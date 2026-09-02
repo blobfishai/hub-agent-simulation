@@ -7,7 +7,7 @@
 #   1  freeze   copy the committed release tree (must be clean and rebuilt: build_distribution.py)
 #   2  gate     harbor run -p <frozen>/harbor/tasks -a oracle  → every trial must score reward 1.0
 #   3  tasks    harbor publish <frozen>/harbor/tasks/* --public -t v<version>
-#   4  dataset  yes | harbor publish <frozen>/harbor --public --no-tasks -t v<version>   (prompts!)
+#   4  dataset  printf y | harbor publish <frozen>/harbor --public --no-tasks -t v<version>   (prompts!)
 #   5  roundtrip harbor run -d blobfishai/hubbench@v<version> -a oracle -i <one task per family>
 #   6  hf       hf upload-large-folder SamuelChien821/hubbench <frozen>/huggingface --repo-type dataset
 #   7  receipt  publication_receipt.py (verifies the HF payload byte-for-byte; refuses on any gap)
@@ -93,7 +93,9 @@ fi
 
 if step 4; then
   echo "-- 4 publish dataset"
-  (cd "$FROZEN/harbor" && yes | "$HARBOR" publish . --public --no-tasks -t "v$VERSION" | tee "$JOBS/publish-dataset-v$VERSION.log")
+  # Send one confirmation. An unbounded `yes` receives SIGPIPE when Harbor exits;
+  # under `set -o pipefail` that incorrectly turns a successful publish into 141.
+  (cd "$FROZEN/harbor" && printf 'y\n' | "$HARBOR" publish . --public --no-tasks -t "v$VERSION" | tee "$JOBS/publish-dataset-v$VERSION.log")
   grep -o "$DATASET *│ *[0-9a-f]\{12\}" "$JOBS/publish-dataset-v$VERSION.log" | grep -o "[0-9a-f]\{12\}$" > "$FROZEN/dataset-digest-prefix.txt" || true
   echo "dataset digest prefix: $(cat "$FROZEN/dataset-digest-prefix.txt" 2>/dev/null || echo unknown)"
   curl -s -o /dev/null -w "hub page %{http_code}\n" "https://hub.harborframework.com/datasets/$DATASET/latest"
