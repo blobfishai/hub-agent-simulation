@@ -57,6 +57,11 @@ case "$GATE_CONCURRENCY" in
   ''|*[!0-9]*) echo "HUBBENCH_GATE_CONCURRENCY must be a positive integer" >&2; exit 2 ;;
 esac
 [ "$GATE_CONCURRENCY" -ge 1 ] || { echo "HUBBENCH_GATE_CONCURRENCY must be at least 1" >&2; exit 2; }
+PUBLISH_CONCURRENCY="${HUBBENCH_PUBLISH_CONCURRENCY:-8}"
+case "$PUBLISH_CONCURRENCY" in
+  ''|*[!0-9]*) echo "HUBBENCH_PUBLISH_CONCURRENCY must be a positive integer" >&2; exit 2 ;;
+esac
+[ "$PUBLISH_CONCURRENCY" -ge 1 ] || { echo "HUBBENCH_PUBLISH_CONCURRENCY must be at least 1" >&2; exit 2; }
 mkdir -p "$JOBS"
 exec > >(tee -a "$LOG") 2>&1
 echo "== HubBench publish v$VERSION steps $FROM_STEP..$TO_STEP ($(date -u +%FT%TZ)) =="
@@ -87,8 +92,8 @@ if step 2; then
 fi
 
 if step 3; then
-  echo "-- 3 publish tasks"
-  (cd "$FROZEN/harbor" && "$HARBOR" publish tasks/* --public -t "v$VERSION" -c 8)
+  echo "-- 3 publish tasks (concurrency $PUBLISH_CONCURRENCY)"
+  (cd "$FROZEN/harbor" && "$HARBOR" publish tasks/* --public -t "v$VERSION" -c "$PUBLISH_CONCURRENCY")
 fi
 
 if step 4; then
