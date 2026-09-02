@@ -1,0 +1,2376 @@
+{
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for order_standard_to_par.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for dispense_short_dated_lot_to_avoid_order.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "dose_amount_unit": {
+        "description": "Unit of the derived dose amount.",
+        "type": "string"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for emergency_transfer_from_partner_site.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "lot 3288 vials that expire 2026-03-15, before any scheduled dose",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Meridian's confirmed standard and expedited delivery dates on MB-55120.",
+        "type": "string"
+      },
+      "first_administration_slot": {
+        "description": "Chair session of the first in-scope administration, as CHAIR/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for next week's pembrolizumab clinic supply.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: VIAL.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing order_standard_to_par, dispense_short_dated_lot_to_avoid_order, emergency_transfer_from_partner_site.",
+        "enum": [
+          "order_standard_to_par",
+          "dispense_short_dated_lot_to_avoid_order",
+          "emergency_transfer_from_partner_site"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "safety_stock_quantity": {
+        "description": "Safety stock the par policy adds on top of the uncovered requirement.",
+        "type": "integer"
+      },
+      "scheduled_administrations": {
+        "description": "Count of pembrolizumab administrations booked inside the in-scope week after removing cancelled and out-of-window appointments.",
+        "type": "integer"
+      },
+      "source_quantity": {
+        "description": "PEMBRO-100 vials required by the four administrations scheduled 2026-03-17 to 2026-03-19 (three 200 mg doses and one 2 mg/kg dose at 90 kg)",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Meridian's confirmed standard and expedited delivery dates on MB-55120.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "PEMBRO-100 vials dispensable for next week's dates at the infusion pharmacy",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      },
+      "weight_based_dose_amount": {
+        "description": "Dose of the one weight-based order derived from mg/kg and the current measured weight.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "dose_amount_unit",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_administration_slot",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "safety_stock_quantity",
+      "scheduled_administrations",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "transaction_quantity",
+      "weight_based_dose_amount"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-03-09",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "family": "clinicops",
+  "instruction": "Next week's oncology clinic has several pembrolizumab patients on the books and Priya wants the restock order placed today rather than Friday. Work out how many vials the scheduled doses actually need, what part of our stock can legitimately be used for those dates, and how many we should be ordering from Meridian under the approval she already signed. Place the order if it fits, and draft the note for the oncology charge nurse so she knows what is arriving and when. If something would need the director or a partner site, say so instead of doing it.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-CO-0102"
+    },
+    "case_reference": "CLIN-0002",
+    "chat": {
+      "thread_id": "CHAT-0002"
+    },
+    "drive": {
+      "case_folder_query": "CLIN-0002",
+      "policy_query": "policy"
+    },
+    "ehr": {
+      "mrn": "MRN-611402",
+      "patient_search": {
+        "arguments": {
+          "identifier": "MRN-611402"
+        },
+        "tool": "ehr.patients.search"
+      }
+    },
+    "messages": {
+      "search_query": "CLIN-0002"
+    },
+    "pharmacy": {
+      "locations": [
+        "LOC-PHARM"
+      ],
+      "medication_code": "PEMBRO-100"
+    },
+    "scheduling": {
+      "calendar_window": {
+        "end_date": "2026-03-20",
+        "start_date": "2026-03-16"
+      },
+      "location_id": "LOC-INF"
+    },
+    "supplier": {
+      "confirmation_id": "CONF-MER-55120"
+    }
+  },
+  "role": "infusion_pharmacy_buyer",
+  "seed_tables": {
+    "appointments": [
+      {
+        "appointment_id": "APPT-24570",
+        "chair_id": "CHAIR-1",
+        "description": "pembrolizumab cycle 6",
+        "end_time": "2026-03-17T09:00:00",
+        "last_updated": "2026-03-06T12:00:00",
+        "patient_id": "PAT-11007",
+        "request_id": "MR-70341",
+        "revision": 1,
+        "start_time": "2026-03-17T08:00:00",
+        "status": "booked"
+      },
+      {
+        "appointment_id": "APPT-24571",
+        "chair_id": "CHAIR-2",
+        "description": "pembrolizumab cycle 4",
+        "end_time": "2026-03-18T13:30:00",
+        "last_updated": "2026-03-06T12:00:00",
+        "patient_id": "PAT-11052",
+        "request_id": "MR-70348",
+        "revision": 1,
+        "start_time": "2026-03-18T12:30:00",
+        "status": "booked"
+      },
+      {
+        "appointment_id": "APPT-24572",
+        "chair_id": "CHAIR-3",
+        "description": "pembrolizumab cycle 3",
+        "end_time": "2026-03-19T09:00:00",
+        "last_updated": "2026-03-06T12:00:00",
+        "patient_id": "PAT-11119",
+        "request_id": "MR-70355",
+        "revision": 1,
+        "start_time": "2026-03-19T08:00:00",
+        "status": "booked"
+      },
+      {
+        "appointment_id": "APPT-24573",
+        "chair_id": "CHAIR-1",
+        "description": "pembrolizumab cycle 2 (weight-based)",
+        "end_time": "2026-03-19T13:30:00",
+        "last_updated": "2026-03-06T12:00:00",
+        "patient_id": "PAT-11134",
+        "request_id": "MR-70360",
+        "revision": 1,
+        "start_time": "2026-03-19T12:30:00",
+        "status": "booked"
+      },
+      {
+        "appointment_id": "APPT-24574",
+        "chair_id": "CHAIR-2",
+        "description": "pembrolizumab cycle 5",
+        "end_time": "2026-03-24T09:00:00",
+        "last_updated": "2026-03-06T12:00:00",
+        "patient_id": "PAT-11170",
+        "request_id": "MR-70372",
+        "revision": 1,
+        "start_time": "2026-03-24T08:00:00",
+        "status": "booked"
+      },
+      {
+        "appointment_id": "APPT-24560",
+        "chair_id": null,
+        "description": "pembrolizumab cycle 4 (rebooked as APPT-24571)",
+        "end_time": null,
+        "last_updated": "2026-03-06T12:00:00",
+        "patient_id": "PAT-11052",
+        "request_id": "MR-70348",
+        "revision": 1,
+        "start_time": null,
+        "status": "cancelled"
+      }
+    ],
+    "approvals": [
+      {
+        "approval_id": "AP-CO-0102",
+        "approver_id": "U-RAMAN",
+        "approver_role": "pharmacy_manager",
+        "granted_on": "2026-03-06",
+        "scope_json": "{\"delivery_option\": \"standard\", \"expedite_fee_allowed_usd\": 0, \"max_quantity_vials\": 6, \"max_spend_usd\": 30000, \"medication_code\": \"PEMBRO-100\", \"not_covered\": [\"expedited freight (pharmacy director)\", \"inter-facility transfers or loans (pharmacy director + partner agreement)\", \"dispensing short-dated lots past expiry (never)\"], \"supplier_id\": \"SUP-MERIDIAN\"}",
+        "status": "APPROVED",
+        "subject": "Pembrolizumab restock for the week of 2026-03-16 (CLIN-0002)"
+      },
+      {
+        "approval_id": "AP-CO-0090",
+        "approver_id": "U-RAMAN",
+        "approver_role": "pharmacy_manager",
+        "granted_on": "2026-01-08",
+        "scope_json": "{\"max_spend_usd\": 12000, \"medication_code\": \"CONSUMABLES\"}",
+        "status": "APPROVED",
+        "subject": "Quarterly saline and tubing standing order"
+      }
+    ],
+    "chairs": [
+      {
+        "chair_id": "CHAIR-1",
+        "first_dose_capable": 1,
+        "location_id": "LOC-INF",
+        "name": "Infusion chair 1 (bay A)",
+        "status": "ACTIVE",
+        "status_note": null
+      },
+      {
+        "chair_id": "CHAIR-2",
+        "first_dose_capable": 1,
+        "location_id": "LOC-INF",
+        "name": "Infusion chair 2 (bay A)",
+        "status": "ACTIVE",
+        "status_note": null
+      },
+      {
+        "chair_id": "CHAIR-3",
+        "first_dose_capable": 1,
+        "location_id": "LOC-INF",
+        "name": "Infusion chair 3 (bay B)",
+        "status": "ACTIVE",
+        "status_note": null
+      }
+    ],
+    "chat_threads": [
+      {
+        "channel": "#infusion-ops",
+        "messages_json": "[{\"author\": \"Kenji Sato\", \"ts\": \"2026-03-05T11:02:00\", \"text\": \"Ferreira (MRN-611402) stays on the weight-based arm at 2 mg/kg \\u2014 use the weight from 03-04, not the January one.\"}, {\"author\": \"Priya Raman\", \"ts\": \"2026-03-06T15:25:00\", \"text\": \"Whitcombe's cycle is the 24th, so it is not part of next week's count. Brandt's old Wednesday slot was cancelled and rebooked; count him once.\"}, {\"author\": \"L\\u00e9a Dubois\", \"ts\": \"2026-03-06T16:00:00\", \"text\": \"No expedited freight on this one unless it comes to me; partner-site transfers need the agreement countersigned.\"}]",
+        "thread_id": "CHAT-0002",
+        "title": "CLIN-0002 pembrolizumab week of 03-16"
+      },
+      {
+        "channel": "#infusion-ops",
+        "messages_json": "[{\"author\": \"Dana Whitfield\", \"ts\": \"2026-03-05T16:40:00\", \"text\": \"Reminder: log every pump swap in biomed's sheet.\"}]",
+        "thread_id": "CHAT-0002-GEN",
+        "title": "General — pump swaps and parking"
+      }
+    ],
+    "drive_files": [
+      {
+        "content": "# Infusion Operations Policy (v3, effective 2026-01-05)\n\nApplies to Northlake Infusion Services: Northlake Infusion Center (LOC-INF), Northlake Infusion Pharmacy (LOC-PHARM), and Eastgate Satellite Pharmacy (LOC-SAT). This version supersedes the 2024 policy in full.\n\n## 1. Dose and vial requirement\n\n1.1 Weight-based orders (mg/kg, g/kg) are calculated at the most recent measured weight in the EHR (Observation code 29463-7). A historical clinic weight is never used.\n1.2 Weight-band orders use the protocol band table at the current measured weight.\n1.3 Vials are single-use. Every dose is rounded up to whole vials; vial sharing between patients is prohibited.\n1.4 Induction regimens whose second dose falls within 14 days of dose 1: stock for both loading doses must be physically on hand and released before dose 1 is booked. A confirmed supplier order is not a substitute for stock on the shelf.\n1.5 Maintenance doses may be advanced by up to 7 days with a prescriber note.\n\n## 2. Dispensable stock\n\n2.1 A lot is dispensable only when its status is AVAILABLE, it is not reserved for a named patient, and it retains at least the formulary minimum remaining dating (14 days from the planning date). On a planning date of 2026-03-09, lots expiring on or before 2026-03-23 are short-dated and are not dispensable.\n2.2 Quarantined, recalled, and excursion-uncovered lots are never dispensed. Release requires the pharmacy director, and the medical director where a clinical exception is involved.\n2.3 Received stock is released to the shelf on the next clinic day after delivery, after pharmacy verification.\n2.4 Par: order the uncovered requirement plus the item's safety stock from the par table. Inter-site transfers move releasable lots only and cover only the receiving site's uncovered quantity.\n\n## 3. Chair scheduling\n\n3.1 Sessions are AM 08:00-12:00 and PM 12:30-16:30, Monday to Friday. An infusion of up to 4 hours including observation occupies one session; a longer infusion requires both sessions of one chair on one day.\n3.2 Protected sessions (oncology protocol blocks, desensitizations) and blocked sessions (biomed) are never displaced without the medical director.\n3.3 Two infusions of the same short-duration drug (2 hours or less each, including observation) may be sequenced in one session.\n3.4 First-dose biologic infusions require a first-dose-capable chair per the roster.\n3.5 Extended, evening, weekend, and overtime sessions require the nursing director's separate approval.\n\n## 4. Authority\n\n4.1 Pharmacy manager: purchase orders within the signed approval's quantity, supplier, and spend, including any expedite fee the approval names.\n4.2 Pharmacy director: expedited freight not named in an approval, inter-facility loans and direct purchases outside an approval, dating waivers, and release of quarantined or excursion-uncovered lots.\n4.3 Nursing director: chair re-homing plans, overtime, and extended sessions.\n4.4 Medical director: displacing protected sessions, clinical exceptions, and rescheduling a clinic.\n4.5 An approval covers exactly the record, quantity, supplier, and options it names. It never selects an option in advance and never extends to a broader record.\n\n---\nEvidence-room mount: clinicops-002 / CLIN-0002.\n",
+        "file_id": "DRV-002-01",
+        "folder": "Infusion Services/Policies",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "infusion-operations-policy.md",
+        "sha256": "41c01507c4a110bfe368ef97f2cfec522fb92fa43ff47348983af369d0216f54"
+      },
+      {
+        "content": "# Infusion Operations Policy (2024 edition) — SUPERSEDED\n\nThis edition was replaced by v3 on 2026-01-05 and is retained for audit only. Do not apply it.\n\n1. Weight-based doses may be calculated at the weight recorded at the start of the treatment course.\n2. Minimum remaining dating at dispense: 7 days.\n3. A confirmed supplier order counts toward induction stock; dose 1 may be booked once the order is confirmed.\n4. Expedite fees up to USD 500 may be approved by the pharmacy manager at discretion.\n5. Chairs run a single 08:00-16:00 block; long infusions may be split across two days with prescriber agreement.\n6. Protected sessions may be displaced by the charge nurse when clinically urgent.\n\n---\nEvidence-room mount: clinicops-002 / CLIN-0002.\n",
+        "file_id": "DRV-002-02",
+        "folder": "Infusion Services/Policies/Archive",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "superseded-infusion-policy-2024.md",
+        "sha256": "9c976b5d137824ba3988ad0f0cff6b6888e0ab3570fe1fbe9882e988872bdcb2"
+      },
+      {
+        "content": "{\n  \"entry\": [\n    {\n      \"resource\": {\n        \"authoredOn\": \"2026-02-10\",\n        \"dosageInstruction\": [\n          {\n            \"doseAndRate\": [\n              {\n                \"doseQuantity\": {\n                  \"unit\": \"mg/kg\",\n                  \"value\": 2.0\n                }\n              }\n            ],\n            \"route\": {\n              \"text\": \"intravenous\"\n            },\n            \"text\": \"every 3 weeks (weight-based protocol arm)\",\n            \"timing\": {\n              \"code\": {\n                \"text\": \"every 3 weeks (weight-based protocol arm)\"\n              }\n            }\n          }\n        ],\n        \"extension\": [\n          {\n            \"url\": \"urn:northlake:doses-in-scope\",\n            \"valueInteger\": 1\n          },\n          {\n            \"url\": \"urn:northlake:infusion-minutes\",\n            \"valueInteger\": 30\n          },\n          {\n            \"url\": \"urn:northlake:observation-minutes\",\n            \"valueInteger\": 30\n          }\n        ],\n        \"id\": \"MR-70360\",\n        \"intent\": \"order\",\n        \"medicationCodeableConcept\": {\n          \"coding\": [\n            {\n              \"code\": \"PEMBRO-100\",\n              \"display\": \"pembrolizumab 100 mg vial\",\n              \"system\": \"urn:northlake:formulary\"\n            }\n          ]\n        },\n        \"note\": [\n          {\n            \"text\": \"Weight-based dosing per trial arm; use most recent weight.\"\n          }\n        ],\n        \"priority\": \"routine\",\n        \"requester\": {\n          \"reference\": \"Practitioner/DR-SATO\"\n        },\n        \"resourceType\": \"MedicationRequest\",\n        \"status\": \"active\",\n        \"subject\": {\n          \"reference\": \"Patient/PAT-11134\"\n        }\n      }\n    }\n  ],\n  \"resourceType\": \"Bundle\",\n  \"type\": \"collection\"\n}\n",
+        "file_id": "DRV-002-03",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "medication-request-MR-70360.json",
+        "sha256": "064a303bd1b431132e0cb721a007ef1532f3613d7c693e1945772b9cbad6bba6"
+      },
+      {
+        "content": "{\n  \"entry\": [\n    {\n      \"resource\": {\n        \"birthDate\": \"1968-09-30\",\n        \"gender\": \"male\",\n        \"generalPractitioner\": [\n          {\n            \"reference\": \"Practitioner/DR-SATO\"\n          }\n        ],\n        \"id\": \"PAT-11134\",\n        \"identifier\": [\n          {\n            \"system\": \"urn:northlake:mrn\",\n            \"value\": \"MRN-611402\"\n          }\n        ],\n        \"name\": [\n          {\n            \"family\": \"Ferreira\",\n            \"given\": [\n              \"Lucas\"\n            ]\n          }\n        ],\n        \"resourceType\": \"Patient\"\n      }\n    },\n    {\n      \"resource\": {\n        \"code\": {\n          \"coding\": [\n            {\n              \"code\": \"29463-7\",\n              \"display\": \"Body weight\",\n              \"system\": \"http://loinc.org\"\n            }\n          ]\n        },\n        \"effectiveDateTime\": \"2026-03-04\",\n        \"id\": \"OBS-WT-11134\",\n        \"resourceType\": \"Observation\",\n        \"status\": \"final\",\n        \"subject\": {\n          \"reference\": \"Patient/PAT-11134\"\n        },\n        \"valueQuantity\": {\n          \"unit\": \"kg\",\n          \"value\": 90.0\n        }\n      }\n    },\n    {\n      \"resource\": {\n        \"code\": {\n          \"coding\": [\n            {\n              \"code\": \"8302-2\",\n              \"display\": \"Body height\",\n              \"system\": \"http://loinc.org\"\n            }\n          ]\n        },\n        \"effectiveDateTime\": \"2026-03-04\",\n        \"id\": \"OBS-HT-11134\",\n        \"resourceType\": \"Observation\",\n        \"status\": \"final\",\n        \"subject\": {\n          \"reference\": \"Patient/PAT-11134\"\n        },\n        \"valueQuantity\": {\n          \"unit\": \"cm\",\n          \"value\": 182.0\n        }\n      }\n    },\n    {\n      \"resource\": {\n        \"code\": {\n          \"coding\": [\n            {\n              \"code\": \"29463-7\",\n              \"display\": \"Body weight\",\n              \"system\": \"http://loinc.org\"\n            }\n          ]\n        },\n        \"effectiveDateTime\": \"2025-09-12\",\n        \"id\": \"OBS-WT-11134-2025\",\n        \"resourceType\": \"Observation\",\n        \"status\": \"final\",\n        \"subject\": {\n          \"reference\": \"Patient/PAT-11134\"\n        },\n        \"valueQuantity\": {\n          \"unit\": \"kg\",\n          \"value\": 85.0\n        }\n      }\n    }\n  ],\n  \"resourceType\": \"Bundle\",\n  \"type\": \"collection\"\n}\n",
+        "file_id": "DRV-002-04",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "patient-MRN-611402-summary.json",
+        "sha256": "085093935b4f932aae7befc65c7b54a97a5e37c87cbc2ca4ff96a02431cb63bf"
+      },
+      {
+        "content": "medication_code,display,vial_strength_value,vial_strength_unit,storage,minimum_dating_days,interchangeable_with\nPEMBRO-100,pembrolizumab 100 mg vial,100,mg,2-8 °C refrigerated,14,\nTOCIL-400,tocilizumab 400 mg vial,400,mg,2-8 °C refrigerated,14,\n",
+        "file_id": "DRV-002-05",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "formulary-vial-strengths.csv",
+        "sha256": "b1140f0d1ee3a7f6e8552deedffcbe9c28676961bc0a9b8cb8f0f41ef8e84e96"
+      },
+      {
+        "content": "lot_number,medication_code,location_id,quantity_on_hand,expiry_date\n3301,PEMBRO-100,LOC-PHARM,4,2026-10-31\n3288,PEMBRO-100,LOC-PHARM,3,2026-03-15\n9155,TOCIL-400,LOC-PHARM,5,2027-01-31\n",
+        "file_id": "DRV-002-06",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "on-hand-by-lot.xlsx",
+        "sha256": "82b179f05626968a9709c91836ea68c7d18ef0b0f029c39b221f0fdf47fc3ee1"
+      },
+      {
+        "content": "lot_number,medication_code,location_id,status,status_reason,reserved_for_patient_id,register_note\n3301,PEMBRO-100,LOC-PHARM,AVAILABLE,,,\n3288,PEMBRO-100,LOC-PHARM,AVAILABLE,,,\n9155,TOCIL-400,LOC-PHARM,AVAILABLE,,,\n",
+        "file_id": "DRV-002-07",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "lot-status-register.csv",
+        "sha256": "1c88c4372f2e7e8e61e4209806a48b7cc14b35ddf79fdecb283b76b95d88bbae"
+      },
+      {
+        "content": "service_date,chair_id,session,start,end,status,hold_reason\n2026-03-09,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-09,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-09,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-09,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-09,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-09,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-10,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-10,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-10,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-10,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-10,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-10,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-11,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-11,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-11,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-11,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-11,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-11,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-12,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-12,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-12,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-12,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-12,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-12,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-13,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-13,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-13,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-13,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-13,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-13,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-16,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-16,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-16,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-16,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-16,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-16,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-17,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-17,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-17,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-17,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-17,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-17,CHAIR-3,PM,12:30:00,16:30:00,protected,oncology protocol block\n2026-03-18,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-18,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-18,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-18,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-18,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-18,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-19,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-19,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-19,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-19,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-19,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-19,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-20,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-20,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-20,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-20,CHAIR-2,PM,12:30:00,16:30:00,free,\n2026-03-20,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-20,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-23,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-23,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-23,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-23,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-23,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-23,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-24,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-24,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-24,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-24,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-24,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-24,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-25,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-25,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-25,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-25,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-25,CHAIR-3,AM,08:00:00,12:00:00,free,\n2026-03-25,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-26,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-26,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-26,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-26,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-26,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-26,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n2026-03-27,CHAIR-1,AM,08:00:00,12:00:00,busy,booked\n2026-03-27,CHAIR-1,PM,12:30:00,16:30:00,busy,booked\n2026-03-27,CHAIR-2,AM,08:00:00,12:00:00,busy,booked\n2026-03-27,CHAIR-2,PM,12:30:00,16:30:00,busy,booked\n2026-03-27,CHAIR-3,AM,08:00:00,12:00:00,busy,booked\n2026-03-27,CHAIR-3,PM,12:30:00,16:30:00,busy,booked\n",
+        "file_id": "DRV-002-08",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "chair-calendar-2026-03-09.xlsx",
+        "sha256": "b12e15133efb28a9a56521b097f6d2c446fcec0822c83ad7d564fcbb6630f5df"
+      },
+      {
+        "content": "chair_id,name,status,first_dose_capable,note,hubbench_task_scope,hubbench_case_reference\nCHAIR-1,Infusion chair 1 (bay A),ACTIVE,yes,,clinicops-002,CLIN-0002\nCHAIR-2,Infusion chair 2 (bay A),ACTIVE,yes,,clinicops-002,CLIN-0002\nCHAIR-3,Infusion chair 3 (bay B),ACTIVE,yes,,clinicops-002,CLIN-0002\n",
+        "file_id": "DRV-002-09",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "chair-roster-and-capabilities.csv",
+        "sha256": "fd025bcced40f40fe382122d322f1bde592c128ab005b12c8e58c2bff100fff3"
+      },
+      {
+        "content": "Meridian Biologics Supply\nDelivery confirmation MB-55120 (system reference CONF-MER-55120)\nCustomer: Northlake Health Infusion Services, account NL-0877\nCase reference: CLIN-0002\nItem: PEMBRO-100 — pembrolizumab 100 mg vial\nQuantity available for this confirmation: 10 vials\nUnit price: USD 4850.00\nStandard delivery date: 2026-03-13\nExpedited delivery date: 2026-03-11 (expedite fee USD 320, flat)\nValid until: 2026-03-11\nNotes: Standard: Friday ground run. Expedited: courier, USD 320 flat. Shelf release next clinic day after pharmacy verification.\nDelivery is to the receiving dock; shelf release is subject to the customer's pharmacy verification.\n",
+        "file_id": "DRV-002-10",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "delivery-confirmation-MB-55120.pdf",
+        "sha256": "6d410bb7a38f122f6a97cb8d9659c494b764cf85c7a1196f64e655cde2cf7650"
+      },
+      {
+        "content": "{\n  \"approval_id\": \"AP-CO-0102\",\n  \"approver_id\": \"U-RAMAN\",\n  \"approver_role\": \"pharmacy_manager\",\n  \"case_reference\": \"CLIN-0002\",\n  \"granted_on\": \"2026-03-06\",\n  \"scope\": {\n    \"delivery_option\": \"standard\",\n    \"expedite_fee_allowed_usd\": 0,\n    \"max_quantity_vials\": 6,\n    \"max_spend_usd\": 30000,\n    \"medication_code\": \"PEMBRO-100\",\n    \"not_covered\": [\n      \"expedited freight (pharmacy director)\",\n      \"inter-facility transfers or loans (pharmacy director + partner agreement)\",\n      \"dispensing short-dated lots past expiry (never)\"\n    ],\n    \"supplier_id\": \"SUP-MERIDIAN\"\n  },\n  \"status\": \"APPROVED\",\n  \"subject\": \"Pembrolizumab restock for the week of 2026-03-16 (CLIN-0002)\"\n}\n",
+        "file_id": "DRV-002-11",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "approval-AP-CO-0102.json",
+        "sha256": "be45c753b8497ca43959de33392c085a2817fc1f4c88a8e55b149ced30583194"
+      },
+      {
+        "content": "{\n  \"appointments\": [\n    {\n      \"appointment_id\": \"APPT-24570\",\n      \"chair_id\": \"CHAIR-1\",\n      \"end\": \"2026-03-17T09:00:00\",\n      \"patient_id\": \"PAT-11007\",\n      \"request_id\": \"MR-70341\",\n      \"start\": \"2026-03-17T08:00:00\",\n      \"status\": \"booked\"\n    },\n    {\n      \"appointment_id\": \"APPT-24571\",\n      \"chair_id\": \"CHAIR-2\",\n      \"end\": \"2026-03-18T13:30:00\",\n      \"patient_id\": \"PAT-11052\",\n      \"request_id\": \"MR-70348\",\n      \"start\": \"2026-03-18T12:30:00\",\n      \"status\": \"booked\"\n    },\n    {\n      \"appointment_id\": \"APPT-24572\",\n      \"chair_id\": \"CHAIR-3\",\n      \"end\": \"2026-03-19T09:00:00\",\n      \"patient_id\": \"PAT-11119\",\n      \"request_id\": \"MR-70355\",\n      \"start\": \"2026-03-19T08:00:00\",\n      \"status\": \"booked\"\n    },\n    {\n      \"appointment_id\": \"APPT-24573\",\n      \"chair_id\": \"CHAIR-1\",\n      \"end\": \"2026-03-19T13:30:00\",\n      \"patient_id\": \"PAT-11134\",\n      \"request_id\": \"MR-70360\",\n      \"start\": \"2026-03-19T12:30:00\",\n      \"status\": \"booked\"\n    },\n    {\n      \"appointment_id\": \"APPT-24574\",\n      \"chair_id\": \"CHAIR-2\",\n      \"end\": \"2026-03-24T09:00:00\",\n      \"patient_id\": \"PAT-11170\",\n      \"request_id\": \"MR-70372\",\n      \"start\": \"2026-03-24T08:00:00\",\n      \"status\": \"booked\"\n    },\n    {\n      \"appointment_id\": \"APPT-24560\",\n      \"chair_id\": null,\n      \"end\": null,\n      \"patient_id\": \"PAT-11052\",\n      \"request_id\": \"MR-70348\",\n      \"start\": null,\n      \"status\": \"cancelled\"\n    }\n  ],\n  \"as_of\": \"2026-03-09\",\n  \"case_reference\": \"CLIN-0002\",\n  \"note\": \"Snapshot before any action; row order does not indicate applicability.\",\n  \"purchase_orders\": [\n    {\n      \"po_id\": \"PO-5100\",\n      \"status\": \"RECEIVED\"\n    }\n  ],\n  \"stock_transfers\": []\n}\n",
+        "file_id": "DRV-002-12",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "starting-state-clinicops-002.json",
+        "sha256": "72e4529b2c64528639a9249051b8b26a8ee114cfe5e4c031f280978666e5ac01"
+      },
+      {
+        "content": "medication_code,par_basis,safety_stock_vials,reorder_rule\nPEMBRO-100,scheduled doses in the next 7 clinic days,2,order uncovered requirement plus safety stock\nTOCIL-400,scheduled doses in the next 7 clinic days,1,order uncovered requirement plus safety stock\nINFLIX-100,scheduled doses in the next 14 clinic days,2,order uncovered requirement plus safety stock\n",
+        "file_id": "DRV-002-13",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "par-levels-and-safety-stock.csv",
+        "sha256": "e9846c3154387f40fa6f080136f78996afa4195c95155cb81ab3eac763a8414b"
+      },
+      {
+        "content": "{\n  \"anchors\": [\n    {\n      \"evaluation_shape\": \"stateful FHIR-backed EHR retrieval and action tasks\",\n      \"harbor_dataset\": \"stanford/medagentbench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/stanford/medagentbench/latest\",\n      \"license\": \"MIT\",\n      \"name\": \"MedAgentBench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/stanfordmlgroup/MedAgentBench\"\n    },\n    {\n      \"evaluation_shape\": \"long-horizon clinical workflows with checkpointed FHIR interactions\",\n      \"harbor_dataset\": \"josancamon19/physician-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/josancamon19/physician-bench/latest\",\n      \"license\": \"Apache-2.0\",\n      \"name\": \"PhysicianBench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/HealthRex/PhysicianBench\"\n    }\n  ],\n  \"clean_room\": true,\n  \"family\": \"clinicops\",\n  \"schema_version\": \"hubbench.provenance.v1\",\n  \"task_id\": \"clinicops-002\",\n  \"upstream_scores_claimed\": false,\n  \"upstream_tasks_copied\": false\n}\n",
+        "file_id": "DRV-002-14",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "harbor-open-source-anchors.json",
+        "sha256": "3b271c4a493fa6d8a4d0cedbe12915e0feed219cf7a234672cbd9abfa9d1a6de"
+      },
+      {
+        "content": "task_id,case_reference,subject_id,source_system,record_role,effective_revision\nclinicops-002,CLIN-0002,PEMBRO-100,domain,authoritative_subject,v1\nclinicops-002,CLIN-0002,PEMBRO-100,approvals,execution_authority,v1\nclinicops-002,CLIN-0002,PEMBRO-100,drive,supporting_evidence,v1\n",
+        "file_id": "DRV-002-15",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "record-lineage.csv",
+        "sha256": "a78c9c9f9b29c4f3b8f76670ca823545f4ff2c72e09ea31e19efeaaba286cd2a"
+      },
+      {
+        "content": "# Current execution authority — CLIN-0002\n\nEffective 2026-03-09. Applies only to PEMBRO-100 in ClinicOps. The signed approval record and provider contract jointly bound any write. A source record, search result, or prior decision never grants authority.\n\nRelease revision: v1. Task scope: clinicops-002.\n",
+        "file_id": "DRV-002-16",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "current-authority.md",
+        "sha256": "5650c9d72b7fd6a9abaf7098b8574954efb7c8a971cecc7f2ef26ffd24bca8b8"
+      },
+      {
+        "content": "# Retired authority — CLIN-0002\n\nStatus: SUPERSEDED. This historical ClinicOps delegation ended before 2026-03-09. It references PEMBRO-100 but cannot authorize a current action for clinicops-002.\n",
+        "file_id": "DRV-002-17",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "retired-authority.md",
+        "sha256": "54620c2cd47d1a693d66408d323bb856937fe1b094e09f28edf05b3a5aa2bdf6"
+      },
+      {
+        "content": "{\n  \"approval_record\": \"DEC-CLINICOPS-0002\",\n  \"authority_source\": \"signed family approval plus provider contract\",\n  \"case_reference\": \"CLIN-0002\",\n  \"effective_revision\": \"v1\",\n  \"prohibited_basis\": [\n    \"retired authority\",\n    \"search ranking\",\n    \"request urgency\"\n  ],\n  \"status\": \"REVIEW_REQUIRED\",\n  \"subject_id\": \"PEMBRO-100\"\n}\n",
+        "file_id": "DRV-002-18",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "decision-record.json",
+        "sha256": "83c04f3d8024533961d6765aea93aebe159f4b1dcf745c3456339b10bdafd304"
+      },
+      {
+        "content": "task_id,case_reference,review_lane,available_units,protected_units,effective_date\nclinicops-002,CLIN-0002,standard,10,2,2026-03-09\nclinicops-002,CLIN-0002,expedited,6,1,2026-03-09\n",
+        "file_id": "DRV-002-19",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "review-capacity.xlsx",
+        "sha256": "5bfebbc27e28e8c7bb3a7105c7219940bee9d4741b30ca0b952666d31b34aadf"
+      },
+      {
+        "content": "Source integrity control\nTask: clinicops-002\nCase: CLIN-0002\nSubject: PEMBRO-100\nEffective revision: v1\nRule: current provider state plus the signed approval govern. Search rank, filenames, request urgency, and archived authority do not.\n",
+        "file_id": "DRV-002-20",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "source-integrity.pdf",
+        "sha256": "4e4a5b6f4b16436b817e002bbf3d073506e500e5dde4788a6e5096fd0812b513"
+      },
+      {
+        "content": "task_id: \"clinicops-002\"\ncase_reference: \"CLIN-0002\"\nas_of: \"2026-03-09\"\nchecks:\n  - name: \"identity_linked\"\n    status: \"PASS\"\n    record: \"PEMBRO-100\"\n  - name: \"revision_current\"\n    status: \"PASS\"\n    record: \"v1\"\n  - name: \"authority_requires_live_read\"\n    status: \"OPEN\"\n    record: \"DEC-CLINICOPS-0002\"\n  - name: \"outcome_precomputed\"\n    status: \"NO\"\n    record: \"clinicops-002\"\n",
+        "file_id": "DRV-002-21",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "evidence-status.yaml",
+        "sha256": "62d75782181f903f0e5f5aff43570fb38edc2f24f18d892ed2b56e9966f81b9d"
+      },
+      {
+        "content": "2026-03-09T08:55:00Z INFO scope_created task=clinicops-002 case=CLIN-0002\n2026-03-09T08:56:00Z INFO subject_linked family=clinicops subject=PEMBRO-100\n2026-03-09T08:57:00Z WARN retired_authority_present case=CLIN-0002 action=ignore_until_current_scope_verified\n2026-03-09T08:58:00Z INFO provider_state_ready task=clinicops-002 expected_mutations=2\n",
+        "file_id": "DRV-002-22",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "text/plain",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "system-audit.log",
+        "sha256": "3422888a66258834b3d54300749fd1505cdf844df6210afc5df06d1d13dc6728"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"CLIN-0002\",\n  \"messages\": [\n    {\n      \"author\": \"operations\",\n      \"sent_at\": \"2026-03-09T08:35:00\",\n      \"text\": \"Use immutable subject PEMBRO-100; the similarly named archived record is not in scope.\"\n    },\n    {\n      \"author\": \"governance\",\n      \"sent_at\": \"2026-03-09T08:41:00\",\n      \"text\": \"Current revision is v1. Confirm the signed approval before any state change.\"\n    },\n    {\n      \"author\": \"requester\",\n      \"sent_at\": \"2026-03-09T08:47:00\",\n      \"text\": \"Please leave the stakeholder communication as a draft for human review.\"\n    }\n  ],\n  \"thread_id\": \"OPS-CLINICOPS-0002\"\n}\n",
+        "file_id": "DRV-002-23",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "operations-thread.json",
+        "sha256": "cdee9245c06b3d6eb3dbecaf8c38ec576e2e5059e33300a95953dbd90152a9e7"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"CLIN-0002\",\n  \"network\": \"closed benchmark world\",\n  \"read_semantics\": \"provider-shaped records backed by the seeded task world\",\n  \"schema_version\": \"hubbench.provider-contract.v1\",\n  \"state_scope\": \"isolated SQLite episode\",\n  \"subject_id\": \"PEMBRO-100\",\n  \"task_id\": \"clinicops-002\",\n  \"unsupported_claims\": [\n    \"byte parity with upstream providers\",\n    \"conversion of upstream benchmark tasks\",\n    \"upstream score comparability\"\n  ],\n  \"verifier_visibility\": \"hidden from the agent\",\n  \"write_semantics\": \"task-scoped, schema-validated, transactionally persisted and audited\"\n}\n",
+        "file_id": "DRV-002-24",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "provider-contracts.json",
+        "sha256": "d0f49ba36956da936b5dc79c6d5dbf9cb997a521e2becf97bf56a55b96b31f28"
+      },
+      {
+        "content": "{\n  \"captured_as_of\": \"2026-03-09\",\n  \"case_reference\": \"CLIN-0002\",\n  \"expected_mutation_count\": 2,\n  \"family\": \"clinicops\",\n  \"note\": \"Live provider state remains authoritative; this export is a correlation aid, not a write instruction.\",\n  \"organization\": \"Northlake Health \\u2014 Infusion Services\",\n  \"schema_version\": \"hubbench.live-snapshot.v1\",\n  \"state\": \"PRE_ACTION\",\n  \"subject_id\": \"PEMBRO-100\",\n  \"task_id\": \"clinicops-002\"\n}\n",
+        "file_id": "DRV-002-25",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "live-snapshot.json",
+        "sha256": "08e9a5192196ee822ed3f5a4a69e70a7f37ddb6cb615faeb6873969ec9cd9ee0"
+      },
+      {
+        "content": "case_reference: \"CLIN-0002\"\nas_of: \"2026-03-09\"\nfiles:\n  - path: \"policy/infusion-operations-policy.md\"\n    kind: \"policy\"\n    media_type: \"text/markdown\"\n    sha256: \"41c01507c4a110bfe368ef97f2cfec522fb92fa43ff47348983af369d0216f54\"\n  - path: \"policy/superseded-infusion-policy-2024.md\"\n    kind: \"policy_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"9c976b5d137824ba3988ad0f0cff6b6888e0ab3570fe1fbe9882e988872bdcb2\"\n  - path: \"ehr/medication-request-MR-70360.json\"\n    kind: \"medication_order\"\n    media_type: \"application/json\"\n    sha256: \"064a303bd1b431132e0cb721a007ef1532f3613d7c693e1945772b9cbad6bba6\"\n  - path: \"ehr/patient-MRN-611402-summary.json\"\n    kind: \"patient_summary\"\n    media_type: \"application/json\"\n    sha256: \"085093935b4f932aae7befc65c7b54a97a5e37c87cbc2ca4ff96a02431cb63bf\"\n  - path: \"pharmacy/formulary-vial-strengths.csv\"\n    kind: \"formulary\"\n    media_type: \"text/csv\"\n    sha256: \"b1140f0d1ee3a7f6e8552deedffcbe9c28676961bc0a9b8cb8f0f41ef8e84e96\"\n  - path: \"pharmacy/on-hand-by-lot.xlsx\"\n    kind: \"on_hand_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"82b179f05626968a9709c91836ea68c7d18ef0b0f029c39b221f0fdf47fc3ee1\"\n  - path: \"pharmacy/lot-status-register.csv\"\n    kind: \"quarantine_register\"\n    media_type: \"text/csv\"\n    sha256: \"1c88c4372f2e7e8e61e4209806a48b7cc14b35ddf79fdecb283b76b95d88bbae\"\n  - path: \"scheduling/chair-calendar-2026-03-09.xlsx\"\n    kind: \"chair_calendar\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"b12e15133efb28a9a56521b097f6d2c446fcec0822c83ad7d564fcbb6630f5df\"\n  - path: \"scheduling/chair-roster-and-capabilities.csv\"\n    kind: \"chair_roster\"\n    media_type: \"text/csv\"\n    sha256: \"fd025bcced40f40fe382122d322f1bde592c128ab005b12c8e58c2bff100fff3\"\n  - path: \"supplier/delivery-confirmation-MB-55120.pdf\"\n    kind: \"supplier_confirmation\"\n    media_type: \"application/pdf\"\n    sha256: \"6d410bb7a38f122f6a97cb8d9659c494b764cf85c7a1196f64e655cde2cf7650\"\n  - path: \"messages/THR-0002.eml\"\n    kind: \"email\"\n    media_type: \"message/rfc822\"\n    sha256: \"39afdb4314b8a8b286c2ddd4dee3d2fbf655c5428a92a5a726fea113f7df8f77\"\n  - path: \"chat/CHAT-0002.json\"\n    kind: \"chat_thread\"\n    media_type: \"application/json\"\n    sha256: \"cb825f319a214f66e2bfd1ea1430718620a18c3e6085dada4da46d1059281072\"\n  - path: \"approvals/approval-AP-CO-0102.json\"\n    kind: \"approval\"\n    media_type: \"application/json\"\n    sha256: \"be45c753b8497ca43959de33392c085a2817fc1f4c88a8e55b149ced30583194\"\n  - path: \"exports/starting-state-clinicops-002.json\"\n    kind: \"starting_state\"\n    media_type: \"application/json\"\n    sha256: \"72e4529b2c64528639a9249051b8b26a8ee114cfe5e4c031f280978666e5ac01\"\n  - path: \"pharmacy/par-levels-and-safety-stock.csv\"\n    kind: \"par_policy\"\n    media_type: \"text/csv\"\n    sha256: \"e9846c3154387f40fa6f080136f78996afa4195c95155cb81ab3eac763a8414b\"\n  - path: \"provenance/harbor-open-source-anchors.json\"\n    kind: \"open_source_provenance\"\n    media_type: \"application/json\"\n    sha256: \"3b271c4a493fa6d8a4d0cedbe12915e0feed219cf7a234672cbd9abfa9d1a6de\"\n  - path: \"lineage/record-lineage.csv\"\n    kind: \"record_lineage\"\n    media_type: \"text/csv\"\n    sha256: \"a78c9c9f9b29c4f3b8f76670ca823545f4ff2c72e09ea31e19efeaaba286cd2a\"\n  - path: \"controls/current-authority.md\"\n    kind: \"authority_current\"\n    media_type: \"text/markdown\"\n    sha256: \"5650c9d72b7fd6a9abaf7098b8574954efb7c8a971cecc7f2ef26ffd24bca8b8\"\n  - path: \"controls/retired-authority.md\"\n    kind: \"authority_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"54620c2cd47d1a693d66408d323bb856937fe1b094e09f28edf05b3a5aa2bdf6\"\n  - path: \"approvals/decision-record.json\"\n    kind: \"approval_decision\"\n    media_type: \"application/json\"\n    sha256: \"83c04f3d8024533961d6765aea93aebe159f4b1dcf745c3456339b10bdafd304\"\n  - path: \"workbooks/review-capacity.xlsx\"\n    kind: \"review_capacity_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"5bfebbc27e28e8c7bb3a7105c7219940bee9d4741b30ca0b952666d31b34aadf\"\n  - path: \"controls/source-integrity.pdf\"\n    kind: \"source_integrity_control\"\n    media_type: \"application/pdf\"\n    sha256: \"4e4a5b6f4b16436b817e002bbf3d073506e500e5dde4788a6e5096fd0812b513\"\n  - path: \"audit/evidence-status.yaml\"\n    kind: \"evidence_status\"\n    media_type: \"application/yaml\"\n    sha256: \"62d75782181f903f0e5f5aff43570fb38edc2f24f18d892ed2b56e9966f81b9d\"\n  - path: \"audit/system-audit.log\"\n    kind: \"system_audit\"\n    media_type: \"text/plain\"\n    sha256: \"3422888a66258834b3d54300749fd1505cdf844df6210afc5df06d1d13dc6728\"\n  - path: \"communications/source-request.eml\"\n    kind: \"source_request\"\n    media_type: \"message/rfc822\"\n    sha256: \"a14ed1929b349eb7a6a831185b4b3e0270179815ba1f4964caa57040084767b0\"\n  - path: \"collaboration/operations-thread.json\"\n    kind: \"operations_thread\"\n    media_type: \"application/json\"\n    sha256: \"cdee9245c06b3d6eb3dbecaf8c38ec576e2e5059e33300a95953dbd90152a9e7\"\n  - path: \"contracts/provider-contracts.json\"\n    kind: \"provider_contract\"\n    media_type: \"application/json\"\n    sha256: \"d0f49ba36956da936b5dc79c6d5dbf9cb997a521e2becf97bf56a55b96b31f28\"\n  - path: \"exports/live-snapshot.json\"\n    kind: \"live_snapshot\"\n    media_type: \"application/json\"\n    sha256: \"08e9a5192196ee822ed3f5a4a69e70a7f37ddb6cb615faeb6873969ec9cd9ee0\"\n",
+        "file_id": "DRV-002-26",
+        "folder": "Infusion Services/Cases/CLIN-0002",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-03-06T17:30:00",
+        "name": "evidence-index.yaml",
+        "sha256": "16165e714de46aec17ac550bd203c7856ff7e3a2547a101723da47b30c96d063"
+      }
+    ],
+    "evidence_files": [
+      {
+        "asset_id": "clinicops-002-01",
+        "kind": "policy",
+        "media_type": "text/markdown",
+        "path": "policy/infusion-operations-policy.md",
+        "sha256": "41c01507c4a110bfe368ef97f2cfec522fb92fa43ff47348983af369d0216f54",
+        "source": "drive",
+        "task_id": "clinicops-002",
+        "title": "Infusion operations policy v3 (effective)"
+      },
+      {
+        "asset_id": "clinicops-002-02",
+        "kind": "policy_superseded",
+        "media_type": "text/markdown",
+        "path": "policy/superseded-infusion-policy-2024.md",
+        "sha256": "9c976b5d137824ba3988ad0f0cff6b6888e0ab3570fe1fbe9882e988872bdcb2",
+        "source": "drive",
+        "task_id": "clinicops-002",
+        "title": "Infusion operations policy 2024 (superseded)"
+      },
+      {
+        "asset_id": "clinicops-002-03",
+        "kind": "medication_order",
+        "media_type": "application/json",
+        "path": "ehr/medication-request-MR-70360.json",
+        "sha256": "064a303bd1b431132e0cb721a007ef1532f3613d7c693e1945772b9cbad6bba6",
+        "source": "ehr_export",
+        "task_id": "clinicops-002",
+        "title": "MedicationRequest MR-70360 (FHIR export)"
+      },
+      {
+        "asset_id": "clinicops-002-04",
+        "kind": "patient_summary",
+        "media_type": "application/json",
+        "path": "ehr/patient-MRN-611402-summary.json",
+        "sha256": "085093935b4f932aae7befc65c7b54a97a5e37c87cbc2ca4ff96a02431cb63bf",
+        "source": "ehr_export",
+        "task_id": "clinicops-002",
+        "title": "Patient MRN-611402 summary with weight observations (FHIR export)"
+      },
+      {
+        "asset_id": "clinicops-002-05",
+        "kind": "formulary",
+        "media_type": "text/csv",
+        "path": "pharmacy/formulary-vial-strengths.csv",
+        "sha256": "b1140f0d1ee3a7f6e8552deedffcbe9c28676961bc0a9b8cb8f0f41ef8e84e96",
+        "source": "pharmacy_export",
+        "task_id": "clinicops-002",
+        "title": "Formulary vial strengths and minimum dating"
+      },
+      {
+        "asset_id": "clinicops-002-06",
+        "kind": "on_hand_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "pharmacy/on-hand-by-lot.xlsx",
+        "sha256": "82b179f05626968a9709c91836ea68c7d18ef0b0f029c39b221f0fdf47fc3ee1",
+        "source": "pharmacy_workbook",
+        "task_id": "clinicops-002",
+        "title": "On-hand inventory by lot (gross)"
+      },
+      {
+        "asset_id": "clinicops-002-07",
+        "kind": "quarantine_register",
+        "media_type": "text/csv",
+        "path": "pharmacy/lot-status-register.csv",
+        "sha256": "1c88c4372f2e7e8e61e4209806a48b7cc14b35ddf79fdecb283b76b95d88bbae",
+        "source": "pharmacy_export",
+        "task_id": "clinicops-002",
+        "title": "Lot status register (quarantine, reservation, excursion notes)"
+      },
+      {
+        "asset_id": "clinicops-002-08",
+        "kind": "chair_calendar",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "scheduling/chair-calendar-2026-03-09.xlsx",
+        "sha256": "b12e15133efb28a9a56521b097f6d2c446fcec0822c83ad7d564fcbb6630f5df",
+        "source": "scheduling_workbook",
+        "task_id": "clinicops-002",
+        "title": "Chair calendar, three weeks from 2026-03-09"
+      },
+      {
+        "asset_id": "clinicops-002-09",
+        "kind": "chair_roster",
+        "media_type": "text/csv",
+        "path": "scheduling/chair-roster-and-capabilities.csv",
+        "sha256": "fd025bcced40f40fe382122d322f1bde592c128ab005b12c8e58c2bff100fff3",
+        "source": "scheduling_export",
+        "task_id": "clinicops-002",
+        "title": "Chair roster and first-dose capability"
+      },
+      {
+        "asset_id": "clinicops-002-10",
+        "kind": "supplier_confirmation",
+        "media_type": "application/pdf",
+        "path": "supplier/delivery-confirmation-MB-55120.pdf",
+        "sha256": "6d410bb7a38f122f6a97cb8d9659c494b764cf85c7a1196f64e655cde2cf7650",
+        "source": "email_attachment",
+        "task_id": "clinicops-002",
+        "title": "Supplier delivery confirmation MB-55120"
+      },
+      {
+        "asset_id": "clinicops-002-11",
+        "kind": "email",
+        "media_type": "message/rfc822",
+        "path": "messages/THR-0002.eml",
+        "sha256": "39afdb4314b8a8b286c2ddd4dee3d2fbf655c5428a92a5a726fea113f7df8f77",
+        "source": "messages",
+        "task_id": "clinicops-002",
+        "title": "CLIN-0002 pembrolizumab restock — place today"
+      },
+      {
+        "asset_id": "clinicops-002-12",
+        "kind": "chat_thread",
+        "media_type": "application/json",
+        "path": "chat/CHAT-0002.json",
+        "sha256": "cb825f319a214f66e2bfd1ea1430718620a18c3e6085dada4da46d1059281072",
+        "source": "chat",
+        "task_id": "clinicops-002",
+        "title": "CLIN-0002 pembrolizumab week of 03-16"
+      },
+      {
+        "asset_id": "clinicops-002-13",
+        "kind": "approval",
+        "media_type": "application/json",
+        "path": "approvals/approval-AP-CO-0102.json",
+        "sha256": "be45c753b8497ca43959de33392c085a2817fc1f4c88a8e55b149ced30583194",
+        "source": "approvals_export",
+        "task_id": "clinicops-002",
+        "title": "Approval record AP-CO-0102"
+      },
+      {
+        "asset_id": "clinicops-002-14",
+        "kind": "starting_state",
+        "media_type": "application/json",
+        "path": "exports/starting-state-clinicops-002.json",
+        "sha256": "72e4529b2c64528639a9249051b8b26a8ee114cfe5e4c031f280978666e5ac01",
+        "source": "scheduling_export",
+        "task_id": "clinicops-002",
+        "title": "Starting-state export (appointments, orders, transfers)"
+      },
+      {
+        "asset_id": "clinicops-002-15",
+        "kind": "par_policy",
+        "media_type": "text/csv",
+        "path": "pharmacy/par-levels-and-safety-stock.csv",
+        "sha256": "e9846c3154387f40fa6f080136f78996afa4195c95155cb81ab3eac763a8414b",
+        "source": "drive",
+        "task_id": "clinicops-002",
+        "title": "Par levels and safety stock (infusion pharmacy)"
+      },
+      {
+        "asset_id": "clinicops-002-16",
+        "kind": "open_source_provenance",
+        "media_type": "application/json",
+        "path": "provenance/harbor-open-source-anchors.json",
+        "sha256": "3b271c4a493fa6d8a4d0cedbe12915e0feed219cf7a234672cbd9abfa9d1a6de",
+        "source": "release_metadata",
+        "task_id": "clinicops-002",
+        "title": "Open-source benchmark provenance — ClinicOps"
+      },
+      {
+        "asset_id": "clinicops-002-17",
+        "kind": "record_lineage",
+        "media_type": "text/csv",
+        "path": "lineage/record-lineage.csv",
+        "sha256": "a78c9c9f9b29c4f3b8f76670ca823545f4ff2c72e09ea31e19efeaaba286cd2a",
+        "source": "lineage_export",
+        "task_id": "clinicops-002",
+        "title": "Cross-system record lineage — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-18",
+        "kind": "authority_current",
+        "media_type": "text/markdown",
+        "path": "controls/current-authority.md",
+        "sha256": "5650c9d72b7fd6a9abaf7098b8574954efb7c8a971cecc7f2ef26ffd24bca8b8",
+        "source": "governance",
+        "task_id": "clinicops-002",
+        "title": "Current authority — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-19",
+        "kind": "authority_superseded",
+        "media_type": "text/markdown",
+        "path": "controls/retired-authority.md",
+        "sha256": "54620c2cd47d1a693d66408d323bb856937fe1b094e09f28edf05b3a5aa2bdf6",
+        "source": "governance_archive",
+        "task_id": "clinicops-002",
+        "title": "Retired authority — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-20",
+        "kind": "approval_decision",
+        "media_type": "application/json",
+        "path": "approvals/decision-record.json",
+        "sha256": "83c04f3d8024533961d6765aea93aebe159f4b1dcf745c3456339b10bdafd304",
+        "source": "approvals_export",
+        "task_id": "clinicops-002",
+        "title": "Decision control record — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-21",
+        "kind": "review_capacity_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "workbooks/review-capacity.xlsx",
+        "sha256": "5bfebbc27e28e8c7bb3a7105c7219940bee9d4741b30ca0b952666d31b34aadf",
+        "source": "operations_workbook",
+        "task_id": "clinicops-002",
+        "title": "Review capacity — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-22",
+        "kind": "source_integrity_control",
+        "media_type": "application/pdf",
+        "path": "controls/source-integrity.pdf",
+        "sha256": "4e4a5b6f4b16436b817e002bbf3d073506e500e5dde4788a6e5096fd0812b513",
+        "source": "governance",
+        "task_id": "clinicops-002",
+        "title": "Source integrity control — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-23",
+        "kind": "evidence_status",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-status.yaml",
+        "sha256": "62d75782181f903f0e5f5aff43570fb38edc2f24f18d892ed2b56e9966f81b9d",
+        "source": "audit_export",
+        "task_id": "clinicops-002",
+        "title": "Evidence readiness — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-24",
+        "kind": "system_audit",
+        "media_type": "text/plain",
+        "path": "audit/system-audit.log",
+        "sha256": "3422888a66258834b3d54300749fd1505cdf844df6210afc5df06d1d13dc6728",
+        "source": "audit_export",
+        "task_id": "clinicops-002",
+        "title": "System audit log — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-25",
+        "kind": "source_request",
+        "media_type": "message/rfc822",
+        "path": "communications/source-request.eml",
+        "sha256": "a14ed1929b349eb7a6a831185b4b3e0270179815ba1f4964caa57040084767b0",
+        "source": "messages",
+        "task_id": "clinicops-002",
+        "title": "Source integrity request — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-26",
+        "kind": "operations_thread",
+        "media_type": "application/json",
+        "path": "collaboration/operations-thread.json",
+        "sha256": "cdee9245c06b3d6eb3dbecaf8c38ec576e2e5059e33300a95953dbd90152a9e7",
+        "source": "chat",
+        "task_id": "clinicops-002",
+        "title": "Operations thread — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-27",
+        "kind": "provider_contract",
+        "media_type": "application/json",
+        "path": "contracts/provider-contracts.json",
+        "sha256": "d0f49ba36956da936b5dc79c6d5dbf9cb997a521e2becf97bf56a55b96b31f28",
+        "source": "release_metadata",
+        "task_id": "clinicops-002",
+        "title": "Provider contract — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-28",
+        "kind": "live_snapshot",
+        "media_type": "application/json",
+        "path": "exports/live-snapshot.json",
+        "sha256": "08e9a5192196ee822ed3f5a4a69e70a7f37ddb6cb615faeb6873969ec9cd9ee0",
+        "source": "provider_export",
+        "task_id": "clinicops-002",
+        "title": "Live pre-action snapshot — CLIN-0002"
+      },
+      {
+        "asset_id": "clinicops-002-29",
+        "kind": "evidence_index",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-index.yaml",
+        "sha256": "16165e714de46aec17ac550bd203c7856ff7e3a2547a101723da47b30c96d063",
+        "source": "drive",
+        "task_id": "clinicops-002",
+        "title": "Evidence index"
+      }
+    ],
+    "inventory_lots": [
+      {
+        "expiry_date": "2026-10-31",
+        "location_id": "LOC-PHARM",
+        "lot_id": "LOT-PEM-3301",
+        "lot_number": "3301",
+        "medication_code": "PEMBRO-100",
+        "quantity_on_hand": 4,
+        "reserved_for_patient_id": null,
+        "status": "AVAILABLE",
+        "status_reason": null
+      },
+      {
+        "expiry_date": "2026-03-15",
+        "location_id": "LOC-PHARM",
+        "lot_id": "LOT-PEM-3288",
+        "lot_number": "3288",
+        "medication_code": "PEMBRO-100",
+        "quantity_on_hand": 3,
+        "reserved_for_patient_id": null,
+        "status": "AVAILABLE",
+        "status_reason": null
+      },
+      {
+        "expiry_date": "2027-01-31",
+        "location_id": "LOC-PHARM",
+        "lot_id": "LOT-TCZ-9155",
+        "lot_number": "9155",
+        "medication_code": "TOCIL-400",
+        "quantity_on_hand": 5,
+        "reserved_for_patient_id": null,
+        "status": "AVAILABLE",
+        "status_reason": null
+      }
+    ],
+    "locations": [
+      {
+        "location_id": "LOC-INF",
+        "name": "Northlake Infusion Center",
+        "type": "infusion_center"
+      },
+      {
+        "location_id": "LOC-PHARM",
+        "name": "Northlake Infusion Pharmacy",
+        "type": "infusion_pharmacy"
+      },
+      {
+        "location_id": "LOC-SAT",
+        "name": "Eastgate Satellite Pharmacy",
+        "type": "satellite_pharmacy"
+      }
+    ],
+    "medication_requests": [
+      {
+        "authored_on": "2026-02-10",
+        "dose_unit": "mg/kg",
+        "dose_value": 2.0,
+        "doses_in_scope": 1,
+        "infusion_minutes": 30,
+        "intent": "order",
+        "medication_code": "PEMBRO-100",
+        "note": "Weight-based dosing per trial arm; use most recent weight.",
+        "observation_minutes": 30,
+        "patient_id": "PAT-11134",
+        "priority": "routine",
+        "regimen": "every 3 weeks (weight-based protocol arm)",
+        "request_id": "MR-70360",
+        "requester_id": "DR-SATO",
+        "status": "active"
+      },
+      {
+        "authored_on": "2026-01-20",
+        "dose_unit": "mg",
+        "dose_value": 200.0,
+        "doses_in_scope": 1,
+        "infusion_minutes": 30,
+        "intent": "order",
+        "medication_code": "PEMBRO-100",
+        "note": null,
+        "observation_minutes": 30,
+        "patient_id": "PAT-11007",
+        "priority": "routine",
+        "regimen": "every 3 weeks",
+        "request_id": "MR-70341",
+        "requester_id": "DR-SATO",
+        "status": "active"
+      },
+      {
+        "authored_on": "2026-01-27",
+        "dose_unit": "mg",
+        "dose_value": 200.0,
+        "doses_in_scope": 1,
+        "infusion_minutes": 30,
+        "intent": "order",
+        "medication_code": "PEMBRO-100",
+        "note": null,
+        "observation_minutes": 30,
+        "patient_id": "PAT-11052",
+        "priority": "routine",
+        "regimen": "every 3 weeks",
+        "request_id": "MR-70348",
+        "requester_id": "DR-SATO",
+        "status": "active"
+      },
+      {
+        "authored_on": "2026-02-03",
+        "dose_unit": "mg",
+        "dose_value": 200.0,
+        "doses_in_scope": 1,
+        "infusion_minutes": 30,
+        "intent": "order",
+        "medication_code": "PEMBRO-100",
+        "note": null,
+        "observation_minutes": 30,
+        "patient_id": "PAT-11119",
+        "priority": "routine",
+        "regimen": "every 3 weeks",
+        "request_id": "MR-70355",
+        "requester_id": "DR-SATO",
+        "status": "active"
+      },
+      {
+        "authored_on": "2026-02-24",
+        "dose_unit": "mg",
+        "dose_value": 200.0,
+        "doses_in_scope": 1,
+        "infusion_minutes": 30,
+        "intent": "order",
+        "medication_code": "PEMBRO-100",
+        "note": "Next cycle 2026-03-24 (outside next week).",
+        "observation_minutes": 30,
+        "patient_id": "PAT-11170",
+        "priority": "routine",
+        "regimen": "every 3 weeks",
+        "request_id": "MR-70372",
+        "requester_id": "DR-SATO",
+        "status": "active"
+      }
+    ],
+    "medications": [
+      {
+        "display": "pembrolizumab 100 mg vial",
+        "interchangeable_with": null,
+        "medication_code": "PEMBRO-100",
+        "minimum_dating_days": 14,
+        "route": "intravenous",
+        "storage": "2-8 °C refrigerated",
+        "vial_strength_unit": "mg",
+        "vial_strength_value": 100
+      },
+      {
+        "display": "tocilizumab 400 mg vial",
+        "interchangeable_with": null,
+        "medication_code": "TOCIL-400",
+        "minimum_dating_days": 14,
+        "route": "intravenous",
+        "storage": "2-8 °C refrigerated",
+        "vial_strength_unit": "mg",
+        "vial_strength_value": 400
+      }
+    ],
+    "messages": [
+      {
+        "attachments_json": "[{\"name\": \"delivery-confirmation-MB-55120.pdf\", \"mime_type\": \"application/pdf\"}]",
+        "body": "Please get the pembrolizumab restock in today rather than Friday. Oncology's first dose next week is Tuesday 2026-03-17 (Okonkwo) and the clinic must not slip.\n\nMeridian's confirmation MB-55120 is attached; I have approved the standard order under AP-CO-0102 (up to six vials, standard freight only). Par policy applies: keep two vials of safety stock on top of the week's need.\n\nRemember lot 3288 goes out of date on the 15th.\n\nPriya",
+        "channel": "email",
+        "labels": "pharmacy,CLIN-0002,CLIN-0002",
+        "message_id": "MSG-0002-01",
+        "recipients": "infusion-ops@northlake.example",
+        "sender": "priya.raman@northlake.example",
+        "sent_at": "2026-03-06T15:20:00",
+        "subject": "CLIN-0002 pembrolizumab restock — place today",
+        "thread_id": "THR-0002"
+      },
+      {
+        "attachments_json": "[]",
+        "body": "Roster for the week of 2026-03-09 is posted. Chair capability flags are on the shared drive roster; no changes to protected blocks.",
+        "channel": "email",
+        "labels": "staffing",
+        "message_id": "MSG-0002-00",
+        "recipients": "infusion-ops@northlake.example",
+        "sender": "dana.whitfield@northlake.example",
+        "sent_at": "2026-03-06T08:00:00",
+        "subject": "Weekly staffing note",
+        "thread_id": "THR-0002-STAFF"
+      }
+    ],
+    "observations": [
+      {
+        "code": "29463-7",
+        "display": "Body weight",
+        "effective_date": "2026-03-04",
+        "observation_id": "OBS-WT-11134",
+        "patient_id": "PAT-11134",
+        "status": "final",
+        "unit": "kg",
+        "value": 90.0
+      },
+      {
+        "code": "8302-2",
+        "display": "Body height",
+        "effective_date": "2026-03-04",
+        "observation_id": "OBS-HT-11134",
+        "patient_id": "PAT-11134",
+        "status": "final",
+        "unit": "cm",
+        "value": 182.0
+      },
+      {
+        "code": "29463-7",
+        "display": "Body weight",
+        "effective_date": "2025-09-12",
+        "observation_id": "OBS-WT-11134-2025",
+        "patient_id": "PAT-11134",
+        "status": "final",
+        "unit": "kg",
+        "value": 85.0
+      },
+      {
+        "code": "29463-7",
+        "display": "Body weight",
+        "effective_date": "2026-02-26",
+        "observation_id": "OBS-WT-11007",
+        "patient_id": "PAT-11007",
+        "status": "final",
+        "unit": "kg",
+        "value": 66.0
+      },
+      {
+        "code": "8302-2",
+        "display": "Body height",
+        "effective_date": "2026-02-26",
+        "observation_id": "OBS-HT-11007",
+        "patient_id": "PAT-11007",
+        "status": "final",
+        "unit": "cm",
+        "value": 165.0
+      },
+      {
+        "code": "29463-7",
+        "display": "Body weight",
+        "effective_date": "2026-03-02",
+        "observation_id": "OBS-WT-11052",
+        "patient_id": "PAT-11052",
+        "status": "final",
+        "unit": "kg",
+        "value": 88.0
+      },
+      {
+        "code": "8302-2",
+        "display": "Body height",
+        "effective_date": "2026-03-02",
+        "observation_id": "OBS-HT-11052",
+        "patient_id": "PAT-11052",
+        "status": "final",
+        "unit": "cm",
+        "value": 180.0
+      },
+      {
+        "code": "29463-7",
+        "display": "Body weight",
+        "effective_date": "2026-02-27",
+        "observation_id": "OBS-WT-11119",
+        "patient_id": "PAT-11119",
+        "status": "final",
+        "unit": "kg",
+        "value": 71.0
+      },
+      {
+        "code": "8302-2",
+        "display": "Body height",
+        "effective_date": "2026-02-27",
+        "observation_id": "OBS-HT-11119",
+        "patient_id": "PAT-11119",
+        "status": "final",
+        "unit": "cm",
+        "value": 168.0
+      },
+      {
+        "code": "29463-7",
+        "display": "Body weight",
+        "effective_date": "2026-03-03",
+        "observation_id": "OBS-WT-11170",
+        "patient_id": "PAT-11170",
+        "status": "final",
+        "unit": "kg",
+        "value": 84.0
+      },
+      {
+        "code": "8302-2",
+        "display": "Body height",
+        "effective_date": "2026-03-03",
+        "observation_id": "OBS-HT-11170",
+        "patient_id": "PAT-11170",
+        "status": "final",
+        "unit": "cm",
+        "value": 176.0
+      }
+    ],
+    "patients": [
+      {
+        "birth_date": "1968-09-30",
+        "family_name": "Ferreira",
+        "given_name": "Lucas",
+        "mrn": "MRN-611402",
+        "patient_id": "PAT-11134",
+        "primary_practitioner_id": "DR-SATO",
+        "sex": "male"
+      },
+      {
+        "birth_date": "1972-01-19",
+        "family_name": "Okonkwo",
+        "given_name": "Adaeze",
+        "mrn": "MRN-610118",
+        "patient_id": "PAT-11007",
+        "primary_practitioner_id": "DR-SATO",
+        "sex": "female"
+      },
+      {
+        "birth_date": "1959-11-08",
+        "family_name": "Brandt",
+        "given_name": "Henrik",
+        "mrn": "MRN-610577",
+        "patient_id": "PAT-11052",
+        "primary_practitioner_id": "DR-SATO",
+        "sex": "male"
+      },
+      {
+        "birth_date": "1975-05-23",
+        "family_name": "Castellanos",
+        "given_name": "Inés",
+        "mrn": "MRN-611290",
+        "patient_id": "PAT-11119",
+        "primary_practitioner_id": "DR-SATO",
+        "sex": "female"
+      },
+      {
+        "birth_date": "1963-07-12",
+        "family_name": "Whitcombe",
+        "given_name": "Roland",
+        "mrn": "MRN-611781",
+        "patient_id": "PAT-11170",
+        "primary_practitioner_id": "DR-SATO",
+        "sex": "male"
+      }
+    ],
+    "practitioners": [
+      {
+        "name": "Dr. Chidi Okafor",
+        "practitioner_id": "DR-OKAFOR",
+        "role": "attending",
+        "specialty": "Gastroenterology"
+      },
+      {
+        "name": "Dr. Maja Lindqvist",
+        "practitioner_id": "DR-LINDQVIST",
+        "role": "attending",
+        "specialty": "Neurology"
+      },
+      {
+        "name": "Dr. Thandiwe Mbeki",
+        "practitioner_id": "DR-MBEKI",
+        "role": "attending",
+        "specialty": "Rheumatology"
+      },
+      {
+        "name": "Dr. Kenji Sato",
+        "practitioner_id": "DR-SATO",
+        "role": "attending",
+        "specialty": "Medical Oncology"
+      },
+      {
+        "name": "Dr. Miriam Hale",
+        "practitioner_id": "DR-HALE",
+        "role": "medical_director",
+        "specialty": "Infusion Services"
+      }
+    ],
+    "purchase_orders": [
+      {
+        "confirmation_id": null,
+        "created_at": "2026-02-19T09:30:00",
+        "delivery_option": "standard",
+        "expected_delivery_date": "2026-02-26",
+        "medication_code": "TOCIL-400",
+        "po_id": "PO-5100",
+        "quantity": 2,
+        "requested_by": "infusion_pharmacy_buyer",
+        "revision": 1,
+        "status": "RECEIVED",
+        "supplier_id": "SUP-MERIDIAN",
+        "unit": "VIAL"
+      }
+    ],
+    "slots": [
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-09",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260309-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-09",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260309-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-09",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260309-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-09",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260309-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-09",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260309-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-09",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260309-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-10",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260310-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-10",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260310-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-10",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260310-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-10",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260310-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-10",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260310-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-10",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260310-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-11",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260311-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-11",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260311-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-11",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260311-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-11",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260311-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-11",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260311-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-11",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260311-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-12",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260312-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-12",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260312-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-12",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260312-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-12",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260312-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-12",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260312-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-12",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260312-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-13",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260313-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-13",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260313-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-13",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260313-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-13",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260313-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-13",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260313-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-13",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260313-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-16",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260316-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-16",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260316-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-16",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260316-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-16",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260316-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-16",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260316-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-16",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260316-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-17",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260317-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-17",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260317-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-17",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260317-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-17",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260317-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-17",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260317-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "oncology protocol block",
+        "service_date": "2026-03-17",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260317-PM",
+        "start_time": "12:30:00",
+        "status": "protected"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-18",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260318-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-18",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260318-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-18",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260318-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-18",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260318-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-18",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260318-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-18",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260318-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-19",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260319-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-19",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260319-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-19",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260319-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-19",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260319-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-19",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260319-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-19",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260319-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-20",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260320-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-20",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260320-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-20",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260320-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": null,
+        "service_date": "2026-03-20",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260320-PM",
+        "start_time": "12:30:00",
+        "status": "free"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-20",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260320-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-20",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260320-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-23",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260323-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-23",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260323-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-23",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260323-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-23",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260323-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-23",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260323-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-23",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260323-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-24",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260324-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-24",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260324-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-24",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260324-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-24",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260324-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-24",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260324-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-24",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260324-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-25",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260325-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-25",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260325-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-25",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260325-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-25",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260325-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": null,
+        "service_date": "2026-03-25",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260325-AM",
+        "start_time": "08:00:00",
+        "status": "free"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-25",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260325-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-26",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260326-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-26",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260326-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-26",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260326-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-26",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260326-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-26",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260326-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-26",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260326-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-27",
+        "session": "AM",
+        "slot_id": "SLOT-1-20260327-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-1",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-27",
+        "session": "PM",
+        "slot_id": "SLOT-1-20260327-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-27",
+        "session": "AM",
+        "slot_id": "SLOT-2-20260327-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-2",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-27",
+        "session": "PM",
+        "slot_id": "SLOT-2-20260327-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "12:00:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-27",
+        "session": "AM",
+        "slot_id": "SLOT-3-20260327-AM",
+        "start_time": "08:00:00",
+        "status": "busy"
+      },
+      {
+        "appointment_id": null,
+        "chair_id": "CHAIR-3",
+        "end_time": "16:30:00",
+        "hold_reason": "booked",
+        "service_date": "2026-03-27",
+        "session": "PM",
+        "slot_id": "SLOT-3-20260327-PM",
+        "start_time": "12:30:00",
+        "status": "busy"
+      }
+    ],
+    "stock_transfers": [],
+    "supplier_confirmations": [
+      {
+        "confirmation_id": "CONF-MER-55120",
+        "expedite_fee_usd": 320,
+        "expedited_delivery_date": "2026-03-11",
+        "medication_code": "PEMBRO-100",
+        "note": "Standard: Friday ground run. Expedited: courier, USD 320 flat. Shelf release next clinic day after pharmacy verification.",
+        "quantity_available": 10,
+        "reference": "MB-55120",
+        "standard_delivery_date": "2026-03-13",
+        "status": "OPEN",
+        "supplier_id": "SUP-MERIDIAN",
+        "unit_price_usd": 4850.0,
+        "valid_until": "2026-03-11"
+      },
+      {
+        "confirmation_id": "CONF-MER-54990",
+        "expedite_fee_usd": 320,
+        "expedited_delivery_date": "2026-02-25",
+        "medication_code": "PEMBRO-100",
+        "note": "Superseded by MB-55120.",
+        "quantity_available": 8,
+        "reference": "MB-54990",
+        "standard_delivery_date": "2026-02-27",
+        "status": "EXPIRED",
+        "supplier_id": "SUP-MERIDIAN",
+        "unit_price_usd": 4850.0,
+        "valid_until": "2026-02-24"
+      }
+    ],
+    "suppliers": [
+      {
+        "account_number": "NL-2201",
+        "name": "Cascadia Specialty Distribution",
+        "supplier_id": "SUP-CASCADIA"
+      },
+      {
+        "account_number": "NL-0877",
+        "name": "Meridian Biologics Supply",
+        "supplier_id": "SUP-MERIDIAN"
+      }
+    ],
+    "users": [
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Infusion Operations Coordinator (you)",
+        "role": "infusion_operations_coordinator",
+        "user_id": "U-COORD"
+      },
+      {
+        "approval_limit_usd": 35000,
+        "display_name": "Priya Raman",
+        "role": "pharmacy_manager",
+        "user_id": "U-RAMAN"
+      },
+      {
+        "approval_limit_usd": 150000,
+        "display_name": "Léa Dubois",
+        "role": "pharmacy_director",
+        "user_id": "U-DUBOIS"
+      },
+      {
+        "approval_limit_usd": 25000,
+        "display_name": "Dana Whitfield",
+        "role": "nursing_director",
+        "user_id": "U-WHITFIELD"
+      },
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Dr. Miriam Hale",
+        "role": "medical_director",
+        "user_id": "U-HALE"
+      }
+    ]
+  },
+  "starting_records": [
+    {
+      "resource_id": "APPT-24570",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24571",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24572",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24573",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24574",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24560",
+      "resource_type": "Appointment",
+      "status": "cancelled",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "PO-5100",
+      "resource_type": "PurchaseOrder",
+      "status": "RECEIVED",
+      "system": "pharmacy"
+    }
+  ],
+  "task_id": "clinicops-002",
+  "title": "Restock pembrolizumab for the week of 16 March",
+  "world": {
+    "id": "northlake-infusion-v1",
+    "name": "Northlake Health — Infusion Services",
+    "organization_id": "ORG-NORTHLAKE",
+    "primary_site": "LOC-INF",
+    "systems": [
+      "ehr",
+      "pharmacy",
+      "scheduling",
+      "supplier",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

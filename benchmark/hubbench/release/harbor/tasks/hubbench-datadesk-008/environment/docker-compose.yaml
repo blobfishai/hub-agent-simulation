@@ -1,0 +1,22 @@
+services:
+  main:
+    depends_on:
+      world:
+        condition: service_healthy
+    environment:
+      HUBBENCH_URL: http://world:8765
+    networks: [agent-egress, hubbench]
+  world:
+    build:
+      context: .
+      dockerfile: Dockerfile.world
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/api/v1/task', timeout=1)"]
+      interval: 1s
+      timeout: 2s
+      retries: 30
+    networks: [hubbench]
+networks:
+  agent-egress: {}
+  hubbench:
+    internal: true

@@ -1,0 +1,1325 @@
+{
+  "benchmark": "HubBench",
+  "family": "datadesk",
+  "schema_version": "hubbench.tool-contract.v1",
+  "servers": {
+    "approvals": {
+      "description": "Approval workflow records with exact scope.",
+      "tools": [
+        "approvals.get",
+        "approvals.list"
+      ]
+    },
+    "chat": {
+      "description": "Data platform team chat threads.",
+      "tools": [
+        "chat.threads.get",
+        "chat.threads.list"
+      ]
+    },
+    "drive": {
+      "description": "Shared drive holding policies, registers, calendars, and exports.",
+      "tools": [
+        "drive.files.export",
+        "drive.files.get",
+        "drive.files.list"
+      ]
+    },
+    "feeds": {
+      "description": "Source feeds, delivery logs, and vendor redelivery confirmations.",
+      "tools": [
+        "feeds.confirmations.get",
+        "feeds.confirmations.list",
+        "feeds.deliveries.list",
+        "feeds.get",
+        "feeds.list"
+      ]
+    },
+    "hubbench": {
+      "description": "Benchmark-only discovery and structured answer submission controls.",
+      "tools": [
+        "hubbench.context.get",
+        "hubbench.submit_answer"
+      ]
+    },
+    "messages": {
+      "description": "Mailbox for the data platform team.",
+      "tools": [
+        "messages.get",
+        "messages.list"
+      ]
+    },
+    "notes": {
+      "description": "Stakeholder draft notes (never sent by the benchmark).",
+      "tools": [
+        "notes.drafts.create"
+      ]
+    },
+    "pipelines": {
+      "description": "Pipeline runs, run schedules, and backfill jobs.",
+      "tools": [
+        "pipelines.backfills.create",
+        "pipelines.backfills.get",
+        "pipelines.runs.get",
+        "pipelines.runs.list",
+        "pipelines.schedules.get",
+        "pipelines.schedules.update"
+      ]
+    },
+    "recon": {
+      "description": "Finance reconciliation: published control totals and adjustment entries.",
+      "tools": [
+        "recon.adjustments.create",
+        "recon.adjustments.get",
+        "recon.controls.get",
+        "recon.controls.list"
+      ]
+    },
+    "warehouse": {
+      "description": "Warehouse catalog: dbt-style models, lineage, freshness SLAs, clusters, and the batch window calendar.",
+      "tools": [
+        "warehouse.clusters.list",
+        "warehouse.lineage.get",
+        "warehouse.models.get",
+        "warehouse.models.search",
+        "warehouse.sla.get",
+        "warehouse.slots.list"
+      ]
+    }
+  },
+  "task_id": "hubbench-datadesk-002",
+  "tools": [
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "warehouse",
+          "shape": "dbt-style model catalog search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "warehouse.models.search"
+      },
+      "description": "Search the model catalog by immutable model id or by name substring.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "name": {
+            "description": "name substring",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "warehouse.models.search"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "warehouse",
+          "shape": "dbt-style model catalog record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "warehouse.models.get"
+      },
+      "description": "Read one catalog model: layer, schema, materialization, owner, status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "model_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id"
+        ],
+        "type": "object"
+      },
+      "name": "warehouse.models.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "warehouse",
+          "shape": "dbt-style lineage graph"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "warehouse.lineage.get"
+      },
+      "description": "Read the lineage of one model: parent sources and child consumers with relationship type.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "model_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id"
+        ],
+        "type": "object"
+      },
+      "name": "warehouse.lineage.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "warehouse",
+          "shape": "freshness SLA register"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "warehouse.sla.get"
+      },
+      "description": "Read the active freshness SLA for a model: max staleness, refresh deadline, escalation, business reference.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "model_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id"
+        ],
+        "type": "object"
+      },
+      "name": "warehouse.sla.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "warehouse",
+          "shape": "warehouse cluster roster"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "warehouse.clusters.list"
+      },
+      "description": "List warehouse compute clusters with status and backfill capability.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "warehouse.clusters.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "warehouse",
+          "shape": "warehouse window calendar"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "warehouse.slots.list"
+      },
+      "description": "List warehouse batch windows between two dates with free / busy / protected / blocked status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "cluster_id": {
+            "type": "string"
+          },
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date"
+        ],
+        "type": "object"
+      },
+      "name": "warehouse.slots.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "pipelines",
+          "shape": "pipeline run log"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "pipelines.runs.list"
+      },
+      "description": "List pipeline runs for a model by partition window, status, or trigger, with durations and rows processed.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "model_id": {
+            "type": "string"
+          },
+          "partition_end": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "partition_start": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id"
+        ],
+        "type": "object"
+      },
+      "name": "pipelines.runs.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "pipelines",
+          "shape": "pipeline run log"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "pipelines.runs.get"
+      },
+      "description": "Read one pipeline run.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "run_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id"
+        ],
+        "type": "object"
+      },
+      "name": "pipelines.runs.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "pipelines",
+          "shape": "pipeline schedule record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "pipelines.schedules.get"
+      },
+      "description": "Read one run schedule with cluster, window, status, and revision.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "schedule_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "schedule_id"
+        ],
+        "type": "object"
+      },
+      "name": "pipelines.schedules.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "pipelines",
+          "shape": "pipeline schedule update"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "pipelines.schedules.update"
+      },
+      "description": "Window, move, or cancel a run schedule. Every batch window the interval touches must be free; protected and blocked windows are never displaced; the record revision increments.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "cluster_id": {
+            "type": "string"
+          },
+          "end_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "schedule_id": {
+            "type": "string"
+          },
+          "start_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "scheduled",
+              "pending",
+              "cancelled"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "schedule_id"
+        ],
+        "type": "object"
+      },
+      "name": "pipelines.schedules.update"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "pipelines",
+          "shape": "pipeline backfill job"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "pipelines.backfills.create"
+      },
+      "description": "Schedule a backfill job on a backfill-capable cluster. Every batch window the interval touches must be free; protected and blocked windows are never displaced.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "cluster_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "end_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "model_id": {
+            "type": "string"
+          },
+          "partition_end": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "partition_start": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "start_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model_id",
+          "partition_start",
+          "partition_end",
+          "cluster_id",
+          "start_time",
+          "end_time"
+        ],
+        "type": "object"
+      },
+      "name": "pipelines.backfills.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "pipelines",
+          "shape": "pipeline backfill job"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "pipelines.backfills.get"
+      },
+      "description": "Read one backfill job.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "job_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id"
+        ],
+        "type": "object"
+      },
+      "name": "pipelines.backfills.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "feeds",
+          "shape": "source feed registry"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "feeds.list"
+      },
+      "description": "List source feeds, optionally by vendor.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "vendor_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "feeds.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "feeds",
+          "shape": "source feed registry"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "feeds.get"
+      },
+      "description": "Read one source feed with its vendor.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "feed_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "feed_id"
+        ],
+        "type": "object"
+      },
+      "name": "feeds.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "feeds",
+          "shape": "feed delivery log"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "feeds.deliveries.list"
+      },
+      "description": "List feed delivery log entries by business-date window and status: files, rows received, invalid, duplicate, and late counts.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "feed_id": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "feed_id"
+        ],
+        "type": "object"
+      },
+      "name": "feeds.deliveries.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "feeds",
+          "shape": "vendor redelivery confirmation"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "feeds.confirmations.list"
+      },
+      "description": "List vendor redelivery confirmations.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "feed_id": {
+            "type": "string"
+          },
+          "vendor_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "feeds.confirmations.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "feeds",
+          "shape": "vendor redelivery confirmation"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "feeds.confirmations.get"
+      },
+      "description": "Read one vendor redelivery confirmation: scope, standard and expedited redelivery dates, fee, validity.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirmation_id"
+        ],
+        "type": "object"
+      },
+      "name": "feeds.confirmations.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "recon",
+          "shape": "finance control total"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "recon.controls.list"
+      },
+      "description": "List published finance control totals, optionally by model.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "model_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "recon.controls.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "recon",
+          "shape": "finance control total"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "recon.controls.get"
+      },
+      "description": "Read one published finance control total.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "control_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "control_id"
+        ],
+        "type": "object"
+      },
+      "name": "recon.controls.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "recon",
+          "shape": "reconciliation adjustment entry"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "recon.adjustments.create"
+      },
+      "description": "Post a reconciling adjustment entry against a certified model. The entry must stay inside the signed approval's model and row maximum and a published control total must cover the period.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_id": {
+            "type": "string"
+          },
+          "direction": {
+            "enum": [
+              "add",
+              "remove"
+            ],
+            "type": "string"
+          },
+          "model_id": {
+            "type": "string"
+          },
+          "period_end": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "period_start": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "rows": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "model_id",
+          "period_start",
+          "period_end",
+          "direction",
+          "rows",
+          "reason",
+          "approval_id"
+        ],
+        "type": "object"
+      },
+      "name": "recon.adjustments.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "recon",
+          "shape": "reconciliation adjustment entry"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "recon.adjustments.get"
+      },
+      "description": "Read one adjustment entry.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "entry_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry_id"
+        ],
+        "type": "object"
+      },
+      "name": "recon.adjustments.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.list"
+      },
+      "description": "List approval records, optionally by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "approvals.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.get"
+      },
+      "description": "Read one approval record with its exact scope and approver.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "approval_id"
+        ],
+        "type": "object"
+      },
+      "name": "approvals.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "messages",
+          "shape": "mailbox search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "messages.list"
+      },
+      "description": "Search mailbox messages by keyword (subject, body, labels).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_results": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "messages.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "messages",
+          "shape": "mailbox message"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "messages.get"
+      },
+      "description": "Read one message with body and attachment list.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "message_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message_id"
+        ],
+        "type": "object"
+      },
+      "name": "messages.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.list"
+      },
+      "description": "Search team chat threads by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat thread"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.get"
+      },
+      "description": "Read one team chat thread.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "thread_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "thread_id"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.list"
+      },
+      "description": "Search shared-drive files by keyword (name, folder, content).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive file"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.get"
+      },
+      "description": "Read shared-drive file metadata.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive export"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.export"
+      },
+      "description": "Export a shared-drive file as text (spreadsheets as CSV, PDFs as extracted text).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.export"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "notes",
+          "shape": "collaboration draft"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "notes.drafts.create"
+      },
+      "description": "Create, but do not send, a stakeholder draft note.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "related_case": {
+            "type": "string"
+          },
+          "related_model_id": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipient",
+          "subject",
+          "body"
+        ],
+        "type": "object"
+      },
+      "name": "notes.drafts.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "hubbench.context.get"
+      },
+      "description": "Return the isolated task scope: case reference, immutable record handles, mounted servers, identity, and the evidence index.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "hubbench.context.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "hubbench.submit_answer"
+      },
+      "description": "Record the structured decision for the current task. Every field of the task's answer contract is required; resubmission replaces earlier values.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "accelerated_completion": {
+            "description": "Outcome date for expedite_vendor_redelivery.",
+            "type": "string"
+          },
+          "backfill_minutes_per_partition": {
+            "description": "Worst-case rerun minutes for one margin partition per the run history and runbook.",
+            "type": "integer"
+          },
+          "baseline_completion": {
+            "description": "Outcome date for standard_redelivery_backfill.",
+            "type": "string"
+          },
+          "business_need_date": {
+            "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+            "type": "string"
+          },
+          "coverage_item_or_resource": {
+            "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+            "type": "string"
+          },
+          "decision_timing_status": {
+            "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+            "enum": [
+              "ON_TIME",
+              "LATE"
+            ],
+            "type": "string"
+          },
+          "downstream_certified_dashboards": {
+            "description": "Dashboard models consuming fct_margin_daily per the lineage graph.",
+            "type": "integer"
+          },
+          "escalated_completion": {
+            "description": "Outcome date for displace_close_window_rebuild.",
+            "type": "string"
+          },
+          "escalation_approval_required": {
+            "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+            "type": "integer"
+          },
+          "expedited_external_readiness": {
+            "description": "Expedited readiness date independently confirmed for Harrier's confirmed standard and expedited redelivery dates on HR-8802.",
+            "type": "string"
+          },
+          "external_recovery_quantity": {
+            "description": "Uncovered PARTITION_DAY that the external recovery must cover.",
+            "type": "integer"
+          },
+          "first_contaminated_partition": {
+            "description": "Earliest partition loaded from the contaminated reference cut (ISO date).",
+            "type": "string"
+          },
+          "ineligible_coverage_quantity": {
+            "description": "partitions loaded from Harrier's contaminated HLD-2026R2 reference cut",
+            "type": "integer"
+          },
+          "observed_coverage_quantity": {
+            "description": "Gross observed coverage for margin partitions still certified on the clean HLD-2026R1 reference cut before exclusions.",
+            "type": "integer"
+          },
+          "outcome_vs_control_days": {
+            "description": "Selected outcome date minus the documented control date; positive means late.",
+            "type": "integer"
+          },
+          "partitions_per_window": {
+            "description": "Partitions one 4-hour batch window can rerun at that rate.",
+            "type": "integer"
+          },
+          "quantity_unit": {
+            "description": "Unit shared by the requirement and coverage calculations: PARTITION_DAY.",
+            "type": "string"
+          },
+          "recommended_incremental_cost_usd": {
+            "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+            "type": "integer"
+          },
+          "recommended_option": {
+            "description": "Best authorized option identifier after comparing standard_redelivery_backfill, expedite_vendor_redelivery, displace_close_window_rebuild.",
+            "enum": [
+              "standard_redelivery_backfill",
+              "expedite_vendor_redelivery",
+              "displace_close_window_rebuild"
+            ],
+            "type": "string"
+          },
+          "recommended_outcome_date": {
+            "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+            "type": "string"
+          },
+          "required_quantity": {
+            "description": "daily margin partitions the trailing 2026-02-23..2026-03-06 certification window covers",
+            "type": "integer"
+          },
+          "shortage_quantity": {
+            "description": "Uncovered PARTITION_DAY after netting eligible coverage from the requirement.",
+            "type": "integer"
+          },
+          "standard_external_readiness": {
+            "description": "Standard readiness date independently confirmed for Harrier's confirmed standard and expedited redelivery dates on HR-8802.",
+            "type": "string"
+          },
+          "usable_coverage_quantity": {
+            "description": "Net eligible coverage after removing partitions loaded from Harrier's contaminated HLD-2026R2 reference cut.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "accelerated_completion",
+          "backfill_minutes_per_partition",
+          "baseline_completion",
+          "business_need_date",
+          "coverage_item_or_resource",
+          "decision_timing_status",
+          "downstream_certified_dashboards",
+          "escalated_completion",
+          "escalation_approval_required",
+          "expedited_external_readiness",
+          "external_recovery_quantity",
+          "first_contaminated_partition",
+          "ineligible_coverage_quantity",
+          "observed_coverage_quantity",
+          "outcome_vs_control_days",
+          "partitions_per_window",
+          "quantity_unit",
+          "recommended_incremental_cost_usd",
+          "recommended_option",
+          "recommended_outcome_date",
+          "required_quantity",
+          "shortage_quantity",
+          "standard_external_readiness",
+          "usable_coverage_quantity"
+        ],
+        "type": "object"
+      },
+      "name": "hubbench.submit_answer"
+    }
+  ]
+}

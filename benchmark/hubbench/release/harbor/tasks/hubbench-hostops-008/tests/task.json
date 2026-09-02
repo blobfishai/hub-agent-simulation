@@ -1,0 +1,2664 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "mutations",
+    "note_drafts",
+    "restore_jobs"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for retrieve_standard_to_margin.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for stage_scrub_flagged_set.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for expedite_vendor_retrieval.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "set 3320 segments whose second power event is outside the durability letter",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Coldspur's confirmed standard and expedited retrieval dates on RQ-88410.",
+        "type": "string"
+      },
+      "first_run_window": {
+        "description": "Farm window of the first Monday train, as RUNNER/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "margin_segments": {
+        "description": "Retrieval margin the policy adds on top of the uncovered requirement.",
+        "type": "integer"
+      },
+      "metered_bundle_gb": {
+        "description": "Bundle size of the one metered ticket taken from the current final metering.",
+        "multipleOf": 0.01,
+        "type": "number"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for Monday's storefront release trains.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "payload_unit": {
+        "description": "Unit of the metered bundle size.",
+        "type": "string"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: SEGMENT.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing retrieve_standard_to_margin, stage_scrub_flagged_set, expedite_vendor_retrieval.",
+        "enum": [
+          "retrieve_standard_to_margin",
+          "stage_scrub_flagged_set",
+          "expedite_vendor_retrieval"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "scheduled_runs": {
+        "description": "Count of IMG-FRONT-10 train verifications booked for Monday; the edge-widget train is a different class.",
+        "type": "integer"
+      },
+      "source_quantity": {
+        "description": "IMG-FRONT-10 segments required by the three 10 GB-class train verifications booked for 2026-04-20 (two fixed bundles and one metered at 17.3 GB)",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Coldspur's confirmed standard and expedited retrieval dates on RQ-88410.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "IMG-FRONT-10 segments stageable for Monday at the nearline store",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_run_window",
+      "margin_segments",
+      "metered_bundle_gb",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "payload_unit",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "scheduled_runs",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "transaction_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-04-13",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "the durability-coverage rule, the retrieval margin, and the signed approval scope; set 3320 segments whose second power event is outside the durability letter = 4 SEGMENT; uncovered scope = 1 SEGMENT",
+    "calculations": [
+      {
+        "description": "Preserved 2026-04-20 as the documented control date for Monday's storefront release trains; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 6 SEGMENT for IMG-FRONT-10 segments required by the three 10 GB-class train verifications booked for 2026-04-20 (two fixed bundles and one metered at 17.3 GB).",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 9 observed SEGMENT.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 4 SEGMENT for set 3320 segments whose second power event is outside the durability letter.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 4 excluded = 5 supported SEGMENT.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 3 SEGMENT, the measure required by the chosen disposition under the durability-coverage rule, the retrieval margin, and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in SEGMENT.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-04-17 for retrieve_standard_to_margin.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-04-20 for stage_scrub_flagged_set.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-04-15 for expedite_vendor_retrieval and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-17 as the independently confirmed standard readiness date for Coldspur's confirmed standard and expedited retrieval dates on RQ-88410.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-15 as the independently confirmed expedited readiness date for Coldspur's confirmed standard and expedited retrieval dates on RQ-88410.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 3 booked IMG-FRONT-10 train verifications on 2026-04-20; the edge-widget train (RT-51304) runs on the 5 GB class and its own set.",
+        "field": "scheduled_runs",
+        "id": "count_scheduled_runs",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Used storefront-web's 2026-04-09 metering of 17.3 GB (2 segments), not the 8.4 GB onboarding figure; the fixed bundles also round to 2 segments each.",
+        "field": "metered_bundle_gb",
+        "id": "calculate_metered_payload",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the metered bundle size in GB.",
+        "field": "payload_unit",
+        "id": "preserve_payload_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied the margin policy's 2-segment retrieval margin for IMG-FRONT-10 on top of the 1 uncovered segment.",
+        "field": "margin_segments",
+        "id": "apply_retrieval_margin",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified RUNNER-1/2026-04-20/AM (RES-70910) as the first train the retrieval must beat.",
+        "field": "first_run_window",
+        "id": "identify_first_run_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for retrieve_standard_to_margin; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that expedite_vendor_retrieval remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of retrieve_standard_to_margin, stage_scrub_flagged_set, expedite_vendor_retrieval; selected retrieve_standard_to_margin because it alone gives the best currently authorized result under the durability-coverage rule, the retrieval margin, and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-04-17 as the supported outcome date for retrieve_standard_to_margin.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-04-17 with the independent control date 2026-04-20 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located IMG-FRONT-10 using immutable identifiers and preserved effective revision v1: the in-scope tickets are RT-51301, RT-51302, and RT-51303 on IMG-FRONT-10; RT-51304 (storefront-edge) runs on the 5 GB class and is out of this count.",
+        "sources": [
+          "cmdb",
+          "messages"
+        ],
+        "statement": "HOST-0008: the in-scope tickets are RT-51301, RT-51302, and RT-51303 on IMG-FRONT-10; RT-51304 (storefront-edge) runs on the 5 GB class and is out of this count; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective ticket and runbook to establish 6 SEGMENT for IMG-FRONT-10 segments required by the three 10 GB-class train verifications booked for 2026-04-20 (two fixed bundles and one metered at 17.3 GB), with control date 2026-04-20.",
+        "sources": [
+          "releases",
+          "drive"
+        ],
+        "statement": "The effective ticket and runbook establish IMG-FRONT-10 segments required by the three 10 GB-class train verifications booked for 2026-04-20 (two fixed bundles and one metered at 17.3 GB) = 6 SEGMENT: two fixed bundles round to 2 segments each and the metered storefront-web bundle is 17.3 GB (2 segments), so 6 segments are required for Monday. The control date is 2026-04-20 (first storefront train verification of the week (RES-70910))."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 9 observed less 4 excluded to 5 supported SEGMENT for IMG-FRONT-10 segments stageable for Monday at the nearline store.",
+        "sources": [
+          "backup",
+          "buildfarm",
+          "drive"
+        ],
+        "statement": "the holdings workbook shows 9 IMG-FRONT-10 segments in gross; the register excludes set 3320 (4 segments) whose second power event is outside the 2026-04 durability letter, so 5 segments are stageable; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-04-15 expedited readiness input for stage_scrub_flagged_set, then separately derived its 2026-04-20 operating outcome under the durability-coverage rule, the retrieval margin, and the signed approval scope instead of treating a vendor promise as authorization or a completion date.",
+        "sources": [
+          "vendor",
+          "messages"
+        ],
+        "statement": "Coldspur's confirmed standard and expedited retrieval dates on RQ-88410: Coldspur RQ-88410 confirms standard retrieval 2026-04-16 and expedited 2026-04-14 (+USD 130); staging release is the next business day; a vendor confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied the booked farm reservations that fix the train dates to derive the three option outcomes without using protected or blocked windows.",
+        "sources": [
+          "buildfarm",
+          "drive"
+        ],
+        "statement": "the booked farm reservations that fix the train dates: the booked farm reservations fix Monday's dates: the first is RUNNER-1 AM on 2026-04-20; protected and blocked windows cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-HO-0108 only to retrieve_standard_to_margin and IMG-FRONT-10; kept expedite_vendor_retrieval outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-HO-0108 covers one standard Coldspur retrieval up to 3 segments / USD 150 with no expedite fee; expedited retrieval and set 3320 need the infrastructure director. The approval does not select an option in advance and does not authorize expedite_vendor_retrieval."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected retrieve_standard_to_margin: it is the best currently authorized response that satisfies the durability-coverage rule, the retrieval margin, and the signed approval scope.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "Monday's trains must run from 2026-04-20 with two segments of margin left in staging; a faster or broader action has value only if it remains inside the durability-coverage rule, the retrieval margin, and the signed approval scope."
+      }
+    ],
+    "mode": "quantity",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-04-17",
+        "consequence": "retrieve standard to margin places 3 segments (1 uncovered + 2 margin) on Coldspur's standard pull, verified into staging 2026-04-17, one business day before the trains, at no incremental cost.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "retrieve_standard_to_margin",
+        "incremental_cost": 0,
+        "label": "retrieve_standard_to_margin: outcome 2026-04-17, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "NOT_SUPPORTED_BY_CURRENT_EVIDENCE",
+        "completion": "2026-04-20",
+        "consequence": "stage scrub-flagged set would cover Monday from set 3320 at no cost, but its second power event is not covered by the 2026-04 durability letter, so the runbook keeps it out of staging.",
+        "control_status": "FAILS_CURRENT_CONTROL",
+        "id": "stage_scrub_flagged_set",
+        "incremental_cost": 0,
+        "label": "stage_scrub_flagged_set: outcome 2026-04-20, incremental cost USD 0, FAILS_CURRENT_CONTROL",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-04-15",
+        "consequence": "expedite vendor retrieval would stage on 2026-04-15, two days earlier than retrieve standard to margin, and adds USD 130, but AP-HO-0108 allows no expedite fee, so expedited retrieval needs the infrastructure director.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "expedite_vendor_retrieval",
+        "incremental_cost": 130,
+        "label": "expedite_vendor_retrieval: outcome 2026-04-15, incremental cost USD 130, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "retrieve_standard_to_margin is the best currently authorized response that satisfies the durability-coverage rule, the retrieval margin, and the signed approval scope and lands 3 day(s) on or before the control date.",
+    "selected_completion": "2026-04-17",
+    "selected_cost": 0,
+    "selected_option": "retrieve_standard_to_margin"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "baseline_resolution_date": "2026-04-17",
+      "business_need_date": "2026-04-20",
+      "controlled_item_or_record": "IMG-FRONT-10",
+      "controlled_resolution_date": "2026-04-20",
+      "decision_timing_status": "ON_TIME",
+      "escalated_resolution_date": "2026-04-15",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 4,
+      "expedited_external_readiness": "2026-04-15",
+      "first_run_window": "RUNNER-1/2026-04-20/AM",
+      "margin_segments": 2,
+      "metered_bundle_gb": 17.3,
+      "observed_quantity": 9,
+      "outcome_vs_control_days": -3,
+      "payload_unit": "GB",
+      "quantity_unit": "SEGMENT",
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "retrieve_standard_to_margin",
+      "recommended_outcome_date": "2026-04-17",
+      "scheduled_runs": 3,
+      "source_quantity": 6,
+      "standard_external_readiness": "2026-04-17",
+      "supported_quantity": 5,
+      "transaction_quantity": 3
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'retrieve_standard_to_margin', tied to IMG-FRONT-10, revision v1, and the selected retrieve_standard_to_margin outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-04-17', tied to IMG-FRONT-10, revision v1, and the selected retrieve_standard_to_margin outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'IMG-FRONT-10', tied to IMG-FRONT-10, revision v1, and the selected retrieve_standard_to_margin outcome.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 3, tied to IMG-FRONT-10, revision v1, and the selected retrieve_standard_to_margin outcome.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to IMG-FRONT-10, revision v1, and the selected retrieve_standard_to_margin outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required IMG-FRONT-10 to reach business outcome 'Replacement restore job submitted' through backup.restores.create with exact provider-critical values vendor_id='VND-COLDSPUR', confirmation_id='CONF-CSP-88410', artifact_class='IMG-FRONT-10', segment_count=3, retrieval_option='standard'. The audited change binds selected option retrieve_standard_to_margin, approval AP-HO-0108, and constraint the durability-coverage rule, the retrieval margin, and the signed approval scope; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "vendor_id",
+          "confirmation_id",
+          "artifact_class",
+          "segment_count",
+          "retrieval_option"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "artifact_class": "IMG-FRONT-10",
+            "confirmation_id": "CONF-CSP-88410",
+            "retrieval_option": "standard",
+            "segment_count": 3,
+            "vendor_id": "VND-COLDSPUR"
+          },
+          "tool": "backup.restores.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "RST-3401",
+          "status": "SUBMITTED",
+          "table_name": "restore_jobs",
+          "tool": "backup.restores.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "hostops-008-mutation-01",
+          "task_id": "hostops-008"
+        }
+      },
+      {
+        "description": "Persisted RST-3401 in restore_jobs with the supported values (vendor_id='VND-COLDSPUR', confirmation_id='CONF-CSP-88410', artifact_class='IMG-FRONT-10', segment_count=3, retrieval_option='standard', expected_ready_date='2026-04-16', status='SUBMITTED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "restore_jobs",
+        "values": {
+          "artifact_class": "IMG-FRONT-10",
+          "confirmation_id": "CONF-CSP-88410",
+          "expected_ready_date": "2026-04-16",
+          "retrieval_option": "standard",
+          "segment_count": 3,
+          "status": "SUBMITTED",
+          "vendor_id": "VND-COLDSPUR"
+        },
+        "weight": 2.0,
+        "where": {
+          "restore_id": "RST-3401"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying retrieve_standard_to_margin, the 2026-04-17 outcome, the binding constraint, and the HOST-0008 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "freya.tidemand@ridgeline.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "HOST-0008",
+            "storefront-web",
+            "RT-51301"
+          ]
+        ],
+        "payload_text_contains": [
+          "retrieve_standard_to_margin",
+          "2026-04-17"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "hostops-008-mutation-02",
+          "task_id": "hostops-008"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for HOST-0008: the primary change and the stakeholder draft; no additional restore, copy, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "hostops-008"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-04-20 as the documented control date for Monday's storefront release trains; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 6 SEGMENT for IMG-FRONT-10 segments required by the three 10 GB-class train verifications booked for 2026-04-20 (two fixed bundles and one metered at 17.3 GB).",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 9 observed SEGMENT.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 4 SEGMENT for set 3320 segments whose second power event is outside the durability letter.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 4 excluded = 5 supported SEGMENT.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 3 SEGMENT, the measure required by the chosen disposition under the durability-coverage rule, the retrieval margin, and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in SEGMENT.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-04-17 for retrieve_standard_to_margin.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-04-20 for stage_scrub_flagged_set.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-04-15 for expedite_vendor_retrieval and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-17 as the independently confirmed standard readiness date for Coldspur's confirmed standard and expedited retrieval dates on RQ-88410.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-15 as the independently confirmed expedited readiness date for Coldspur's confirmed standard and expedited retrieval dates on RQ-88410.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 3 booked IMG-FRONT-10 train verifications on 2026-04-20; the edge-widget train (RT-51304) runs on the 5 GB class and its own set.",
+        "field": "scheduled_runs",
+        "id": "count_scheduled_runs",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Used storefront-web's 2026-04-09 metering of 17.3 GB (2 segments), not the 8.4 GB onboarding figure; the fixed bundles also round to 2 segments each.",
+        "field": "metered_bundle_gb",
+        "id": "calculate_metered_payload",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the metered bundle size in GB.",
+        "field": "payload_unit",
+        "id": "preserve_payload_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied the margin policy's 2-segment retrieval margin for IMG-FRONT-10 on top of the 1 uncovered segment.",
+        "field": "margin_segments",
+        "id": "apply_retrieval_margin",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified RUNNER-1/2026-04-20/AM (RES-70910) as the first train the retrieval must beat.",
+        "field": "first_run_window",
+        "id": "identify_first_run_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for retrieve_standard_to_margin; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that expedite_vendor_retrieval remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of retrieve_standard_to_margin, stage_scrub_flagged_set, expedite_vendor_retrieval; selected retrieve_standard_to_margin because it alone gives the best currently authorized result under the durability-coverage rule, the retrieval margin, and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-04-17 as the supported outcome date for retrieve_standard_to_margin.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-04-17 with the independent control date 2026-04-20 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "HOST-0008"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated HOST-0008 scope, immutable handles, mounted systems, and evidence index before investigating IMG-FRONT-10.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "HOST-0008"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1008-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for HOST-0008 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "storefront-web"
+            },
+            "expected_result_contains": {
+              "services": [
+                {
+                  "service_id": "SVC-21301"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cmdb.services.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved service code storefront-web to the immutable service record through an identifier search rather than a name match against a similarly named service.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "HOST-0008"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-008-13"
+                },
+                {
+                  "id": "DRV-008-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the HOST-0008 case folder on the shared drive and identified the approval record and the ticket export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "runbook"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-008-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the runbook folder and distinguished the effective v4 runbook from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "ticket_id": "RT-51301"
+            },
+            "expected_result_contains": {
+              "status": "open",
+              "ticket_id": "RT-51301"
+            },
+            "match": "result_contains",
+            "tool": "releases.tickets.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active ticket RT-51301: payload basis, units in scope, and run durations.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "metric": "BUNDLE-GB",
+              "service_id": "SVC-21301"
+            },
+            "expected_result_contains": {
+              "meterings": [
+                {
+                  "metering_id": "MTR-21301"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cmdb.meterings.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current final payload metering for SVC-21301 (BUNDLE-GB) and ignored the stale historical metering.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v4 runbook for the sizing, minimum-retention, staging, window, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "artifact_class": "IMG-FRONT-10"
+            },
+            "expected_result_contains": {
+              "artifact_class": "IMG-FRONT-10"
+            },
+            "match": "result_contains",
+            "tool": "backup.classes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the artifact class record for IMG-FRONT-10: segment size and minimum remaining retention.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "artifact_class": "IMG-FRONT-10",
+              "status": "open"
+            },
+            "expected_result_contains": {
+              "tickets": [
+                {
+                  "ticket_id": "RT-51301"
+                },
+                {
+                  "ticket_id": "RT-51302"
+                },
+                {
+                  "ticket_id": "RT-51303"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "releases.tickets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the tickets that define the requirement (RT-51301, RT-51302, RT-51303) and excluded superseded or out-of-scope tickets.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-13",
+              "job_id": "JOB-SCRUB",
+              "start_date": "2026-04-13"
+            },
+            "expected_result_contains": {
+              "runs": [
+                {
+                  "run_id": "JR-77901"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "jobs.runs.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the scheduler's run history for JOB-SCRUB to ground what actually ran, what failed, and what the schedule does next.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "artifact_class": "IMG-FRONT-10"
+            },
+            "expected_result_contains": {
+              "sets": [
+                {
+                  "set_id": "SET-FRT-3320"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "backup.sets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every IMG-FRONT-10 segment set with count, retention expiry, checksum status, and reservations before netting the coverage.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-24",
+              "start_date": "2026-04-15"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "WIN-1-20260420-AM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "buildfarm.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the runner window calendar for 2026-04-15 onward to find the first free window that displaces no protected or blocked block.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-CSP-88410"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-CSP-88410",
+              "standard_ready_date": "2026-04-16"
+            },
+            "match": "result_contains",
+            "tool": "vendor.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the vendor retrieval confirmation CONF-CSP-88410 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-HO-0108"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-HO-0108"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-HO-0108 for its exact scope: record, quantity, vendor, fee allowance, and what it does not cover.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-13"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-13"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1008-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1008-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1008-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1008"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1008"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1008 for set, window, and authority remarks that qualify the system records.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-24",
+              "start_date": "2026-04-20",
+              "status": "booked"
+            },
+            "expected_result_contains": {
+              "reservations": [
+                {
+                  "id": "RES-70910"
+                },
+                {
+                  "id": "RES-70911"
+                },
+                {
+                  "id": "RES-70912"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "buildfarm.reservations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the farm reservations that fix the schedule scope by immutable id.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for HOST-0008 and confirmed that IMG-FRONT-10 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for HOST-0008 and joined IMG-FRONT-10 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for HOST-0008; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for HOST-0008 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for IMG-FRONT-10 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for HOST-0008 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for HOST-0008, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for HOST-0008: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "backup.restores.create",
+        "any_of": [
+          {
+            "arguments": {
+              "restore_id": "RST-3401"
+            },
+            "expected_result_contains": {
+              "expected_ready_date": "2026-04-16",
+              "restore_id": "RST-3401",
+              "retrieval_option": "standard",
+              "segment_count": 3,
+              "status": "SUBMITTED"
+            },
+            "match": "result_contains",
+            "tool": "backup.restores.get"
+          }
+        ],
+        "description": "Read RST-3401 back through backup.restores.get after the change and confirmed the persisted provider values (restore_id='RST-3401', segment_count=3, retrieval_option='standard', expected_ready_date='2026-04-16', status='SUBMITTED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "expected_ready_date": "2026-04-16",
+          "restore_id": "RST-3401",
+          "retrieval_option": "standard",
+          "segment_count": 3,
+          "status": "SUBMITTED"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "restore_id": "RST-3401"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "hostops",
+  "instruction": "The morning scrub flagged part of the storefront rollback archive after last week's power event, and Monday has three ten-gig-class train verifications on the calendar plus the edge-widget train on its own class. Tell me how many segments Monday genuinely needs with storefront-web on its metered size, which sets can still be staged under the new durability letter rather than the old one, and how many segments to pull from Coldspur under Imogen's approval. Place that retrieval, then draft the note for Freya so the storefront owners know what is arriving and what stays quarantined.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "artifact_class": "IMG-FRONT-10",
+        "confirmation_id": "CONF-CSP-88410",
+        "retrieval_option": "expedited",
+        "segment_count": 5,
+        "vendor_id": "VND-COLDSPUR"
+      },
+      "tool": "backup.restores.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-008-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "backup.restores.create",
+      "any_of": [
+        {
+          "arguments": {
+            "restore_id": "RST-3401"
+          },
+          "expected_result_contains": {
+            "expected_ready_date": "2026-04-16",
+            "restore_id": "RST-3401",
+            "retrieval_option": "standard",
+            "segment_count": 3,
+            "status": "SUBMITTED"
+          },
+          "match": "result_contains",
+          "tool": "backup.restores.get"
+        }
+      ],
+      "description": "Read RST-3401 back through backup.restores.get after the change and confirmed the persisted provider values (restore_id='RST-3401', segment_count=3, retrieval_option='standard', expected_ready_date='2026-04-16', status='SUBMITTED') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "expected_ready_date": "2026-04-16",
+        "restore_id": "RST-3401",
+        "retrieval_option": "standard",
+        "segment_count": 3,
+        "status": "SUBMITTED"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "restore_id": "RST-3401"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-HO-0108"
+    },
+    "backup": {
+      "artifact_class": "IMG-FRONT-10",
+      "stores": [
+        "STORE-NEAR"
+      ]
+    },
+    "buildfarm": {
+      "calendar_window": {
+        "end_date": "2026-04-24",
+        "start_date": "2026-04-15"
+      },
+      "pool": "release-pool"
+    },
+    "case_reference": "HOST-0008",
+    "chat": {
+      "thread_id": "CHAT-1008"
+    },
+    "cmdb": {
+      "service_code": "storefront-web",
+      "service_search": {
+        "arguments": {
+          "identifier": "storefront-web"
+        },
+        "tool": "cmdb.services.search"
+      }
+    },
+    "drive": {
+      "case_folder_query": "HOST-0008",
+      "runbook_query": "runbook"
+    },
+    "jobs": {
+      "job_id": "JOB-SCRUB"
+    },
+    "messages": {
+      "search_query": "HOST-0008"
+    },
+    "vendor": {
+      "confirmation_id": "CONF-CSP-88410"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "HOST-0008"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated HOST-0008 scope, immutable handles, mounted systems, and evidence index before investigating IMG-FRONT-10.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "HOST-0008"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1008-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for HOST-0008 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "storefront-web"
+          },
+          "expected_result_contains": {
+            "services": [
+              {
+                "service_id": "SVC-21301"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cmdb.services.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved service code storefront-web to the immutable service record through an identifier search rather than a name match against a similarly named service.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "HOST-0008"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-008-13"
+              },
+              {
+                "id": "DRV-008-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the HOST-0008 case folder on the shared drive and identified the approval record and the ticket export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "runbook"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-008-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the runbook folder and distinguished the effective v4 runbook from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "ticket_id": "RT-51301"
+          },
+          "expected_result_contains": {
+            "status": "open",
+            "ticket_id": "RT-51301"
+          },
+          "match": "result_contains",
+          "tool": "releases.tickets.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active ticket RT-51301: payload basis, units in scope, and run durations.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "metric": "BUNDLE-GB",
+            "service_id": "SVC-21301"
+          },
+          "expected_result_contains": {
+            "meterings": [
+              {
+                "metering_id": "MTR-21301"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cmdb.meterings.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current final payload metering for SVC-21301 (BUNDLE-GB) and ignored the stale historical metering.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v4 runbook for the sizing, minimum-retention, staging, window, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "artifact_class": "IMG-FRONT-10"
+          },
+          "expected_result_contains": {
+            "artifact_class": "IMG-FRONT-10"
+          },
+          "match": "result_contains",
+          "tool": "backup.classes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the artifact class record for IMG-FRONT-10: segment size and minimum remaining retention.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "artifact_class": "IMG-FRONT-10",
+            "status": "open"
+          },
+          "expected_result_contains": {
+            "tickets": [
+              {
+                "ticket_id": "RT-51301"
+              },
+              {
+                "ticket_id": "RT-51302"
+              },
+              {
+                "ticket_id": "RT-51303"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "releases.tickets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the tickets that define the requirement (RT-51301, RT-51302, RT-51303) and excluded superseded or out-of-scope tickets.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-13",
+            "job_id": "JOB-SCRUB",
+            "start_date": "2026-04-13"
+          },
+          "expected_result_contains": {
+            "runs": [
+              {
+                "run_id": "JR-77901"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "jobs.runs.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the scheduler's run history for JOB-SCRUB to ground what actually ran, what failed, and what the schedule does next.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "artifact_class": "IMG-FRONT-10"
+          },
+          "expected_result_contains": {
+            "sets": [
+              {
+                "set_id": "SET-FRT-3320"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "backup.sets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every IMG-FRONT-10 segment set with count, retention expiry, checksum status, and reservations before netting the coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-24",
+            "start_date": "2026-04-15"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "WIN-1-20260420-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "buildfarm.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the runner window calendar for 2026-04-15 onward to find the first free window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-CSP-88410"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-CSP-88410",
+            "standard_ready_date": "2026-04-16"
+          },
+          "match": "result_contains",
+          "tool": "vendor.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the vendor retrieval confirmation CONF-CSP-88410 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-HO-0108"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-HO-0108"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-HO-0108 for its exact scope: record, quantity, vendor, fee allowance, and what it does not cover.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-13"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-13"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1008-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1008-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1008-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1008"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1008"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1008 for set, window, and authority remarks that qualify the system records.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-24",
+            "start_date": "2026-04-20",
+            "status": "booked"
+          },
+          "expected_result_contains": {
+            "reservations": [
+              {
+                "id": "RES-70910"
+              },
+              {
+                "id": "RES-70911"
+              },
+              {
+                "id": "RES-70912"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "buildfarm.reservations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the farm reservations that fix the schedule scope by immutable id.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for HOST-0008 and confirmed that IMG-FRONT-10 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for HOST-0008 and joined IMG-FRONT-10 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for HOST-0008; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for HOST-0008 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for IMG-FRONT-10 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for HOST-0008 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for HOST-0008, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for HOST-0008: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "HOST-0008"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "HOST-0008"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1008-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "storefront-web"
+      },
+      "expected_result_contains": {
+        "services": [
+          {
+            "service_id": "SVC-21301"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cmdb.services.search"
+    },
+    {
+      "arguments": {
+        "q": "HOST-0008"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-008-13"
+          },
+          {
+            "id": "DRV-008-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "runbook"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-008-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "ticket_id": "RT-51301"
+      },
+      "expected_result_contains": {
+        "status": "open",
+        "ticket_id": "RT-51301"
+      },
+      "match": "result_contains",
+      "tool": "releases.tickets.get"
+    },
+    {
+      "arguments": {
+        "metric": "BUNDLE-GB",
+        "service_id": "SVC-21301"
+      },
+      "expected_result_contains": {
+        "meterings": [
+          {
+            "metering_id": "MTR-21301"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cmdb.meterings.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "artifact_class": "IMG-FRONT-10"
+      },
+      "expected_result_contains": {
+        "artifact_class": "IMG-FRONT-10"
+      },
+      "match": "result_contains",
+      "tool": "backup.classes.get"
+    },
+    {
+      "arguments": {
+        "artifact_class": "IMG-FRONT-10",
+        "status": "open"
+      },
+      "expected_result_contains": {
+        "tickets": [
+          {
+            "ticket_id": "RT-51301"
+          },
+          {
+            "ticket_id": "RT-51302"
+          },
+          {
+            "ticket_id": "RT-51303"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "releases.tickets.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-13",
+        "job_id": "JOB-SCRUB",
+        "start_date": "2026-04-13"
+      },
+      "expected_result_contains": {
+        "runs": [
+          {
+            "run_id": "JR-77901"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "jobs.runs.list"
+    },
+    {
+      "arguments": {
+        "artifact_class": "IMG-FRONT-10"
+      },
+      "expected_result_contains": {
+        "sets": [
+          {
+            "set_id": "SET-FRT-3320"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "backup.sets.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-24",
+        "start_date": "2026-04-15"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "WIN-1-20260420-AM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "buildfarm.windows.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-CSP-88410"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-CSP-88410",
+        "standard_ready_date": "2026-04-16"
+      },
+      "match": "result_contains",
+      "tool": "vendor.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-HO-0108"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-HO-0108"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-13"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-13"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1008-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1008-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1008"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1008"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-24",
+        "start_date": "2026-04-20",
+        "status": "booked"
+      },
+      "expected_result_contains": {
+        "reservations": [
+          {
+            "id": "RES-70910"
+          },
+          {
+            "id": "RES-70911"
+          },
+          {
+            "id": "RES-70912"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "buildfarm.reservations.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-28"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-28"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-29"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-29"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "cmdb.services.search",
+    "releases.tickets.list",
+    "releases.tickets.get",
+    "cmdb.meterings.list",
+    "jobs.runs.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "backup.classes.get",
+    "backup.sets.list",
+    "buildfarm.reservations.list",
+    "buildfarm.windows.list",
+    "vendor.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "platform_operations_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_20",
+        "investigation_21"
+      ],
+      "description": "Establish the isolated HOST-0008 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 7.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_22"
+      ],
+      "description": "Determine the operative v1 requirement for IMG-FRONT-10 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_23",
+        "investigation_24",
+        "investigation_26"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 9 observed less 4 excluded to 5 supported SEGMENT for IMG-FRONT-10 segments stageable for Monday at the nearline store. Applied the booked farm reservations that fix the train dates to derive the three option outcomes without using protected or blocked windows. Used the independently confirmed 2026-04-15 expedited readiness input for stage_scrub_flagged_set, then separately derived its 2026-04-20 operating outcome under the durability-coverage rule, the retrieval margin, and the signed approval scope instead of treating a vendor promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_15",
+        "investigation_16",
+        "investigation_25"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-HO-0108 only to retrieve_standard_to_margin and IMG-FRONT-10; kept expedite_vendor_retrieval outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_17",
+        "investigation_18",
+        "investigation_19",
+        "investigation_27"
+      ],
+      "description": "Correlate IMG-FRONT-10 by immutable identifiers across the systems of record (cmdb, releases, jobs, backup, buildfarm, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 20.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "establish_source_quantity",
+        "reconcile_observed_quantity",
+        "identify_excluded_quantity",
+        "calculate_supported_quantity",
+        "bound_transaction_quantity",
+        "preserve_transaction_unit",
+        "compare_quantity_option_one",
+        "compare_quantity_option_two",
+        "compare_quantity_option_three",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "count_scheduled_runs",
+        "calculate_metered_payload",
+        "preserve_payload_unit",
+        "apply_retrieval_margin",
+        "identify_first_run_window"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for Monday's storefront release trains.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for retrieve_standard_to_margin under the actual operating window and report whether the 2026-04-17 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select retrieve_standard_to_margin only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported 'Replacement restore job submitted' change for IMG-FRONT-10 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read IMG-FRONT-10 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_controlled_item_or_record",
+        "answer_transaction_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for Monday's storefront release trains.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside HOST-0008's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "b81effc64089350aec01773763aec3a232fbb48ae2033caeb821cc1b17531a80",
+  "starting_records": [
+    {
+      "resource_id": "RES-70910",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "buildfarm"
+    },
+    {
+      "resource_id": "RES-70911",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "buildfarm"
+    },
+    {
+      "resource_id": "RES-70912",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "buildfarm"
+    },
+    {
+      "resource_id": "RES-70913",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "buildfarm"
+    },
+    {
+      "resource_id": "RST-3400",
+      "resource_type": "RestoreJob",
+      "status": "RECEIVED",
+      "system": "backup"
+    }
+  ],
+  "task_id": "hostops-008",
+  "title": "Replace the scrub-flagged storefront segments before Monday's trains",
+  "workflow": {
+    "answer_fields": 24,
+    "readbacks": 1,
+    "reads": 28,
+    "writes": 2
+  },
+  "world": {
+    "id": "ridgeline-platform-v1",
+    "name": "Ridgeline Systems — Platform Operations",
+    "organization_id": "ORG-RIDGELINE",
+    "primary_site": "STORE-NEAR",
+    "systems": [
+      "cmdb",
+      "releases",
+      "jobs",
+      "backup",
+      "buildfarm",
+      "vendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

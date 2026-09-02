@@ -1,0 +1,2647 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "mutations",
+    "note_drafts",
+    "research_claims"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for publish_verified_voluntary_attrition.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for wait_for_reconciliation_voluntary_attrition.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "definition_exclusion": {
+        "description": "Measure removed by the effective definition or stale-source control.",
+        "type": "integer"
+      },
+      "definition_id": {
+        "description": "Immutable identifier of the effective metric definition.",
+        "type": "string"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for publish_legacy_voluntary_attrition.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "190 BASIS_POINTS excluded by voluntary_attrition_v4 or stale-source controls",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for the independent source-set reconciliation for SRCSET-0006.",
+        "type": "string"
+      },
+      "gross_measure": {
+        "description": "Gross observed measure before definition and source-quality exclusions.",
+        "type": "integer"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for Quarterly voluntary attrition.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "period_end": {
+        "description": "Inclusive end date of the controlled measurement period.",
+        "type": "string"
+      },
+      "period_start": {
+        "description": "Inclusive start date of the controlled measurement period.",
+        "type": "string"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: BASIS_POINTS.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental research cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing publish_verified_voluntary_attrition, wait_for_reconciliation_voluntary_attrition, publish_legacy_voluntary_attrition.",
+        "enum": [
+          "publish_verified_voluntary_attrition",
+          "wait_for_reconciliation_voluntary_attrition",
+          "publish_legacy_voluntary_attrition"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "source_quantity": {
+        "description": "documented BASIS_POINTS requirement for Thursday's talent-committee narrative lock",
+        "type": "integer"
+      },
+      "source_set_id": {
+        "description": "Immutable identifier of the independently reconciled source set.",
+        "type": "string"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for the independent source-set reconciliation for SRCSET-0006.",
+        "type": "string"
+      },
+      "supported_measure": {
+        "description": "Net measure supported after the exclusion is applied.",
+        "type": "integer"
+      },
+      "supported_quantity": {
+        "description": "current, independently supported quarterly voluntary attrition evidence",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      },
+      "verified_source_records": {
+        "description": "Count of independently identified records in VERIFIED state.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "definition_exclusion",
+      "definition_id",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "gross_measure",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "period_end",
+      "period_start",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "source_quantity",
+      "source_set_id",
+      "standard_external_readiness",
+      "supported_measure",
+      "supported_quantity",
+      "transaction_quantity",
+      "verified_source_records"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-07-13",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "the active voluntary_attrition_v4 definition, source-set contract, review capacity, and AP-RSH-0006; 190 BASIS_POINTS excluded by voluntary_attrition_v4 or stale-source controls = 190 BASIS_POINTS; uncovered scope = 40 BASIS_POINTS",
+    "calculations": [
+      {
+        "description": "Preserved 2026-07-23 as the documented control date for Quarterly voluntary attrition; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 960 BASIS_POINTS for documented BASIS_POINTS requirement for Thursday's talent-committee narrative lock.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 1110 observed BASIS_POINTS.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 190 BASIS_POINTS for 190 BASIS_POINTS excluded by voluntary_attrition_v4 or stale-source controls.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 1110 observed − 190 excluded = 920 supported BASIS_POINTS.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 920 BASIS_POINTS, the measure required by the chosen disposition under the active voluntary_attrition_v4 definition, source-set contract, review capacity, and AP-RSH-0006; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in BASIS_POINTS.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-07-21 for publish_verified_voluntary_attrition.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-07-27 for wait_for_reconciliation_voluntary_attrition.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-07-16 for publish_legacy_voluntary_attrition and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-07-27 as the independently confirmed standard readiness date for the independent source-set reconciliation for SRCSET-0006.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-07-16 as the independently confirmed expedited readiness date for the independent source-set reconciliation for SRCSET-0006.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Established voluntary_attrition_v4 as effective and rejected retired voluntary_attrition_v3.",
+        "field": "definition_id",
+        "id": "research_current_definition",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the decision to source set SRCSET-0006.",
+        "field": "source_set_id",
+        "id": "research_source_set",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Explained the 190 BASIS_POINTS difference introduced by the current definition and source controls.",
+        "field": "definition_exclusion",
+        "id": "research_definition_delta",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated 3 independently identified VERIFIED source records.",
+        "field": "verified_source_records",
+        "id": "research_verified_sources",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental research cost for publish_verified_voluntary_attrition; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that publish_legacy_voluntary_attrition remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of publish_verified_voluntary_attrition, wait_for_reconciliation_voluntary_attrition, publish_legacy_voluntary_attrition; selected publish_verified_voluntary_attrition because it alone gives the best currently authorized result under the active voluntary_attrition_v4 definition, source-set contract, review capacity, and AP-RSH-0006.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-07-21 as the supported outcome date for publish_verified_voluntary_attrition.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-07-21 with the independent control date 2026-07-23 and calculated a signed variance of -2 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "evidence": "Article ART-0006 and current revision REV-0006-CURRENT",
+        "id": "authoritative_identity",
+        "rubric": "Resolved ART-0006 by immutable identity and rejected the archived same-topic search result."
+      },
+      {
+        "evidence": "voluntary_attrition_v4 over 2026-04-01..2026-06-30",
+        "id": "effective_requirement",
+        "rubric": "Applied voluntary_attrition_v4, the exact period, and the 960 BASIS_POINTS business requirement."
+      },
+      {
+        "evidence": "SNAP-0006 and SRCSET-0006",
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 1110 observed minus 190 excluded into 920 supported BASIS_POINTS."
+      },
+      {
+        "evidence": "Independent source-set readiness dates 2026-07-27 and 2026-07-16",
+        "id": "conditional_external_recovery",
+        "rubric": "Kept later source reconciliation and the faster unqualified route conditional rather than treating either as current evidence."
+      },
+      {
+        "evidence": "Qualified slot SLOT-RSH-0006-QUALIFIED; protected slot SLOT-RSH-0006-PROTECTED",
+        "id": "finite_capacity",
+        "rubric": "Applied 60 minutes of qualified capacity and preserved protected methodology work."
+      },
+      {
+        "evidence": "AP-RSH-0006",
+        "id": "approval_scope",
+        "rubric": "Applied AP-RSH-0006 only to its article, metric, definition, source set, value, and review-capacity scope."
+      },
+      {
+        "evidence": "2026-07-23",
+        "id": "business_impact",
+        "rubric": "Compared the supported outcome with 2026-07-23, the documented date for Thursday's talent-committee narrative lock."
+      }
+    ],
+    "mode": "quantity",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-07-21",
+        "consequence": "Uses the current voluntary_attrition_v4 definition, the verified SRCSET-0006 source set, and approved research capacity; completes 2026-07-21.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "publish_verified_voluntary_attrition",
+        "incremental_cost": 0,
+        "label": "publish_verified_voluntary_attrition: outcome 2026-07-21, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-07-27",
+        "consequence": "Waits for a later reconciliation or archive refresh and completes 2026-07-27, after the supported route is already available.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "wait_for_reconciliation_voluntary_attrition",
+        "incremental_cost": 0,
+        "label": "wait_for_reconciliation_voluntary_attrition: outcome 2026-07-27, incremental cost USD 0, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-07-16",
+        "consequence": "Produces an earlier 2026-07-16 headline by using stale, unqualified, or protected evidence; AP-RSH-0006 does not authorize that basis.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "publish_legacy_voluntary_attrition",
+        "incremental_cost": 350,
+        "label": "publish_legacy_voluntary_attrition: outcome 2026-07-16, incremental cost USD 350, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "publish_verified_voluntary_attrition is the best currently authorized response that satisfies the active voluntary_attrition_v4 definition, source-set contract, review capacity, and AP-RSH-0006 and lands 2 day(s) on or before the control date.",
+    "selected_completion": "2026-07-21",
+    "selected_cost": 0,
+    "selected_option": "publish_verified_voluntary_attrition"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "baseline_resolution_date": "2026-07-21",
+      "business_need_date": "2026-07-23",
+      "controlled_item_or_record": "ART-0006",
+      "controlled_resolution_date": "2026-07-27",
+      "decision_timing_status": "ON_TIME",
+      "definition_exclusion": 190,
+      "definition_id": "voluntary_attrition_v4",
+      "escalated_resolution_date": "2026-07-16",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 190,
+      "expedited_external_readiness": "2026-07-16",
+      "gross_measure": 1110,
+      "observed_quantity": 1110,
+      "outcome_vs_control_days": -2,
+      "period_end": "2026-06-30",
+      "period_start": "2026-04-01",
+      "quantity_unit": "BASIS_POINTS",
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "publish_verified_voluntary_attrition",
+      "recommended_outcome_date": "2026-07-21",
+      "source_quantity": 960,
+      "source_set_id": "SRCSET-0006",
+      "standard_external_readiness": "2026-07-27",
+      "supported_measure": 920,
+      "supported_quantity": 920,
+      "transaction_quantity": 920,
+      "verified_source_records": 3
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'publish_verified_voluntary_attrition', tied to ART-0006, definition voluntary_attrition_v4, source set SRCSET-0006, and option publish_verified_voluntary_attrition.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-07-21', tied to ART-0006, definition voluntary_attrition_v4, source set SRCSET-0006, and option publish_verified_voluntary_attrition.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'ART-0006', tied to ART-0006, definition voluntary_attrition_v4, source set SRCSET-0006, and option publish_verified_voluntary_attrition.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 920, tied to ART-0006, definition voluntary_attrition_v4, source set SRCSET-0006, and option publish_verified_voluntary_attrition.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to ART-0006, definition voluntary_attrition_v4, source set SRCSET-0006, and option publish_verified_voluntary_attrition.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required ART-0006 to reach 'Verified claim published' through research.claims.create with the exact current definition, source set, approval, and provider-critical values.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "article_id",
+          "metric_key",
+          "period_start",
+          "period_end",
+          "value",
+          "unit",
+          "definition_id",
+          "source_set_id",
+          "approval_id",
+          "note"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "approval_id": "AP-RSH-0006",
+            "article_id": "ART-0006",
+            "definition_id": "voluntary_attrition_v4",
+            "metric_key": "VOLUNTARY_ATTRITION",
+            "note": "RSH-0006: current-definition claim supported by SRCSET-0006",
+            "period_end": "2026-06-30",
+            "period_start": "2026-04-01",
+            "source_set_id": "SRCSET-0006",
+            "unit": "BASIS_POINTS",
+            "value": 920
+          },
+          "tool": "research.claims.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "CLM-5006",
+          "status": "PUBLISHED",
+          "table_name": "research_claims",
+          "tool": "research.claims.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "researchdesk-006-mutation-01",
+          "task_id": "researchdesk-006"
+        }
+      },
+      {
+        "description": "Persisted CLM-5006 in research_claims with the supported values so a later reader observes the outcome.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "research_claims",
+        "values": {
+          "approval_id": "AP-RSH-0006",
+          "article_id": "ART-0006",
+          "definition_id": "voluntary_attrition_v4",
+          "metric_key": "VOLUNTARY_ATTRITION",
+          "source_set_id": "SRCSET-0006",
+          "status": "PUBLISHED",
+          "unit": "BASIS_POINTS",
+          "value": 920
+        },
+        "weight": 2.0,
+        "where": {
+          "claim_id": "CLM-5006"
+        }
+      },
+      {
+        "description": "Created, but did not send, the stakeholder draft carrying publish_verified_voluntary_attrition, the 2026-07-21 outcome, the current definition, and RSH-0006.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "owner-6@meridian.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "RSH-0006",
+            "ART-0006"
+          ]
+        ],
+        "payload_text_contains": [
+          "publish_verified_voluntary_attrition",
+          "2026-07-21",
+          "voluntary_attrition_v4"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "researchdesk-006-mutation-02",
+          "task_id": "researchdesk-006"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for RSH-0006: the supported primary outcome and one stakeholder draft.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "researchdesk-006"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-07-23 as the documented control date for Quarterly voluntary attrition; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 960 BASIS_POINTS for documented BASIS_POINTS requirement for Thursday's talent-committee narrative lock.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 1110 observed BASIS_POINTS.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 190 BASIS_POINTS for 190 BASIS_POINTS excluded by voluntary_attrition_v4 or stale-source controls.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 1110 observed − 190 excluded = 920 supported BASIS_POINTS.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 920 BASIS_POINTS, the measure required by the chosen disposition under the active voluntary_attrition_v4 definition, source-set contract, review capacity, and AP-RSH-0006; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in BASIS_POINTS.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-07-21 for publish_verified_voluntary_attrition.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-07-27 for wait_for_reconciliation_voluntary_attrition.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-07-16 for publish_legacy_voluntary_attrition and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-07-27 as the independently confirmed standard readiness date for the independent source-set reconciliation for SRCSET-0006.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-07-16 as the independently confirmed expedited readiness date for the independent source-set reconciliation for SRCSET-0006.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Established voluntary_attrition_v4 as effective and rejected retired voluntary_attrition_v3.",
+        "field": "definition_id",
+        "id": "research_current_definition",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the decision to source set SRCSET-0006.",
+        "field": "source_set_id",
+        "id": "research_source_set",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Explained the 190 BASIS_POINTS difference introduced by the current definition and source controls.",
+        "field": "definition_exclusion",
+        "id": "research_definition_delta",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated 3 independently identified VERIFIED source records.",
+        "field": "verified_source_records",
+        "id": "research_verified_sources",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental research cost for publish_verified_voluntary_attrition; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that publish_legacy_voluntary_attrition remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of publish_verified_voluntary_attrition, wait_for_reconciliation_voluntary_attrition, publish_legacy_voluntary_attrition; selected publish_verified_voluntary_attrition because it alone gives the best currently authorized result under the active voluntary_attrition_v4 definition, source-set contract, review capacity, and AP-RSH-0006.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-07-21 as the supported outcome date for publish_verified_voluntary_attrition.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-07-21 with the independent control date 2026-07-23 and calculated a signed variance of -2 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "RSH-0006"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated RSH-0006 world, immutable article identity, mounted systems, and evidence index before researching ART-0006.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "RSH-0006"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-RSH-0006-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped request for RSH-0006 through mailbox search rather than guessing a sender or subject.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "voluntary-attrition"
+            },
+            "expected_result_contains": {
+              "articles": [
+                {
+                  "article_id": "ART-0006",
+                  "status": "ACTIVE"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "knowledge.articles.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved Quarterly voluntary attrition to active article ART-0006, separate from the archived same-topic result.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "RSH-0006"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-RSH-006-03"
+                },
+                {
+                  "id": "DRV-RSH-006-10"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the RSH-0006 evidence folder and identified the article and approval exports by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "Research evidence and publication policy"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-RSH-006-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the effective research evidence policy and distinguished it from the superseded search-rank rule.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "article_id": "ART-0006"
+            },
+            "expected_result_contains": {
+              "article_id": "ART-0006",
+              "current_revision": "v9",
+              "status": "ACTIVE"
+            },
+            "match": "result_contains",
+            "tool": "knowledge.articles.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read active article ART-0006 and fixed its current revision pointer at v9.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "article_id": "ART-0006"
+            },
+            "expected_result_contains": {
+              "revisions": [
+                {
+                  "revision_id": "REV-0006-CURRENT",
+                  "status": "CURRENT"
+                },
+                {
+                  "revision_id": "REV-0006-STALE",
+                  "status": "SUPERSEDED"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "knowledge.revisions.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the full revision history and separated CURRENT REV-0006-CURRENT from SUPERSEDED REV-0006-STALE.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "definition_id": "voluntary_attrition_v4"
+            },
+            "expected_result_contains": {
+              "definition_id": "voluntary_attrition_v4",
+              "metric_key": "VOLUNTARY_ATTRITION",
+              "status": "CURRENT"
+            },
+            "match": "result_contains",
+            "tool": "metrics.definitions.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read current definition voluntary_attrition_v4: numerator, denominator, unit, exclusions, and effective status.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "metric_key": "VOLUNTARY_ATTRITION"
+            },
+            "expected_result_contains": {
+              "definitions": [
+                {
+                  "definition_id": "voluntary_attrition_v3",
+                  "status": "SUPERSEDED"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "metrics.definitions.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed definition history for VOLUNTARY_ATTRITION and confirmed that voluntary_attrition_v3 is superseded.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "snapshot_id": "SNAP-0006"
+            },
+            "expected_result_contains": {
+              "excluded_value": 190,
+              "gross_value": 1110,
+              "snapshot_id": "SNAP-0006",
+              "supported_value": 920
+            },
+            "match": "result_contains",
+            "tool": "metrics.snapshots.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read controlled snapshot SNAP-0006 and reconciled gross, excluded, and supported BASIS_POINTS values for the exact period.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "source_set_id": "SRCSET-0006"
+            },
+            "expected_result_contains": {
+              "required_sources": 3,
+              "source_set_id": "SRCSET-0006",
+              "verified_count": 3
+            },
+            "match": "result_contains",
+            "tool": "sources.sets.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read source-set contract SRCSET-0006 and its independent verification threshold.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "source_set_id": "SRCSET-0006"
+            },
+            "expected_result_contains": {
+              "records": [
+                {
+                  "source_id": "SRC-0006-01",
+                  "status": "VERIFIED"
+                },
+                {
+                  "source_id": "SRC-0006-04",
+                  "status": "SUPERSEDED"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "sources.records.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every record in SRCSET-0006, retaining the verified records and explicitly separating stale material.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "source_id": "SRC-0006-04"
+            },
+            "expected_result_contains": {
+              "reliability": "STALE",
+              "source_id": "SRC-0006-04",
+              "status": "SUPERSEDED"
+            },
+            "match": "result_contains",
+            "tool": "sources.records.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read stale source SRC-0006-04 and confirmed why its tempting headline cannot support the current decision.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "index_id": "IDX-KNOWLEDGE-CURRENT",
+              "query_key": "voluntary-attrition"
+            },
+            "expected_result_contains": {
+              "hits": [
+                {
+                  "article_id": "ART-0006",
+                  "status": "CURRENT"
+                },
+                {
+                  "article_id": "ART-0006-ARCHIVE",
+                  "status": "SUPERSEDED"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "search.query"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Queried the current index for voluntary-attrition, using rank only for discovery and checking each hit's status and source identity.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-07-23",
+              "start_date": "2026-07-13"
+            },
+            "expected_result_contains": {
+              "slots": [
+                {
+                  "expertise": "people_analytics",
+                  "slot_id": "SLOT-RSH-0006-QUALIFIED",
+                  "status": "free"
+                },
+                {
+                  "slot_id": "SLOT-RSH-0006-PROTECTED",
+                  "status": "protected"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "reviews.slots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read review capacity through 2026-07-23, separating qualified SLOT-RSH-0006-QUALIFIED from protected SLOT-RSH-0006-PROTECTED and the generalist opening.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-RSH-0006"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-RSH-0006",
+              "scope": {
+                "article_id": "ART-0006",
+                "metric_key": "VOLUNTARY_ATTRITION"
+              },
+              "status": "APPROVED"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-RSH-0006 and fixed its exact action, article, metric, definition, source, value, and slot boundaries.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-RSH-0006-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-RSH-0006-01",
+              "subject": "RSH-0006: Quarterly voluntary attrition — evidence needed"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read request MSG-RSH-0006-01 for the documented business date and draft-only communication constraint.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-RSH-0006"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-RSH-0006"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read research thread CHAT-RSH-0006 for the current-definition, source-status, and protected-capacity corrections.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-RSH-006-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-RSH-006-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for RSH-0006 and confirmed that ART-0006 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-RSH-006-16"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-RSH-006-16"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for RSH-0006 and joined ART-0006 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-RSH-006-17"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-RSH-006-17"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for RSH-0006; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-RSH-006-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-RSH-006-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for RSH-0006 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-RSH-006-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-RSH-006-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for ART-0006 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-RSH-006-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-RSH-006-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for RSH-0006 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-RSH-006-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-RSH-006-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for RSH-0006, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-RSH-006-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-RSH-006-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for RSH-0006: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "research.claims.create",
+        "any_of": [
+          {
+            "arguments": {
+              "claim_id": "CLM-5006"
+            },
+            "expected_result_contains": {
+              "claim_id": "CLM-5006",
+              "definition_id": "voluntary_attrition_v4",
+              "status": "PUBLISHED",
+              "value": 920
+            },
+            "match": "result_contains",
+            "tool": "research.claims.get"
+          }
+        ],
+        "description": "Read CLM-5006 back through research.claims.get and confirmed the exact persisted outcome rather than trusting the write acknowledgement.",
+        "expected_result_contains": {
+          "claim_id": "CLM-5006",
+          "definition_id": "voluntary_attrition_v4",
+          "status": "PUBLISHED",
+          "value": 920
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "claim_id": "CLM-5006"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "researchdesk",
+  "instruction": "People leadership found three attrition percentages in the quarterly talent narrative, each using a different treatment of internal transfers, retirements, and acquired employees. Resolve the active knowledge revision, quarter boundary, and approved population definition; reconcile the HR event export, opening-headcount control, and exclusions register to the exact supported basis-point figure. Compare publishing the current result with waiting for payroll close or reusing the legacy calculation. Publish only the claim within the signed scope and draft People leadership an explanation that distinguishes the current metric from the retired headline.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "approval_id": "AP-RSH-0006",
+        "article_id": "ART-0006",
+        "definition_id": "voluntary_attrition_v3",
+        "metric_key": "VOLUNTARY_ATTRITION",
+        "note": "RSH-0006: reuse retired headline",
+        "period_end": "2026-06-30",
+        "period_start": "2026-04-01",
+        "source_set_id": "SRCSET-0006",
+        "unit": "BASIS_POINTS",
+        "value": 1110
+      },
+      "tool": "research.claims.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-RSH-006-02"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "research.claims.create",
+      "any_of": [
+        {
+          "arguments": {
+            "claim_id": "CLM-5006"
+          },
+          "expected_result_contains": {
+            "claim_id": "CLM-5006",
+            "definition_id": "voluntary_attrition_v4",
+            "status": "PUBLISHED",
+            "value": 920
+          },
+          "match": "result_contains",
+          "tool": "research.claims.get"
+        }
+      ],
+      "description": "Read CLM-5006 back through research.claims.get and confirmed the exact persisted outcome rather than trusting the write acknowledgement.",
+      "expected_result_contains": {
+        "claim_id": "CLM-5006",
+        "definition_id": "voluntary_attrition_v4",
+        "status": "PUBLISHED",
+        "value": 920
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "claim_id": "CLM-5006"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-RSH-0006"
+    },
+    "case_reference": "RSH-0006",
+    "chat": {
+      "thread_id": "CHAT-RSH-0006"
+    },
+    "drive": {
+      "case_folder_query": "RSH-0006",
+      "policy_query": "Research evidence and publication policy"
+    },
+    "knowledge": {
+      "article_id": "ART-0006",
+      "article_search": {
+        "arguments": {
+          "q": "voluntary-attrition"
+        },
+        "tool": "knowledge.articles.search"
+      }
+    },
+    "messages": {
+      "message_id": "MSG-RSH-0006-01",
+      "search_query": "RSH-0006"
+    },
+    "metrics": {
+      "definition_id": "voluntary_attrition_v4",
+      "snapshot_id": "SNAP-0006"
+    },
+    "reviews": {
+      "protected_slot_id": "SLOT-RSH-0006-PROTECTED",
+      "selected_slot_id": "SLOT-RSH-0006-QUALIFIED"
+    },
+    "search": {
+      "index_id": "IDX-KNOWLEDGE-CURRENT",
+      "query_key": "voluntary-attrition"
+    },
+    "sources": {
+      "source_ids": [
+        "SRC-0006-01",
+        "SRC-0006-02",
+        "SRC-0006-03",
+        "SRC-0006-04"
+      ],
+      "source_set_id": "SRCSET-0006"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "RSH-0006"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated RSH-0006 world, immutable article identity, mounted systems, and evidence index before researching ART-0006.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "RSH-0006"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-RSH-0006-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped request for RSH-0006 through mailbox search rather than guessing a sender or subject.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "voluntary-attrition"
+          },
+          "expected_result_contains": {
+            "articles": [
+              {
+                "article_id": "ART-0006",
+                "status": "ACTIVE"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "knowledge.articles.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved Quarterly voluntary attrition to active article ART-0006, separate from the archived same-topic result.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "RSH-0006"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-RSH-006-03"
+              },
+              {
+                "id": "DRV-RSH-006-10"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the RSH-0006 evidence folder and identified the article and approval exports by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "Research evidence and publication policy"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-RSH-006-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the effective research evidence policy and distinguished it from the superseded search-rank rule.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "article_id": "ART-0006"
+          },
+          "expected_result_contains": {
+            "article_id": "ART-0006",
+            "current_revision": "v9",
+            "status": "ACTIVE"
+          },
+          "match": "result_contains",
+          "tool": "knowledge.articles.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read active article ART-0006 and fixed its current revision pointer at v9.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "article_id": "ART-0006"
+          },
+          "expected_result_contains": {
+            "revisions": [
+              {
+                "revision_id": "REV-0006-CURRENT",
+                "status": "CURRENT"
+              },
+              {
+                "revision_id": "REV-0006-STALE",
+                "status": "SUPERSEDED"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "knowledge.revisions.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the full revision history and separated CURRENT REV-0006-CURRENT from SUPERSEDED REV-0006-STALE.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "definition_id": "voluntary_attrition_v4"
+          },
+          "expected_result_contains": {
+            "definition_id": "voluntary_attrition_v4",
+            "metric_key": "VOLUNTARY_ATTRITION",
+            "status": "CURRENT"
+          },
+          "match": "result_contains",
+          "tool": "metrics.definitions.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read current definition voluntary_attrition_v4: numerator, denominator, unit, exclusions, and effective status.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "metric_key": "VOLUNTARY_ATTRITION"
+          },
+          "expected_result_contains": {
+            "definitions": [
+              {
+                "definition_id": "voluntary_attrition_v3",
+                "status": "SUPERSEDED"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "metrics.definitions.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed definition history for VOLUNTARY_ATTRITION and confirmed that voluntary_attrition_v3 is superseded.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "snapshot_id": "SNAP-0006"
+          },
+          "expected_result_contains": {
+            "excluded_value": 190,
+            "gross_value": 1110,
+            "snapshot_id": "SNAP-0006",
+            "supported_value": 920
+          },
+          "match": "result_contains",
+          "tool": "metrics.snapshots.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read controlled snapshot SNAP-0006 and reconciled gross, excluded, and supported BASIS_POINTS values for the exact period.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "source_set_id": "SRCSET-0006"
+          },
+          "expected_result_contains": {
+            "required_sources": 3,
+            "source_set_id": "SRCSET-0006",
+            "verified_count": 3
+          },
+          "match": "result_contains",
+          "tool": "sources.sets.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read source-set contract SRCSET-0006 and its independent verification threshold.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "source_set_id": "SRCSET-0006"
+          },
+          "expected_result_contains": {
+            "records": [
+              {
+                "source_id": "SRC-0006-01",
+                "status": "VERIFIED"
+              },
+              {
+                "source_id": "SRC-0006-04",
+                "status": "SUPERSEDED"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "sources.records.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every record in SRCSET-0006, retaining the verified records and explicitly separating stale material.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "source_id": "SRC-0006-04"
+          },
+          "expected_result_contains": {
+            "reliability": "STALE",
+            "source_id": "SRC-0006-04",
+            "status": "SUPERSEDED"
+          },
+          "match": "result_contains",
+          "tool": "sources.records.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read stale source SRC-0006-04 and confirmed why its tempting headline cannot support the current decision.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "index_id": "IDX-KNOWLEDGE-CURRENT",
+            "query_key": "voluntary-attrition"
+          },
+          "expected_result_contains": {
+            "hits": [
+              {
+                "article_id": "ART-0006",
+                "status": "CURRENT"
+              },
+              {
+                "article_id": "ART-0006-ARCHIVE",
+                "status": "SUPERSEDED"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "search.query"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Queried the current index for voluntary-attrition, using rank only for discovery and checking each hit's status and source identity.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-07-23",
+            "start_date": "2026-07-13"
+          },
+          "expected_result_contains": {
+            "slots": [
+              {
+                "expertise": "people_analytics",
+                "slot_id": "SLOT-RSH-0006-QUALIFIED",
+                "status": "free"
+              },
+              {
+                "slot_id": "SLOT-RSH-0006-PROTECTED",
+                "status": "protected"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "reviews.slots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read review capacity through 2026-07-23, separating qualified SLOT-RSH-0006-QUALIFIED from protected SLOT-RSH-0006-PROTECTED and the generalist opening.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-RSH-0006"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-RSH-0006",
+            "scope": {
+              "article_id": "ART-0006",
+              "metric_key": "VOLUNTARY_ATTRITION"
+            },
+            "status": "APPROVED"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-RSH-0006 and fixed its exact action, article, metric, definition, source, value, and slot boundaries.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-RSH-0006-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-RSH-0006-01",
+            "subject": "RSH-0006: Quarterly voluntary attrition — evidence needed"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read request MSG-RSH-0006-01 for the documented business date and draft-only communication constraint.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-RSH-0006"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-RSH-0006"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read research thread CHAT-RSH-0006 for the current-definition, source-status, and protected-capacity corrections.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-RSH-006-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-RSH-006-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for RSH-0006 and confirmed that ART-0006 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-RSH-006-16"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-RSH-006-16"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for RSH-0006 and joined ART-0006 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-RSH-006-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-RSH-006-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for RSH-0006; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-RSH-006-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-RSH-006-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for RSH-0006 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-RSH-006-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-RSH-006-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for ART-0006 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-RSH-006-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-RSH-006-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for RSH-0006 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-RSH-006-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-RSH-006-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for RSH-0006, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-RSH-006-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-RSH-006-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for RSH-0006: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "RSH-0006"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "RSH-0006"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-RSH-0006-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "q": "voluntary-attrition"
+      },
+      "expected_result_contains": {
+        "articles": [
+          {
+            "article_id": "ART-0006",
+            "status": "ACTIVE"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "knowledge.articles.search"
+    },
+    {
+      "arguments": {
+        "q": "RSH-0006"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-RSH-006-03"
+          },
+          {
+            "id": "DRV-RSH-006-10"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "Research evidence and publication policy"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-RSH-006-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "article_id": "ART-0006"
+      },
+      "expected_result_contains": {
+        "article_id": "ART-0006",
+        "current_revision": "v9",
+        "status": "ACTIVE"
+      },
+      "match": "result_contains",
+      "tool": "knowledge.articles.get"
+    },
+    {
+      "arguments": {
+        "article_id": "ART-0006"
+      },
+      "expected_result_contains": {
+        "revisions": [
+          {
+            "revision_id": "REV-0006-CURRENT",
+            "status": "CURRENT"
+          },
+          {
+            "revision_id": "REV-0006-STALE",
+            "status": "SUPERSEDED"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "knowledge.revisions.list"
+    },
+    {
+      "arguments": {
+        "definition_id": "voluntary_attrition_v4"
+      },
+      "expected_result_contains": {
+        "definition_id": "voluntary_attrition_v4",
+        "metric_key": "VOLUNTARY_ATTRITION",
+        "status": "CURRENT"
+      },
+      "match": "result_contains",
+      "tool": "metrics.definitions.get"
+    },
+    {
+      "arguments": {
+        "metric_key": "VOLUNTARY_ATTRITION"
+      },
+      "expected_result_contains": {
+        "definitions": [
+          {
+            "definition_id": "voluntary_attrition_v3",
+            "status": "SUPERSEDED"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "metrics.definitions.list"
+    },
+    {
+      "arguments": {
+        "snapshot_id": "SNAP-0006"
+      },
+      "expected_result_contains": {
+        "excluded_value": 190,
+        "gross_value": 1110,
+        "snapshot_id": "SNAP-0006",
+        "supported_value": 920
+      },
+      "match": "result_contains",
+      "tool": "metrics.snapshots.get"
+    },
+    {
+      "arguments": {
+        "source_set_id": "SRCSET-0006"
+      },
+      "expected_result_contains": {
+        "required_sources": 3,
+        "source_set_id": "SRCSET-0006",
+        "verified_count": 3
+      },
+      "match": "result_contains",
+      "tool": "sources.sets.get"
+    },
+    {
+      "arguments": {
+        "source_set_id": "SRCSET-0006"
+      },
+      "expected_result_contains": {
+        "records": [
+          {
+            "source_id": "SRC-0006-01",
+            "status": "VERIFIED"
+          },
+          {
+            "source_id": "SRC-0006-04",
+            "status": "SUPERSEDED"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "sources.records.list"
+    },
+    {
+      "arguments": {
+        "source_id": "SRC-0006-04"
+      },
+      "expected_result_contains": {
+        "reliability": "STALE",
+        "source_id": "SRC-0006-04",
+        "status": "SUPERSEDED"
+      },
+      "match": "result_contains",
+      "tool": "sources.records.get"
+    },
+    {
+      "arguments": {
+        "index_id": "IDX-KNOWLEDGE-CURRENT",
+        "query_key": "voluntary-attrition"
+      },
+      "expected_result_contains": {
+        "hits": [
+          {
+            "article_id": "ART-0006",
+            "status": "CURRENT"
+          },
+          {
+            "article_id": "ART-0006-ARCHIVE",
+            "status": "SUPERSEDED"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "search.query"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-07-23",
+        "start_date": "2026-07-13"
+      },
+      "expected_result_contains": {
+        "slots": [
+          {
+            "expertise": "people_analytics",
+            "slot_id": "SLOT-RSH-0006-QUALIFIED",
+            "status": "free"
+          },
+          {
+            "slot_id": "SLOT-RSH-0006-PROTECTED",
+            "status": "protected"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "reviews.slots.list"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-RSH-0006"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-RSH-0006",
+        "scope": {
+          "article_id": "ART-0006",
+          "metric_key": "VOLUNTARY_ATTRITION"
+        },
+        "status": "APPROVED"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-RSH-0006-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-RSH-0006-01",
+        "subject": "RSH-0006: Quarterly voluntary attrition — evidence needed"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-RSH-0006"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-RSH-0006"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-RSH-006-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-RSH-006-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-RSH-006-16"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-RSH-006-16"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-RSH-006-17"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-RSH-006-17"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-RSH-006-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-RSH-006-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-RSH-006-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-RSH-006-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-RSH-006-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-RSH-006-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-RSH-006-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-RSH-006-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-RSH-006-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-RSH-006-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "knowledge.articles.search",
+    "knowledge.articles.get",
+    "knowledge.revisions.list",
+    "metrics.definitions.get",
+    "metrics.definitions.list",
+    "metrics.snapshots.get",
+    "sources.sets.get",
+    "sources.records.list",
+    "sources.records.get",
+    "search.query",
+    "drive.files.list",
+    "drive.files.list",
+    "approvals.get",
+    "reviews.slots.list",
+    "messages.get",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "research_analyst",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 6.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_19",
+        "investigation_20"
+      ],
+      "description": "Establish the isolated RSH-0006 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_05",
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_21"
+      ],
+      "description": "Determine the operative v9 requirement for ART-0006 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 9.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_10",
+        "investigation_11",
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_15",
+        "investigation_22",
+        "investigation_23",
+        "investigation_25"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 1110 observed minus 190 excluded into 920 supported BASIS_POINTS. Applied 60 minutes of qualified capacity and preserved protected methodology work. Kept later source reconciliation and the faster unqualified route conditional rather than treating either as current evidence.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_16",
+        "investigation_24"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-RSH-0006 only to its article, metric, definition, source set, value, and review-capacity scope.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_17",
+        "investigation_18",
+        "investigation_26"
+      ],
+      "description": "Correlate ART-0006 by immutable identifiers across the systems of record (knowledge, metrics, sources, search, reviews, approvals, messages, chat) and preserve the effective v9 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 19.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "establish_source_quantity",
+        "reconcile_observed_quantity",
+        "identify_excluded_quantity",
+        "calculate_supported_quantity",
+        "bound_transaction_quantity",
+        "preserve_transaction_unit",
+        "compare_quantity_option_one",
+        "compare_quantity_option_two",
+        "compare_quantity_option_three",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "research_current_definition",
+        "research_source_set",
+        "research_definition_delta",
+        "research_verified_sources"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for Quarterly voluntary attrition.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for publish_verified_voluntary_attrition under the actual operating window and report whether the 2026-07-21 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select publish_verified_voluntary_attrition only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported 'Verified claim published' change for ART-0006 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read ART-0006 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_controlled_item_or_record",
+        "answer_transaction_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for Quarterly voluntary attrition.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside RSH-0006's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "4e9764c0601a86d4112e75cf4bf6ed5505a209dd125702aac821610a6f812944",
+  "starting_records": [
+    {
+      "resource_id": "ART-0006",
+      "resource_type": "Article",
+      "status": "ACTIVE",
+      "system": "knowledge"
+    },
+    {
+      "resource_id": "SNAP-0006",
+      "resource_type": "MetricSnapshot",
+      "status": "PUBLISHED",
+      "system": "metrics"
+    },
+    {
+      "resource_id": "SRCSET-0006",
+      "resource_type": "SourceSet",
+      "status": "CURRENT",
+      "system": "sources"
+    },
+    {
+      "resource_id": "SLOT-RSH-0006-QUALIFIED",
+      "resource_type": "ReviewSlot",
+      "status": "free",
+      "system": "reviews"
+    }
+  ],
+  "task_id": "researchdesk-006",
+  "title": "Resolve voluntary attrition under the current definition",
+  "workflow": {
+    "answer_fields": 27,
+    "readbacks": 1,
+    "reads": 27,
+    "writes": 2
+  },
+  "world": {
+    "id": "meridian-researchdesk-v1",
+    "name": "Meridian Works — Strategy & Research",
+    "organization_id": "ORG-MERIDIAN",
+    "primary_site": "KNOWLEDGE-HQ",
+    "systems": [
+      "knowledge",
+      "metrics",
+      "sources",
+      "search",
+      "reviews",
+      "research",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

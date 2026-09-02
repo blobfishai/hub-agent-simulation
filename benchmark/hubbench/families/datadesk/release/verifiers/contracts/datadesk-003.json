@@ -1,0 +1,918 @@
+{
+  "answer": {
+    "affected_resource_or_operation": "SCH-4407",
+    "base_completion": "2026-03-11",
+    "business_need_date": "2026-03-12",
+    "candidate_capacity": 16,
+    "capacity_gap": 3,
+    "capacity_unit": "WINDOW_HOUR",
+    "decision_timing_status": "ON_TIME",
+    "escalated_completion": "2026-03-10",
+    "escalation_approval_required": 1,
+    "expedited_external_readiness": "2026-03-12",
+    "last_full_refresh_date": "2025-12-08",
+    "net_usable_capacity": 4,
+    "outcome_vs_control_days": -1,
+    "qualified_alternative_completion": "2026-03-11",
+    "recommended_incremental_cost_usd": 0,
+    "recommended_option": "book_first_full_refresh_day",
+    "recommended_outcome_date": "2026-03-11",
+    "refresh_runtime_minutes": 420,
+    "requested_day": "2026-03-10",
+    "required_capacity": 7,
+    "selected_resource_or_control": "WH-STD/2026-03-11/NIGHT+DAY",
+    "standard_external_readiness": "2026-03-16",
+    "unavailable_or_protected_capacity": 12,
+    "windows_required": 2
+  },
+  "answer_checks": [
+    {
+      "description": "Reported recommended option as 'book_first_full_refresh_day', tied to SCH-4407, policy revision v4, and the selected book_first_full_refresh_day outcome.",
+      "field": "recommended_option",
+      "id": "answer_recommended_option",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported recommended outcome date as '2026-03-11', tied to SCH-4407, policy revision v4, and the selected book_first_full_refresh_day outcome.",
+      "field": "recommended_outcome_date",
+      "id": "answer_recommended_outcome_date",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported affected resource or operation as 'SCH-4407', tied to SCH-4407, policy revision v4, and the selected book_first_full_refresh_day outcome.",
+      "field": "affected_resource_or_operation",
+      "id": "answer_affected_resource_or_operation",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported capacity gap as 3, tied to SCH-4407, policy revision v4, and the selected book_first_full_refresh_day outcome.",
+      "field": "capacity_gap",
+      "id": "answer_capacity_gap",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported decision timing status as 'ON_TIME', tied to SCH-4407, policy revision v4, and the selected book_first_full_refresh_day outcome.",
+      "field": "decision_timing_status",
+      "id": "answer_decision_timing_status",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    }
+  ],
+  "assertions": [
+    {
+      "description": "Required SCH-4407 to reach business outcome 'Pending refresh windowed' through pipelines.schedules.update with exact provider-critical values schedule_id='SCH-4407', cluster_id='WH-STD', start_time='2026-03-11T01:00:00', end_time='2026-03-11T16:00:00', status='scheduled'. The audited change binds selected option book_first_full_refresh_day, approval AP-DD-0203, and constraint one-cluster-one-day execution without displacing protected close loads; no other record satisfies this state criterion.",
+      "id": "mutation_01",
+      "milestone_id": "state.primary",
+      "payload_allowed_argument_paths": [
+        "schedule_id",
+        "cluster_id",
+        "start_time",
+        "end_time",
+        "status"
+      ],
+      "payload_contains": {
+        "arguments": {
+          "cluster_id": "WH-STD",
+          "end_time": "2026-03-11T16:00:00",
+          "schedule_id": "SCH-4407",
+          "start_time": "2026-03-11T01:00:00",
+          "status": "scheduled"
+        },
+        "tool": "pipelines.schedules.update"
+      },
+      "table": "mutations",
+      "values": {
+        "record_id": "SCH-4407",
+        "status": "scheduled",
+        "table_name": "run_schedules",
+        "tool": "pipelines.schedules.update"
+      },
+      "weight": 3.0,
+      "where": {
+        "mutation_id": "datadesk-003-mutation-01",
+        "task_id": "datadesk-003"
+      }
+    },
+    {
+      "description": "Persisted SCH-4407 in run_schedules with the supported values (model_id='MDL-REV-D', cluster_id='WH-STD', start_time='2026-03-11T01:00:00', end_time='2026-03-11T16:00:00', status='scheduled', revision=2) so a later reader sees the change, not just the acknowledgement.",
+      "id": "state_01",
+      "milestone_id": "state.primary",
+      "table": "run_schedules",
+      "values": {
+        "cluster_id": "WH-STD",
+        "end_time": "2026-03-11T16:00:00",
+        "model_id": "MDL-REV-D",
+        "revision": 2,
+        "start_time": "2026-03-11T01:00:00",
+        "status": "scheduled"
+      },
+      "weight": 2.0,
+      "where": {
+        "schedule_id": "SCH-4407"
+      }
+    },
+    {
+      "description": "Reserved WH-STD's 2026-03-11 night window (and its day window) for SCH-4407 without touching the protected close loads.",
+      "id": "state_02",
+      "milestone_id": "state.primary",
+      "table": "warehouse_slots",
+      "values": {
+        "job_id": "SCH-4407",
+        "status": "busy"
+      },
+      "weight": 1.0,
+      "where": {
+        "slot_id": "SLOT-STD-20260311-NIGHT"
+      }
+    },
+    {
+      "description": "Created \u2014 but did not send \u2014 the stakeholder draft carrying book_first_full_refresh_day, the 2026-03-11 outcome, the binding constraint, and the DATA-0003 business reference.",
+      "id": "mutation_02",
+      "milestone_id": "state.collaboration",
+      "payload_contains": {
+        "arguments": {
+          "recipient": "analytics-manager@tidewater.example"
+        },
+        "tool": "notes.drafts.create"
+      },
+      "payload_text_any_of": [
+        [
+          "DATA-0003",
+          "MDL-REV-D",
+          "SCH-4407"
+        ]
+      ],
+      "payload_text_contains": [
+        "book_first_full_refresh_day",
+        "2026-03-11"
+      ],
+      "table": "mutations",
+      "values": {
+        "status": "DRAFT",
+        "table_name": "note_drafts",
+        "tool": "notes.drafts.create"
+      },
+      "weight": 1.5,
+      "where": {
+        "mutation_id": "datadesk-003-mutation-02",
+        "task_id": "datadesk-003"
+      }
+    },
+    {
+      "count": 2,
+      "description": "Made exactly two state changes for DATA-0003: the primary change and the stakeholder draft; no additional backfill, schedule change, or adjustment.",
+      "id": "containment_01",
+      "milestone_id": "containment.scope",
+      "table": "mutations",
+      "weight": 1.0,
+      "where": {
+        "task_id": "datadesk-003"
+      }
+    }
+  ],
+  "calculations": [
+    {
+      "description": "Preserved 2026-03-12 as the documented control date for the Q1 full refresh of the revenue mart; did not infer urgency from a title or a request tone.",
+      "field": "business_need_date",
+      "id": "identify_business_date",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 7 WINDOW_HOUR for contiguous window hours the 420-minute refresh plus validation occupies on one cluster-day.",
+      "field": "required_capacity",
+      "id": "calculate_required_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Established 16 gross candidate WINDOW_HOUR associated with window hours on the approved clusters on the requested Tuesday 2026-03-10; did not call it usable before applying protected load.",
+      "field": "candidate_capacity",
+      "id": "establish_candidate_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Excluded 12 WINDOW_HOUR for Tuesday window hours already reserved by scheduled loads or protected for the close.",
+      "field": "unavailable_or_protected_capacity",
+      "id": "remove_protected_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Calculated 16 candidate \u2212 12 unavailable/protected = 4 net usable WINDOW_HOUR.",
+      "field": "net_usable_capacity",
+      "id": "calculate_net_usable_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 7 required \u2212 4 net usable = 3 WINDOW_HOUR uncovered inside the requested window.",
+      "field": "capacity_gap",
+      "id": "calculate_capacity_gap",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Kept load and availability in WINDOW_HOUR.",
+      "field": "capacity_unit",
+      "id": "preserve_capacity_unit",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Bound the recovery to provider identifier WH-STD/2026-03-11/NIGHT+DAY only after confirming one-cluster-one-day execution without displacing protected close loads.",
+      "field": "selected_resource_or_control",
+      "id": "identify_selected_resource_or_control",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Calculated 2026-03-11 for book_first_full_refresh_day.",
+      "field": "base_completion",
+      "id": "compare_base_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 2026-03-11 for split_refresh_across_days using days offering both windows free on one approved cluster.",
+      "field": "qualified_alternative_completion",
+      "id": "compare_qualified_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 2026-03-10 for displace_close_loads_tuesday and retained its authority constraint.",
+      "field": "escalated_completion",
+      "id": "compare_escalated_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-03-16 as the independently confirmed standard readiness date for Skyfield's confirmed March catalog re-cut dates on SC-9917.",
+      "field": "standard_external_readiness",
+      "id": "read_standard_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-03-12 as the independently confirmed expedited readiness date for Skyfield's confirmed March catalog re-cut dates on SC-9917.",
+      "field": "expedited_external_readiness",
+      "id": "read_expedited_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Sized the refresh at 420 minutes from the completed Q4 run (RUN-7719), not the outdated 240-minute runbook figure.",
+      "field": "refresh_runtime_minutes",
+      "id": "size_refresh_runtime",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Converted 420 minutes into 7 window-hours needing both 4-hour windows of one cluster on one day.",
+      "field": "windows_required",
+      "id": "convert_runtime_to_windows",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Kept 2026-03-10 as the requested day and tested it honestly rather than assuming it.",
+      "field": "requested_day",
+      "id": "preserve_requested_day",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Cited the 2025-12-08 Q4 refresh as the runtime reference.",
+      "field": "last_full_refresh_date",
+      "id": "cite_runtime_reference_run",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Applied USD 0 as the documented incremental cost for book_first_full_refresh_day; did not invent a premium where spend is not a decision driver.",
+      "field": "recommended_incremental_cost_usd",
+      "id": "calculate_selected_cost",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Recognized that displace_close_loads_tuesday remains outside current authority and requires an additional approval.",
+      "field": "escalation_approval_required",
+      "id": "apply_escalation_authority",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Compared the timing, cost, control status, and consequence of book_first_full_refresh_day, split_refresh_across_days, displace_close_loads_tuesday; selected book_first_full_refresh_day because it alone gives the best currently authorized result under one-cluster-one-day execution without displacing protected close loads.",
+      "field": "recommended_option",
+      "id": "choose_task_specific_option",
+      "milestone_id": "decision.options",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 2026-03-11 as the supported outcome date for book_first_full_refresh_day.",
+      "field": "recommended_outcome_date",
+      "id": "calculate_recommended_outcome",
+      "milestone_id": "analysis.timeline",
+      "weight": 2.0
+    },
+    {
+      "description": "Compared 2026-03-11 with the independent control date 2026-03-12 and calculated a signed variance of -1 day(s).",
+      "field": "outcome_vs_control_days",
+      "id": "calculate_outcome_variance",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.5
+    },
+    {
+      "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+      "field": "decision_timing_status",
+      "id": "state_honest_timing_status",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    }
+  ],
+  "investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "DATA-0003"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated DATA-0003 scope, immutable handles, mounted systems, and evidence index before investigating SCH-4407.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DATA-0003"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-0003-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for DATA-0003 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "name": "fct_revenue_daily"
+          },
+          "expected_result_contains": {
+            "models": [
+              {
+                "model_id": "MDL-REV-D"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "warehouse.models.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved fct_revenue_daily to the immutable catalog record MDL-REV-D through a catalog search rather than assuming a similarly named or deprecated model.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DATA-0003"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-003-13"
+              },
+              {
+                "id": "DRV-003-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the DATA-0003 case folder on the shared drive and identified the approval record and the catalog manifest by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "policy"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-003-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the policy folder and distinguished the effective v4 policy from the superseded 2025 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "model_id": "MDL-REV-D"
+          },
+          "expected_result_contains": {
+            "model_id": "MDL-REV-D",
+            "status": "ACTIVE"
+          },
+          "match": "result_contains",
+          "tool": "warehouse.models.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the catalog record for MDL-REV-D: layer, schema, materialization, owner, and active status.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "model_id": "MDL-REV-D"
+          },
+          "expected_result_contains": {
+            "model_id": "MDL-REV-D",
+            "parents": [
+              {
+                "model_id": "MDL-STG-ORD"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "warehouse.lineage.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the lineage of MDL-REV-D and fixed its actual source (MDL-STG-ORD) and certified consumers before blaming or rebuilding anything.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v4 policy for the reconciliation, validation, window, and authority rules; did not apply the superseded 2025 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "model_id": "MDL-REV-D"
+          },
+          "expected_result_contains": {
+            "model_id": "MDL-REV-D",
+            "sla_id": "SLA-REV-D"
+          },
+          "match": "result_contains",
+          "tool": "warehouse.sla.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active freshness SLA for MDL-REV-D: staleness limit, refresh deadline, and the business surface it protects.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "schedule_id": "SCH-4407"
+          },
+          "expected_result_contains": {
+            "schedule_id": "SCH-4407",
+            "status": "pending"
+          },
+          "match": "result_contains",
+          "tool": "pipelines.schedules.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the displaced schedule record SCH-4407 for its runtime, model, and pending state before promising any window.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-02-28",
+            "feed_id": "FEED-SKY-CAT",
+            "start_date": "2026-02-28"
+          },
+          "expected_result_contains": {
+            "deliveries": [
+              {
+                "delivery_id": "DL-CAT-0228"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "feeds.deliveries.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the FEED-SKY-CAT delivery log with files, rows, and the invalid / duplicate / late buckets before netting the supported coverage.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-03-16",
+            "start_date": "2026-03-10"
+          },
+          "expected_result_contains": {
+            "slots": [
+              {
+                "id": "SLOT-STD-20260311-NIGHT"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "warehouse.slots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the warehouse window calendar across the 2026-03-10 capacity window to find usable free windows that displace no protected or blocked load.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-SKY-9917"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-SKY-9917",
+            "standard_redelivery_date": "2026-03-13"
+          },
+          "match": "result_contains",
+          "tool": "feeds.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the vendor redelivery confirmation CONF-SKY-9917 for the independently confirmed standard and expedited dates and the expedite fee.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-DD-0203"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-DD-0203"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-DD-0203 for its exact scope: model or schedule, period, row or window limits, fees, and what it does not cover.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-13"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-13"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-0003-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-0003-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-0003-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-0003"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-0003"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-0003 for exclusion, window, and authority remarks that qualify the system records.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "model_id": "MDL-REV-D",
+            "trigger": "full_refresh"
+          },
+          "expected_result_contains": {
+            "runs": [
+              {
+                "run_id": "RUN-7719"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "pipelines.runs.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the completed reference refresh RUN-7719 whose measured runtime sizes this job, by immutable run id.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for DATA-0003 and confirmed that SCH-4407 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for DATA-0003 and joined SCH-4407 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-18"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-18"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for DATA-0003; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for DATA-0003 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-27"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-27"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for SCH-4407 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for DATA-0003 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for DATA-0003, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for DATA-0003: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "post_write_verifications": [
+    {
+      "after_tool": "pipelines.schedules.update",
+      "any_of": [
+        {
+          "arguments": {
+            "schedule_id": "SCH-4407"
+          },
+          "expected_result_contains": {
+            "cluster_id": "WH-STD",
+            "end_time": "2026-03-11T16:00:00",
+            "revision": 2,
+            "schedule_id": "SCH-4407",
+            "start_time": "2026-03-11T01:00:00",
+            "status": "scheduled"
+          },
+          "match": "result_contains",
+          "tool": "pipelines.schedules.get"
+        }
+      ],
+      "description": "Read SCH-4407 back through pipelines.schedules.get after the change and confirmed the persisted provider values (schedule_id='SCH-4407', status='scheduled', cluster_id='WH-STD', start_time='2026-03-11T01:00:00', end_time='2026-03-11T16:00:00', revision=2) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "cluster_id": "WH-STD",
+        "end_time": "2026-03-11T16:00:00",
+        "revision": 2,
+        "schedule_id": "SCH-4407",
+        "start_time": "2026-03-11T01:00:00",
+        "status": "scheduled"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": false,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "schedule_id": "SCH-4407"
+      },
+      "weight": 2.0
+    }
+  ]
+}

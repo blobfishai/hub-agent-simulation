@@ -1,0 +1,947 @@
+{
+  "answer": {
+    "affected_resource_or_operation": "RES-70877",
+    "base_completion": "2026-04-17",
+    "business_need_date": "2026-04-17",
+    "candidate_capacity": 16,
+    "capacity_gap": 3,
+    "capacity_unit": "RUNNER_HOUR",
+    "decision_timing_status": "ON_TIME",
+    "escalated_completion": "2026-04-16",
+    "escalation_approval_required": 1,
+    "expedited_external_readiness": "2026-04-22",
+    "net_usable_capacity": 4,
+    "outcome_vs_control_days": 0,
+    "qualified_alternative_completion": "2026-04-16",
+    "recommended_incremental_cost_usd": 0,
+    "recommended_option": "run_first_full_free_day",
+    "recommended_outcome_date": "2026-04-17",
+    "requested_day": "2026-04-16",
+    "required_capacity": 7,
+    "selected_resource_or_control": "RUNNER-2/2026-04-17/AM+PM",
+    "snapshot_segments_required": 3,
+    "snapshot_segments_usable": 4,
+    "standard_external_readiness": "2026-04-27",
+    "unavailable_or_protected_capacity": 12,
+    "windows_required": 2
+  },
+  "answer_checks": [
+    {
+      "description": "Reported recommended option as 'run_first_full_free_day', tied to RES-70877, revision v1, and the selected run_first_full_free_day outcome.",
+      "field": "recommended_option",
+      "id": "answer_recommended_option",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported recommended outcome date as '2026-04-17', tied to RES-70877, revision v1, and the selected run_first_full_free_day outcome.",
+      "field": "recommended_outcome_date",
+      "id": "answer_recommended_outcome_date",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported affected resource or operation as 'RES-70877', tied to RES-70877, revision v1, and the selected run_first_full_free_day outcome.",
+      "field": "affected_resource_or_operation",
+      "id": "answer_affected_resource_or_operation",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported capacity gap as 3, tied to RES-70877, revision v1, and the selected run_first_full_free_day outcome.",
+      "field": "capacity_gap",
+      "id": "answer_capacity_gap",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported decision timing status as 'ON_TIME', tied to RES-70877, revision v1, and the selected run_first_full_free_day outcome.",
+      "field": "decision_timing_status",
+      "id": "answer_decision_timing_status",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    }
+  ],
+  "assertions": [
+    {
+      "description": "Required RES-70877 to reach business outcome 'Pending rehearsal booked' through buildfarm.reservations.update with exact provider-critical values reservation_id='RES-70877', runner_id='RUNNER-2', start_time='2026-04-17T08:00:00', end_time='2026-04-17T15:00:00', status='booked'. The audited change binds selected option run_first_full_free_day, approval AP-HO-0103, and constraint one continuous run on an isolation-capable runner without displacing protected windows; no other record satisfies this state criterion.",
+      "id": "mutation_01",
+      "milestone_id": "state.primary",
+      "payload_allowed_argument_paths": [
+        "reservation_id",
+        "runner_id",
+        "start_time",
+        "end_time",
+        "status"
+      ],
+      "payload_contains": {
+        "arguments": {
+          "end_time": "2026-04-17T15:00:00",
+          "reservation_id": "RES-70877",
+          "runner_id": "RUNNER-2",
+          "start_time": "2026-04-17T08:00:00",
+          "status": "booked"
+        },
+        "tool": "buildfarm.reservations.update"
+      },
+      "table": "mutations",
+      "values": {
+        "record_id": "RES-70877",
+        "status": "booked",
+        "table_name": "reservations",
+        "tool": "buildfarm.reservations.update"
+      },
+      "weight": 3.0,
+      "where": {
+        "mutation_id": "hostops-003-mutation-01",
+        "task_id": "hostops-003"
+      }
+    },
+    {
+      "description": "Persisted RES-70877 in reservations with the supported values (service_id='SVC-20904', ticket_id='RT-51260', runner_id='RUNNER-2', start_time='2026-04-17T08:00:00', end_time='2026-04-17T15:00:00', status='booked', revision=2) so a later reader sees the change, not just the acknowledgement.",
+      "id": "state_01",
+      "milestone_id": "state.primary",
+      "table": "reservations",
+      "values": {
+        "end_time": "2026-04-17T15:00:00",
+        "revision": 2,
+        "runner_id": "RUNNER-2",
+        "service_id": "SVC-20904",
+        "start_time": "2026-04-17T08:00:00",
+        "status": "booked",
+        "ticket_id": "RT-51260"
+      },
+      "weight": 2.0,
+      "where": {
+        "reservation_id": "RES-70877"
+      }
+    },
+    {
+      "description": "Held RUNNER-2's 2026-04-17 AM window (and PM) for RES-70877 without touching the protected Thursday compliance batch.",
+      "id": "state_02",
+      "milestone_id": "state.primary",
+      "table": "farm_windows",
+      "values": {
+        "reservation_id": "RES-70877",
+        "status": "busy"
+      },
+      "weight": 1.0,
+      "where": {
+        "window_id": "WIN-2-20260417-AM"
+      }
+    },
+    {
+      "description": "Created \u2014 but did not send \u2014 the stakeholder draft carrying run_first_full_free_day, the 2026-04-17 outcome, the binding constraint, and the HOST-0003 business reference.",
+      "id": "mutation_02",
+      "milestone_id": "state.collaboration",
+      "payload_contains": {
+        "arguments": {
+          "recipient": "matteo.rossi@ridgeline.example"
+        },
+        "tool": "notes.drafts.create"
+      },
+      "payload_text_any_of": [
+        [
+          "HOST-0003",
+          "ledger-core",
+          "RT-51260"
+        ]
+      ],
+      "payload_text_contains": [
+        "run_first_full_free_day",
+        "2026-04-17"
+      ],
+      "table": "mutations",
+      "values": {
+        "status": "DRAFT",
+        "table_name": "note_drafts",
+        "tool": "notes.drafts.create"
+      },
+      "weight": 1.5,
+      "where": {
+        "mutation_id": "hostops-003-mutation-02",
+        "task_id": "hostops-003"
+      }
+    },
+    {
+      "count": 2,
+      "description": "Made exactly two state changes for HOST-0003: the primary change and the stakeholder draft; no additional restore, copy, or booking.",
+      "id": "containment_01",
+      "milestone_id": "containment.scope",
+      "table": "mutations",
+      "weight": 1.0,
+      "where": {
+        "task_id": "hostops-003"
+      }
+    }
+  ],
+  "calculations": [
+    {
+      "description": "Preserved 2026-04-17 as the documented control date for the ledger restore rehearsal; did not infer urgency from a title or a request tone.",
+      "field": "business_need_date",
+      "id": "identify_business_date",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 7 RUNNER_HOUR for runner-hours for one continuous regulated restore rehearsal (360 min restore + 60 min evidence capture).",
+      "field": "required_capacity",
+      "id": "calculate_required_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Established 16 gross candidate RUNNER_HOUR associated with runner-hours on isolation-capable runners (RUNNER-1, RUNNER-2) on the requested Thursday 2026-04-16; did not call it usable before applying protected load.",
+      "field": "candidate_capacity",
+      "id": "establish_candidate_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Excluded 12 RUNNER_HOUR for Thursday runner-hours already reserved or held as the protected quarterly compliance batch.",
+      "field": "unavailable_or_protected_capacity",
+      "id": "remove_protected_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Calculated 16 candidate \u2212 12 unavailable/protected = 4 net usable RUNNER_HOUR.",
+      "field": "net_usable_capacity",
+      "id": "calculate_net_usable_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 7 required \u2212 4 net usable = 3 RUNNER_HOUR uncovered inside the requested window.",
+      "field": "capacity_gap",
+      "id": "calculate_capacity_gap",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Kept load and availability in RUNNER_HOUR.",
+      "field": "capacity_unit",
+      "id": "preserve_capacity_unit",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Bound the recovery to provider identifier RUNNER-2/2026-04-17/AM+PM only after confirming one continuous run on an isolation-capable runner without displacing protected windows.",
+      "field": "selected_resource_or_control",
+      "id": "identify_selected_resource_or_control",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Calculated 2026-04-17 for run_first_full_free_day.",
+      "field": "base_completion",
+      "id": "compare_base_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 2026-04-16 for split_rehearsal_across_windows using free full-day runner windows with isolation capability.",
+      "field": "qualified_alternative_completion",
+      "id": "compare_qualified_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 2026-04-16 for extend_thursday_out_of_hours and retained its authority constraint.",
+      "field": "escalated_completion",
+      "id": "compare_escalated_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-04-27 as the independently confirmed standard readiness date for Coldspur's confirmed post-rehearsal archive refresh dates on RQ-88301.",
+      "field": "standard_external_readiness",
+      "id": "read_standard_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-04-22 as the independently confirmed expedited readiness date for Coldspur's confirmed post-rehearsal archive refresh dates on RQ-88301.",
+      "field": "expedited_external_readiness",
+      "id": "read_expedited_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Converted the 130 GB snapshot into 3 immutable 50 GB segments.",
+      "field": "snapshot_segments_required",
+      "id": "derive_snapshot_segments",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Confirmed 4 restorable DB-LEDGER-50 segments (set 2201) cover the rehearsal; set 2188 (retention ends 2026-04-22) was excluded and the 10 GB reporting extracts are a different class.",
+      "field": "snapshot_segments_usable",
+      "id": "confirm_snapshot_coverage",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Converted 360 + 60 minutes into a 7-hour continuous block that needs both windows of one runner on one day.",
+      "field": "windows_required",
+      "id": "convert_duration_to_windows",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Kept 2026-04-16 as the requested day and tested it honestly rather than assuming it.",
+      "field": "requested_day",
+      "id": "preserve_requested_day",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Applied USD 0 as the documented incremental cost for run_first_full_free_day; did not invent a premium where spend is not a decision driver.",
+      "field": "recommended_incremental_cost_usd",
+      "id": "calculate_selected_cost",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Recognized that extend_thursday_out_of_hours remains outside current authority and requires an additional approval.",
+      "field": "escalation_approval_required",
+      "id": "apply_escalation_authority",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Compared the timing, cost, control status, and consequence of run_first_full_free_day, split_rehearsal_across_windows, extend_thursday_out_of_hours; selected run_first_full_free_day because it alone gives the best currently authorized result under one continuous run on an isolation-capable runner without displacing protected windows.",
+      "field": "recommended_option",
+      "id": "choose_task_specific_option",
+      "milestone_id": "decision.options",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 2026-04-17 as the supported outcome date for run_first_full_free_day.",
+      "field": "recommended_outcome_date",
+      "id": "calculate_recommended_outcome",
+      "milestone_id": "analysis.timeline",
+      "weight": 2.0
+    },
+    {
+      "description": "Compared 2026-04-17 with the independent control date 2026-04-17 and calculated a signed variance of 0 day(s).",
+      "field": "outcome_vs_control_days",
+      "id": "calculate_outcome_variance",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.5
+    },
+    {
+      "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+      "field": "decision_timing_status",
+      "id": "state_honest_timing_status",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    }
+  ],
+  "investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "HOST-0003"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated HOST-0003 scope, immutable handles, mounted systems, and evidence index before investigating RES-70877.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "HOST-0003"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1003-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for HOST-0003 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "ledger-core"
+          },
+          "expected_result_contains": {
+            "services": [
+              {
+                "service_id": "SVC-20904"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cmdb.services.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved service code ledger-core to the immutable service record through an identifier search rather than a name match against a similarly named service.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "HOST-0003"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-003-13"
+              },
+              {
+                "id": "DRV-003-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the HOST-0003 case folder on the shared drive and identified the approval record and the ticket export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "runbook"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-003-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the runbook folder and distinguished the effective v4 runbook from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "ticket_id": "RT-51260"
+          },
+          "expected_result_contains": {
+            "status": "open",
+            "ticket_id": "RT-51260"
+          },
+          "match": "result_contains",
+          "tool": "releases.tickets.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active ticket RT-51260: payload basis, units in scope, and run durations.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "metric": "SNAPSHOT-GB",
+            "service_id": "SVC-20904"
+          },
+          "expected_result_contains": {
+            "meterings": [
+              {
+                "metering_id": "MTR-20904"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cmdb.meterings.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current final payload metering for SVC-20904 (SNAPSHOT-GB) and ignored the stale historical metering.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v4 runbook for the sizing, minimum-retention, staging, window, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "artifact_class": "DB-LEDGER-50"
+          },
+          "expected_result_contains": {
+            "artifact_class": "DB-LEDGER-50"
+          },
+          "match": "result_contains",
+          "tool": "backup.classes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the artifact class record for DB-LEDGER-50: segment size and minimum remaining retention.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "service_id": "SVC-20904"
+          },
+          "expected_result_contains": {
+            "tickets": [
+              {
+                "ticket_id": "RT-51260"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "releases.tickets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the tickets that define the requirement (RT-51260) and excluded superseded or out-of-scope tickets.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-13",
+            "job_id": "JOB-LEDGER-SNAP",
+            "start_date": "2026-04-11"
+          },
+          "expected_result_contains": {
+            "runs": [
+              {
+                "run_id": "JR-77601"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "jobs.runs.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the scheduler's run history for JOB-LEDGER-SNAP to ground what actually ran, what failed, and what the schedule does next.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "artifact_class": "DB-LEDGER-50"
+          },
+          "expected_result_contains": {
+            "sets": [
+              {
+                "set_id": "SET-LED-2201"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "backup.sets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every DB-LEDGER-50 segment set with count, retention expiry, checksum status, and reservations before netting the coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-22",
+            "start_date": "2026-04-15"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "WIN-2-20260417-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "buildfarm.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the runner window calendar for 2026-04-15 onward to find the first free window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-CSP-88301"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-CSP-88301",
+            "standard_ready_date": "2026-04-24"
+          },
+          "match": "result_contains",
+          "tool": "vendor.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the vendor retrieval confirmation CONF-CSP-88301 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-HO-0103"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-HO-0103"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-HO-0103 for its exact scope: record, quantity, vendor, fee allowance, and what it does not cover.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-13"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-13"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1003-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1003-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1003-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1003"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1003"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1003 for set, window, and authority remarks that qualify the system records.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "service_id": "SVC-20904"
+          },
+          "expected_result_contains": {
+            "reservations": [
+              {
+                "id": "RES-70877"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "buildfarm.reservations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the farm reservations that fix the schedule scope by immutable id.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for HOST-0003 and confirmed that RES-70877 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for HOST-0003 and joined RES-70877 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-18"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-18"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for HOST-0003; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for HOST-0003 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-27"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-27"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for RES-70877 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for HOST-0003 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for HOST-0003, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for HOST-0003: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "post_write_verifications": [
+    {
+      "after_tool": "buildfarm.reservations.update",
+      "any_of": [
+        {
+          "arguments": {
+            "reservation_id": "RES-70877"
+          },
+          "expected_result_contains": {
+            "end": "2026-04-17T15:00:00",
+            "id": "RES-70877",
+            "meta": {
+              "versionId": "2"
+            },
+            "runner": "RUNNER-2",
+            "start": "2026-04-17T08:00:00",
+            "status": "booked"
+          },
+          "match": "result_contains",
+          "tool": "buildfarm.reservations.get"
+        }
+      ],
+      "description": "Read RES-70877 back through buildfarm.reservations.get after the change and confirmed the persisted provider values (id='RES-70877', status='booked', runner='RUNNER-2', start='2026-04-17T08:00:00', end='2026-04-17T15:00:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "end": "2026-04-17T15:00:00",
+        "id": "RES-70877",
+        "meta": {
+          "versionId": "2"
+        },
+        "runner": "RUNNER-2",
+        "start": "2026-04-17T08:00:00",
+        "status": "booked"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": false,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "reservation_id": "RES-70877"
+      },
+      "weight": 2.0
+    }
+  ]
+}

@@ -1,0 +1,2683 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "mutations",
+    "note_drafts",
+    "purchase_orders"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for order_standard_to_par.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for dispense_short_dated_lot_to_avoid_order.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "dose_amount_unit": {
+        "description": "Unit of the derived dose amount.",
+        "type": "string"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for emergency_transfer_from_partner_site.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "lot 3288 vials that expire 2026-03-15, before any scheduled dose",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Meridian's confirmed standard and expedited delivery dates on MB-55120.",
+        "type": "string"
+      },
+      "first_administration_slot": {
+        "description": "Chair session of the first in-scope administration, as CHAIR/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for next week's pembrolizumab clinic supply.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: VIAL.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing order_standard_to_par, dispense_short_dated_lot_to_avoid_order, emergency_transfer_from_partner_site.",
+        "enum": [
+          "order_standard_to_par",
+          "dispense_short_dated_lot_to_avoid_order",
+          "emergency_transfer_from_partner_site"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "safety_stock_quantity": {
+        "description": "Safety stock the par policy adds on top of the uncovered requirement.",
+        "type": "integer"
+      },
+      "scheduled_administrations": {
+        "description": "Count of pembrolizumab administrations booked inside the in-scope week after removing cancelled and out-of-window appointments.",
+        "type": "integer"
+      },
+      "source_quantity": {
+        "description": "PEMBRO-100 vials required by the four administrations scheduled 2026-03-17 to 2026-03-19 (three 200 mg doses and one 2 mg/kg dose at 90 kg)",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Meridian's confirmed standard and expedited delivery dates on MB-55120.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "PEMBRO-100 vials dispensable for next week's dates at the infusion pharmacy",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      },
+      "weight_based_dose_amount": {
+        "description": "Dose of the one weight-based order derived from mg/kg and the current measured weight.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "dose_amount_unit",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_administration_slot",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "safety_stock_quantity",
+      "scheduled_administrations",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "transaction_quantity",
+      "weight_based_dose_amount"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-03-09",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "the par policy and the signed approval scope; lot 3288 vials that expire 2026-03-15, before any scheduled dose = 3 VIAL; uncovered scope = 4 VIAL",
+    "calculations": [
+      {
+        "description": "Preserved 2026-03-17 as the documented control date for next week's pembrolizumab clinic supply; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 8 VIAL for PEMBRO-100 vials required by the four administrations scheduled 2026-03-17 to 2026-03-19 (three 200 mg doses and one 2 mg/kg dose at 90 kg).",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 7 observed VIAL.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 3 VIAL for lot 3288 vials that expire 2026-03-15, before any scheduled dose.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 7 observed − 3 excluded = 4 supported VIAL.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 6 VIAL, the measure required by the chosen disposition under the par policy and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-03-16 for order_standard_to_par.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-03-17 for dispense_short_dated_lot_to_avoid_order.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-03-11 for emergency_transfer_from_partner_site and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-16 as the independently confirmed standard readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55120.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-12 as the independently confirmed expedited readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55120.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 4 booked pembrolizumab administrations between 2026-03-16 and 2026-03-20; excluded the cancelled APPT-24560 and Whitcombe's 2026-03-24 cycle.",
+        "field": "scheduled_administrations",
+        "id": "count_scheduled_administrations",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 2 mg/kg × 90 kg (2026-03-04 weight) = 180 mg for Lucas Ferreira, rounding up to 2 vials like each 200 mg dose.",
+        "field": "weight_based_dose_amount",
+        "id": "calculate_weight_based_dose",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the derived dose in mg.",
+        "field": "dose_amount_unit",
+        "id": "preserve_dose_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied the par policy's 2-vial safety stock for PEMBRO-100 on top of the 4 uncovered vials.",
+        "field": "safety_stock_quantity",
+        "id": "apply_par_safety_stock",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified CHAIR-1/2026-03-17/AM (APPT-24570) as the first administration the order must beat.",
+        "field": "first_administration_slot",
+        "id": "identify_first_administration_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for order_standard_to_par; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that emergency_transfer_from_partner_site remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of order_standard_to_par, dispense_short_dated_lot_to_avoid_order, emergency_transfer_from_partner_site; selected order_standard_to_par because it alone gives the best currently authorized result under the par policy and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-03-16 as the supported outcome date for order_standard_to_par.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-03-16 with the independent control date 2026-03-17 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located PEMBRO-100 using immutable identifiers and preserved effective revision v1: the in-scope orders are MR-70341, MR-70348, MR-70355, and MR-70360; MR-70372 (Whitcombe, 2026-03-24) and the cancelled APPT-24560 are out of scope.",
+        "sources": [
+          "ehr",
+          "messages"
+        ],
+        "statement": "CLIN-0002: the in-scope orders are MR-70341, MR-70348, MR-70355, and MR-70360; MR-70372 (Whitcombe, 2026-03-24) and the cancelled APPT-24560 are out of scope; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective order and policy to establish 8 VIAL for PEMBRO-100 vials required by the four administrations scheduled 2026-03-17 to 2026-03-19 (three 200 mg doses and one 2 mg/kg dose at 90 kg), with control date 2026-03-17.",
+        "sources": [
+          "ehr",
+          "drive"
+        ],
+        "statement": "The effective order and policy establish PEMBRO-100 vials required by the four administrations scheduled 2026-03-17 to 2026-03-19 (three 200 mg doses and one 2 mg/kg dose at 90 kg) = 8 VIAL: three 200 mg doses take 2 vials each and the 2 mg/kg dose at 90 kg is 180 mg (2 vials), so 8 vials are required for the week. The control date is 2026-03-17 (first scheduled pembrolizumab administration of the week (APPT-24570))."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 7 observed less 3 excluded to 4 supported VIAL for PEMBRO-100 vials dispensable for next week's dates at the infusion pharmacy.",
+        "sources": [
+          "pharmacy",
+          "scheduling",
+          "drive"
+        ],
+        "statement": "the on-hand workbook shows 7 PEMBRO-100 vials in gross; lot 3288 (3 vials) expires 2026-03-15, before every scheduled date, so 4 vials are usable; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-03-12 expedited readiness input for dispense_short_dated_lot_to_avoid_order, then separately derived its 2026-03-17 operating outcome under the par policy and the signed approval scope instead of treating a supplier promise as authorization or a completion date.",
+        "sources": [
+          "supplier",
+          "messages"
+        ],
+        "statement": "Meridian's confirmed standard and expedited delivery dates on MB-55120: Meridian MB-55120 confirms standard delivery 2026-03-13 (Friday run) and expedited 2026-03-11 (+USD 320); shelf release is the next clinic day; a supplier confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied the booked chair sessions that fix the administration dates to derive the three option outcomes without using protected or blocked sessions.",
+        "sources": [
+          "scheduling",
+          "drive"
+        ],
+        "statement": "the booked chair sessions that fix the administration dates: the booked chair sessions fix the administration dates: the first is CHAIR-1 AM on 2026-03-17, the last is 2026-03-19; protected and blocked sessions cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-CO-0102 only to order_standard_to_par and PEMBRO-100; kept emergency_transfer_from_partner_site outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-CO-0102 covers one standard-freight Meridian order up to 6 vials / USD 30,000; expedited freight and partner transfers need the pharmacy director. The approval does not select an option in advance and does not authorize emergency_transfer_from_partner_site."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected order_standard_to_par: it is the best currently authorized response that satisfies the par policy and the signed approval scope.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "oncology's clinic must run on 2026-03-17 with two vials of safety stock left on the shelf; a faster or broader action has value only if it remains inside the par policy and the signed approval scope."
+      }
+    ],
+    "mode": "quantity",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-03-16",
+        "consequence": "order standard to par places 6 vials (4 uncovered + 2 safety stock) on Meridian's Friday run, on the shelf 2026-03-16, one day before the first scheduled dose, at no incremental cost.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "order_standard_to_par",
+        "incremental_cost": 0,
+        "label": "order_standard_to_par: outcome 2026-03-16, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "NOT_SUPPORTED_BY_CURRENT_EVIDENCE",
+        "completion": "2026-03-17",
+        "consequence": "dispense short-dated lot to avoid order would cover the 2026-03-17 dose from lot 3288, but that lot expires 2026-03-15 and cannot be dispensed to any of next week's dates.",
+        "control_status": "FAILS_CURRENT_CONTROL",
+        "id": "dispense_short_dated_lot_to_avoid_order",
+        "incremental_cost": 0,
+        "label": "dispense_short_dated_lot_to_avoid_order: outcome 2026-03-17, incremental cost USD 0, FAILS_CURRENT_CONTROL",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-03-11",
+        "consequence": "emergency transfer from partner site would land 5 days earlier than order standard to par and adds USD 140 courier, but inter-facility transfers need the pharmacy director and the partner agreement, neither of which AP-CO-0102 carries.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "emergency_transfer_from_partner_site",
+        "incremental_cost": 140,
+        "label": "emergency_transfer_from_partner_site: outcome 2026-03-11, incremental cost USD 140, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "order_standard_to_par is the best currently authorized response that satisfies the par policy and the signed approval scope and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-03-16",
+    "selected_cost": 0,
+    "selected_option": "order_standard_to_par"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "baseline_resolution_date": "2026-03-16",
+      "business_need_date": "2026-03-17",
+      "controlled_item_or_record": "PEMBRO-100",
+      "controlled_resolution_date": "2026-03-17",
+      "decision_timing_status": "ON_TIME",
+      "dose_amount_unit": "mg",
+      "escalated_resolution_date": "2026-03-11",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 3,
+      "expedited_external_readiness": "2026-03-12",
+      "first_administration_slot": "CHAIR-1/2026-03-17/AM",
+      "observed_quantity": 7,
+      "outcome_vs_control_days": -1,
+      "quantity_unit": "VIAL",
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "order_standard_to_par",
+      "recommended_outcome_date": "2026-03-16",
+      "safety_stock_quantity": 2,
+      "scheduled_administrations": 4,
+      "source_quantity": 8,
+      "standard_external_readiness": "2026-03-16",
+      "supported_quantity": 4,
+      "transaction_quantity": 6,
+      "weight_based_dose_amount": 180
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'order_standard_to_par', tied to PEMBRO-100, revision v1, and the selected order_standard_to_par outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-03-16', tied to PEMBRO-100, revision v1, and the selected order_standard_to_par outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'PEMBRO-100', tied to PEMBRO-100, revision v1, and the selected order_standard_to_par outcome.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 6, tied to PEMBRO-100, revision v1, and the selected order_standard_to_par outcome.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to PEMBRO-100, revision v1, and the selected order_standard_to_par outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required PEMBRO-100 to reach business outcome 'Purchase order submitted' through pharmacy.orders.create with exact provider-critical values supplier_id='SUP-MERIDIAN', confirmation_id='CONF-MER-55120', medication_code='PEMBRO-100', quantity=6, delivery_option='standard'. The audited change binds selected option order_standard_to_par, approval AP-CO-0102, and constraint the par policy and the signed approval scope; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "supplier_id",
+          "confirmation_id",
+          "medication_code",
+          "quantity",
+          "delivery_option"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "confirmation_id": "CONF-MER-55120",
+            "delivery_option": "standard",
+            "medication_code": "PEMBRO-100",
+            "quantity": 6,
+            "supplier_id": "SUP-MERIDIAN"
+          },
+          "tool": "pharmacy.orders.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "PO-5101",
+          "status": "SUBMITTED",
+          "table_name": "purchase_orders",
+          "tool": "pharmacy.orders.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "clinicops-002-mutation-01",
+          "task_id": "clinicops-002"
+        }
+      },
+      {
+        "description": "Persisted PO-5101 in purchase_orders with the supported values (supplier_id='SUP-MERIDIAN', confirmation_id='CONF-MER-55120', medication_code='PEMBRO-100', quantity=6, delivery_option='standard', expected_delivery_date='2026-03-13', status='SUBMITTED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "purchase_orders",
+        "values": {
+          "confirmation_id": "CONF-MER-55120",
+          "delivery_option": "standard",
+          "expected_delivery_date": "2026-03-13",
+          "medication_code": "PEMBRO-100",
+          "quantity": 6,
+          "status": "SUBMITTED",
+          "supplier_id": "SUP-MERIDIAN"
+        },
+        "weight": 2.0,
+        "where": {
+          "po_id": "PO-5101"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying order_standard_to_par, the 2026-03-16 outcome, the binding constraint, and the CLIN-0002 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "oncology-charge-nurse@northlake.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "CLIN-0002",
+            "MRN-611402",
+            "MR-70360"
+          ]
+        ],
+        "payload_text_contains": [
+          "order_standard_to_par",
+          "2026-03-16"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "clinicops-002-mutation-02",
+          "task_id": "clinicops-002"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for CLIN-0002: the primary change and the stakeholder draft; no additional order, transfer, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "clinicops-002"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-03-17 as the documented control date for next week's pembrolizumab clinic supply; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 8 VIAL for PEMBRO-100 vials required by the four administrations scheduled 2026-03-17 to 2026-03-19 (three 200 mg doses and one 2 mg/kg dose at 90 kg).",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 7 observed VIAL.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 3 VIAL for lot 3288 vials that expire 2026-03-15, before any scheduled dose.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 7 observed − 3 excluded = 4 supported VIAL.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 6 VIAL, the measure required by the chosen disposition under the par policy and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-03-16 for order_standard_to_par.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-03-17 for dispense_short_dated_lot_to_avoid_order.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-03-11 for emergency_transfer_from_partner_site and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-16 as the independently confirmed standard readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55120.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-12 as the independently confirmed expedited readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55120.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 4 booked pembrolizumab administrations between 2026-03-16 and 2026-03-20; excluded the cancelled APPT-24560 and Whitcombe's 2026-03-24 cycle.",
+        "field": "scheduled_administrations",
+        "id": "count_scheduled_administrations",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 2 mg/kg × 90 kg (2026-03-04 weight) = 180 mg for Lucas Ferreira, rounding up to 2 vials like each 200 mg dose.",
+        "field": "weight_based_dose_amount",
+        "id": "calculate_weight_based_dose",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the derived dose in mg.",
+        "field": "dose_amount_unit",
+        "id": "preserve_dose_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied the par policy's 2-vial safety stock for PEMBRO-100 on top of the 4 uncovered vials.",
+        "field": "safety_stock_quantity",
+        "id": "apply_par_safety_stock",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified CHAIR-1/2026-03-17/AM (APPT-24570) as the first administration the order must beat.",
+        "field": "first_administration_slot",
+        "id": "identify_first_administration_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for order_standard_to_par; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that emergency_transfer_from_partner_site remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of order_standard_to_par, dispense_short_dated_lot_to_avoid_order, emergency_transfer_from_partner_site; selected order_standard_to_par because it alone gives the best currently authorized result under the par policy and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-03-16 as the supported outcome date for order_standard_to_par.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-03-16 with the independent control date 2026-03-17 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "CLIN-0002"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated CLIN-0002 scope, immutable handles, mounted systems, and evidence index before investigating PEMBRO-100.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "CLIN-0002"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-0002-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for CLIN-0002 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "MRN-611402"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "PAT-11134"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.patients.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved MRN-611402 to the immutable Patient record through an identifier search rather than a name match against a similarly named patient.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "CLIN-0002"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-002-11"
+                },
+                {
+                  "id": "DRV-002-03"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the CLIN-0002 case folder on the shared drive and identified the approval record and the order export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "policy"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-002-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the policy folder and distinguished the effective v3 policy from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "request_id": "MR-70360"
+            },
+            "expected_result_contains": {
+              "id": "MR-70360",
+              "status": "active"
+            },
+            "match": "result_contains",
+            "tool": "ehr.medication_requests.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active order MR-70360: dose basis, regimen, doses in scope, and infusion and observation minutes.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "code": "29463-7",
+              "patient_id": "PAT-11134"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "OBS-WT-11134"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.observations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current measured weight for PAT-11134 (Observation 29463-7) and ignored the historical 2025 weight.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v3 policy for the rounding, minimum-dating, stocking, chair, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "PEMBRO-100"
+            },
+            "expected_result_contains": {
+              "medication_code": "PEMBRO-100"
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.medications.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the formulary record for PEMBRO-100: vial strength and minimum remaining dating.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "PEMBRO-100",
+              "status": "active"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "MR-70341"
+                  }
+                },
+                {
+                  "resource": {
+                    "id": "MR-70348"
+                  }
+                },
+                {
+                  "resource": {
+                    "id": "MR-70355"
+                  }
+                },
+                {
+                  "resource": {
+                    "id": "MR-70360"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.medication_requests.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the active orders that define the requirement (MR-70341, MR-70348, MR-70355, MR-70360) and excluded superseded or out-of-scope orders.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "PEMBRO-100"
+            },
+            "expected_result_contains": {
+              "lots": [
+                {
+                  "lot_id": "LOT-PEM-3301"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.lots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every PEMBRO-100 lot with quantity, expiry, quarantine status, and reservations before netting the on-hand coverage.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-03-20",
+              "location_id": "LOC-INF",
+              "start_date": "2026-03-16"
+            },
+            "expected_result_contains": {
+              "slots": [
+                {
+                  "id": "SLOT-1-20260317-AM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scheduling.slots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the chair schedule (FHIR Slot sessions) for 2026-03-16 onward to find the first free session that displaces no protected or blocked slot.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-MER-55120"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-MER-55120",
+              "standard_delivery_date": "2026-03-13"
+            },
+            "match": "result_contains",
+            "tool": "supplier.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the supplier confirmation CONF-MER-55120 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-CO-0102"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-CO-0102"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-CO-0102 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-11"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-11"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-0002-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-0002-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-0002-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-0002"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-0002"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-0002 for lot, chair, and authority remarks that qualify the system records.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-03-20",
+              "start_date": "2026-03-16",
+              "status": "booked"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "APPT-24570"
+                  }
+                },
+                {
+                  "resource": {
+                    "id": "APPT-24571"
+                  }
+                },
+                {
+                  "resource": {
+                    "id": "APPT-24572"
+                  }
+                },
+                {
+                  "resource": {
+                    "id": "APPT-24573"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scheduling.appointments.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the appointment records that fix the schedule scope by immutable id.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for CLIN-0002 and confirmed that PEMBRO-100 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-15"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-15"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for CLIN-0002 and joined PEMBRO-100 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-16"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-16"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for CLIN-0002; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for CLIN-0002 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for PEMBRO-100 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-18"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-18"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for CLIN-0002 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for CLIN-0002, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for CLIN-0002: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "pharmacy.orders.create",
+        "any_of": [
+          {
+            "arguments": {
+              "po_id": "PO-5101"
+            },
+            "expected_result_contains": {
+              "delivery_option": "standard",
+              "expected_delivery_date": "2026-03-13",
+              "po_id": "PO-5101",
+              "quantity": 6,
+              "status": "SUBMITTED"
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.orders.get"
+          }
+        ],
+        "description": "Read PO-5101 back through pharmacy.orders.get after the change and confirmed the persisted provider values (po_id='PO-5101', quantity=6, delivery_option='standard', expected_delivery_date='2026-03-13', status='SUBMITTED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "delivery_option": "standard",
+          "expected_delivery_date": "2026-03-13",
+          "po_id": "PO-5101",
+          "quantity": 6,
+          "status": "SUBMITTED"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "po_id": "PO-5101"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "clinicops",
+  "instruction": "Next week's oncology clinic has several pembrolizumab patients on the books and Priya wants the restock order placed today rather than Friday. Work out how many vials the scheduled doses actually need, what part of our stock can legitimately be used for those dates, and how many we should be ordering from Meridian under the approval she already signed. Place the order if it fits, and draft the note for the oncology charge nurse so she knows what is arriving and when. If something would need the director or a partner site, say so instead of doing it.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "confirmation_id": "CONF-MER-55120",
+        "delivery_option": "expedited",
+        "medication_code": "PEMBRO-100",
+        "quantity": 10,
+        "supplier_id": "SUP-MERIDIAN"
+      },
+      "tool": "pharmacy.orders.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-002-02"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "pharmacy.orders.create",
+      "any_of": [
+        {
+          "arguments": {
+            "po_id": "PO-5101"
+          },
+          "expected_result_contains": {
+            "delivery_option": "standard",
+            "expected_delivery_date": "2026-03-13",
+            "po_id": "PO-5101",
+            "quantity": 6,
+            "status": "SUBMITTED"
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.orders.get"
+        }
+      ],
+      "description": "Read PO-5101 back through pharmacy.orders.get after the change and confirmed the persisted provider values (po_id='PO-5101', quantity=6, delivery_option='standard', expected_delivery_date='2026-03-13', status='SUBMITTED') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "delivery_option": "standard",
+        "expected_delivery_date": "2026-03-13",
+        "po_id": "PO-5101",
+        "quantity": 6,
+        "status": "SUBMITTED"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "po_id": "PO-5101"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-CO-0102"
+    },
+    "case_reference": "CLIN-0002",
+    "chat": {
+      "thread_id": "CHAT-0002"
+    },
+    "drive": {
+      "case_folder_query": "CLIN-0002",
+      "policy_query": "policy"
+    },
+    "ehr": {
+      "mrn": "MRN-611402",
+      "patient_search": {
+        "arguments": {
+          "identifier": "MRN-611402"
+        },
+        "tool": "ehr.patients.search"
+      }
+    },
+    "messages": {
+      "search_query": "CLIN-0002"
+    },
+    "pharmacy": {
+      "locations": [
+        "LOC-PHARM"
+      ],
+      "medication_code": "PEMBRO-100"
+    },
+    "scheduling": {
+      "calendar_window": {
+        "end_date": "2026-03-20",
+        "start_date": "2026-03-16"
+      },
+      "location_id": "LOC-INF"
+    },
+    "supplier": {
+      "confirmation_id": "CONF-MER-55120"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "CLIN-0002"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated CLIN-0002 scope, immutable handles, mounted systems, and evidence index before investigating PEMBRO-100.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0002"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-0002-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for CLIN-0002 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "MRN-611402"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "PAT-11134"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.patients.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved MRN-611402 to the immutable Patient record through an identifier search rather than a name match against a similarly named patient.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0002"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-002-11"
+              },
+              {
+                "id": "DRV-002-03"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the CLIN-0002 case folder on the shared drive and identified the approval record and the order export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "policy"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-002-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the policy folder and distinguished the effective v3 policy from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "request_id": "MR-70360"
+          },
+          "expected_result_contains": {
+            "id": "MR-70360",
+            "status": "active"
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active order MR-70360: dose basis, regimen, doses in scope, and infusion and observation minutes.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "code": "29463-7",
+            "patient_id": "PAT-11134"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "OBS-WT-11134"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.observations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current measured weight for PAT-11134 (Observation 29463-7) and ignored the historical 2025 weight.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v3 policy for the rounding, minimum-dating, stocking, chair, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "PEMBRO-100"
+          },
+          "expected_result_contains": {
+            "medication_code": "PEMBRO-100"
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.medications.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the formulary record for PEMBRO-100: vial strength and minimum remaining dating.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "PEMBRO-100",
+            "status": "active"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "MR-70341"
+                }
+              },
+              {
+                "resource": {
+                  "id": "MR-70348"
+                }
+              },
+              {
+                "resource": {
+                  "id": "MR-70355"
+                }
+              },
+              {
+                "resource": {
+                  "id": "MR-70360"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the active orders that define the requirement (MR-70341, MR-70348, MR-70355, MR-70360) and excluded superseded or out-of-scope orders.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "PEMBRO-100"
+          },
+          "expected_result_contains": {
+            "lots": [
+              {
+                "lot_id": "LOT-PEM-3301"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.lots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every PEMBRO-100 lot with quantity, expiry, quarantine status, and reservations before netting the on-hand coverage.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-03-20",
+            "location_id": "LOC-INF",
+            "start_date": "2026-03-16"
+          },
+          "expected_result_contains": {
+            "slots": [
+              {
+                "id": "SLOT-1-20260317-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scheduling.slots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the chair schedule (FHIR Slot sessions) for 2026-03-16 onward to find the first free session that displaces no protected or blocked slot.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-MER-55120"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-MER-55120",
+            "standard_delivery_date": "2026-03-13"
+          },
+          "match": "result_contains",
+          "tool": "supplier.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the supplier confirmation CONF-MER-55120 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-CO-0102"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-CO-0102"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-CO-0102 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-11"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-11"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-0002-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-0002-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-0002-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-0002"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-0002"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-0002 for lot, chair, and authority remarks that qualify the system records.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-03-20",
+            "start_date": "2026-03-16",
+            "status": "booked"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "APPT-24570"
+                }
+              },
+              {
+                "resource": {
+                  "id": "APPT-24571"
+                }
+              },
+              {
+                "resource": {
+                  "id": "APPT-24572"
+                }
+              },
+              {
+                "resource": {
+                  "id": "APPT-24573"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scheduling.appointments.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the appointment records that fix the schedule scope by immutable id.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for CLIN-0002 and confirmed that PEMBRO-100 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-15"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-15"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for CLIN-0002 and joined PEMBRO-100 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-16"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-16"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for CLIN-0002; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for CLIN-0002 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for PEMBRO-100 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-18"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-18"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for CLIN-0002 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for CLIN-0002, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for CLIN-0002: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "CLIN-0002"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "CLIN-0002"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-0002-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "MRN-611402"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "PAT-11134"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.patients.search"
+    },
+    {
+      "arguments": {
+        "q": "CLIN-0002"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-002-11"
+          },
+          {
+            "id": "DRV-002-03"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "policy"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-002-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "request_id": "MR-70360"
+      },
+      "expected_result_contains": {
+        "id": "MR-70360",
+        "status": "active"
+      },
+      "match": "result_contains",
+      "tool": "ehr.medication_requests.get"
+    },
+    {
+      "arguments": {
+        "code": "29463-7",
+        "patient_id": "PAT-11134"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "OBS-WT-11134"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.observations.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "medication_code": "PEMBRO-100"
+      },
+      "expected_result_contains": {
+        "medication_code": "PEMBRO-100"
+      },
+      "match": "result_contains",
+      "tool": "pharmacy.medications.get"
+    },
+    {
+      "arguments": {
+        "medication_code": "PEMBRO-100",
+        "status": "active"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "MR-70341"
+            }
+          },
+          {
+            "resource": {
+              "id": "MR-70348"
+            }
+          },
+          {
+            "resource": {
+              "id": "MR-70355"
+            }
+          },
+          {
+            "resource": {
+              "id": "MR-70360"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.medication_requests.list"
+    },
+    {
+      "arguments": {
+        "medication_code": "PEMBRO-100"
+      },
+      "expected_result_contains": {
+        "lots": [
+          {
+            "lot_id": "LOT-PEM-3301"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "pharmacy.lots.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-03-20",
+        "location_id": "LOC-INF",
+        "start_date": "2026-03-16"
+      },
+      "expected_result_contains": {
+        "slots": [
+          {
+            "id": "SLOT-1-20260317-AM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scheduling.slots.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-MER-55120"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-MER-55120",
+        "standard_delivery_date": "2026-03-13"
+      },
+      "match": "result_contains",
+      "tool": "supplier.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-CO-0102"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-CO-0102"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-11"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-11"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-0002-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-0002-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-0002"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-0002"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-03-20",
+        "start_date": "2026-03-16",
+        "status": "booked"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "APPT-24570"
+            }
+          },
+          {
+            "resource": {
+              "id": "APPT-24571"
+            }
+          },
+          {
+            "resource": {
+              "id": "APPT-24572"
+            }
+          },
+          {
+            "resource": {
+              "id": "APPT-24573"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scheduling.appointments.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-15"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-15"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-16"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-16"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-18"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-18"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "ehr.patients.search",
+    "ehr.medication_requests.list",
+    "ehr.medication_requests.get",
+    "ehr.observations.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "pharmacy.medications.get",
+    "pharmacy.lots.list",
+    "scheduling.appointments.list",
+    "scheduling.slots.list",
+    "supplier.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "infusion_pharmacy_buyer",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_19",
+        "investigation_20"
+      ],
+      "description": "Establish the isolated CLIN-0002 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_21"
+      ],
+      "description": "Determine the operative v1 requirement for PEMBRO-100 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_11",
+        "investigation_12",
+        "investigation_13",
+        "investigation_22",
+        "investigation_23",
+        "investigation_25"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 7 observed less 3 excluded to 4 supported VIAL for PEMBRO-100 vials dispensable for next week's dates at the infusion pharmacy. Applied the booked chair sessions that fix the administration dates to derive the three option outcomes without using protected or blocked sessions. Used the independently confirmed 2026-03-12 expedited readiness input for dispense_short_dated_lot_to_avoid_order, then separately derived its 2026-03-17 operating outcome under the par policy and the signed approval scope instead of treating a supplier promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_14",
+        "investigation_15",
+        "investigation_24"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-CO-0102 only to order_standard_to_par and PEMBRO-100; kept emergency_transfer_from_partner_site outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_16",
+        "investigation_17",
+        "investigation_18",
+        "investigation_26"
+      ],
+      "description": "Correlate PEMBRO-100 by immutable identifiers across the systems of record (ehr, scheduling, pharmacy, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 20.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "establish_source_quantity",
+        "reconcile_observed_quantity",
+        "identify_excluded_quantity",
+        "calculate_supported_quantity",
+        "bound_transaction_quantity",
+        "preserve_transaction_unit",
+        "compare_quantity_option_one",
+        "compare_quantity_option_two",
+        "compare_quantity_option_three",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "count_scheduled_administrations",
+        "calculate_weight_based_dose",
+        "preserve_dose_unit",
+        "apply_par_safety_stock",
+        "identify_first_administration_session"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for next week's pembrolizumab clinic supply.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for order_standard_to_par under the actual operating window and report whether the 2026-03-16 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select order_standard_to_par only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported 'Purchase order submitted' change for PEMBRO-100 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read PEMBRO-100 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_controlled_item_or_record",
+        "answer_transaction_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for next week's pembrolizumab clinic supply.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside CLIN-0002's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "cf8c22e7362b22cd5b11b100db110ffa8e4429300b321e9b63a760e20662aa36",
+  "starting_records": [
+    {
+      "resource_id": "APPT-24570",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24571",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24572",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24573",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24574",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24560",
+      "resource_type": "Appointment",
+      "status": "cancelled",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "PO-5100",
+      "resource_type": "PurchaseOrder",
+      "status": "RECEIVED",
+      "system": "pharmacy"
+    }
+  ],
+  "task_id": "clinicops-002",
+  "title": "Restock pembrolizumab for the week of 16 March",
+  "workflow": {
+    "answer_fields": 24,
+    "readbacks": 1,
+    "reads": 27,
+    "writes": 2
+  },
+  "world": {
+    "id": "northlake-infusion-v1",
+    "name": "Northlake Health — Infusion Services",
+    "organization_id": "ORG-NORTHLAKE",
+    "primary_site": "LOC-INF",
+    "systems": [
+      "ehr",
+      "pharmacy",
+      "scheduling",
+      "supplier",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

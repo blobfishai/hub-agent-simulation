@@ -1,0 +1,2666 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "appointments",
+    "audit_log",
+    "mutations",
+    "note_drafts",
+    "slots"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_supplier_shipment.",
+        "type": "string"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for keep_scheduled_date.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "dose_amount_unit": {
+        "description": "Unit of the derived dose amount.",
+        "type": "string"
+      },
+      "doses_in_scope": {
+        "description": "Administrations in scope for this decision.",
+        "type": "integer"
+      },
+      "earliest_qualified_base_slot": {
+        "description": "First non-displacing chair session on or after standard drug readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for waive_minimum_dating_for_lot_6098.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_completion_days_saved": {
+        "description": "Days the expedited shipment saves versus the first session after standard readiness.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Meridian's confirmed standard and expedited delivery dates on MB-55288.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered VIAL that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "short-dated lot 6098 vials and the quarantined lot 6075 vial",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for dispensable ABATA-250 vials at the infusion pharmacy before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: VIAL.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing keep_scheduled_date, expedite_supplier_shipment, waive_minimum_dating_for_lot_6098.",
+        "enum": [
+          "keep_scheduled_date",
+          "expedite_supplier_shipment",
+          "waive_minimum_dating_for_lot_6098"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_dose_amount": {
+        "description": "Dose derived from the weight-band table at the current measured weight.",
+        "type": "integer"
+      },
+      "required_quantity": {
+        "description": "250 mg vials required for one weight-band dose (60-100 kg band → 750 mg) at the 2026-03-03 weight of 72 kg",
+        "type": "integer"
+      },
+      "selected_chair_session": {
+        "description": "Chair and session used by the selected option, as CHAIR/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered VIAL after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Meridian's confirmed standard and expedited delivery dates on MB-55288.",
+        "type": "string"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing short-dated lot 6098 vials and the quarantined lot 6075 vial.",
+        "type": "integer"
+      },
+      "vials_per_dose": {
+        "description": "Whole 250 mg vials per administration.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "baseline_completion",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "dose_amount_unit",
+      "doses_in_scope",
+      "earliest_qualified_base_slot",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_completion_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_dose_amount",
+      "required_quantity",
+      "selected_chair_session",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "usable_coverage_quantity",
+      "vials_per_dose"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-03-09",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "drug readiness versus the non-displacing chair calendar before departure; short-dated lot 6098 vials and the quarantined lot 6075 vial = 3 VIAL; uncovered scope = 1 VIAL",
+    "calculations": [
+      {
+        "description": "Preserved 2026-03-20 as the documented control date for Rosalind Achterberg's advanced abatacept dose; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 3 VIAL for 250 mg vials required for one weight-band dose (60-100 kg band → 750 mg) at the 2026-03-03 weight of 72 kg at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 5 VIAL of gross observed dispensable ABATA-250 vials at the infusion pharmacy.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 3 VIAL for short-dated lot 6098 vials and the quarantined lot 6075 vial.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 5 observed − 3 ineligible = 2 usable VIAL.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 3 required − 2 usable = 1 VIAL uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated keep_scheduled_date outcome as 2026-03-27 under regular chair sessions that do not displace protected patients.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_supplier_shipment outcome as 2026-03-19 using Meridian's confirmed standard and expedited delivery dates on MB-55288.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated waive_minimum_dating_for_lot_6098 outcome as 2026-03-12 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-25 as the independently confirmed standard readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55288.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-18 as the independently confirmed expedited readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55288.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 1 VIAL uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied the 60-100 kg band at the 2026-03-03 weight of 72 kg → 750 mg; did not use the superseded 500 mg order MR-69210.",
+        "field": "required_dose_amount",
+        "id": "calculate_weight_based_dose",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the derived dose in mg.",
+        "field": "dose_amount_unit",
+        "id": "preserve_dose_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Converted 750 mg into 3 single-use 250 mg vials.",
+        "field": "vials_per_dose",
+        "id": "convert_dose_to_vials",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept one administration in scope: the advanced maintenance dose.",
+        "field": "doses_in_scope",
+        "id": "apply_stocking_policy_doses",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-03-26 (CHAIR-1 PM) as the first free session on or after the 2026-03-25 standard readiness; the existing 2026-03-27 slot is later still.",
+        "field": "earliest_qualified_base_slot",
+        "id": "identify_first_nondisplacing_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the advanced dose to CHAIR-1/2026-03-19/AM, the first free session on or after the 2026-03-18 expedited readiness.",
+        "field": "selected_chair_session",
+        "id": "bind_selected_chair_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the expedited 2026-03-19 chair date with the standard-readiness date 2026-03-26: expediting saves 7 days and is the only authorized path before departure.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_chair_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 95 as the documented incremental cost for expedite_supplier_shipment; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that waive_minimum_dating_for_lot_6098 remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of keep_scheduled_date, expedite_supplier_shipment, waive_minimum_dating_for_lot_6098; selected expedite_supplier_shipment because it alone gives the best currently authorized result under drug readiness versus the non-displacing chair calendar before departure.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-03-19 as the supported outcome date for expedite_supplier_shipment.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-03-19 with the independent control date 2026-03-20 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located ABATA-250 using immutable identifiers and preserved effective revision v1: MRN-573320 resolves to Patient PAT-10788 and active order MR-70488 with appointment APPT-24533; MR-69210 is her superseded 2024 order and Willem Achterberg (MR-70470) is a different patient.",
+        "sources": [
+          "ehr",
+          "messages"
+        ],
+        "statement": "CLIN-0007: MRN-573320 resolves to Patient PAT-10788 and active order MR-70488 with appointment APPT-24533; MR-69210 is her superseded 2024 order and Willem Achterberg (MR-70470) is a different patient; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective order and policy to establish 3 VIAL for 250 mg vials required for one weight-band dose (60-100 kg band → 750 mg) at the 2026-03-03 weight of 72 kg, with control date 2026-03-20.",
+        "sources": [
+          "ehr",
+          "drive"
+        ],
+        "statement": "The effective order and policy establish 250 mg vials required for one weight-band dose (60-100 kg band → 750 mg) at the 2026-03-03 weight of 72 kg = 3 VIAL: the weight-band table gives 750 mg (3 vials) for 72 kg; one advanced administration is in scope. The control date is 2026-03-20 (last clinic day before the patient departs on 2026-03-21 (prescriber allows advancing up to 7 days))."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 5 observed less 3 excluded to 2 supported VIAL for dispensable ABATA-250 vials at the infusion pharmacy.",
+        "sources": [
+          "pharmacy",
+          "scheduling",
+          "drive"
+        ],
+        "statement": "the on-hand workbook shows 5 ABATA-250 vials in gross; lot 6098 (2) expires 2026-03-18 inside the 14-day rule and lot 6075 (1) is quarantined, so 2 vials are dispensable and 1 is short; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-03-18 expedited readiness input for expedite_supplier_shipment, then separately derived its 2026-03-19 operating outcome under drug readiness versus the non-displacing chair calendar before departure instead of treating a supplier promise as authorization or a completion date.",
+        "sources": [
+          "supplier",
+          "messages"
+        ],
+        "statement": "Meridian's confirmed standard and expedited delivery dates on MB-55288: Meridian MB-55288 confirms standard delivery 2026-03-24 and expedited 2026-03-17 (+USD 95); shelf release is the next clinic day; a supplier confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied regular chair sessions that do not displace protected patients to derive the three option outcomes without using protected or blocked sessions.",
+        "sources": [
+          "scheduling",
+          "drive"
+        ],
+        "statement": "regular chair sessions that do not displace protected patients: the first free session on or after 2026-03-18 is CHAIR-1 AM on 2026-03-19; on or after 2026-03-25 it is CHAIR-1 PM on 2026-03-26; CHAIR-2 AM on 2026-03-16 is protected; protected and blocked sessions cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-CO-0107 only to expedite_supplier_shipment and ABATA-250; kept waive_minimum_dating_for_lot_6098 outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-CO-0107 covers one Meridian order up to 2 vials with an expedite fee up to USD 150; a dating waiver for lot 6098 needs the pharmacy director. The approval does not select an option in advance and does not authorize waive_minimum_dating_for_lot_6098."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected expedite_supplier_shipment: it is the best currently authorized response that satisfies drug readiness versus the non-displacing chair calendar before departure.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "the dose must be given by 2026-03-20, the last clinic day before departure; a faster or broader action has value only if it remains inside drug readiness versus the non-displacing chair calendar before departure."
+      }
+    ],
+    "mode": "plan",
+    "options": [
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-03-27",
+        "consequence": "keep scheduled date leaves APPT-24533 on 2026-03-27 with standard delivery; it costs nothing but lands 7 days after the 2026-03-20 control date, after the patient has left.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "keep_scheduled_date",
+        "incremental_cost": 0,
+        "label": "keep_scheduled_date: outcome 2026-03-27, incremental cost USD 0, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "APPROVED",
+        "completion": "2026-03-19",
+        "consequence": "expedite supplier shipment brings the 1 uncovered vial by 2026-03-17, shelf 2026-03-18, and CHAIR-1's free AM session on 2026-03-19 doses her one day before departure for USD 95, inside AP-CO-0107.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "expedite_supplier_shipment",
+        "incremental_cost": 95,
+        "label": "expedite_supplier_shipment: outcome 2026-03-19, incremental cost USD 95, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-03-12",
+        "consequence": "waive minimum dating for lot 6098 would dose on 2026-03-12 (CHAIR-3 PM) from the short-dated lot at no cost, 7 days earlier, but waiving the 14-day dating rule needs the pharmacy director, which AP-CO-0107 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "waive_minimum_dating_for_lot_6098",
+        "incremental_cost": 0,
+        "label": "waive_minimum_dating_for_lot_6098: outcome 2026-03-12, incremental cost USD 0, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "expedite_supplier_shipment is the best currently authorized response that satisfies drug readiness versus the non-displacing chair calendar before departure and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-03-19",
+    "selected_cost": 95,
+    "selected_option": "expedite_supplier_shipment"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "accelerated_completion": "2026-03-19",
+      "baseline_completion": "2026-03-27",
+      "business_need_date": "2026-03-20",
+      "coverage_item_or_resource": "ABATA-250",
+      "decision_timing_status": "ON_TIME",
+      "dose_amount_unit": "mg",
+      "doses_in_scope": 1,
+      "earliest_qualified_base_slot": "2026-03-26",
+      "escalated_completion": "2026-03-12",
+      "escalation_approval_required": 1,
+      "expedite_completion_days_saved": 7,
+      "expedited_external_readiness": "2026-03-18",
+      "external_recovery_quantity": 1,
+      "ineligible_coverage_quantity": 3,
+      "observed_coverage_quantity": 5,
+      "outcome_vs_control_days": -1,
+      "quantity_unit": "VIAL",
+      "recommended_incremental_cost_usd": 95,
+      "recommended_option": "expedite_supplier_shipment",
+      "recommended_outcome_date": "2026-03-19",
+      "required_dose_amount": 750,
+      "required_quantity": 3,
+      "selected_chair_session": "CHAIR-1/2026-03-19/AM",
+      "shortage_quantity": 1,
+      "standard_external_readiness": "2026-03-25",
+      "usable_coverage_quantity": 2,
+      "vials_per_dose": 3
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'expedite_supplier_shipment', tied to ABATA-250, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-03-19', tied to ABATA-250, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported coverage item or resource as 'ABATA-250', tied to ABATA-250, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "coverage_item_or_resource",
+        "id": "answer_coverage_item_or_resource",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported shortage quantity as 1, tied to ABATA-250, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "shortage_quantity",
+        "id": "answer_shortage_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to ABATA-250, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required ABATA-250 to reach business outcome 'Maintenance appointment advanced' through scheduling.appointments.update with exact provider-critical values appointment_id='APPT-24533', chair_id='CHAIR-1', start_time='2026-03-19T08:00:00', end_time='2026-03-19T09:30:00', status='booked'. The audited change binds selected option expedite_supplier_shipment, approval AP-CO-0107, and constraint drug readiness versus the non-displacing chair calendar before departure; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "appointment_id",
+          "chair_id",
+          "start_time",
+          "end_time",
+          "status"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "appointment_id": "APPT-24533",
+            "chair_id": "CHAIR-1",
+            "end_time": "2026-03-19T09:30:00",
+            "start_time": "2026-03-19T08:00:00",
+            "status": "booked"
+          },
+          "tool": "scheduling.appointments.update"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "APPT-24533",
+          "status": "booked",
+          "table_name": "appointments",
+          "tool": "scheduling.appointments.update"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "clinicops-007-mutation-01",
+          "task_id": "clinicops-007"
+        }
+      },
+      {
+        "description": "Persisted APPT-24533 in appointments with the supported values (patient_id='PAT-10788', request_id='MR-70488', chair_id='CHAIR-1', start_time='2026-03-19T08:00:00', end_time='2026-03-19T09:30:00', status='booked', revision=2) so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "appointments",
+        "values": {
+          "chair_id": "CHAIR-1",
+          "end_time": "2026-03-19T09:30:00",
+          "patient_id": "PAT-10788",
+          "request_id": "MR-70488",
+          "revision": 2,
+          "start_time": "2026-03-19T08:00:00",
+          "status": "booked"
+        },
+        "weight": 2.0,
+        "where": {
+          "appointment_id": "APPT-24533"
+        }
+      },
+      {
+        "description": "Held CHAIR-1's 2026-03-19 AM session for APPT-24533.",
+        "id": "state_02",
+        "milestone_id": "state.primary",
+        "table": "slots",
+        "values": {
+          "appointment_id": "APPT-24533",
+          "status": "busy"
+        },
+        "weight": 1.0,
+        "where": {
+          "slot_id": "SLOT-1-20260319-AM"
+        }
+      },
+      {
+        "description": "Released the original 2026-03-27 CHAIR-2 AM session when the appointment moved.",
+        "id": "state_03",
+        "milestone_id": "state.primary",
+        "table": "slots",
+        "values": {
+          "appointment_id": null,
+          "status": "free"
+        },
+        "weight": 0.5,
+        "where": {
+          "slot_id": "SLOT-2-20260327-AM"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying expedite_supplier_shipment, the 2026-03-19 outcome, the binding constraint, and the CLIN-0007 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "rheum-nurse@northlake.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "CLIN-0007",
+            "MRN-573320",
+            "MR-70488"
+          ]
+        ],
+        "payload_text_contains": [
+          "expedite_supplier_shipment",
+          "2026-03-19"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "clinicops-007-mutation-02",
+          "task_id": "clinicops-007"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for CLIN-0007: the primary change and the stakeholder draft; no additional order, transfer, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "clinicops-007"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-03-20 as the documented control date for Rosalind Achterberg's advanced abatacept dose; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 3 VIAL for 250 mg vials required for one weight-band dose (60-100 kg band → 750 mg) at the 2026-03-03 weight of 72 kg at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 5 VIAL of gross observed dispensable ABATA-250 vials at the infusion pharmacy.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 3 VIAL for short-dated lot 6098 vials and the quarantined lot 6075 vial.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 5 observed − 3 ineligible = 2 usable VIAL.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 3 required − 2 usable = 1 VIAL uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated keep_scheduled_date outcome as 2026-03-27 under regular chair sessions that do not displace protected patients.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_supplier_shipment outcome as 2026-03-19 using Meridian's confirmed standard and expedited delivery dates on MB-55288.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated waive_minimum_dating_for_lot_6098 outcome as 2026-03-12 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-25 as the independently confirmed standard readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55288.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-18 as the independently confirmed expedited readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55288.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 1 VIAL uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied the 60-100 kg band at the 2026-03-03 weight of 72 kg → 750 mg; did not use the superseded 500 mg order MR-69210.",
+        "field": "required_dose_amount",
+        "id": "calculate_weight_based_dose",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the derived dose in mg.",
+        "field": "dose_amount_unit",
+        "id": "preserve_dose_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Converted 750 mg into 3 single-use 250 mg vials.",
+        "field": "vials_per_dose",
+        "id": "convert_dose_to_vials",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept one administration in scope: the advanced maintenance dose.",
+        "field": "doses_in_scope",
+        "id": "apply_stocking_policy_doses",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-03-26 (CHAIR-1 PM) as the first free session on or after the 2026-03-25 standard readiness; the existing 2026-03-27 slot is later still.",
+        "field": "earliest_qualified_base_slot",
+        "id": "identify_first_nondisplacing_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the advanced dose to CHAIR-1/2026-03-19/AM, the first free session on or after the 2026-03-18 expedited readiness.",
+        "field": "selected_chair_session",
+        "id": "bind_selected_chair_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the expedited 2026-03-19 chair date with the standard-readiness date 2026-03-26: expediting saves 7 days and is the only authorized path before departure.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_chair_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 95 as the documented incremental cost for expedite_supplier_shipment; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that waive_minimum_dating_for_lot_6098 remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of keep_scheduled_date, expedite_supplier_shipment, waive_minimum_dating_for_lot_6098; selected expedite_supplier_shipment because it alone gives the best currently authorized result under drug readiness versus the non-displacing chair calendar before departure.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-03-19 as the supported outcome date for expedite_supplier_shipment.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-03-19 with the independent control date 2026-03-20 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "CLIN-0007"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated CLIN-0007 scope, immutable handles, mounted systems, and evidence index before investigating ABATA-250.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "CLIN-0007"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-0007-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for CLIN-0007 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "MRN-573320"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "PAT-10788"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.patients.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved MRN-573320 to the immutable Patient record through an identifier search rather than a name match against a similarly named patient.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "CLIN-0007"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-007-12"
+                },
+                {
+                  "id": "DRV-007-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the CLIN-0007 case folder on the shared drive and identified the approval record and the order export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "policy"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-007-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the policy folder and distinguished the effective v3 policy from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "request_id": "MR-70488"
+            },
+            "expected_result_contains": {
+              "id": "MR-70488",
+              "status": "active"
+            },
+            "match": "result_contains",
+            "tool": "ehr.medication_requests.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active order MR-70488: dose basis, regimen, doses in scope, and infusion and observation minutes.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "code": "29463-7",
+              "patient_id": "PAT-10788"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "OBS-WT-10788"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.observations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current measured weight for PAT-10788 (Observation 29463-7) and ignored the historical 2025 weight.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v3 policy for the rounding, minimum-dating, stocking, chair, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "ABATA-250"
+            },
+            "expected_result_contains": {
+              "medication_code": "ABATA-250"
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.medications.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the formulary record for ABATA-250: vial strength and minimum remaining dating.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "patient_id": "PAT-10788"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "MR-70488"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.medication_requests.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the active orders that define the requirement (MR-70488) and excluded superseded or out-of-scope orders.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "ABATA-250"
+            },
+            "expected_result_contains": {
+              "lots": [
+                {
+                  "lot_id": "LOT-ABA-6120"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.lots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every ABATA-250 lot with quantity, expiry, quarantine status, and reservations before netting the on-hand coverage.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-03-27",
+              "location_id": "LOC-INF",
+              "start_date": "2026-03-12"
+            },
+            "expected_result_contains": {
+              "slots": [
+                {
+                  "id": "SLOT-1-20260319-AM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scheduling.slots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the chair schedule (FHIR Slot sessions) for 2026-03-12 onward to find the first free session that displaces no protected or blocked slot.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-MER-55288"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-MER-55288",
+              "standard_delivery_date": "2026-03-24"
+            },
+            "match": "result_contains",
+            "tool": "supplier.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the supplier confirmation CONF-MER-55288 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-CO-0107"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-CO-0107"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-CO-0107 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-12"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-12"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-0007-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-0007-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-0007-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-0007"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-0007"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-0007 for lot, chair, and authority remarks that qualify the system records.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "patient_id": "PAT-10788"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "APPT-24533"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scheduling.appointments.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the appointment records that fix the schedule scope by immutable id.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for CLIN-0007 and confirmed that ABATA-250 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-16"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-16"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for CLIN-0007 and joined ABATA-250 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-17"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-17"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for CLIN-0007; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for CLIN-0007 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for ABATA-250 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for CLIN-0007 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for CLIN-0007, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for CLIN-0007: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "scheduling.appointments.update",
+        "any_of": [
+          {
+            "arguments": {
+              "appointment_id": "APPT-24533"
+            },
+            "expected_result_contains": {
+              "chair": "CHAIR-1",
+              "end": "2026-03-19T09:30:00",
+              "id": "APPT-24533",
+              "meta": {
+                "versionId": "2"
+              },
+              "start": "2026-03-19T08:00:00",
+              "status": "booked"
+            },
+            "match": "result_contains",
+            "tool": "scheduling.appointments.get"
+          }
+        ],
+        "description": "Read APPT-24533 back through scheduling.appointments.get after the change and confirmed the persisted provider values (id='APPT-24533', status='booked', chair='CHAIR-1', start='2026-03-19T08:00:00', end='2026-03-19T09:30:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "chair": "CHAIR-1",
+          "end": "2026-03-19T09:30:00",
+          "id": "APPT-24533",
+          "meta": {
+            "versionId": "2"
+          },
+          "start": "2026-03-19T08:00:00",
+          "status": "booked"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": false,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "appointment_id": "APPT-24533"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "clinicops",
+  "instruction": "Rosalind Achterberg is leaving the country on the twenty-first for six weeks and Dr. Mbeki has agreed her abatacept can be given early. Her dose depends on her weight band, pharmacy says the vials on the shelf are a mix of good, short-dated, and one that was pulled after a temperature issue, and Meridian has quoted two delivery dates. I need to know whether we can dose her before she travels, on what day, and at what cost, and whether the short-dated stock could be used instead. Rebook her appointment accordingly and draft the note for the rheumatology nurse.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "appointment_id": "APPT-24533",
+        "chair_id": "CHAIR-2",
+        "end_time": "2026-03-16T09:30:00",
+        "start_time": "2026-03-16T08:00:00",
+        "status": "booked"
+      },
+      "tool": "scheduling.appointments.update"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-007-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "scheduling.appointments.update",
+      "any_of": [
+        {
+          "arguments": {
+            "appointment_id": "APPT-24533"
+          },
+          "expected_result_contains": {
+            "chair": "CHAIR-1",
+            "end": "2026-03-19T09:30:00",
+            "id": "APPT-24533",
+            "meta": {
+              "versionId": "2"
+            },
+            "start": "2026-03-19T08:00:00",
+            "status": "booked"
+          },
+          "match": "result_contains",
+          "tool": "scheduling.appointments.get"
+        }
+      ],
+      "description": "Read APPT-24533 back through scheduling.appointments.get after the change and confirmed the persisted provider values (id='APPT-24533', status='booked', chair='CHAIR-1', start='2026-03-19T08:00:00', end='2026-03-19T09:30:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "chair": "CHAIR-1",
+        "end": "2026-03-19T09:30:00",
+        "id": "APPT-24533",
+        "meta": {
+          "versionId": "2"
+        },
+        "start": "2026-03-19T08:00:00",
+        "status": "booked"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": false,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "appointment_id": "APPT-24533"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-CO-0107"
+    },
+    "case_reference": "CLIN-0007",
+    "chat": {
+      "thread_id": "CHAT-0007"
+    },
+    "drive": {
+      "case_folder_query": "CLIN-0007",
+      "policy_query": "policy"
+    },
+    "ehr": {
+      "mrn": "MRN-573320",
+      "patient_search": {
+        "arguments": {
+          "identifier": "MRN-573320"
+        },
+        "tool": "ehr.patients.search"
+      }
+    },
+    "messages": {
+      "search_query": "CLIN-0007"
+    },
+    "pharmacy": {
+      "locations": [
+        "LOC-PHARM"
+      ],
+      "medication_code": "ABATA-250"
+    },
+    "scheduling": {
+      "calendar_window": {
+        "end_date": "2026-03-27",
+        "start_date": "2026-03-12"
+      },
+      "location_id": "LOC-INF"
+    },
+    "supplier": {
+      "confirmation_id": "CONF-MER-55288"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "CLIN-0007"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated CLIN-0007 scope, immutable handles, mounted systems, and evidence index before investigating ABATA-250.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0007"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-0007-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for CLIN-0007 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "MRN-573320"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "PAT-10788"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.patients.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved MRN-573320 to the immutable Patient record through an identifier search rather than a name match against a similarly named patient.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0007"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-007-12"
+              },
+              {
+                "id": "DRV-007-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the CLIN-0007 case folder on the shared drive and identified the approval record and the order export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "policy"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-007-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the policy folder and distinguished the effective v3 policy from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "request_id": "MR-70488"
+          },
+          "expected_result_contains": {
+            "id": "MR-70488",
+            "status": "active"
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active order MR-70488: dose basis, regimen, doses in scope, and infusion and observation minutes.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "code": "29463-7",
+            "patient_id": "PAT-10788"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "OBS-WT-10788"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.observations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current measured weight for PAT-10788 (Observation 29463-7) and ignored the historical 2025 weight.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v3 policy for the rounding, minimum-dating, stocking, chair, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "ABATA-250"
+          },
+          "expected_result_contains": {
+            "medication_code": "ABATA-250"
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.medications.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the formulary record for ABATA-250: vial strength and minimum remaining dating.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "patient_id": "PAT-10788"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "MR-70488"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the active orders that define the requirement (MR-70488) and excluded superseded or out-of-scope orders.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "ABATA-250"
+          },
+          "expected_result_contains": {
+            "lots": [
+              {
+                "lot_id": "LOT-ABA-6120"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.lots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every ABATA-250 lot with quantity, expiry, quarantine status, and reservations before netting the on-hand coverage.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-03-27",
+            "location_id": "LOC-INF",
+            "start_date": "2026-03-12"
+          },
+          "expected_result_contains": {
+            "slots": [
+              {
+                "id": "SLOT-1-20260319-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scheduling.slots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the chair schedule (FHIR Slot sessions) for 2026-03-12 onward to find the first free session that displaces no protected or blocked slot.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-MER-55288"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-MER-55288",
+            "standard_delivery_date": "2026-03-24"
+          },
+          "match": "result_contains",
+          "tool": "supplier.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the supplier confirmation CONF-MER-55288 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-CO-0107"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-CO-0107"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-CO-0107 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-12"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-12"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-0007-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-0007-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-0007-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-0007"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-0007"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-0007 for lot, chair, and authority remarks that qualify the system records.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "patient_id": "PAT-10788"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "APPT-24533"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scheduling.appointments.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the appointment records that fix the schedule scope by immutable id.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for CLIN-0007 and confirmed that ABATA-250 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-16"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-16"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for CLIN-0007 and joined ABATA-250 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for CLIN-0007; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for CLIN-0007 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for ABATA-250 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for CLIN-0007 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for CLIN-0007, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for CLIN-0007: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "CLIN-0007"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "CLIN-0007"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-0007-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "MRN-573320"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "PAT-10788"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.patients.search"
+    },
+    {
+      "arguments": {
+        "q": "CLIN-0007"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-007-12"
+          },
+          {
+            "id": "DRV-007-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "policy"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-007-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "request_id": "MR-70488"
+      },
+      "expected_result_contains": {
+        "id": "MR-70488",
+        "status": "active"
+      },
+      "match": "result_contains",
+      "tool": "ehr.medication_requests.get"
+    },
+    {
+      "arguments": {
+        "code": "29463-7",
+        "patient_id": "PAT-10788"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "OBS-WT-10788"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.observations.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "medication_code": "ABATA-250"
+      },
+      "expected_result_contains": {
+        "medication_code": "ABATA-250"
+      },
+      "match": "result_contains",
+      "tool": "pharmacy.medications.get"
+    },
+    {
+      "arguments": {
+        "patient_id": "PAT-10788"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "MR-70488"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.medication_requests.list"
+    },
+    {
+      "arguments": {
+        "medication_code": "ABATA-250"
+      },
+      "expected_result_contains": {
+        "lots": [
+          {
+            "lot_id": "LOT-ABA-6120"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "pharmacy.lots.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-03-27",
+        "location_id": "LOC-INF",
+        "start_date": "2026-03-12"
+      },
+      "expected_result_contains": {
+        "slots": [
+          {
+            "id": "SLOT-1-20260319-AM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scheduling.slots.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-MER-55288"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-MER-55288",
+        "standard_delivery_date": "2026-03-24"
+      },
+      "match": "result_contains",
+      "tool": "supplier.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-CO-0107"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-CO-0107"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-12"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-12"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-0007-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-0007-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-0007"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-0007"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "patient_id": "PAT-10788"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "APPT-24533"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scheduling.appointments.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-16"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-16"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-17"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-17"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "ehr.patients.search",
+    "ehr.medication_requests.list",
+    "ehr.medication_requests.get",
+    "ehr.observations.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "pharmacy.medications.get",
+    "pharmacy.lots.list",
+    "scheduling.appointments.list",
+    "scheduling.slots.list",
+    "supplier.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "infusion_operations_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_19",
+        "investigation_20"
+      ],
+      "description": "Establish the isolated CLIN-0007 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_21"
+      ],
+      "description": "Determine the operative v1 requirement for ABATA-250 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_11",
+        "investigation_12",
+        "investigation_13",
+        "investigation_22",
+        "investigation_23",
+        "investigation_25"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 5 observed less 3 excluded to 2 supported VIAL for dispensable ABATA-250 vials at the infusion pharmacy. Applied regular chair sessions that do not displace protected patients to derive the three option outcomes without using protected or blocked sessions. Used the independently confirmed 2026-03-18 expedited readiness input for expedite_supplier_shipment, then separately derived its 2026-03-19 operating outcome under drug readiness versus the non-displacing chair calendar before departure instead of treating a supplier promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_14",
+        "investigation_15",
+        "investigation_24"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-CO-0107 only to expedite_supplier_shipment and ABATA-250; kept waive_minimum_dating_for_lot_6098 outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_16",
+        "investigation_17",
+        "investigation_18",
+        "investigation_26"
+      ],
+      "description": "Correlate ABATA-250 by immutable identifiers across the systems of record (ehr, scheduling, pharmacy, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 23.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "derive_plan_requirement",
+        "read_gross_coverage",
+        "remove_ineligible_coverage",
+        "calculate_usable_coverage",
+        "calculate_plan_gap",
+        "preserve_plan_unit",
+        "compare_baseline_plan",
+        "compare_accelerated_plan",
+        "compare_escalated_plan",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "bound_external_recovery_quantity",
+        "calculate_weight_based_dose",
+        "preserve_dose_unit",
+        "convert_dose_to_vials",
+        "apply_stocking_policy_doses",
+        "identify_first_nondisplacing_session",
+        "bind_selected_chair_session",
+        "test_expedite_against_chair_calendar"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for Rosalind Achterberg's advanced abatacept dose.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for expedite_supplier_shipment under the actual operating window and report whether the 2026-03-19 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select expedite_supplier_shipment only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 6.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01",
+        "state_02",
+        "state_03"
+      ],
+      "description": "Persist exactly the supported 'Maintenance appointment advanced' change for ABATA-250 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read ABATA-250 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_coverage_item_or_resource",
+        "answer_shortage_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for Rosalind Achterberg's advanced abatacept dose.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside CLIN-0007's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "03bfc701d7a3aec6f020b655b681bf3f71a337c94f32718589d93c37db62faf1",
+  "starting_records": [
+    {
+      "resource_id": "APPT-24533",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24534",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "PO-5100",
+      "resource_type": "PurchaseOrder",
+      "status": "RECEIVED",
+      "system": "pharmacy"
+    }
+  ],
+  "task_id": "clinicops-007",
+  "title": "Advance Rosalind Achterberg's abatacept dose before travel",
+  "workflow": {
+    "answer_fields": 27,
+    "readbacks": 1,
+    "reads": 27,
+    "writes": 2
+  },
+  "world": {
+    "id": "northlake-infusion-v1",
+    "name": "Northlake Health — Infusion Services",
+    "organization_id": "ORG-NORTHLAKE",
+    "primary_site": "LOC-INF",
+    "systems": [
+      "ehr",
+      "pharmacy",
+      "scheduling",
+      "supplier",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

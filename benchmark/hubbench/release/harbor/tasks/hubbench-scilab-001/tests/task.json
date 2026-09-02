@@ -1,0 +1,2981 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "bookings",
+    "instrument_windows",
+    "mutations",
+    "note_drafts"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_supplier_shipment.",
+        "type": "string"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for standard_order_plan.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "control_vials_per_plate": {
+        "description": "Single-use control vials each plate carries under the current protocol version.",
+        "type": "integer"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "earliest_qualified_base_window": {
+        "description": "First non-displacing analyser window on or after standard control readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for expedite_and_run_out_of_hours.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_completion_days_saved": {
+        "description": "Days the expedited shipment saves after the window calendar is reapplied.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Ostrander's confirmed standard and expedited delivery dates on SO-88214.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered VIAL that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "quarantined and short-dated CTRL-IL6-2L vials",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for released CTRL-IL6-2L vials at the main laboratory before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "plates_per_unit": {
+        "description": "Whole plates per run after the whole-plate rounding rule at the current protocol's samples per plate.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: VIAL.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing standard_order_plan, expedite_supplier_shipment, expedite_and_run_out_of_hours.",
+        "enum": [
+          "standard_order_plan",
+          "expedite_supplier_shipment",
+          "expedite_and_run_out_of_hours"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_quantity": {
+        "description": "single-use control vials required for the re-run and duplicate run of sponsor batch B-2611 at the current 118-sample count under protocol v3",
+        "type": "integer"
+      },
+      "required_samples": {
+        "description": "Sample count the requirement is sized at, taken from the current final batch count, not a stale intake count.",
+        "type": "integer"
+      },
+      "sample_unit": {
+        "description": "Unit of the sized sample count (SAMPLE).",
+        "type": "string"
+      },
+      "selected_instrument_window": {
+        "description": "Analyser and window used by the selected option, as INSTRUMENT/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered VIAL after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Ostrander's confirmed standard and expedited delivery dates on SO-88214.",
+        "type": "string"
+      },
+      "units_in_scope": {
+        "description": "Runs the reporting rule requires controlled before the re-run is booked.",
+        "type": "integer"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing quarantined and short-dated CTRL-IL6-2L vials.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "baseline_completion",
+      "business_need_date",
+      "control_vials_per_plate",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "earliest_qualified_base_window",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_completion_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "plates_per_unit",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_quantity",
+      "required_samples",
+      "sample_unit",
+      "selected_instrument_window",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "units_in_scope",
+      "usable_coverage_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-05-11",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "control readiness versus the non-displacing analyser window calendar; quarantined and short-dated CTRL-IL6-2L vials = 5 VIAL; uncovered scope = 3 VIAL",
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-21 as the documented control date for the IL-6 sponsor batch re-run and its duplicate; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 12 VIAL for single-use control vials required for the re-run and duplicate run of sponsor batch B-2611 at the current 118-sample count under protocol v3 at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 14 VIAL of gross observed released CTRL-IL6-2L vials at the main laboratory.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 5 VIAL for quarantined and short-dated CTRL-IL6-2L vials.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 14 observed − 5 ineligible = 9 usable VIAL.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 12 required − 9 usable = 3 VIAL uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_order_plan outcome as 2026-05-20 under regular analyser windows that do not displace protected proficiency or clinical-priority blocks.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_supplier_shipment outcome as 2026-05-20 using Ostrander's confirmed standard and expedited delivery dates on SO-88214.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_and_run_out_of_hours outcome as 2026-05-19 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-20 as the independently confirmed standard readiness date for Ostrander's confirmed standard and expedited delivery dates on SO-88214.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-18 as the independently confirmed expedited readiness date for Ostrander's confirmed standard and expedited delivery dates on SO-88214.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 3 VIAL uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Used the 2026-05-08 batch count of 118 samples; did not use the stale February intake count of 92.",
+        "field": "required_samples",
+        "id": "calculate_metered_samples",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the sized count in SAMPLE.",
+        "field": "sample_unit",
+        "id": "preserve_sample_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Rounded 118 samples up to 3 whole plates at 40 samples per plate under protocol v3.",
+        "field": "plates_per_unit",
+        "id": "convert_samples_to_plates",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the sponsor reporting rule: both the re-run and its duplicate must be controlled before booking, so 2 runs are in scope.",
+        "field": "units_in_scope",
+        "id": "apply_reporting_duplicate_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied protocol v3's bracketing rule of 2 single-use control vials per plate; did not apply the superseded v2 single-vial rule.",
+        "field": "control_vials_per_plate",
+        "id": "apply_protocol_control_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified 2026-05-20 (INST-2 PM) as the first free window on or after the 2026-05-20 standard readiness that displaces no protected block.",
+        "field": "earliest_qualified_base_window",
+        "id": "identify_first_nondisplacing_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the re-run to INST-2/2026-05-20/PM, the exact window that was free.",
+        "field": "selected_instrument_window",
+        "id": "bind_selected_instrument_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the 2026-05-18 expedited readiness with the window calendar and proved the first free window is still 2026-05-20, so expediting saves 0 days.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_window_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental cost for standard_order_plan; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that expedite_and_run_out_of_hours remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_order_plan, expedite_supplier_shipment, expedite_and_run_out_of_hours; selected standard_order_plan because it alone gives the best currently authorized result under control readiness versus the non-displacing analyser window calendar.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-20 as the supported outcome date for standard_order_plan.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-20 with the independent control date 2026-05-21 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located CTRL-IL6-2L using immutable identifiers and preserved effective revision v1: assay code cyto-il6-elisa resolves to ASY-30411 and open request RR-51203 under protocol PRT-IL6-3; the similarly named cyto-il6-legacy (RR-51188, closed, v2) is a different assay.",
+        "sources": [
+          "lims",
+          "messages"
+        ],
+        "statement": "LAB-0001: assay code cyto-il6-elisa resolves to ASY-30411 and open request RR-51203 under protocol PRT-IL6-3; the similarly named cyto-il6-legacy (RR-51188, closed, v2) is a different assay; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective run request, protocol version, and SOP to establish 12 VIAL for single-use control vials required for the re-run and duplicate run of sponsor batch B-2611 at the current 118-sample count under protocol v3, with control date 2026-05-21.",
+        "sources": [
+          "lims",
+          "eln",
+          "drive"
+        ],
+        "statement": "The effective run request, protocol version, and SOP establish single-use control vials required for the re-run and duplicate run of sponsor batch B-2611 at the current 118-sample count under protocol v3 = 12 VIAL: the request is metered at the 2026-05-08 batch count of 118 samples (3 plates per run at 40 per plate), protocol v3 needs 2 bracketing vials per plate, and the reporting rule keeps both runs controlled, so 12 vials are required. The control date is 2026-05-21 (the sponsor's data lock for batch B-2611 is 09:00 on 2026-05-21; both controlled runs must report before it)."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 14 observed less 5 excluded to 9 supported VIAL for released CTRL-IL6-2L vials at the main laboratory.",
+        "sources": [
+          "inventory",
+          "instruments",
+          "drive"
+        ],
+        "statement": "the on-hand workbook shows 14 CTRL-IL6-2L vials in gross; the register quarantines 9077 (2 vials) after the excursion and 9084 (3 vials) expires 2026-05-22 inside the dating horizon, so 9 vials are released; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-05-18 expedited readiness input for expedite_supplier_shipment, then separately derived its 2026-05-20 operating outcome under control readiness versus the non-displacing analyser window calendar instead of treating a supplier promise as authorization or a completion date.",
+        "sources": [
+          "supplier",
+          "messages"
+        ],
+        "statement": "Ostrander's confirmed standard and expedited delivery dates on SO-88214: Ostrander SO-88214 confirms standard delivery 2026-05-19 and expedited 2026-05-15 (+USD 240); release to use is the next laboratory day after incoming QC; a supplier confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied regular analyser windows that do not displace protected proficiency or clinical-priority blocks to derive the three option outcomes without using protected or blocked windows.",
+        "sources": [
+          "instruments",
+          "drive"
+        ],
+        "statement": "regular analyser windows that do not displace protected proficiency or clinical-priority blocks: the window calendar's first free window on or after 2026-05-20 is INST-2 PM on 2026-05-20; INST-1 AM on 2026-05-18 is the protected proficiency panel and cannot be displaced; protected and blocked windows cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-SL-0101 only to standard_order_plan and CTRL-IL6-2L; kept expedite_and_run_out_of_hours outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-SL-0101 covers one Ostrander order up to 6 vials with an expedite fee up to USD 250; out-of-hours windows need the laboratory manager. The approval does not select an option in advance and does not authorize expedite_and_run_out_of_hours."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected standard_order_plan: it is the best currently authorized response that satisfies control readiness versus the non-displacing analyser window calendar.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "the sponsor call needs one defensible run date before the 2026-05-21 data lock; a faster or broader action has value only if it remains inside control readiness versus the non-displacing analyser window calendar."
+      }
+    ],
+    "mode": "plan",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-05-20",
+        "consequence": "standard order plan books only released control vials plus the standard Ostrander shipment, lands on the first non-displacing analyser window on 2026-05-20, one day before the data lock, at no incremental cost.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "standard_order_plan",
+        "incremental_cost": 0,
+        "label": "standard_order_plan: outcome 2026-05-20, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-05-20",
+        "consequence": "expedite supplier shipment would have vials released by 2026-05-18 and adds USD 240, but the first non-displacing analyser window is still 2026-05-20, so it saves 0 days.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "expedite_supplier_shipment",
+        "incremental_cost": 240,
+        "label": "expedite_supplier_shipment: outcome 2026-05-20, incremental cost USD 240, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-05-19",
+        "consequence": "expedite and run out of hours would finish 1 day earlier than standard order plan by pairing the expedited shipment with an evening run on 2026-05-19 (USD 240 courier plus USD 380 overtime), but out-of-hours windows need the laboratory manager's separate approval, which AP-SL-0101 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "expedite_and_run_out_of_hours",
+        "incremental_cost": 620,
+        "label": "expedite_and_run_out_of_hours: outcome 2026-05-19, incremental cost USD 620, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "standard_order_plan is the best currently authorized response that satisfies control readiness versus the non-displacing analyser window calendar and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-05-20",
+    "selected_cost": 0,
+    "selected_option": "standard_order_plan"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "accelerated_completion": "2026-05-20",
+      "baseline_completion": "2026-05-20",
+      "business_need_date": "2026-05-21",
+      "control_vials_per_plate": 2,
+      "coverage_item_or_resource": "CTRL-IL6-2L",
+      "decision_timing_status": "ON_TIME",
+      "earliest_qualified_base_window": "2026-05-20",
+      "escalated_completion": "2026-05-19",
+      "escalation_approval_required": 1,
+      "expedite_completion_days_saved": 0,
+      "expedited_external_readiness": "2026-05-18",
+      "external_recovery_quantity": 3,
+      "ineligible_coverage_quantity": 5,
+      "observed_coverage_quantity": 14,
+      "outcome_vs_control_days": -1,
+      "plates_per_unit": 3,
+      "quantity_unit": "VIAL",
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "standard_order_plan",
+      "recommended_outcome_date": "2026-05-20",
+      "required_quantity": 12,
+      "required_samples": 118,
+      "sample_unit": "SAMPLE",
+      "selected_instrument_window": "INST-2/2026-05-20/PM",
+      "shortage_quantity": 3,
+      "standard_external_readiness": "2026-05-20",
+      "units_in_scope": 2,
+      "usable_coverage_quantity": 9
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'standard_order_plan', tied to CTRL-IL6-2L, revision v1, and the selected standard_order_plan outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-05-20', tied to CTRL-IL6-2L, revision v1, and the selected standard_order_plan outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported coverage item or resource as 'CTRL-IL6-2L', tied to CTRL-IL6-2L, revision v1, and the selected standard_order_plan outcome.",
+        "field": "coverage_item_or_resource",
+        "id": "answer_coverage_item_or_resource",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported shortage quantity as 3, tied to CTRL-IL6-2L, revision v1, and the selected standard_order_plan outcome.",
+        "field": "shortage_quantity",
+        "id": "answer_shortage_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to CTRL-IL6-2L, revision v1, and the selected standard_order_plan outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required CTRL-IL6-2L to reach business outcome 'Re-run analyser window booked' through instruments.bookings.create with exact provider-critical values request_id='RR-51203', instrument_id='INST-2', start_time='2026-05-20T12:30:00', end_time='2026-05-20T15:30:00', description='IL-6 batch B-2611 re-run (LAB-0001)'. The audited change binds selected option standard_order_plan, approval AP-SL-0101, and constraint control readiness versus the non-displacing analyser window calendar; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "request_id",
+          "instrument_id",
+          "start_time",
+          "end_time",
+          "description"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "description": "IL-6 batch B-2611 re-run (LAB-0001)",
+            "end_time": "2026-05-20T15:30:00",
+            "instrument_id": "INST-2",
+            "request_id": "RR-51203",
+            "start_time": "2026-05-20T12:30:00"
+          },
+          "tool": "instruments.bookings.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "BK-70901",
+          "status": "booked",
+          "table_name": "bookings",
+          "tool": "instruments.bookings.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "scilab-001-mutation-01",
+          "task_id": "scilab-001"
+        }
+      },
+      {
+        "description": "Persisted BK-70901 in bookings with the supported values (assay_id='ASY-30411', request_id='RR-51203', instrument_id='INST-2', start_time='2026-05-20T12:30:00', end_time='2026-05-20T15:30:00', status='booked') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "bookings",
+        "values": {
+          "assay_id": "ASY-30411",
+          "end_time": "2026-05-20T15:30:00",
+          "instrument_id": "INST-2",
+          "request_id": "RR-51203",
+          "start_time": "2026-05-20T12:30:00",
+          "status": "booked"
+        },
+        "weight": 2.0,
+        "where": {
+          "booking_id": "BK-70901"
+        }
+      },
+      {
+        "description": "Held INST-2's 2026-05-20 PM window for BK-70901 and left every protected window untouched.",
+        "id": "state_02",
+        "milestone_id": "state.primary",
+        "table": "instrument_windows",
+        "values": {
+          "booking_id": "BK-70901",
+          "status": "busy"
+        },
+        "weight": 1.0,
+        "where": {
+          "window_id": "WIN-2-20260520-PM"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying standard_order_plan, the 2026-05-20 outcome, the binding constraint, and the LAB-0001 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "ingrid.halvard@corvane.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "LAB-0001",
+            "cyto-il6-elisa",
+            "RR-51203"
+          ]
+        ],
+        "payload_text_contains": [
+          "standard_order_plan",
+          "2026-05-20"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "scilab-001-mutation-02",
+          "task_id": "scilab-001"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for LAB-0001: the primary change and the stakeholder draft; no additional order, transfer, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "scilab-001"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-21 as the documented control date for the IL-6 sponsor batch re-run and its duplicate; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 12 VIAL for single-use control vials required for the re-run and duplicate run of sponsor batch B-2611 at the current 118-sample count under protocol v3 at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 14 VIAL of gross observed released CTRL-IL6-2L vials at the main laboratory.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 5 VIAL for quarantined and short-dated CTRL-IL6-2L vials.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 14 observed − 5 ineligible = 9 usable VIAL.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 12 required − 9 usable = 3 VIAL uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_order_plan outcome as 2026-05-20 under regular analyser windows that do not displace protected proficiency or clinical-priority blocks.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_supplier_shipment outcome as 2026-05-20 using Ostrander's confirmed standard and expedited delivery dates on SO-88214.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_and_run_out_of_hours outcome as 2026-05-19 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-20 as the independently confirmed standard readiness date for Ostrander's confirmed standard and expedited delivery dates on SO-88214.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-18 as the independently confirmed expedited readiness date for Ostrander's confirmed standard and expedited delivery dates on SO-88214.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 3 VIAL uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Used the 2026-05-08 batch count of 118 samples; did not use the stale February intake count of 92.",
+        "field": "required_samples",
+        "id": "calculate_metered_samples",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the sized count in SAMPLE.",
+        "field": "sample_unit",
+        "id": "preserve_sample_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Rounded 118 samples up to 3 whole plates at 40 samples per plate under protocol v3.",
+        "field": "plates_per_unit",
+        "id": "convert_samples_to_plates",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the sponsor reporting rule: both the re-run and its duplicate must be controlled before booking, so 2 runs are in scope.",
+        "field": "units_in_scope",
+        "id": "apply_reporting_duplicate_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied protocol v3's bracketing rule of 2 single-use control vials per plate; did not apply the superseded v2 single-vial rule.",
+        "field": "control_vials_per_plate",
+        "id": "apply_protocol_control_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified 2026-05-20 (INST-2 PM) as the first free window on or after the 2026-05-20 standard readiness that displaces no protected block.",
+        "field": "earliest_qualified_base_window",
+        "id": "identify_first_nondisplacing_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the re-run to INST-2/2026-05-20/PM, the exact window that was free.",
+        "field": "selected_instrument_window",
+        "id": "bind_selected_instrument_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the 2026-05-18 expedited readiness with the window calendar and proved the first free window is still 2026-05-20, so expediting saves 0 days.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_window_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental cost for standard_order_plan; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that expedite_and_run_out_of_hours remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_order_plan, expedite_supplier_shipment, expedite_and_run_out_of_hours; selected standard_order_plan because it alone gives the best currently authorized result under control readiness versus the non-displacing analyser window calendar.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-20 as the supported outcome date for standard_order_plan.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-20 with the independent control date 2026-05-21 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "LAB-0001"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated LAB-0001 scope, immutable handles, mounted systems, and evidence index before investigating CTRL-IL6-2L.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "LAB-0001"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1001-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for LAB-0001 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "cyto-il6-elisa"
+            },
+            "expected_result_contains": {
+              "assays": [
+                {
+                  "assay_id": "ASY-30411"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "lims.assays.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved assay code cyto-il6-elisa to the immutable LIMS assay record through an identifier search rather than a name match against a similarly named assay.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "LAB-0001"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-001-15"
+                },
+                {
+                  "id": "DRV-001-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the LAB-0001 case folder on the shared drive and identified the approval record and the run-request export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "AO-014"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-001-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the SOP folder and distinguished the effective AO-014 v3 SOP from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "request_id": "RR-51203"
+            },
+            "expected_result_contains": {
+              "request_id": "RR-51203",
+              "status": "open"
+            },
+            "match": "result_contains",
+            "tool": "lims.requests.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active run request RR-51203: sample basis, units in scope, protocol version, and run durations.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "assay_id": "ASY-30411",
+              "metric": "SAMPLES-IN-BATCH"
+            },
+            "expected_result_contains": {
+              "batches": [
+                {
+                  "batch_id": "BAT-30411"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "lims.batches.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current final sample-batch count for ASY-30411 (SAMPLES-IN-BATCH) and ignored the stale intake count.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective AO-014 v3 SOP for the sizing, minimum-dating, release, window, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "reagent_code": "CTRL-IL6-2L"
+            },
+            "expected_result_contains": {
+              "reagent_code": "CTRL-IL6-2L"
+            },
+            "match": "result_contains",
+            "tool": "inventory.reagents.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the reagent record for CTRL-IL6-2L: vial format, storage, minimum remaining dating, and validation status.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "assay_id": "ASY-30411"
+            },
+            "expected_result_contains": {
+              "requests": [
+                {
+                  "request_id": "RR-51203"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "lims.requests.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the run requests that define the requirement (RR-51203) and excluded superseded or out-of-scope requests.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "assay_id": "ASY-30411",
+              "status": "INVALID"
+            },
+            "expected_result_contains": {
+              "runs": [
+                {
+                  "run_id": "RUN-88811"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "lims.runs.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the LIMS run history (assay_id=ASY-30411, status=INVALID) to ground what actually ran, what was invalidated or failed, and what the record says next.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "protocol_id": "PRT-IL6-3"
+            },
+            "expected_result_contains": {
+              "protocol_id": "PRT-IL6-3",
+              "status": "current"
+            },
+            "match": "result_contains",
+            "tool": "lims.protocols.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current protocol version PRT-IL6-3 (IA-IL6-ELISA v3) for samples per plate and control vials per plate; did not apply a superseded version.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "run_id": "RUN-88811"
+            },
+            "expected_result_contains": {
+              "results": [
+                {
+                  "result_id": "RES-88811-1"
+                }
+              ],
+              "run_id": "RUN-88811"
+            },
+            "match": "result_contains",
+            "tool": "lims.results.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the QC control results for run RUN-88811 with their acceptance ranges and validity flags before deciding what must be re-run or replaced.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "protocol_code": "IA-IL6-ELISA"
+            },
+            "expected_result_contains": {
+              "notes": [
+                {
+                  "note_id": "NOTE-IL6-3"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "eln.notes.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Searched the ELN for the IA-IL6-ELISA method notes and separated the current note from the superseded one by status.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "note_id": "NOTE-IL6-3"
+            },
+            "expected_result_contains": {
+              "note_id": "NOTE-IL6-3",
+              "status": "current"
+            },
+            "match": "result_contains",
+            "tool": "eln.notes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current ELN method note NOTE-IL6-3 for the operative protocol version and its control rule.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "reagent_code": "CTRL-IL6-2L"
+            },
+            "expected_result_contains": {
+              "lots": [
+                {
+                  "lot_id": "LOT-IL6-9101"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "inventory.lots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every CTRL-IL6-2L lot with vials on hand, expiry, status, and reservations before netting the coverage.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-28",
+              "start_date": "2026-05-18"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "WIN-2-20260520-PM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "instruments.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the analyser window calendar for 2026-05-18 onward to find the first free window that displaces no protected or blocked block.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "instrument_id": "INST-2"
+            },
+            "expected_result_contains": {
+              "certificates": [
+                {
+                  "cert_id": "CAL-2-2026"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "instruments.certificates.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the calibration certificate register for INST-2 and confirmed a valid certificate covers the run date before relying on that analyser.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-OST-88214"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-OST-88214",
+              "standard_delivery_date": "2026-05-19"
+            },
+            "match": "result_contains",
+            "tool": "supplier.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the supplier shipment confirmation CONF-OST-88214 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-SL-0101"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-SL-0101"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-SL-0101 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-15"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-15"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1001-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1001-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1001-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1001"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1001"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1001 for lot, window, and authority remarks that qualify the system records.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "assay_id": "ASY-30411"
+            },
+            "expected_result_contains": {
+              "total": 0
+            },
+            "match": "result_contains",
+            "tool": "instruments.bookings.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the analyser bookings that fix the schedule scope by immutable id.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for LAB-0001 and confirmed that CTRL-IL6-2L is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for LAB-0001 and joined CTRL-IL6-2L to the current authority and evidence records by immutable identity.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for LAB-0001; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for LAB-0001 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for CTRL-IL6-2L and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for LAB-0001 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_30",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for LAB-0001, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_31",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for LAB-0001: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_32",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "instruments.bookings.create",
+        "any_of": [
+          {
+            "arguments": {
+              "booking_id": "BK-70901"
+            },
+            "expected_result_contains": {
+              "end": "2026-05-20T15:30:00",
+              "id": "BK-70901",
+              "instrument": "INST-2",
+              "start": "2026-05-20T12:30:00",
+              "status": "booked"
+            },
+            "match": "result_contains",
+            "tool": "instruments.bookings.get"
+          }
+        ],
+        "description": "Read BK-70901 back through instruments.bookings.get after the change and confirmed the persisted provider values (id='BK-70901', status='booked', instrument='INST-2', start='2026-05-20T12:30:00', end='2026-05-20T15:30:00') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "end": "2026-05-20T15:30:00",
+          "id": "BK-70901",
+          "instrument": "INST-2",
+          "start": "2026-05-20T12:30:00",
+          "status": "booked"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "booking_id": "BK-70901"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "scilab",
+  "instruction": "Friday's IL-6 run for sponsor batch B-2611 was invalidated on a plate-end control and the sponsor locks the data Thursday morning. Before the sponsor call I need the honest picture: how many control vials the re-run and its duplicate actually need at the current batch count under the protocol version in force, how many of what the fridge shows are genuinely released once the excursion lot and the short-dated lot are set aside, whether Ostrander's shipment changes the date, and what an evening run would really involve. Book the analyser window that works and leave Ingrid a draft she can take into the call. Anything that needs Petter or Camille should be flagged, not assumed.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "description": "IL-6 batch B-2611 re-run (LAB-0001)",
+        "end_time": "2026-05-18T11:00:00",
+        "instrument_id": "INST-1",
+        "request_id": "RR-51203",
+        "start_time": "2026-05-18T08:00:00"
+      },
+      "tool": "instruments.bookings.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-001-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "instruments.bookings.create",
+      "any_of": [
+        {
+          "arguments": {
+            "booking_id": "BK-70901"
+          },
+          "expected_result_contains": {
+            "end": "2026-05-20T15:30:00",
+            "id": "BK-70901",
+            "instrument": "INST-2",
+            "start": "2026-05-20T12:30:00",
+            "status": "booked"
+          },
+          "match": "result_contains",
+          "tool": "instruments.bookings.get"
+        }
+      ],
+      "description": "Read BK-70901 back through instruments.bookings.get after the change and confirmed the persisted provider values (id='BK-70901', status='booked', instrument='INST-2', start='2026-05-20T12:30:00', end='2026-05-20T15:30:00') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "end": "2026-05-20T15:30:00",
+        "id": "BK-70901",
+        "instrument": "INST-2",
+        "start": "2026-05-20T12:30:00",
+        "status": "booked"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "booking_id": "BK-70901"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-SL-0101"
+    },
+    "case_reference": "LAB-0001",
+    "chat": {
+      "thread_id": "CHAT-1001"
+    },
+    "drive": {
+      "case_folder_query": "LAB-0001",
+      "sop_query": "AO-014"
+    },
+    "eln": {
+      "protocol_code": "IA-IL6-ELISA"
+    },
+    "instruments": {
+      "calendar_window": {
+        "end_date": "2026-05-28",
+        "start_date": "2026-05-18"
+      },
+      "site_id": "SITE-MAIN"
+    },
+    "inventory": {
+      "reagent_code": "CTRL-IL6-2L",
+      "sites": [
+        "SITE-MAIN"
+      ]
+    },
+    "lims": {
+      "assay_code": "cyto-il6-elisa",
+      "assay_search": {
+        "arguments": {
+          "identifier": "cyto-il6-elisa"
+        },
+        "tool": "lims.assays.search"
+      },
+      "protocol_id": "PRT-IL6-3",
+      "results_run_id": "RUN-88811"
+    },
+    "messages": {
+      "search_query": "LAB-0001"
+    },
+    "supplier": {
+      "confirmation_id": "CONF-OST-88214"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "LAB-0001"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated LAB-0001 scope, immutable handles, mounted systems, and evidence index before investigating CTRL-IL6-2L.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "LAB-0001"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1001-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for LAB-0001 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "cyto-il6-elisa"
+          },
+          "expected_result_contains": {
+            "assays": [
+              {
+                "assay_id": "ASY-30411"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "lims.assays.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved assay code cyto-il6-elisa to the immutable LIMS assay record through an identifier search rather than a name match against a similarly named assay.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "LAB-0001"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-001-15"
+              },
+              {
+                "id": "DRV-001-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the LAB-0001 case folder on the shared drive and identified the approval record and the run-request export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "AO-014"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-001-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the SOP folder and distinguished the effective AO-014 v3 SOP from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "request_id": "RR-51203"
+          },
+          "expected_result_contains": {
+            "request_id": "RR-51203",
+            "status": "open"
+          },
+          "match": "result_contains",
+          "tool": "lims.requests.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active run request RR-51203: sample basis, units in scope, protocol version, and run durations.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "assay_id": "ASY-30411",
+            "metric": "SAMPLES-IN-BATCH"
+          },
+          "expected_result_contains": {
+            "batches": [
+              {
+                "batch_id": "BAT-30411"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "lims.batches.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current final sample-batch count for ASY-30411 (SAMPLES-IN-BATCH) and ignored the stale intake count.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective AO-014 v3 SOP for the sizing, minimum-dating, release, window, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "reagent_code": "CTRL-IL6-2L"
+          },
+          "expected_result_contains": {
+            "reagent_code": "CTRL-IL6-2L"
+          },
+          "match": "result_contains",
+          "tool": "inventory.reagents.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the reagent record for CTRL-IL6-2L: vial format, storage, minimum remaining dating, and validation status.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "assay_id": "ASY-30411"
+          },
+          "expected_result_contains": {
+            "requests": [
+              {
+                "request_id": "RR-51203"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "lims.requests.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the run requests that define the requirement (RR-51203) and excluded superseded or out-of-scope requests.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "assay_id": "ASY-30411",
+            "status": "INVALID"
+          },
+          "expected_result_contains": {
+            "runs": [
+              {
+                "run_id": "RUN-88811"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "lims.runs.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the LIMS run history (assay_id=ASY-30411, status=INVALID) to ground what actually ran, what was invalidated or failed, and what the record says next.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "protocol_id": "PRT-IL6-3"
+          },
+          "expected_result_contains": {
+            "protocol_id": "PRT-IL6-3",
+            "status": "current"
+          },
+          "match": "result_contains",
+          "tool": "lims.protocols.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current protocol version PRT-IL6-3 (IA-IL6-ELISA v3) for samples per plate and control vials per plate; did not apply a superseded version.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "run_id": "RUN-88811"
+          },
+          "expected_result_contains": {
+            "results": [
+              {
+                "result_id": "RES-88811-1"
+              }
+            ],
+            "run_id": "RUN-88811"
+          },
+          "match": "result_contains",
+          "tool": "lims.results.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the QC control results for run RUN-88811 with their acceptance ranges and validity flags before deciding what must be re-run or replaced.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "protocol_code": "IA-IL6-ELISA"
+          },
+          "expected_result_contains": {
+            "notes": [
+              {
+                "note_id": "NOTE-IL6-3"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "eln.notes.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Searched the ELN for the IA-IL6-ELISA method notes and separated the current note from the superseded one by status.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "note_id": "NOTE-IL6-3"
+          },
+          "expected_result_contains": {
+            "note_id": "NOTE-IL6-3",
+            "status": "current"
+          },
+          "match": "result_contains",
+          "tool": "eln.notes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current ELN method note NOTE-IL6-3 for the operative protocol version and its control rule.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "reagent_code": "CTRL-IL6-2L"
+          },
+          "expected_result_contains": {
+            "lots": [
+              {
+                "lot_id": "LOT-IL6-9101"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "inventory.lots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every CTRL-IL6-2L lot with vials on hand, expiry, status, and reservations before netting the coverage.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-28",
+            "start_date": "2026-05-18"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "WIN-2-20260520-PM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "instruments.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the analyser window calendar for 2026-05-18 onward to find the first free window that displaces no protected or blocked block.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "instrument_id": "INST-2"
+          },
+          "expected_result_contains": {
+            "certificates": [
+              {
+                "cert_id": "CAL-2-2026"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "instruments.certificates.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the calibration certificate register for INST-2 and confirmed a valid certificate covers the run date before relying on that analyser.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-OST-88214"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-OST-88214",
+            "standard_delivery_date": "2026-05-19"
+          },
+          "match": "result_contains",
+          "tool": "supplier.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the supplier shipment confirmation CONF-OST-88214 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-SL-0101"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-SL-0101"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-SL-0101 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-15"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-15"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1001-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1001-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1001-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1001"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1001"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1001 for lot, window, and authority remarks that qualify the system records.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "assay_id": "ASY-30411"
+          },
+          "expected_result_contains": {
+            "total": 0
+          },
+          "match": "result_contains",
+          "tool": "instruments.bookings.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the analyser bookings that fix the schedule scope by immutable id.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for LAB-0001 and confirmed that CTRL-IL6-2L is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for LAB-0001 and joined CTRL-IL6-2L to the current authority and evidence records by immutable identity.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for LAB-0001; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for LAB-0001 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for CTRL-IL6-2L and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for LAB-0001 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_30",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for LAB-0001, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_31",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for LAB-0001: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_32",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "LAB-0001"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "LAB-0001"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1001-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "cyto-il6-elisa"
+      },
+      "expected_result_contains": {
+        "assays": [
+          {
+            "assay_id": "ASY-30411"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "lims.assays.search"
+    },
+    {
+      "arguments": {
+        "q": "LAB-0001"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-001-15"
+          },
+          {
+            "id": "DRV-001-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "AO-014"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-001-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "request_id": "RR-51203"
+      },
+      "expected_result_contains": {
+        "request_id": "RR-51203",
+        "status": "open"
+      },
+      "match": "result_contains",
+      "tool": "lims.requests.get"
+    },
+    {
+      "arguments": {
+        "assay_id": "ASY-30411",
+        "metric": "SAMPLES-IN-BATCH"
+      },
+      "expected_result_contains": {
+        "batches": [
+          {
+            "batch_id": "BAT-30411"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "lims.batches.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "reagent_code": "CTRL-IL6-2L"
+      },
+      "expected_result_contains": {
+        "reagent_code": "CTRL-IL6-2L"
+      },
+      "match": "result_contains",
+      "tool": "inventory.reagents.get"
+    },
+    {
+      "arguments": {
+        "assay_id": "ASY-30411"
+      },
+      "expected_result_contains": {
+        "requests": [
+          {
+            "request_id": "RR-51203"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "lims.requests.list"
+    },
+    {
+      "arguments": {
+        "assay_id": "ASY-30411",
+        "status": "INVALID"
+      },
+      "expected_result_contains": {
+        "runs": [
+          {
+            "run_id": "RUN-88811"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "lims.runs.list"
+    },
+    {
+      "arguments": {
+        "protocol_id": "PRT-IL6-3"
+      },
+      "expected_result_contains": {
+        "protocol_id": "PRT-IL6-3",
+        "status": "current"
+      },
+      "match": "result_contains",
+      "tool": "lims.protocols.get"
+    },
+    {
+      "arguments": {
+        "run_id": "RUN-88811"
+      },
+      "expected_result_contains": {
+        "results": [
+          {
+            "result_id": "RES-88811-1"
+          }
+        ],
+        "run_id": "RUN-88811"
+      },
+      "match": "result_contains",
+      "tool": "lims.results.list"
+    },
+    {
+      "arguments": {
+        "protocol_code": "IA-IL6-ELISA"
+      },
+      "expected_result_contains": {
+        "notes": [
+          {
+            "note_id": "NOTE-IL6-3"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "eln.notes.search"
+    },
+    {
+      "arguments": {
+        "note_id": "NOTE-IL6-3"
+      },
+      "expected_result_contains": {
+        "note_id": "NOTE-IL6-3",
+        "status": "current"
+      },
+      "match": "result_contains",
+      "tool": "eln.notes.get"
+    },
+    {
+      "arguments": {
+        "reagent_code": "CTRL-IL6-2L"
+      },
+      "expected_result_contains": {
+        "lots": [
+          {
+            "lot_id": "LOT-IL6-9101"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "inventory.lots.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-28",
+        "start_date": "2026-05-18"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "WIN-2-20260520-PM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "instruments.windows.list"
+    },
+    {
+      "arguments": {
+        "instrument_id": "INST-2"
+      },
+      "expected_result_contains": {
+        "certificates": [
+          {
+            "cert_id": "CAL-2-2026"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "instruments.certificates.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-OST-88214"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-OST-88214",
+        "standard_delivery_date": "2026-05-19"
+      },
+      "match": "result_contains",
+      "tool": "supplier.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-SL-0101"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-SL-0101"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-15"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-15"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1001-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1001-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1001"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1001"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "assay_id": "ASY-30411"
+      },
+      "expected_result_contains": {
+        "total": 0
+      },
+      "match": "result_contains",
+      "tool": "instruments.bookings.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-28"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-28"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-29"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-29"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "lims.assays.search",
+    "lims.requests.list",
+    "lims.requests.get",
+    "lims.batches.list",
+    "lims.runs.list",
+    "lims.results.list",
+    "lims.protocols.get",
+    "eln.notes.search",
+    "eln.notes.get",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "inventory.reagents.get",
+    "inventory.lots.list",
+    "instruments.bookings.list",
+    "instruments.windows.list",
+    "instruments.certificates.list",
+    "supplier.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "assay_operations_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_25",
+        "investigation_26"
+      ],
+      "description": "Establish the isolated LAB-0001 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 11.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_15",
+        "investigation_27"
+      ],
+      "description": "Determine the operative v1 requirement for CTRL-IL6-2L from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 7.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_16",
+        "investigation_17",
+        "investigation_18",
+        "investigation_19",
+        "investigation_28",
+        "investigation_29",
+        "investigation_31"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 14 observed less 5 excluded to 9 supported VIAL for released CTRL-IL6-2L vials at the main laboratory. Applied regular analyser windows that do not displace protected proficiency or clinical-priority blocks to derive the three option outcomes without using protected or blocked windows. Used the independently confirmed 2026-05-18 expedited readiness input for expedite_supplier_shipment, then separately derived its 2026-05-20 operating outcome under control readiness versus the non-displacing analyser window calendar instead of treating a supplier promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_20",
+        "investigation_21",
+        "investigation_30"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-SL-0101 only to standard_order_plan and CTRL-IL6-2L; kept expedite_and_run_out_of_hours outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_22",
+        "investigation_23",
+        "investigation_24",
+        "investigation_32"
+      ],
+      "description": "Correlate CTRL-IL6-2L by immutable identifiers across the systems of record (lims, instruments, inventory, supplier, eln, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 25.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "derive_plan_requirement",
+        "read_gross_coverage",
+        "remove_ineligible_coverage",
+        "calculate_usable_coverage",
+        "calculate_plan_gap",
+        "preserve_plan_unit",
+        "compare_baseline_plan",
+        "compare_accelerated_plan",
+        "compare_escalated_plan",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "bound_external_recovery_quantity",
+        "calculate_metered_samples",
+        "preserve_sample_unit",
+        "convert_samples_to_plates",
+        "apply_reporting_duplicate_rule",
+        "apply_protocol_control_requirement",
+        "identify_first_nondisplacing_window",
+        "bind_selected_instrument_window",
+        "test_expedite_against_window_calendar"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for the IL-6 sponsor batch re-run and its duplicate.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for standard_order_plan under the actual operating window and report whether the 2026-05-20 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select standard_order_plan only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01",
+        "state_02"
+      ],
+      "description": "Persist exactly the supported 'Re-run analyser window booked' change for CTRL-IL6-2L through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read CTRL-IL6-2L back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_coverage_item_or_resource",
+        "answer_shortage_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for the IL-6 sponsor batch re-run and its duplicate.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside LAB-0001's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "784bc37e841ca4127c281e3df43b031addab5514a68826a2b9ca69b78e5401f9",
+  "starting_records": [
+    {
+      "resource_id": "BK-70900",
+      "resource_type": "Booking",
+      "status": "booked",
+      "system": "instruments"
+    },
+    {
+      "resource_id": "ORD-3400",
+      "resource_type": "ReagentOrder",
+      "status": "RECEIVED",
+      "system": "supplier"
+    }
+  ],
+  "task_id": "scilab-001",
+  "title": "Re-run the IL-6 sponsor batch after the invalid plate-end control",
+  "workflow": {
+    "answer_fields": 28,
+    "readbacks": 1,
+    "reads": 33,
+    "writes": 2
+  },
+  "world": {
+    "id": "corvane-assay-ops-v1",
+    "name": "Corvane Institute — Assay Operations Core",
+    "organization_id": "ORG-CORVANE",
+    "primary_site": "SITE-MAIN",
+    "systems": [
+      "lims",
+      "instruments",
+      "inventory",
+      "supplier",
+      "eln",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

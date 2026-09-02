@@ -1,0 +1,2609 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "mutations",
+    "note_drafts",
+    "stock_transfers"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for transfer_supported_quantity.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for transfer_full_satellite_stock.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "dose_amount_unit": {
+        "description": "Unit of the dose amount.",
+        "type": "string"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for purchase_direct_with_expedite.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "Eastgate vials reserved for a named patient or past expiry",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Cascadia's confirmed standard and expedited delivery dates on Q-77955.",
+        "type": "string"
+      },
+      "first_administration_slot": {
+        "description": "Chair session of the first administration, as CHAIR/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for this week's two ocrelizumab administrations.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: VIAL.",
+        "type": "string"
+      },
+      "receiving_site_usable_quantity": {
+        "description": "Releasable vials already at the receiving infusion pharmacy that reduce the transfer.",
+        "type": "integer"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing transfer_supported_quantity, transfer_full_satellite_stock, purchase_direct_with_expedite.",
+        "enum": [
+          "transfer_supported_quantity",
+          "transfer_full_satellite_stock",
+          "purchase_direct_with_expedite"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_dose_amount": {
+        "description": "Dose per administration from the orders.",
+        "type": "integer"
+      },
+      "scheduled_administrations": {
+        "description": "Count of ocrelizumab administrations booked at the infusion center this week.",
+        "type": "integer"
+      },
+      "source_quantity": {
+        "description": "OCREL-300 vials required by the two 600 mg administrations booked 2026-03-12 and 2026-03-13",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Cascadia's confirmed standard and expedited delivery dates on Q-77955.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "releasable OCREL-300 vials at the Eastgate satellite pharmacy",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "dose_amount_unit",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_administration_slot",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "receiving_site_usable_quantity",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_dose_amount",
+      "scheduled_administrations",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "transaction_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-03-09",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "the transfer procedure (releasable lots only) and the signed approval scope; Eastgate vials reserved for a named patient or past expiry = 3 VIAL; uncovered scope = 1 VIAL",
+    "calculations": [
+      {
+        "description": "Preserved 2026-03-12 as the documented control date for this week's two ocrelizumab administrations; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 4 VIAL for OCREL-300 vials required by the two 600 mg administrations booked 2026-03-12 and 2026-03-13.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 6 observed VIAL.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 3 VIAL for Eastgate vials reserved for a named patient or past expiry.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 6 observed − 3 excluded = 3 supported VIAL.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 3 VIAL, the measure required by the chosen disposition under the transfer procedure (releasable lots only) and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-03-11 for transfer_supported_quantity.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-03-11 for transfer_full_satellite_stock.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-03-12 for purchase_direct_with_expedite and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-17 as the independently confirmed standard readiness date for Cascadia's confirmed standard and expedited delivery dates on Q-77955.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-12 as the independently confirmed expedited readiness date for Cascadia's confirmed standard and expedited delivery dates on Q-77955.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 2 booked ocrelizumab administrations this week (APPT-24610, APPT-24611); Anja Grünewald's Eastgate dose is not an infusion-center administration.",
+        "field": "scheduled_administrations",
+        "id": "count_scheduled_administrations",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Read 600 mg per administration from MR-70120 and MR-70133 (2 vials each).",
+        "field": "required_dose_amount",
+        "id": "read_ordered_dose",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Kept the dose in mg.",
+        "field": "dose_amount_unit",
+        "id": "preserve_dose_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Netted the 1 releasable vial of lot 5510 at the infusion pharmacy before sizing the transfer (4 − 1 = 3).",
+        "field": "receiving_site_usable_quantity",
+        "id": "net_receiving_site_stock",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified CHAIR-3/2026-03-12/AM (APPT-24610) as the first administration the transfer must beat.",
+        "field": "first_administration_slot",
+        "id": "identify_first_administration_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for transfer_supported_quantity; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that purchase_direct_with_expedite remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of transfer_supported_quantity, transfer_full_satellite_stock, purchase_direct_with_expedite; selected transfer_supported_quantity because it alone gives the best currently authorized result under the transfer procedure (releasable lots only) and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-03-11 as the supported outcome date for transfer_supported_quantity.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-03-11 with the independent control date 2026-03-12 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located OCREL-300 using immutable identifiers and preserved effective revision v1: MRN-455081 resolves to Patient PAT-10240 (MR-70120) and MRN-457712 to PAT-10388 (MR-70133); MR-70140 is Anja Grünewald's Eastgate dose.",
+        "sources": [
+          "ehr",
+          "messages"
+        ],
+        "statement": "CLIN-0005: MRN-455081 resolves to Patient PAT-10240 (MR-70120) and MRN-457712 to PAT-10388 (MR-70133); MR-70140 is Anja Grünewald's Eastgate dose; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective order and policy to establish 4 VIAL for OCREL-300 vials required by the two 600 mg administrations booked 2026-03-12 and 2026-03-13, with control date 2026-03-12.",
+        "sources": [
+          "ehr",
+          "drive"
+        ],
+        "statement": "The effective order and policy establish OCREL-300 vials required by the two 600 mg administrations booked 2026-03-12 and 2026-03-13 = 4 VIAL: two 600 mg doses take 2 vials each, so 4 vials are required this week, of which 1 is already releasable at the infusion pharmacy. The control date is 2026-03-12 (first booked ocrelizumab administration (APPT-24610))."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 6 observed less 3 excluded to 3 supported VIAL for releasable OCREL-300 vials at the Eastgate satellite pharmacy.",
+        "sources": [
+          "pharmacy",
+          "scheduling",
+          "drive"
+        ],
+        "statement": "Eastgate holds 6 vials in gross; lot 5471 (2) is reserved for PAT-30012 and lot 5450 (1) expired 2026-03-01, so 3 vials are releasable; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-03-12 expedited readiness input for transfer_full_satellite_stock, then separately derived its 2026-03-11 operating outcome under the transfer procedure (releasable lots only) and the signed approval scope instead of treating a supplier promise as authorization or a completion date.",
+        "sources": [
+          "supplier",
+          "messages"
+        ],
+        "statement": "Cascadia's confirmed standard and expedited delivery dates on Q-77955: Cascadia Q-77955 confirms direct purchase standard 2026-03-16 and expedited 2026-03-11 (+USD 260); shelf release is the next clinic day; a supplier confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied the booked chair sessions that fix the administration dates to derive the three option outcomes without using protected or blocked sessions.",
+        "sources": [
+          "scheduling",
+          "drive"
+        ],
+        "statement": "the booked chair sessions that fix the administration dates: the booked chair sessions fix the dates: CHAIR-3 AM on 2026-03-12 and CHAIR-1 PM on 2026-03-13; protected and blocked sessions cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-CO-0105 only to transfer_supported_quantity and OCREL-300; kept purchase_direct_with_expedite outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-CO-0105 covers one transfer of up to 3 releasable vials from Eastgate; expedited direct purchase needs the pharmacy director. The approval does not select an option in advance and does not authorize purchase_direct_with_expedite."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected transfer_supported_quantity: it is the best currently authorized response that satisfies the transfer procedure (releasable lots only) and the signed approval scope.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "neurology's Thursday and Friday administrations must run with verified stock on the shelf by 2026-03-11; a faster or broader action has value only if it remains inside the transfer procedure (releasable lots only) and the signed approval scope."
+      }
+    ],
+    "mode": "quantity",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-03-11",
+        "consequence": "transfer supported quantity moves the 3 releasable vials of lot 5488 on the 2026-03-10 courier, verified on the shelf 2026-03-11, one day before the first administration, at no incremental cost.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "transfer_supported_quantity",
+        "incremental_cost": 0,
+        "label": "transfer_supported_quantity: outcome 2026-03-11, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "NOT_SUPPORTED_BY_CURRENT_EVIDENCE",
+        "completion": "2026-03-11",
+        "consequence": "transfer full satellite stock would move all 6 vials on the same courier, but 2 are reserved for Anja Grünewald's 2026-03-11 dose and 1 expired on 2026-03-01, so the evidence does not support it and the system rejects it.",
+        "control_status": "FAILS_CURRENT_CONTROL",
+        "id": "transfer_full_satellite_stock",
+        "incremental_cost": 0,
+        "label": "transfer_full_satellite_stock: outcome 2026-03-11, incremental cost USD 0, FAILS_CURRENT_CONTROL",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-03-12",
+        "consequence": "purchase direct with expedite would land Cascadia's courier on 2026-03-11 for shelf release 2026-03-12, one day later than the transfer, and adds USD 260; expedited direct purchase needs the pharmacy director, which AP-CO-0105 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "purchase_direct_with_expedite",
+        "incremental_cost": 260,
+        "label": "purchase_direct_with_expedite: outcome 2026-03-12, incremental cost USD 260, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "transfer_supported_quantity is the best currently authorized response that satisfies the transfer procedure (releasable lots only) and the signed approval scope and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-03-11",
+    "selected_cost": 0,
+    "selected_option": "transfer_supported_quantity"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "baseline_resolution_date": "2026-03-11",
+      "business_need_date": "2026-03-12",
+      "controlled_item_or_record": "OCREL-300",
+      "controlled_resolution_date": "2026-03-11",
+      "decision_timing_status": "ON_TIME",
+      "dose_amount_unit": "mg",
+      "escalated_resolution_date": "2026-03-12",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 3,
+      "expedited_external_readiness": "2026-03-12",
+      "first_administration_slot": "CHAIR-3/2026-03-12/AM",
+      "observed_quantity": 6,
+      "outcome_vs_control_days": -1,
+      "quantity_unit": "VIAL",
+      "receiving_site_usable_quantity": 1,
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "transfer_supported_quantity",
+      "recommended_outcome_date": "2026-03-11",
+      "required_dose_amount": 600,
+      "scheduled_administrations": 2,
+      "source_quantity": 4,
+      "standard_external_readiness": "2026-03-17",
+      "supported_quantity": 3,
+      "transaction_quantity": 3
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'transfer_supported_quantity', tied to OCREL-300, revision v1, and the selected transfer_supported_quantity outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-03-11', tied to OCREL-300, revision v1, and the selected transfer_supported_quantity outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'OCREL-300', tied to OCREL-300, revision v1, and the selected transfer_supported_quantity outcome.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 3, tied to OCREL-300, revision v1, and the selected transfer_supported_quantity outcome.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to OCREL-300, revision v1, and the selected transfer_supported_quantity outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required OCREL-300 to reach business outcome 'Inter-site transfer scheduled' through pharmacy.transfers.create with exact provider-critical values medication_code='OCREL-300', quantity=3, from_location_id='LOC-SAT', to_location_id='LOC-PHARM', scheduled_date='2026-03-10'. The audited change binds selected option transfer_supported_quantity, approval AP-CO-0105, and constraint the transfer procedure (releasable lots only) and the signed approval scope; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "medication_code",
+          "quantity",
+          "from_location_id",
+          "to_location_id",
+          "scheduled_date"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "from_location_id": "LOC-SAT",
+            "medication_code": "OCREL-300",
+            "quantity": 3,
+            "scheduled_date": "2026-03-10",
+            "to_location_id": "LOC-PHARM"
+          },
+          "tool": "pharmacy.transfers.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "TR-3101",
+          "status": "SCHEDULED",
+          "table_name": "stock_transfers",
+          "tool": "pharmacy.transfers.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "clinicops-005-mutation-01",
+          "task_id": "clinicops-005"
+        }
+      },
+      {
+        "description": "Persisted TR-3101 in stock_transfers with the supported values (medication_code='OCREL-300', quantity=3, from_location_id='LOC-SAT', to_location_id='LOC-PHARM', scheduled_date='2026-03-10', status='SCHEDULED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "stock_transfers",
+        "values": {
+          "from_location_id": "LOC-SAT",
+          "medication_code": "OCREL-300",
+          "quantity": 3,
+          "scheduled_date": "2026-03-10",
+          "status": "SCHEDULED",
+          "to_location_id": "LOC-PHARM"
+        },
+        "weight": 2.0,
+        "where": {
+          "transfer_id": "TR-3101"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying transfer_supported_quantity, the 2026-03-11 outcome, the binding constraint, and the CLIN-0005 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "tomasz.wieczorek@northlake.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "CLIN-0005",
+            "MRN-455081",
+            "MR-70120"
+          ]
+        ],
+        "payload_text_contains": [
+          "transfer_supported_quantity",
+          "2026-03-11"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "clinicops-005-mutation-02",
+          "task_id": "clinicops-005"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for CLIN-0005: the primary change and the stakeholder draft; no additional order, transfer, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "clinicops-005"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-03-12 as the documented control date for this week's two ocrelizumab administrations; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 4 VIAL for OCREL-300 vials required by the two 600 mg administrations booked 2026-03-12 and 2026-03-13.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 6 observed VIAL.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 3 VIAL for Eastgate vials reserved for a named patient or past expiry.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 6 observed − 3 excluded = 3 supported VIAL.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 3 VIAL, the measure required by the chosen disposition under the transfer procedure (releasable lots only) and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-03-11 for transfer_supported_quantity.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-03-11 for transfer_full_satellite_stock.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-03-12 for purchase_direct_with_expedite and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-17 as the independently confirmed standard readiness date for Cascadia's confirmed standard and expedited delivery dates on Q-77955.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-12 as the independently confirmed expedited readiness date for Cascadia's confirmed standard and expedited delivery dates on Q-77955.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 2 booked ocrelizumab administrations this week (APPT-24610, APPT-24611); Anja Grünewald's Eastgate dose is not an infusion-center administration.",
+        "field": "scheduled_administrations",
+        "id": "count_scheduled_administrations",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Read 600 mg per administration from MR-70120 and MR-70133 (2 vials each).",
+        "field": "required_dose_amount",
+        "id": "read_ordered_dose",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Kept the dose in mg.",
+        "field": "dose_amount_unit",
+        "id": "preserve_dose_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Netted the 1 releasable vial of lot 5510 at the infusion pharmacy before sizing the transfer (4 − 1 = 3).",
+        "field": "receiving_site_usable_quantity",
+        "id": "net_receiving_site_stock",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified CHAIR-3/2026-03-12/AM (APPT-24610) as the first administration the transfer must beat.",
+        "field": "first_administration_slot",
+        "id": "identify_first_administration_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for transfer_supported_quantity; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that purchase_direct_with_expedite remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of transfer_supported_quantity, transfer_full_satellite_stock, purchase_direct_with_expedite; selected transfer_supported_quantity because it alone gives the best currently authorized result under the transfer procedure (releasable lots only) and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-03-11 as the supported outcome date for transfer_supported_quantity.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-03-11 with the independent control date 2026-03-12 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "CLIN-0005"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated CLIN-0005 scope, immutable handles, mounted systems, and evidence index before investigating OCREL-300.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "CLIN-0005"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-0005-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for CLIN-0005 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "MRN-455081"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "PAT-10240"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.patients.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved MRN-455081 to the immutable Patient record through an identifier search rather than a name match against a similarly named patient.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "CLIN-0005"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-005-12"
+                },
+                {
+                  "id": "DRV-005-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the CLIN-0005 case folder on the shared drive and identified the approval record and the order export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "policy"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-005-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the policy folder and distinguished the effective v3 policy from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "request_id": "MR-70120"
+            },
+            "expected_result_contains": {
+              "id": "MR-70120",
+              "status": "active"
+            },
+            "match": "result_contains",
+            "tool": "ehr.medication_requests.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active order MR-70120: dose basis, regimen, doses in scope, and infusion and observation minutes.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "code": "29463-7",
+              "patient_id": "PAT-10240"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "OBS-WT-10240"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.observations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current measured weight for PAT-10240 (Observation 29463-7) and ignored the historical 2025 weight.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v3 policy for the rounding, minimum-dating, stocking, chair, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "OCREL-300"
+            },
+            "expected_result_contains": {
+              "medication_code": "OCREL-300"
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.medications.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the formulary record for OCREL-300: vial strength and minimum remaining dating.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "OCREL-300",
+              "status": "active"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "MR-70120"
+                  }
+                },
+                {
+                  "resource": {
+                    "id": "MR-70133"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.medication_requests.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the active orders that define the requirement (MR-70120, MR-70133) and excluded superseded or out-of-scope orders.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "OCREL-300"
+            },
+            "expected_result_contains": {
+              "lots": [
+                {
+                  "lot_id": "LOT-OCR-5510"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.lots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every OCREL-300 lot with quantity, expiry, quarantine status, and reservations before netting the on-hand coverage.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-03-13",
+              "location_id": "LOC-INF",
+              "start_date": "2026-03-09"
+            },
+            "expected_result_contains": {
+              "slots": [
+                {
+                  "id": "SLOT-3-20260312-AM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scheduling.slots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the chair schedule (FHIR Slot sessions) for 2026-03-09 onward to find the first free session that displaces no protected or blocked slot.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-CAS-77955"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-CAS-77955",
+              "standard_delivery_date": "2026-03-16"
+            },
+            "match": "result_contains",
+            "tool": "supplier.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the supplier confirmation CONF-CAS-77955 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-CO-0105"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-CO-0105"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-CO-0105 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-12"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-12"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-0005-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-0005-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-0005-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-0005"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-0005"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-0005 for lot, chair, and authority remarks that qualify the system records.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-03-13",
+              "start_date": "2026-03-09",
+              "status": "booked"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "APPT-24610"
+                  }
+                },
+                {
+                  "resource": {
+                    "id": "APPT-24611"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scheduling.appointments.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the appointment records that fix the schedule scope by immutable id.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for CLIN-0005 and confirmed that OCREL-300 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-16"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-16"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for CLIN-0005 and joined OCREL-300 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-17"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-17"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for CLIN-0005; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for CLIN-0005 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for OCREL-300 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for CLIN-0005 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for CLIN-0005, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for CLIN-0005: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "pharmacy.transfers.create",
+        "any_of": [
+          {
+            "arguments": {
+              "transfer_id": "TR-3101"
+            },
+            "expected_result_contains": {
+              "from_location_id": "LOC-SAT",
+              "quantity": 3,
+              "scheduled_date": "2026-03-10",
+              "status": "SCHEDULED",
+              "to_location_id": "LOC-PHARM",
+              "transfer_id": "TR-3101"
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.transfers.get"
+          }
+        ],
+        "description": "Read TR-3101 back through pharmacy.transfers.get after the change and confirmed the persisted provider values (transfer_id='TR-3101', quantity=3, from_location_id='LOC-SAT', to_location_id='LOC-PHARM', scheduled_date='2026-03-10', status='SCHEDULED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "from_location_id": "LOC-SAT",
+          "quantity": 3,
+          "scheduled_date": "2026-03-10",
+          "status": "SCHEDULED",
+          "to_location_id": "LOC-PHARM",
+          "transfer_id": "TR-3101"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "transfer_id": "TR-3101"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "clinicops",
+  "instruction": "We have two ocrelizumab patients at the infusion center this week and the main pharmacy is nearly out. Eastgate says they have stock, but some of it is spoken for and one lot looked old on the last count. Tell me exactly how many vials the two doses need, how many are already usable here, how many can legitimately come over from Eastgate, and whether buying direct instead is the better call. Schedule the transfer that the evidence supports and draft the message to the Eastgate pharmacist so the courier pickup is not a surprise.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "from_location_id": "LOC-SAT",
+        "medication_code": "OCREL-300",
+        "quantity": 6,
+        "scheduled_date": "2026-03-10",
+        "to_location_id": "LOC-PHARM"
+      },
+      "tool": "pharmacy.transfers.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-005-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "pharmacy.transfers.create",
+      "any_of": [
+        {
+          "arguments": {
+            "transfer_id": "TR-3101"
+          },
+          "expected_result_contains": {
+            "from_location_id": "LOC-SAT",
+            "quantity": 3,
+            "scheduled_date": "2026-03-10",
+            "status": "SCHEDULED",
+            "to_location_id": "LOC-PHARM",
+            "transfer_id": "TR-3101"
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.transfers.get"
+        }
+      ],
+      "description": "Read TR-3101 back through pharmacy.transfers.get after the change and confirmed the persisted provider values (transfer_id='TR-3101', quantity=3, from_location_id='LOC-SAT', to_location_id='LOC-PHARM', scheduled_date='2026-03-10', status='SCHEDULED') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "from_location_id": "LOC-SAT",
+        "quantity": 3,
+        "scheduled_date": "2026-03-10",
+        "status": "SCHEDULED",
+        "to_location_id": "LOC-PHARM",
+        "transfer_id": "TR-3101"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "transfer_id": "TR-3101"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-CO-0105"
+    },
+    "case_reference": "CLIN-0005",
+    "chat": {
+      "thread_id": "CHAT-0005"
+    },
+    "drive": {
+      "case_folder_query": "CLIN-0005",
+      "policy_query": "policy"
+    },
+    "ehr": {
+      "mrn": "MRN-455081",
+      "patient_search": {
+        "arguments": {
+          "identifier": "MRN-455081"
+        },
+        "tool": "ehr.patients.search"
+      }
+    },
+    "messages": {
+      "search_query": "CLIN-0005"
+    },
+    "pharmacy": {
+      "locations": [
+        "LOC-PHARM",
+        "LOC-SAT"
+      ],
+      "medication_code": "OCREL-300"
+    },
+    "scheduling": {
+      "calendar_window": {
+        "end_date": "2026-03-13",
+        "start_date": "2026-03-09"
+      },
+      "location_id": "LOC-INF"
+    },
+    "supplier": {
+      "confirmation_id": "CONF-CAS-77955"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "CLIN-0005"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated CLIN-0005 scope, immutable handles, mounted systems, and evidence index before investigating OCREL-300.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0005"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-0005-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for CLIN-0005 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "MRN-455081"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "PAT-10240"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.patients.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved MRN-455081 to the immutable Patient record through an identifier search rather than a name match against a similarly named patient.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0005"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-005-12"
+              },
+              {
+                "id": "DRV-005-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the CLIN-0005 case folder on the shared drive and identified the approval record and the order export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "policy"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-005-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the policy folder and distinguished the effective v3 policy from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "request_id": "MR-70120"
+          },
+          "expected_result_contains": {
+            "id": "MR-70120",
+            "status": "active"
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active order MR-70120: dose basis, regimen, doses in scope, and infusion and observation minutes.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "code": "29463-7",
+            "patient_id": "PAT-10240"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "OBS-WT-10240"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.observations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current measured weight for PAT-10240 (Observation 29463-7) and ignored the historical 2025 weight.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v3 policy for the rounding, minimum-dating, stocking, chair, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "OCREL-300"
+          },
+          "expected_result_contains": {
+            "medication_code": "OCREL-300"
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.medications.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the formulary record for OCREL-300: vial strength and minimum remaining dating.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "OCREL-300",
+            "status": "active"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "MR-70120"
+                }
+              },
+              {
+                "resource": {
+                  "id": "MR-70133"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the active orders that define the requirement (MR-70120, MR-70133) and excluded superseded or out-of-scope orders.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "OCREL-300"
+          },
+          "expected_result_contains": {
+            "lots": [
+              {
+                "lot_id": "LOT-OCR-5510"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.lots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every OCREL-300 lot with quantity, expiry, quarantine status, and reservations before netting the on-hand coverage.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-03-13",
+            "location_id": "LOC-INF",
+            "start_date": "2026-03-09"
+          },
+          "expected_result_contains": {
+            "slots": [
+              {
+                "id": "SLOT-3-20260312-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scheduling.slots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the chair schedule (FHIR Slot sessions) for 2026-03-09 onward to find the first free session that displaces no protected or blocked slot.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-CAS-77955"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-CAS-77955",
+            "standard_delivery_date": "2026-03-16"
+          },
+          "match": "result_contains",
+          "tool": "supplier.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the supplier confirmation CONF-CAS-77955 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-CO-0105"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-CO-0105"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-CO-0105 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-12"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-12"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-0005-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-0005-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-0005-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-0005"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-0005"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-0005 for lot, chair, and authority remarks that qualify the system records.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-03-13",
+            "start_date": "2026-03-09",
+            "status": "booked"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "APPT-24610"
+                }
+              },
+              {
+                "resource": {
+                  "id": "APPT-24611"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scheduling.appointments.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the appointment records that fix the schedule scope by immutable id.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for CLIN-0005 and confirmed that OCREL-300 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-16"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-16"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for CLIN-0005 and joined OCREL-300 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for CLIN-0005; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for CLIN-0005 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for OCREL-300 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for CLIN-0005 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for CLIN-0005, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for CLIN-0005: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "CLIN-0005"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "CLIN-0005"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-0005-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "MRN-455081"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "PAT-10240"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.patients.search"
+    },
+    {
+      "arguments": {
+        "q": "CLIN-0005"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-005-12"
+          },
+          {
+            "id": "DRV-005-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "policy"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-005-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "request_id": "MR-70120"
+      },
+      "expected_result_contains": {
+        "id": "MR-70120",
+        "status": "active"
+      },
+      "match": "result_contains",
+      "tool": "ehr.medication_requests.get"
+    },
+    {
+      "arguments": {
+        "code": "29463-7",
+        "patient_id": "PAT-10240"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "OBS-WT-10240"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.observations.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "medication_code": "OCREL-300"
+      },
+      "expected_result_contains": {
+        "medication_code": "OCREL-300"
+      },
+      "match": "result_contains",
+      "tool": "pharmacy.medications.get"
+    },
+    {
+      "arguments": {
+        "medication_code": "OCREL-300",
+        "status": "active"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "MR-70120"
+            }
+          },
+          {
+            "resource": {
+              "id": "MR-70133"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.medication_requests.list"
+    },
+    {
+      "arguments": {
+        "medication_code": "OCREL-300"
+      },
+      "expected_result_contains": {
+        "lots": [
+          {
+            "lot_id": "LOT-OCR-5510"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "pharmacy.lots.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-03-13",
+        "location_id": "LOC-INF",
+        "start_date": "2026-03-09"
+      },
+      "expected_result_contains": {
+        "slots": [
+          {
+            "id": "SLOT-3-20260312-AM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scheduling.slots.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-CAS-77955"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-CAS-77955",
+        "standard_delivery_date": "2026-03-16"
+      },
+      "match": "result_contains",
+      "tool": "supplier.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-CO-0105"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-CO-0105"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-12"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-12"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-0005-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-0005-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-0005"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-0005"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-03-13",
+        "start_date": "2026-03-09",
+        "status": "booked"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "APPT-24610"
+            }
+          },
+          {
+            "resource": {
+              "id": "APPT-24611"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scheduling.appointments.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-16"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-16"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-17"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-17"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "ehr.patients.search",
+    "ehr.medication_requests.list",
+    "ehr.medication_requests.get",
+    "ehr.observations.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "pharmacy.medications.get",
+    "pharmacy.lots.list",
+    "scheduling.appointments.list",
+    "scheduling.slots.list",
+    "supplier.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "infusion_pharmacy_buyer",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_19",
+        "investigation_20"
+      ],
+      "description": "Establish the isolated CLIN-0005 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_21"
+      ],
+      "description": "Determine the operative v1 requirement for OCREL-300 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_11",
+        "investigation_12",
+        "investigation_13",
+        "investigation_22",
+        "investigation_23",
+        "investigation_25"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 6 observed less 3 excluded to 3 supported VIAL for releasable OCREL-300 vials at the Eastgate satellite pharmacy. Applied the booked chair sessions that fix the administration dates to derive the three option outcomes without using protected or blocked sessions. Used the independently confirmed 2026-03-12 expedited readiness input for transfer_full_satellite_stock, then separately derived its 2026-03-11 operating outcome under the transfer procedure (releasable lots only) and the signed approval scope instead of treating a supplier promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_14",
+        "investigation_15",
+        "investigation_24"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-CO-0105 only to transfer_supported_quantity and OCREL-300; kept purchase_direct_with_expedite outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_16",
+        "investigation_17",
+        "investigation_18",
+        "investigation_26"
+      ],
+      "description": "Correlate OCREL-300 by immutable identifiers across the systems of record (ehr, scheduling, pharmacy, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 19.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "establish_source_quantity",
+        "reconcile_observed_quantity",
+        "identify_excluded_quantity",
+        "calculate_supported_quantity",
+        "bound_transaction_quantity",
+        "preserve_transaction_unit",
+        "compare_quantity_option_one",
+        "compare_quantity_option_two",
+        "compare_quantity_option_three",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "count_scheduled_administrations",
+        "read_ordered_dose",
+        "preserve_dose_unit",
+        "net_receiving_site_stock",
+        "identify_first_administration_session"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for this week's two ocrelizumab administrations.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for transfer_supported_quantity under the actual operating window and report whether the 2026-03-11 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select transfer_supported_quantity only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported 'Inter-site transfer scheduled' change for OCREL-300 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read OCREL-300 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_controlled_item_or_record",
+        "answer_transaction_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for this week's two ocrelizumab administrations.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside CLIN-0005's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "e894041f07a610f7dc82d72bddc84ec3b3521cd5ef3bb29e64d75522a8f157b5",
+  "starting_records": [
+    {
+      "resource_id": "APPT-24610",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "APPT-24611",
+      "resource_type": "Appointment",
+      "status": "booked",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "PO-5100",
+      "resource_type": "PurchaseOrder",
+      "status": "RECEIVED",
+      "system": "pharmacy"
+    },
+    {
+      "resource_id": "TR-3100",
+      "resource_type": "StockTransfer",
+      "status": "COMPLETED",
+      "system": "pharmacy"
+    }
+  ],
+  "task_id": "clinicops-005",
+  "title": "Transfer ocrelizumab from Eastgate for this week's doses",
+  "workflow": {
+    "answer_fields": 24,
+    "readbacks": 1,
+    "reads": 27,
+    "writes": 2
+  },
+  "world": {
+    "id": "northlake-infusion-v1",
+    "name": "Northlake Health — Infusion Services",
+    "organization_id": "ORG-NORTHLAKE",
+    "primary_site": "LOC-INF",
+    "systems": [
+      "ehr",
+      "pharmacy",
+      "scheduling",
+      "supplier",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

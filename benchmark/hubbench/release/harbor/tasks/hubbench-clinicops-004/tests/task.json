@@ -1,0 +1,2599 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "mutations",
+    "note_drafts",
+    "purchase_orders"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_supplier_shipment.",
+        "type": "string"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for standard_delivery_plan.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "dose_amount_unit": {
+        "description": "Unit of the derived dose amount (mg or g).",
+        "type": "string"
+      },
+      "doses_in_scope": {
+        "description": "Administrations in scope for this stocking decision.",
+        "type": "integer"
+      },
+      "earliest_qualified_base_slot": {
+        "description": "First non-displacing chair session on or after standard drug readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for borrow_vials_from_partner_hospital.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_completion_days_saved": {
+        "description": "Days the expedited shipment saves after the chair calendar is reapplied.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Meridian's confirmed standard and expedited delivery dates on MB-55207.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered VIAL that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "lot 8790 vials quarantined after the refrigerator alarm",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for dispensable IVIG-10G vials at the infusion pharmacy before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: VIAL.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing standard_delivery_plan, expedite_supplier_shipment, borrow_vials_from_partner_hospital.",
+        "enum": [
+          "standard_delivery_plan",
+          "expedite_supplier_shipment",
+          "borrow_vials_from_partner_hospital"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_dose_amount": {
+        "description": "Dose per administration derived from the ordered g/kg and the current measured weight.",
+        "type": "integer"
+      },
+      "required_quantity": {
+        "description": "10 g vials required for one 1 g/kg administration at the 2026-03-06 weight of 70 kg",
+        "type": "integer"
+      },
+      "selected_chair_session": {
+        "description": "Chair and session used by the selected option, as CHAIR/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered VIAL after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Meridian's confirmed standard and expedited delivery dates on MB-55207.",
+        "type": "string"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing lot 8790 vials quarantined after the refrigerator alarm.",
+        "type": "integer"
+      },
+      "vials_per_dose": {
+        "description": "Whole vials per administration after the formulary rounding rule.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "baseline_completion",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "dose_amount_unit",
+      "doses_in_scope",
+      "earliest_qualified_base_slot",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_completion_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_dose_amount",
+      "required_quantity",
+      "selected_chair_session",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "usable_coverage_quantity",
+      "vials_per_dose"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-03-09",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "drug readiness versus the non-displacing chair calendar; lot 8790 vials quarantined after the refrigerator alarm = 4 VIAL; uncovered scope = 2 VIAL",
+    "calculations": [
+      {
+        "description": "Preserved 2026-03-16 as the documented control date for Kwame Boateng's IVIG induction; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 7 VIAL for 10 g vials required for one 1 g/kg administration at the 2026-03-06 weight of 70 kg at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 9 VIAL of gross observed dispensable IVIG-10G vials at the infusion pharmacy.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 4 VIAL for lot 8790 vials quarantined after the refrigerator alarm.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 4 ineligible = 5 usable VIAL.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 7 required − 5 usable = 2 VIAL uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_delivery_plan outcome as 2026-03-20 under regular chair sessions that do not displace protected patients.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_supplier_shipment outcome as 2026-03-13 using Meridian's confirmed standard and expedited delivery dates on MB-55207.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated borrow_vials_from_partner_hospital outcome as 2026-03-11 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-20 as the independently confirmed standard readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55207.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-13 as the independently confirmed expedited readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55207.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 2 VIAL uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 1 g/kg × 70 kg (2026-03-06 weight) = 70 g for the single-day administration.",
+        "field": "required_dose_amount",
+        "id": "calculate_weight_based_dose",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the derived dose in g.",
+        "field": "dose_amount_unit",
+        "id": "preserve_dose_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Converted 70 g into 7 single-use 10 g vials.",
+        "field": "vials_per_dose",
+        "id": "convert_dose_to_vials",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept one administration in scope; the every-4-weeks maintenance is a later stocking decision.",
+        "field": "doses_in_scope",
+        "id": "apply_stocking_policy_doses",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-03-20 (CHAIR-3 AM) as the first free session on or after the 2026-03-20 standard readiness.",
+        "field": "earliest_qualified_base_slot",
+        "id": "identify_first_nondisplacing_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the expedited plan to CHAIR-1/2026-03-13/PM, the first free session on or after the 2026-03-13 expedited readiness.",
+        "field": "selected_chair_session",
+        "id": "bind_selected_chair_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the expedited 2026-03-13 chair date with the standard 2026-03-20 date: expediting saves 7 days and is the only authorized path inside the control date.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_chair_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 180 as the documented incremental cost for expedite_supplier_shipment; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that borrow_vials_from_partner_hospital remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_delivery_plan, expedite_supplier_shipment, borrow_vials_from_partner_hospital; selected expedite_supplier_shipment because it alone gives the best currently authorized result under drug readiness versus the non-displacing chair calendar.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-03-13 as the supported outcome date for expedite_supplier_shipment.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-03-13 with the independent control date 2026-03-16 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located IVIG-10G using immutable identifiers and preserved effective revision v1: MRN-604118 resolves to Patient PAT-10933 and active order MR-70455; Ama Boateng's completed ITP course (MR-70430) is a different patient and regimen.",
+        "sources": [
+          "ehr",
+          "messages"
+        ],
+        "statement": "CLIN-0004: MRN-604118 resolves to Patient PAT-10933 and active order MR-70455; Ama Boateng's completed ITP course (MR-70430) is a different patient and regimen; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective order and policy to establish 7 VIAL for 10 g vials required for one 1 g/kg administration at the 2026-03-06 weight of 70 kg, with control date 2026-03-16.",
+        "sources": [
+          "ehr",
+          "drive"
+        ],
+        "statement": "The effective order and policy establish 10 g vials required for one 1 g/kg administration at the 2026-03-06 weight of 70 kg = 7 VIAL: the order is 1 g/kg at the 2026-03-06 weight of 70 kg, so one administration needs 70 g = 7 vials. The control date is 2026-03-16 (Dr. Lindqvist: dose by Monday 2026-03-16 because weakness is progressing)."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 9 observed less 4 excluded to 5 supported VIAL for dispensable IVIG-10G vials at the infusion pharmacy.",
+        "sources": [
+          "pharmacy",
+          "scheduling",
+          "drive"
+        ],
+        "statement": "the on-hand workbook shows 9 IVIG-10G vials in gross; lot 8790 (4 vials) is quarantined after the 2026-03-01 alarm, so 5 vials are dispensable; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-03-13 expedited readiness input for expedite_supplier_shipment, then separately derived its 2026-03-13 operating outcome under drug readiness versus the non-displacing chair calendar instead of treating a supplier promise as authorization or a completion date.",
+        "sources": [
+          "supplier",
+          "messages"
+        ],
+        "statement": "Meridian's confirmed standard and expedited delivery dates on MB-55207: Meridian MB-55207 confirms standard delivery 2026-03-19 and expedited 2026-03-12 (+USD 180); shelf release is the next clinic day after receipt; a supplier confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied regular chair sessions that do not displace protected patients to derive the three option outcomes without using protected or blocked sessions.",
+        "sources": [
+          "scheduling",
+          "drive"
+        ],
+        "statement": "regular chair sessions that do not displace protected patients: the first free session on or after 2026-03-13 is CHAIR-1 PM on 2026-03-13; on or after 2026-03-20 it is CHAIR-3 AM on 2026-03-20; CHAIR-2 AM on 2026-03-16 is protected; protected and blocked sessions cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-CO-0104 only to expedite_supplier_shipment and IVIG-10G; kept borrow_vials_from_partner_hospital outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-CO-0104 covers one Meridian order up to 3 vials with an expedite fee up to USD 200; partner loans and release of lot 8790 need the pharmacy director. The approval does not select an option in advance and does not authorize borrow_vials_from_partner_hospital."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected expedite_supplier_shipment: it is the best currently authorized response that satisfies drug readiness versus the non-displacing chair calendar.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "neurology needs the dose by 2026-03-16 and will otherwise escalate; a faster or broader action has value only if it remains inside drug readiness versus the non-displacing chair calendar."
+      }
+    ],
+    "mode": "plan",
+    "options": [
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-03-20",
+        "consequence": "standard delivery plan waits for Meridian's 2026-03-19 run, shelf 2026-03-20, first free session 2026-03-20 (CHAIR-3 AM); it costs nothing but lands 4 days after the neurology control date.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "standard_delivery_plan",
+        "incremental_cost": 0,
+        "label": "standard_delivery_plan: outcome 2026-03-20, incremental cost USD 0, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "APPROVED",
+        "completion": "2026-03-13",
+        "consequence": "expedite supplier shipment brings 2 vials by 2026-03-12, shelf 2026-03-13, and the free CHAIR-1 PM session on 2026-03-13 dispenses the full 70 g three days before the control date for USD 180, inside AP-CO-0104.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "expedite_supplier_shipment",
+        "incremental_cost": 180,
+        "label": "expedite_supplier_shipment: outcome 2026-03-13, incremental cost USD 180, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-03-11",
+        "consequence": "borrow vials from partner hospital would dose on 2026-03-11 (CHAIR-2 PM) for a USD 60 courier, 2 days earlier, but inter-facility loans need the pharmacy director and the partner agreement, which AP-CO-0104 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "borrow_vials_from_partner_hospital",
+        "incremental_cost": 60,
+        "label": "borrow_vials_from_partner_hospital: outcome 2026-03-11, incremental cost USD 60, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "expedite_supplier_shipment is the best currently authorized response that satisfies drug readiness versus the non-displacing chair calendar and lands 3 day(s) on or before the control date.",
+    "selected_completion": "2026-03-13",
+    "selected_cost": 180,
+    "selected_option": "expedite_supplier_shipment"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "accelerated_completion": "2026-03-13",
+      "baseline_completion": "2026-03-20",
+      "business_need_date": "2026-03-16",
+      "coverage_item_or_resource": "IVIG-10G",
+      "decision_timing_status": "ON_TIME",
+      "dose_amount_unit": "g",
+      "doses_in_scope": 1,
+      "earliest_qualified_base_slot": "2026-03-20",
+      "escalated_completion": "2026-03-11",
+      "escalation_approval_required": 1,
+      "expedite_completion_days_saved": 7,
+      "expedited_external_readiness": "2026-03-13",
+      "external_recovery_quantity": 2,
+      "ineligible_coverage_quantity": 4,
+      "observed_coverage_quantity": 9,
+      "outcome_vs_control_days": -3,
+      "quantity_unit": "VIAL",
+      "recommended_incremental_cost_usd": 180,
+      "recommended_option": "expedite_supplier_shipment",
+      "recommended_outcome_date": "2026-03-13",
+      "required_dose_amount": 70,
+      "required_quantity": 7,
+      "selected_chair_session": "CHAIR-1/2026-03-13/PM",
+      "shortage_quantity": 2,
+      "standard_external_readiness": "2026-03-20",
+      "usable_coverage_quantity": 5,
+      "vials_per_dose": 7
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'expedite_supplier_shipment', tied to IVIG-10G, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-03-13', tied to IVIG-10G, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported coverage item or resource as 'IVIG-10G', tied to IVIG-10G, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "coverage_item_or_resource",
+        "id": "answer_coverage_item_or_resource",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported shortage quantity as 2, tied to IVIG-10G, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "shortage_quantity",
+        "id": "answer_shortage_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to IVIG-10G, revision v1, and the selected expedite_supplier_shipment outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required IVIG-10G to reach business outcome 'Expedited purchase order submitted' through pharmacy.orders.create with exact provider-critical values supplier_id='SUP-MERIDIAN', confirmation_id='CONF-MER-55207', medication_code='IVIG-10G', quantity=2, delivery_option='expedited'. The audited change binds selected option expedite_supplier_shipment, approval AP-CO-0104, and constraint drug readiness versus the non-displacing chair calendar; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "supplier_id",
+          "confirmation_id",
+          "medication_code",
+          "quantity",
+          "delivery_option"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "confirmation_id": "CONF-MER-55207",
+            "delivery_option": "expedited",
+            "medication_code": "IVIG-10G",
+            "quantity": 2,
+            "supplier_id": "SUP-MERIDIAN"
+          },
+          "tool": "pharmacy.orders.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "PO-5101",
+          "status": "SUBMITTED",
+          "table_name": "purchase_orders",
+          "tool": "pharmacy.orders.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "clinicops-004-mutation-01",
+          "task_id": "clinicops-004"
+        }
+      },
+      {
+        "description": "Persisted PO-5101 in purchase_orders with the supported values (supplier_id='SUP-MERIDIAN', confirmation_id='CONF-MER-55207', medication_code='IVIG-10G', quantity=2, delivery_option='expedited', expected_delivery_date='2026-03-12', status='SUBMITTED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "purchase_orders",
+        "values": {
+          "confirmation_id": "CONF-MER-55207",
+          "delivery_option": "expedited",
+          "expected_delivery_date": "2026-03-12",
+          "medication_code": "IVIG-10G",
+          "quantity": 2,
+          "status": "SUBMITTED",
+          "supplier_id": "SUP-MERIDIAN"
+        },
+        "weight": 2.0,
+        "where": {
+          "po_id": "PO-5101"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying expedite_supplier_shipment, the 2026-03-13 outcome, the binding constraint, and the CLIN-0004 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "neuro-coordinator@northlake.example; scheduling@northlake.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "CLIN-0004",
+            "MRN-604118",
+            "MR-70455"
+          ]
+        ],
+        "payload_text_contains": [
+          "expedite_supplier_shipment",
+          "2026-03-13"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "clinicops-004-mutation-02",
+          "task_id": "clinicops-004"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for CLIN-0004: the primary change and the stakeholder draft; no additional order, transfer, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "clinicops-004"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-03-16 as the documented control date for Kwame Boateng's IVIG induction; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 7 VIAL for 10 g vials required for one 1 g/kg administration at the 2026-03-06 weight of 70 kg at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 9 VIAL of gross observed dispensable IVIG-10G vials at the infusion pharmacy.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 4 VIAL for lot 8790 vials quarantined after the refrigerator alarm.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 4 ineligible = 5 usable VIAL.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 7 required − 5 usable = 2 VIAL uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in VIAL.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_delivery_plan outcome as 2026-03-20 under regular chair sessions that do not displace protected patients.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_supplier_shipment outcome as 2026-03-13 using Meridian's confirmed standard and expedited delivery dates on MB-55207.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated borrow_vials_from_partner_hospital outcome as 2026-03-11 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-20 as the independently confirmed standard readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55207.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-03-13 as the independently confirmed expedited readiness date for Meridian's confirmed standard and expedited delivery dates on MB-55207.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 2 VIAL uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 1 g/kg × 70 kg (2026-03-06 weight) = 70 g for the single-day administration.",
+        "field": "required_dose_amount",
+        "id": "calculate_weight_based_dose",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the derived dose in g.",
+        "field": "dose_amount_unit",
+        "id": "preserve_dose_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Converted 70 g into 7 single-use 10 g vials.",
+        "field": "vials_per_dose",
+        "id": "convert_dose_to_vials",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept one administration in scope; the every-4-weeks maintenance is a later stocking decision.",
+        "field": "doses_in_scope",
+        "id": "apply_stocking_policy_doses",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-03-20 (CHAIR-3 AM) as the first free session on or after the 2026-03-20 standard readiness.",
+        "field": "earliest_qualified_base_slot",
+        "id": "identify_first_nondisplacing_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the expedited plan to CHAIR-1/2026-03-13/PM, the first free session on or after the 2026-03-13 expedited readiness.",
+        "field": "selected_chair_session",
+        "id": "bind_selected_chair_session",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the expedited 2026-03-13 chair date with the standard 2026-03-20 date: expediting saves 7 days and is the only authorized path inside the control date.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_chair_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 180 as the documented incremental cost for expedite_supplier_shipment; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that borrow_vials_from_partner_hospital remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_delivery_plan, expedite_supplier_shipment, borrow_vials_from_partner_hospital; selected expedite_supplier_shipment because it alone gives the best currently authorized result under drug readiness versus the non-displacing chair calendar.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-03-13 as the supported outcome date for expedite_supplier_shipment.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-03-13 with the independent control date 2026-03-16 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "CLIN-0004"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated CLIN-0004 scope, immutable handles, mounted systems, and evidence index before investigating IVIG-10G.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "CLIN-0004"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-0004-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for CLIN-0004 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "MRN-604118"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "PAT-10933"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.patients.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved MRN-604118 to the immutable Patient record through an identifier search rather than a name match against a similarly named patient.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "CLIN-0004"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-004-11"
+                },
+                {
+                  "id": "DRV-004-03"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the CLIN-0004 case folder on the shared drive and identified the approval record and the order export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "policy"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-004-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the policy folder and distinguished the effective v3 policy from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "request_id": "MR-70455"
+            },
+            "expected_result_contains": {
+              "id": "MR-70455",
+              "status": "active"
+            },
+            "match": "result_contains",
+            "tool": "ehr.medication_requests.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active order MR-70455: dose basis, regimen, doses in scope, and infusion and observation minutes.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "code": "29463-7",
+              "patient_id": "PAT-10933"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "OBS-WT-10933"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.observations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current measured weight for PAT-10933 (Observation 29463-7) and ignored the historical 2025 weight.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v3 policy for the rounding, minimum-dating, stocking, chair, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "IVIG-10G"
+            },
+            "expected_result_contains": {
+              "medication_code": "IVIG-10G"
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.medications.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the formulary record for IVIG-10G: vial strength and minimum remaining dating.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "patient_id": "PAT-10933"
+            },
+            "expected_result_contains": {
+              "entry": [
+                {
+                  "resource": {
+                    "id": "MR-70455"
+                  }
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ehr.medication_requests.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the active orders that define the requirement (MR-70455) and excluded superseded or out-of-scope orders.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "medication_code": "IVIG-10G"
+            },
+            "expected_result_contains": {
+              "lots": [
+                {
+                  "lot_id": "LOT-IG-8801"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.lots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every IVIG-10G lot with quantity, expiry, quarantine status, and reservations before netting the on-hand coverage.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-03-24",
+              "location_id": "LOC-INF",
+              "start_date": "2026-03-11"
+            },
+            "expected_result_contains": {
+              "slots": [
+                {
+                  "id": "SLOT-1-20260313-PM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scheduling.slots.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the chair schedule (FHIR Slot sessions) for 2026-03-11 onward to find the first free session that displaces no protected or blocked slot.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-MER-55207"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-MER-55207",
+              "standard_delivery_date": "2026-03-19"
+            },
+            "match": "result_contains",
+            "tool": "supplier.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the supplier confirmation CONF-MER-55207 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-CO-0104"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-CO-0104"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-CO-0104 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-11"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-11"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-0004-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-0004-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-0004-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-0004"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-0004"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-0004 for lot, chair, and authority remarks that qualify the system records.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "patient_id": "PAT-10933"
+            },
+            "expected_result_contains": {
+              "total": 0
+            },
+            "match": "result_contains",
+            "tool": "scheduling.appointments.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the appointment records that fix the schedule scope by immutable id.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for CLIN-0004 and confirmed that IVIG-10G is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-15"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-15"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for CLIN-0004 and joined IVIG-10G to the current authority and evidence records by immutable identity.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-16"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-16"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for CLIN-0004; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for CLIN-0004 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for IVIG-10G and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-18"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-18"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for CLIN-0004 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for CLIN-0004, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for CLIN-0004: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "pharmacy.orders.create",
+        "any_of": [
+          {
+            "arguments": {
+              "po_id": "PO-5101"
+            },
+            "expected_result_contains": {
+              "delivery_option": "expedited",
+              "expected_delivery_date": "2026-03-12",
+              "po_id": "PO-5101",
+              "quantity": 2,
+              "status": "SUBMITTED"
+            },
+            "match": "result_contains",
+            "tool": "pharmacy.orders.get"
+          }
+        ],
+        "description": "Read PO-5101 back through pharmacy.orders.get after the change and confirmed the persisted provider values (po_id='PO-5101', quantity=2, delivery_option='expedited', expected_delivery_date='2026-03-12', status='SUBMITTED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "delivery_option": "expedited",
+          "expected_delivery_date": "2026-03-12",
+          "po_id": "PO-5101",
+          "quantity": 2,
+          "status": "SUBMITTED"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "po_id": "PO-5101"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "clinicops",
+  "instruction": "Neurology is pushing to get Kwame Boateng's IVIG in quickly because his weakness is progressing. Dr. Lindqvist's order is weight-based and pharmacy tells me part of our immune globulin is sitting in quarantine after the fridge alarm. I need to know how much the order really needs, how much of what we hold can actually be used, whether Meridian's standard or expedited delivery gets us there in time for the date neurology gave, and what borrowing from the partner hospital would involve. Place the order that is actually approved, then draft the update for neurology and scheduling.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "confirmation_id": "CONF-MER-55207",
+        "delivery_option": "expedited",
+        "medication_code": "IVIG-10G",
+        "quantity": 6,
+        "supplier_id": "SUP-MERIDIAN"
+      },
+      "tool": "pharmacy.orders.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-004-02"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "pharmacy.orders.create",
+      "any_of": [
+        {
+          "arguments": {
+            "po_id": "PO-5101"
+          },
+          "expected_result_contains": {
+            "delivery_option": "expedited",
+            "expected_delivery_date": "2026-03-12",
+            "po_id": "PO-5101",
+            "quantity": 2,
+            "status": "SUBMITTED"
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.orders.get"
+        }
+      ],
+      "description": "Read PO-5101 back through pharmacy.orders.get after the change and confirmed the persisted provider values (po_id='PO-5101', quantity=2, delivery_option='expedited', expected_delivery_date='2026-03-12', status='SUBMITTED') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "delivery_option": "expedited",
+        "expected_delivery_date": "2026-03-12",
+        "po_id": "PO-5101",
+        "quantity": 2,
+        "status": "SUBMITTED"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "po_id": "PO-5101"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-CO-0104"
+    },
+    "case_reference": "CLIN-0004",
+    "chat": {
+      "thread_id": "CHAT-0004"
+    },
+    "drive": {
+      "case_folder_query": "CLIN-0004",
+      "policy_query": "policy"
+    },
+    "ehr": {
+      "mrn": "MRN-604118",
+      "patient_search": {
+        "arguments": {
+          "identifier": "MRN-604118"
+        },
+        "tool": "ehr.patients.search"
+      }
+    },
+    "messages": {
+      "search_query": "CLIN-0004"
+    },
+    "pharmacy": {
+      "locations": [
+        "LOC-PHARM"
+      ],
+      "medication_code": "IVIG-10G"
+    },
+    "scheduling": {
+      "calendar_window": {
+        "end_date": "2026-03-24",
+        "start_date": "2026-03-11"
+      },
+      "location_id": "LOC-INF"
+    },
+    "supplier": {
+      "confirmation_id": "CONF-MER-55207"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "CLIN-0004"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated CLIN-0004 scope, immutable handles, mounted systems, and evidence index before investigating IVIG-10G.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0004"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-0004-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for CLIN-0004 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "MRN-604118"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "PAT-10933"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.patients.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved MRN-604118 to the immutable Patient record through an identifier search rather than a name match against a similarly named patient.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0004"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-004-11"
+              },
+              {
+                "id": "DRV-004-03"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the CLIN-0004 case folder on the shared drive and identified the approval record and the order export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "policy"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-004-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the policy folder and distinguished the effective v3 policy from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "request_id": "MR-70455"
+          },
+          "expected_result_contains": {
+            "id": "MR-70455",
+            "status": "active"
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active order MR-70455: dose basis, regimen, doses in scope, and infusion and observation minutes.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "code": "29463-7",
+            "patient_id": "PAT-10933"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "OBS-WT-10933"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.observations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current measured weight for PAT-10933 (Observation 29463-7) and ignored the historical 2025 weight.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v3 policy for the rounding, minimum-dating, stocking, chair, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "IVIG-10G"
+          },
+          "expected_result_contains": {
+            "medication_code": "IVIG-10G"
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.medications.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the formulary record for IVIG-10G: vial strength and minimum remaining dating.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "patient_id": "PAT-10933"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "MR-70455"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the active orders that define the requirement (MR-70455) and excluded superseded or out-of-scope orders.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "IVIG-10G"
+          },
+          "expected_result_contains": {
+            "lots": [
+              {
+                "lot_id": "LOT-IG-8801"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.lots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every IVIG-10G lot with quantity, expiry, quarantine status, and reservations before netting the on-hand coverage.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-03-24",
+            "location_id": "LOC-INF",
+            "start_date": "2026-03-11"
+          },
+          "expected_result_contains": {
+            "slots": [
+              {
+                "id": "SLOT-1-20260313-PM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scheduling.slots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the chair schedule (FHIR Slot sessions) for 2026-03-11 onward to find the first free session that displaces no protected or blocked slot.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-MER-55207"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-MER-55207",
+            "standard_delivery_date": "2026-03-19"
+          },
+          "match": "result_contains",
+          "tool": "supplier.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the supplier confirmation CONF-MER-55207 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-CO-0104"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-CO-0104"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-CO-0104 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-11"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-11"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-0004-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-0004-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-0004-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-0004"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-0004"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-0004 for lot, chair, and authority remarks that qualify the system records.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "patient_id": "PAT-10933"
+          },
+          "expected_result_contains": {
+            "total": 0
+          },
+          "match": "result_contains",
+          "tool": "scheduling.appointments.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the appointment records that fix the schedule scope by immutable id.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for CLIN-0004 and confirmed that IVIG-10G is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-15"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-15"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for CLIN-0004 and joined IVIG-10G to the current authority and evidence records by immutable identity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-16"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-16"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for CLIN-0004; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for CLIN-0004 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for IVIG-10G and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-18"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-18"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for CLIN-0004 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for CLIN-0004, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for CLIN-0004: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "CLIN-0004"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "CLIN-0004"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-0004-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "MRN-604118"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "PAT-10933"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.patients.search"
+    },
+    {
+      "arguments": {
+        "q": "CLIN-0004"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-004-11"
+          },
+          {
+            "id": "DRV-004-03"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "policy"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-004-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "request_id": "MR-70455"
+      },
+      "expected_result_contains": {
+        "id": "MR-70455",
+        "status": "active"
+      },
+      "match": "result_contains",
+      "tool": "ehr.medication_requests.get"
+    },
+    {
+      "arguments": {
+        "code": "29463-7",
+        "patient_id": "PAT-10933"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "OBS-WT-10933"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.observations.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "medication_code": "IVIG-10G"
+      },
+      "expected_result_contains": {
+        "medication_code": "IVIG-10G"
+      },
+      "match": "result_contains",
+      "tool": "pharmacy.medications.get"
+    },
+    {
+      "arguments": {
+        "patient_id": "PAT-10933"
+      },
+      "expected_result_contains": {
+        "entry": [
+          {
+            "resource": {
+              "id": "MR-70455"
+            }
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ehr.medication_requests.list"
+    },
+    {
+      "arguments": {
+        "medication_code": "IVIG-10G"
+      },
+      "expected_result_contains": {
+        "lots": [
+          {
+            "lot_id": "LOT-IG-8801"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "pharmacy.lots.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-03-24",
+        "location_id": "LOC-INF",
+        "start_date": "2026-03-11"
+      },
+      "expected_result_contains": {
+        "slots": [
+          {
+            "id": "SLOT-1-20260313-PM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scheduling.slots.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-MER-55207"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-MER-55207",
+        "standard_delivery_date": "2026-03-19"
+      },
+      "match": "result_contains",
+      "tool": "supplier.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-CO-0104"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-CO-0104"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-11"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-11"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-0004-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-0004-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-0004"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-0004"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "patient_id": "PAT-10933"
+      },
+      "expected_result_contains": {
+        "total": 0
+      },
+      "match": "result_contains",
+      "tool": "scheduling.appointments.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-15"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-15"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-16"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-16"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-18"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-18"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "ehr.patients.search",
+    "ehr.medication_requests.list",
+    "ehr.medication_requests.get",
+    "ehr.observations.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "pharmacy.medications.get",
+    "pharmacy.lots.list",
+    "scheduling.appointments.list",
+    "scheduling.slots.list",
+    "supplier.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "infusion_pharmacy_buyer",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_19",
+        "investigation_20"
+      ],
+      "description": "Establish the isolated CLIN-0004 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_21"
+      ],
+      "description": "Determine the operative v1 requirement for IVIG-10G from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_11",
+        "investigation_12",
+        "investigation_13",
+        "investigation_22",
+        "investigation_23",
+        "investigation_25"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 9 observed less 4 excluded to 5 supported VIAL for dispensable IVIG-10G vials at the infusion pharmacy. Applied regular chair sessions that do not displace protected patients to derive the three option outcomes without using protected or blocked sessions. Used the independently confirmed 2026-03-13 expedited readiness input for expedite_supplier_shipment, then separately derived its 2026-03-13 operating outcome under drug readiness versus the non-displacing chair calendar instead of treating a supplier promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_14",
+        "investigation_15",
+        "investigation_24"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-CO-0104 only to expedite_supplier_shipment and IVIG-10G; kept borrow_vials_from_partner_hospital outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_16",
+        "investigation_17",
+        "investigation_18",
+        "investigation_26"
+      ],
+      "description": "Correlate IVIG-10G by immutable identifiers across the systems of record (ehr, scheduling, pharmacy, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 23.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "derive_plan_requirement",
+        "read_gross_coverage",
+        "remove_ineligible_coverage",
+        "calculate_usable_coverage",
+        "calculate_plan_gap",
+        "preserve_plan_unit",
+        "compare_baseline_plan",
+        "compare_accelerated_plan",
+        "compare_escalated_plan",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "bound_external_recovery_quantity",
+        "calculate_weight_based_dose",
+        "preserve_dose_unit",
+        "convert_dose_to_vials",
+        "apply_stocking_policy_doses",
+        "identify_first_nondisplacing_session",
+        "bind_selected_chair_session",
+        "test_expedite_against_chair_calendar"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for Kwame Boateng's IVIG induction.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for expedite_supplier_shipment under the actual operating window and report whether the 2026-03-13 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select expedite_supplier_shipment only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported 'Expedited purchase order submitted' change for IVIG-10G through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read IVIG-10G back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_coverage_item_or_resource",
+        "answer_shortage_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for Kwame Boateng's IVIG induction.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside CLIN-0004's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "4eda773d5deb7911667a87a3e9b1b9634ad1d1ddf02356e7cd89c3274322c3f0",
+  "starting_records": [
+    {
+      "resource_id": "APPT-24540",
+      "resource_type": "Appointment",
+      "status": "fulfilled",
+      "system": "scheduling"
+    },
+    {
+      "resource_id": "PO-5100",
+      "resource_type": "PurchaseOrder",
+      "status": "RECEIVED",
+      "system": "pharmacy"
+    }
+  ],
+  "task_id": "clinicops-004",
+  "title": "Get Kwame Boateng's IVIG in before neurology's deadline",
+  "workflow": {
+    "answer_fields": 27,
+    "readbacks": 1,
+    "reads": 27,
+    "writes": 2
+  },
+  "world": {
+    "id": "northlake-infusion-v1",
+    "name": "Northlake Health — Infusion Services",
+    "organization_id": "ORG-NORTHLAKE",
+    "primary_site": "LOC-INF",
+    "systems": [
+      "ehr",
+      "pharmacy",
+      "scheduling",
+      "supplier",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

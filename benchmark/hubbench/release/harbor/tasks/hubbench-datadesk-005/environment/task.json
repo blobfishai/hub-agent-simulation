@@ -1,0 +1,2255 @@
+{
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_vendor_reexport.",
+        "type": "string"
+      },
+      "backfill_minutes_per_partition": {
+        "description": "Worst-case rerun minutes for one attribution partition per the run history.",
+        "type": "integer"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for standard_reexport_backfill.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for reprocess_full_raw_archive.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Cormorant's confirmed standard and expedited re-export dates on CA-5519.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered PARTITION_DAY that the external recovery must cover.",
+        "type": "integer"
+      },
+      "failed_partition_date": {
+        "description": "Partition whose load crashed outright and never succeeded (ISO date).",
+        "type": "string"
+      },
+      "first_contaminated_partition": {
+        "description": "Earliest partition parsed from the unannounced v3.0 schema (ISO date).",
+        "type": "string"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "partitions parsed from the unannounced v3.0 schema with the consent fields dropped",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for attribution partitions still certified on the v2.3 event schema before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "partitions_per_window": {
+        "description": "Partitions one 4-hour batch window can rerun at that rate.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: PARTITION_DAY.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing standard_reexport_backfill, expedite_vendor_reexport, reprocess_full_raw_archive.",
+        "enum": [
+          "standard_reexport_backfill",
+          "expedite_vendor_reexport",
+          "reprocess_full_raw_archive"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_quantity": {
+        "description": "daily attribution partitions the trailing 2026-02-23..2026-03-06 certification window covers",
+        "type": "integer"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered PARTITION_DAY after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Cormorant's confirmed standard and expedited re-export dates on CA-5519.",
+        "type": "string"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing partitions parsed from the unannounced v3.0 schema with the consent fields dropped.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "backfill_minutes_per_partition",
+      "baseline_completion",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "failed_partition_date",
+      "first_contaminated_partition",
+      "ineligible_coverage_quantity",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "partitions_per_window",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_quantity",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "usable_coverage_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-03-09",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "family": "datadesk",
+  "instruction": "Cormorant flipped their clickstream to a new event schema without notice and our parser has been silently dropping the consent fields ever since, so attribution is wrong going into Thursday's growth review. Work out which event days in the trailing window still stand, which were parsed from the new schema, and how many days genuinely need reprocessing. Then see whether their standard or expedited re-export actually lands in time once you account for the warehouse windows we can use. Schedule the reload the approval covers, and draft the note for the growth lead, flagging any full-history option for Ingrid.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-DD-0205"
+    },
+    "case_reference": "DATA-0005",
+    "chat": {
+      "thread_id": "CHAT-0005"
+    },
+    "drive": {
+      "case_folder_query": "DATA-0005",
+      "policy_query": "policy"
+    },
+    "feeds": {
+      "confirmation_id": "CONF-CORM-5519",
+      "feed_id": "FEED-CORM-CLK"
+    },
+    "messages": {
+      "search_query": "DATA-0005"
+    },
+    "pipelines": {
+      "models": [
+        "MDL-ATTR-T",
+        "MDL-STG-CLK"
+      ]
+    },
+    "recon": {
+      "controls": "none published for this case"
+    },
+    "warehouse": {
+      "model_id": "MDL-ATTR-T",
+      "model_search": {
+        "arguments": {
+          "name": "fct_attribution_touch"
+        },
+        "tool": "warehouse.models.search"
+      }
+    },
+    "warehouse_calendar": {
+      "window": {
+        "end_date": "2026-03-13",
+        "start_date": "2026-03-09"
+      }
+    }
+  },
+  "role": "analytics_engineer_oncall",
+  "seed_tables": {
+    "adjustment_entries": [
+      {
+        "approval_id": "AP-DD-0164",
+        "created_at": "2026-01-12T10:00:00",
+        "created_by": "finance_ops",
+        "direction": "add",
+        "entry_id": "ADJ-3100",
+        "model_id": "MDL-ATTR-T",
+        "period_end": "2026-01-09",
+        "period_start": "2026-01-05",
+        "reason": "January freight rebill timing correction",
+        "revision": 1,
+        "rows": 12,
+        "status": "POSTED"
+      }
+    ],
+    "approvals": [
+      {
+        "approval_id": "AP-DD-0205",
+        "approver_id": "U-VOSS",
+        "approver_role": "data_platform_lead",
+        "granted_on": "2026-03-08",
+        "scope_json": "{\"clusters\": [\"WH-STD\"], \"confirmation\": \"CA-5519\", \"expedite_fee_allowed_usd\": 350, \"model_id\": \"MDL-ATTR-T\", \"not_covered\": [\"full-history reprocessing of the raw archive (data platform lead, separate request)\", \"replication window displacement (head of data)\", \"consent-field imputation in SQL (prohibited)\"], \"partitions\": [\"2026-03-02\", \"2026-03-06\"]}",
+        "status": "APPROVED",
+        "subject": "Attribution re-export backfill for DATA-0005 (fct_attribution_touch)"
+      },
+      {
+        "approval_id": "AP-DD-0190",
+        "approver_id": "U-VOSS",
+        "approver_role": "data_platform_lead",
+        "granted_on": "2026-01-15",
+        "scope_json": "{\"budget_usd\": 18000, \"quarter\": \"2026-Q1\"}",
+        "status": "APPROVED",
+        "subject": "Quarterly warehouse credit true-up"
+      }
+    ],
+    "backfill_jobs": [
+      {
+        "cluster_id": "WH-STD",
+        "created_at": "2026-02-12T09:00:00",
+        "description": "January volume re-tier backfill",
+        "end_time": "2026-02-13T05:00:00",
+        "job_id": "BF-7100",
+        "model_id": "MDL-STG-CLK",
+        "partition_end": "2026-02-13",
+        "partition_start": "2026-02-09",
+        "partitions": 5,
+        "requested_by": "data_platform_lead",
+        "revision": 1,
+        "start_time": "2026-02-13T01:00:00",
+        "status": "COMPLETED"
+      }
+    ],
+    "chat_threads": [
+      {
+        "channel": "#data-platform",
+        "messages_json": "[{\"author\": \"Ingrid Voss\", \"ts\": \"2026-03-09T08:30:00\", \"text\": \"Cutover was the 03-02 file. February partitions ran on v2.3 and stand. Thursday night's run crashed outright, so 03-05 never loaded at all.\"}, {\"author\": \"Rei Tanaka\", \"ts\": \"2026-03-09T08:39:00\", \"text\": \"STD's day window Wednesday is free; five attribution partitions at 45 minutes each fit one window. Thursday night is the replication window \\u2014 protected.\"}, {\"author\": \"Ingrid Voss\", \"ts\": \"2026-03-09T08:47:00\", \"text\": \"Nobody imputes consent fields in SQL, and a full raw-archive rebuild is a separate request to me \\u2014 the approval covers the five re-exported days only.\"}]",
+        "thread_id": "CHAT-0005",
+        "title": "DATA-0005 Cormorant schema cutover"
+      },
+      {
+        "channel": "#data-platform",
+        "messages_json": "[{\"author\": \"Ingrid Voss\", \"ts\": \"2026-03-06T16:20:00\", \"text\": \"Reminder: file warehouse cost alerts in the tracker, not here.\"}]",
+        "thread_id": "CHAT-0005-GEN",
+        "title": "General — cost alerts and access requests"
+      }
+    ],
+    "clusters": [
+      {
+        "backfill_capable": 1,
+        "cluster_id": "WH-XL",
+        "name": "Warehouse cluster XL (finance workloads)",
+        "status": "ACTIVE",
+        "status_note": null
+      },
+      {
+        "backfill_capable": 1,
+        "cluster_id": "WH-STD",
+        "name": "Warehouse cluster STD (general ELT)",
+        "status": "ACTIVE",
+        "status_note": null
+      },
+      {
+        "backfill_capable": 0,
+        "cluster_id": "WH-ADHOC",
+        "name": "Warehouse cluster ADHOC (analyst sandbox)",
+        "status": "ACTIVE",
+        "status_note": "no service-account write grants; certified loads and backfills cannot run here"
+      }
+    ],
+    "drive_files": [
+      {
+        "content": "# Data Platform Operations Policy (v4, effective 2026-01-12)\n\nApplies to Tidewater Supply Co. Data Platform: the production warehouse (WH-PROD) and its\ncompute clusters WH-XL (finance workloads), WH-STD (general ELT), and WH-ADHOC (analyst\nsandbox). This version supersedes the 2025 policy in full. Planning date references below\nassume the current batch calendar; today is 2026-03-09.\n\n## 1. Reconciliation and adjustment entries\n\n1.1 Certified marts reconcile to Finance's published control totals. A dashboard variance is\ncorrected only by (a) reloading validated source files, or (b) an adjustment entry bounded to\nthe independently verified variance. Certified tables are never edited by hand.\n1.2 An adjustment entry requires a signed approval naming the model, the period, and a maximum\nrow count. The entry may never exceed that maximum or the verified variance, whichever is lower.\n1.3 Adjustments touching a closed accounting period, and any restatement posted instead of a\nsource reload, require the head of data and the finance controller jointly.\n1.4 An adjustment must reference the published control total it reconciles to; entries without a\ncovering control are rejected.\n\n## 2. Ingestion validation and vendor redelivery\n\n2.1 Rows failing schema validation, rows duplicating an already-loaded business key, and rows\nlanding after the 02:00 cutoff are excluded from certified marts. Excluded rows are quarantined\nin staging; they count only after a validated redelivery.\n2.2 A vendor redelivery is validated overnight and is loadable from the next batch day after the\nconfirmed delivery date. A vendor confirmation alone proves neither validation nor load.\n2.3 Staged redeliveries marked STAGED are picked up by the next scheduled load of the consuming\nmodel; they are not part of the certified mart until that load completes.\n2.4 Expedite fees are payable only when named in the signed approval; otherwise the data\nplatform lead must approve the fee before the redelivery is requested.\n\n## 3. Warehouse windows and backfills\n\n3.1 Batch windows are NIGHT 01:00-05:00 and DAY 13:00-17:00, Monday to Friday. A backfill or\nrefresh of up to 4 hours occupies one window; longer work must reserve both windows of one\ncluster on the same day and holds its staging locks through the interactive period between them.\n3.2 Splitting one refresh or backfill across different days or clusters is prohibited: the\nresulting table swap would mix snapshot days.\n3.3 Protected windows (finance close loads, replication) and blocked windows (maintenance) are\nnever displaced without the head of data.\n3.4 Backfills run only on backfill-capable clusters per the cluster roster; WH-ADHOC carries no\nservice-account write grants and never runs certified loads or backfills.\n3.5 Certified loads displaced by a cluster outage may run at most 5 business days after their\ncycle date; later than that the affected mart is decertified.\n\n## 4. Authority\n\n4.1 The analytics engineer on call executes exactly what a signed approval covers: the named\nmodel, period, row maximum, cluster set, and any named fee.\n4.2 Data platform lead: expedite fees not named in an approval, full-history rebuilds,\ncross-cluster spillover, and partner re-transmission agreements.\n4.3 Head of data: displacing protected windows, publishing from an uncertified mart, and joint\nsign-off (with the finance controller) on closed-period adjustments.\n4.4 Warehouse operations manager: cluster maintenance windows and their return-to-service dates.\n4.5 An approval covers exactly the record, period, quantity, and options it names. It never\nselects an option in advance and never extends to a broader record.\n\n---\nEvidence-room mount: datadesk-005 / DATA-0005.\n",
+        "file_id": "DRV-005-01",
+        "folder": "Data Platform/Policies",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "data-platform-operations-policy.md",
+        "sha256": "fd50eeb1537ba0026b3fc803493733b8b4ab7810c26f32245d7750d59934159b"
+      },
+      {
+        "content": "# Data Platform Operations Policy (2025 edition) — SUPERSEDED\n\nThis edition was replaced by v4 on 2026-01-12 and is retained for audit only. Do not apply it.\n\n1. Late-arriving rows may be counted into certified marts as soon as they land in staging.\n2. On-call engineers may correct a certified mart by direct edit for variances up to 1,000 rows.\n3. The warehouse runs a single 20:00-04:00 batch block; long refreshes may span two nights.\n4. Protected replication windows may be displaced by the on-call engineer when a dashboard is late.\n5. Expedite fees up to USD 500 may be approved verbally by the requesting analyst.\n6. Adjustment entries do not require a covering control total for periods still open.\n\n---\nEvidence-room mount: datadesk-005 / DATA-0005.\n",
+        "file_id": "DRV-005-02",
+        "folder": "Data Platform/Policies/Archive",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "superseded-data-platform-policy-2025.md",
+        "sha256": "350ce1b2193e5238d8170989b5f99aad5099a78b7d0382b59fa2d41d3c8d2d8e"
+      },
+      {
+        "content": "{\n  \"depends_on\": [\n    \"stg_cormorant_clickstream\"\n  ],\n  \"description\": \"Certified attribution touchpoints joining clickstream to orders.\",\n  \"generated_at\": \"2026-03-08T18:00:00\",\n  \"layer\": \"mart\",\n  \"materialization\": \"incremental\",\n  \"model_id\": \"MDL-ATTR-T\",\n  \"name\": \"fct_attribution_touch\",\n  \"owner\": \"growth-analytics\",\n  \"referenced_by\": [\n    \"growth_review_dashboard\"\n  ],\n  \"schema\": \"mart_growth\",\n  \"status\": \"ACTIVE\",\n  \"unique_id\": \"model.tidewater.fct_attribution_touch\"\n}\n",
+        "file_id": "DRV-005-03",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "model-MDL-ATTR-T.json",
+        "sha256": "3e32b197c074a93387be90c9ae38c4798c166ac9ffc3c895bcdc8a9814ed3287"
+      },
+      {
+        "content": "sla_id,model_id,max_staleness_hours,refresh_deadline,breach_escalation,business_reference,status,hubbench_task_scope,hubbench_case_reference\nSLA-ATTR-T,MDL-ATTR-T,48,09:00,data_platform_lead,Thursday growth review,ACTIVE,datadesk-005,DATA-0005\n",
+        "file_id": "DRV-005-04",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "freshness-sla-register.csv",
+        "sha256": "b48cb4dc9328bb51b1c52e9a6bc1107360a7d6cea5e109d3534d21aabf53e89b"
+      },
+      {
+        "content": "run_id,model_id,partition_date,started_at,duration_minutes,status,rows_processed,trigger,source_version,note\nRUN-9101,MDL-ATTR-T,2026-02-23,2026-02-24T02:00:00,44,SUCCESS,86200,scheduled,EV-2.3,\nRUN-9102,MDL-ATTR-T,2026-02-24,2026-02-25T02:00:00,45,SUCCESS,87400,scheduled,EV-2.3,\nRUN-9103,MDL-ATTR-T,2026-02-25,2026-02-26T02:00:00,43,SUCCESS,85100,scheduled,EV-2.3,\nRUN-9104,MDL-ATTR-T,2026-02-26,2026-02-27T02:00:00,42,SUCCESS,88900,scheduled,EV-2.3,\nRUN-9105,MDL-ATTR-T,2026-02-27,2026-02-28T02:00:00,41,SUCCESS,84500,scheduled,EV-2.3,\nRUN-9106,MDL-ATTR-T,2026-03-02,2026-03-03T02:00:00,38,SUCCESS,88190,scheduled,EV-3.0-MISPARSED,consent fields silently dropped\nRUN-9107,MDL-ATTR-T,2026-03-03,2026-03-04T02:00:00,40,SUCCESS,86955,scheduled,EV-3.0-MISPARSED,consent fields silently dropped\nRUN-9108,MDL-ATTR-T,2026-03-04,2026-03-05T02:00:00,39,SUCCESS,89970,scheduled,EV-3.0-MISPARSED,consent fields silently dropped\nRUN-9109,MDL-ATTR-T,2026-03-05,2026-03-06T02:00:00,7,FAILED,0,scheduled,EV-3.0-MISPARSED,parser crash on nested consent payload; no successful load\nRUN-9110,MDL-ATTR-T,2026-03-06,2026-03-07T02:00:00,41,SUCCESS,86730,scheduled,EV-3.0-MISPARSED,consent fields silently dropped\nRUN-9084,MDL-STG-CLK,2026-03-02,2026-03-03T01:35:00,16,SUCCESS,88190,scheduled,EV-3.0,\nRUN-9085,MDL-STG-CLK,2026-03-06,2026-03-07T01:35:00,15,SUCCESS,86730,scheduled,EV-3.0,\n",
+        "file_id": "DRV-005-05",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "run-history-MDL-ATTR-T.xlsx",
+        "sha256": "559adac631382e8cffb6d6d0c4ec69f702af774c47bda0c0fc83d3b74d9576a3"
+      },
+      {
+        "content": "delivery_id,feed_id,business_date,files_expected,files_received,rows_received,rows_invalid,rows_duplicate,rows_late,status,received_at,note\nDL-K0302,FEED-CORM-CLK,2026-03-02,1,1,88400,210,0,0,LOADED,2026-03-03T00:55:00,\"event schema v3.0 (unannounced cutover)\"\nDL-K0303,FEED-CORM-CLK,2026-03-03,1,1,87150,195,0,0,LOADED,2026-03-04T00:57:00,\"event schema v3.0\"\nDL-K0304,FEED-CORM-CLK,2026-03-04,1,1,90210,240,0,0,LOADED,2026-03-05T00:52:00,\"event schema v3.0\"\nDL-K0305,FEED-CORM-CLK,2026-03-05,1,1,89340,225,0,0,LOADED,2026-03-06T00:58:00,\"event schema v3.0; parser crashed mid-load\"\nDL-K0306,FEED-CORM-CLK,2026-03-06,1,1,86910,180,0,0,LOADED,2026-03-07T00:54:00,\"event schema v3.0\"\n",
+        "file_id": "DRV-005-06",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "delivery-log-FEED-CORM-CLK.csv",
+        "sha256": "d3a54d897d5f780da04af36d0d753e7f3f81ae8cf8424b0f6969e53a88fcccac"
+      },
+      {
+        "content": "Cormorant Adtech\nRedelivery confirmation CA-5519 (system reference CONF-CORM-5519)\nCustomer: Tidewater Supply Co. Data Platform, account TW-0921\nCase reference: DATA-0005\nFeed: FEED-CORM-CLK — Cormorant clickstream events\nScope: v2-compatible re-export of event days 2026-03-02..2026-03-06 with the consent fields restored.\nStandard redelivery date: 2026-03-12\nExpedited redelivery date: 2026-03-10 (expedite fee USD 320, flat)\nValid until: 2026-03-11\nNotes: Standard: Thursday export cycle. Expedited: out-of-cycle export, USD 320 flat. Files validate overnight and load the next batch day.\nDelivery is to the ingestion bucket; certified load is subject to the customer's overnight validation.\n",
+        "file_id": "DRV-005-07",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "redelivery-confirmation-CA-5519.pdf",
+        "sha256": "4d41651c6c3c8e3aa6c3c690083cc8ff3bed73c45463df5585cd8a0aa5a27014"
+      },
+      {
+        "content": "service_date,cluster_id,window,start,end,status,hold_reason\n2026-03-09,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-09,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-09,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-09,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-09,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-09,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-10,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-10,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-10,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-10,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-10,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-10,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-11,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-11,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-11,WH-STD,DAY,13:00:00,17:00:00,free,\n2026-03-11,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-11,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-11,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-12,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-12,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-12,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-12,WH-STD,NIGHT,01:00:00,05:00:00,protected,replication window (protected)\n2026-03-12,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-12,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-13,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-13,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-13,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-13,WH-STD,NIGHT,01:00:00,05:00:00,free,\n2026-03-13,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-13,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-16,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-16,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-16,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-16,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-16,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-16,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-17,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-17,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-17,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-17,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-17,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-17,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-18,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-18,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-18,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-18,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-18,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-18,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-19,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-19,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-19,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-19,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-19,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-19,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-20,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-20,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-20,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-20,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-20,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-20,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-23,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-23,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-23,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-23,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-23,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-23,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-24,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-24,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-24,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-24,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-24,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-24,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-25,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-25,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-25,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-25,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-25,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-25,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-26,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-26,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-26,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-26,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-26,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-26,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-27,WH-ADHOC,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-27,WH-ADHOC,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-27,WH-STD,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-27,WH-STD,NIGHT,01:00:00,05:00:00,busy,scheduled load\n2026-03-27,WH-XL,DAY,13:00:00,17:00:00,busy,scheduled load\n2026-03-27,WH-XL,NIGHT,01:00:00,05:00:00,busy,scheduled load\n",
+        "file_id": "DRV-005-08",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "window-calendar-2026-03-09.xlsx",
+        "sha256": "cad7a8b9442d493fa9859acff6c46177f06069aa9611843f6656fb921aedfe09"
+      },
+      {
+        "content": "cluster_id,name,status,backfill_capable,note,hubbench_task_scope,hubbench_case_reference\nWH-XL,Warehouse cluster XL (finance workloads),ACTIVE,yes,,datadesk-005,DATA-0005\nWH-STD,Warehouse cluster STD (general ELT),ACTIVE,yes,,datadesk-005,DATA-0005\nWH-ADHOC,Warehouse cluster ADHOC (analyst sandbox),ACTIVE,no,no service-account write grants; certified loads and backfills cannot run here,datadesk-005,DATA-0005\n",
+        "file_id": "DRV-005-09",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "cluster-roster.csv",
+        "sha256": "5173cccac5b7eab5a72686f664c28f3588c276d8d5e892b455a82bf9e5a82c21"
+      },
+      {
+        "content": "partition_date,loaded,source_version_state,certified\n2026-02-23,yes,EV-2.3,yes\n2026-02-24,yes,EV-2.3,yes\n2026-02-25,yes,EV-2.3,yes\n2026-02-26,yes,EV-2.3,yes\n2026-02-27,yes,EV-2.3,yes\n2026-03-02,yes,EV-3.0-MISPARSED,no\n2026-03-03,yes,EV-3.0-MISPARSED,no\n2026-03-04,yes,EV-3.0-MISPARSED,no\n2026-03-05,no,,no\n2026-03-06,yes,EV-3.0-MISPARSED,no\n",
+        "file_id": "DRV-005-10",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "certification-workbook-DATA-0005.xlsx",
+        "sha256": "ba70127ede2439c515b10f3bf1f9d399081813684f4bd1ab119f333448e685cd"
+      },
+      {
+        "content": "schedule_id,model_id,description,duration_minutes,cluster_id,start_time,end_time,status,hubbench_task_scope,hubbench_case_reference\nSCH-4400,MDL-ATTR-T,Nightly certified load (recurring),45,WH-STD,,,recurring,datadesk-005,DATA-0005\n",
+        "file_id": "DRV-005-11",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "schedule-register.csv",
+        "sha256": "4aafbda0d60ca51eae1a60177c06782b2ce430e43f4600cf0ed92d19373d9c87"
+      },
+      {
+        "content": "{\n  \"approval_id\": \"AP-DD-0205\",\n  \"approver_id\": \"U-VOSS\",\n  \"approver_role\": \"data_platform_lead\",\n  \"case_reference\": \"DATA-0005\",\n  \"granted_on\": \"2026-03-08\",\n  \"scope\": {\n    \"clusters\": [\n      \"WH-STD\"\n    ],\n    \"confirmation\": \"CA-5519\",\n    \"expedite_fee_allowed_usd\": 350,\n    \"model_id\": \"MDL-ATTR-T\",\n    \"not_covered\": [\n      \"full-history reprocessing of the raw archive (data platform lead, separate request)\",\n      \"replication window displacement (head of data)\",\n      \"consent-field imputation in SQL (prohibited)\"\n    ],\n    \"partitions\": [\n      \"2026-03-02\",\n      \"2026-03-06\"\n    ]\n  },\n  \"status\": \"APPROVED\",\n  \"subject\": \"Attribution re-export backfill for DATA-0005 (fct_attribution_touch)\"\n}\n",
+        "file_id": "DRV-005-12",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "approval-AP-DD-0205.json",
+        "sha256": "7625062d6865e3f4bed1c35ae1c7f0a0a5edb6db7cbd53a29a5485c92247f7e6"
+      },
+      {
+        "content": "{\n  \"adjustment_entries\": [\n    {\n      \"entry_id\": \"ADJ-3100\",\n      \"status\": \"POSTED\"\n    }\n  ],\n  \"as_of\": \"2026-03-09\",\n  \"backfill_jobs\": [\n    {\n      \"job_id\": \"BF-7100\",\n      \"status\": \"COMPLETED\"\n    }\n  ],\n  \"case_reference\": \"DATA-0005\",\n  \"note\": \"Snapshot before any action; row order does not indicate applicability.\",\n  \"run_schedules\": [\n    {\n      \"cluster_id\": \"WH-STD\",\n      \"model_id\": \"MDL-ATTR-T\",\n      \"schedule_id\": \"SCH-4400\",\n      \"status\": \"recurring\"\n    }\n  ]\n}\n",
+        "file_id": "DRV-005-13",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "starting-state-datadesk-005.json",
+        "sha256": "a957cd480c61178c836eb222212931d222b3854e9cf04555c2857469073371c0"
+      },
+      {
+        "content": "# Cormorant Adtech — event schema v3.0\n\nEffective with the 2026-03-02 export, events move to schema v3.0: the consent block is nested under user.privacy and the legacy flat fields are no longer populated. Consumers on v2.x parsers must request a v2-compatible re-export for affected days. This notice reached Tidewater on 2026-03-08.\n",
+        "file_id": "DRV-005-14",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "cormorant-schema-change-notice.md",
+        "sha256": "2c550e83864b05eac1a4936db38c310c7e00c971e3af74771d58fb459f67f808"
+      },
+      {
+        "content": "{\n  \"anchors\": [\n    {\n      \"evaluation_shape\": \"hermetic dbt data-engineering tasks with row-level deterministic verification\",\n      \"harbor_dataset\": \"snowflake-labs/data-eng-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/snowflake-labs/data-eng-bench/latest\",\n      \"license\": \"Apache-2.0\",\n      \"name\": \"DataEngBench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/Snowflake-Labs/data-eng-bench\"\n    },\n    {\n      \"evaluation_shape\": \"sandboxed analytics-engineering tasks with project and database state checks\",\n      \"harbor_dataset\": \"dbt-labs/ade-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/dbt-labs/ade-bench/latest\",\n      \"license\": \"Apache-2.0\",\n      \"name\": \"ADE-Bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/dbt-labs/ade-bench\"\n    }\n  ],\n  \"clean_room\": true,\n  \"family\": \"datadesk\",\n  \"schema_version\": \"hubbench.provenance.v1\",\n  \"task_id\": \"datadesk-005\",\n  \"upstream_scores_claimed\": false,\n  \"upstream_tasks_copied\": false\n}\n",
+        "file_id": "DRV-005-15",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "harbor-open-source-anchors.json",
+        "sha256": "d775836bcd85eddcdb69a7bffd2a3cd13f06841f1908c23e65d20d8d2e96a16e"
+      },
+      {
+        "content": "task_id,case_reference,subject_id,source_system,record_role,effective_revision\ndatadesk-005,DATA-0005,MDL-ATTR-T,domain,authoritative_subject,v4\ndatadesk-005,DATA-0005,MDL-ATTR-T,approvals,execution_authority,v4\ndatadesk-005,DATA-0005,MDL-ATTR-T,drive,supporting_evidence,v4\n",
+        "file_id": "DRV-005-16",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "record-lineage.csv",
+        "sha256": "9e10dc1e8faa85937ed601f8e75878ad55257a67ea38f080b94e7b45ff62c55e"
+      },
+      {
+        "content": "# Current execution authority — DATA-0005\n\nEffective 2026-03-09. Applies only to MDL-ATTR-T in DataDesk. The signed approval record and provider contract jointly bound any write. A source record, search result, or prior decision never grants authority.\n\nRelease revision: v4. Task scope: datadesk-005.\n",
+        "file_id": "DRV-005-17",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "current-authority.md",
+        "sha256": "6256c0a607a8c42a5893071342ee8e842d5c324ebca6a4821c5a9517e29dbe6c"
+      },
+      {
+        "content": "# Retired authority — DATA-0005\n\nStatus: SUPERSEDED. This historical DataDesk delegation ended before 2026-03-09. It references MDL-ATTR-T but cannot authorize a current action for datadesk-005.\n",
+        "file_id": "DRV-005-18",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "retired-authority.md",
+        "sha256": "992d88920e58b641570be2c5a0e30b0f3e8f130710e82875c2f5f67c109232e5"
+      },
+      {
+        "content": "{\n  \"approval_record\": \"DEC-DATADESK-0005\",\n  \"authority_source\": \"signed family approval plus provider contract\",\n  \"case_reference\": \"DATA-0005\",\n  \"effective_revision\": \"v4\",\n  \"prohibited_basis\": [\n    \"retired authority\",\n    \"search ranking\",\n    \"request urgency\"\n  ],\n  \"status\": \"REVIEW_REQUIRED\",\n  \"subject_id\": \"MDL-ATTR-T\"\n}\n",
+        "file_id": "DRV-005-19",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "decision-record.json",
+        "sha256": "0e63951b20905f498bc539ae49a7be68d557bb248ffe9ff29534738898e8d9ac"
+      },
+      {
+        "content": "task_id,case_reference,review_lane,available_units,protected_units,effective_date\ndatadesk-005,DATA-0005,standard,13,2,2026-03-09\ndatadesk-005,DATA-0005,expedited,9,1,2026-03-09\n",
+        "file_id": "DRV-005-20",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "review-capacity.xlsx",
+        "sha256": "9395ede3da8b83f59269ab335133c14947b6a064a3e3502da9da8b9ca9d1680f"
+      },
+      {
+        "content": "Source integrity control\nTask: datadesk-005\nCase: DATA-0005\nSubject: MDL-ATTR-T\nEffective revision: v4\nRule: current provider state plus the signed approval govern. Search rank, filenames, request urgency, and archived authority do not.\n",
+        "file_id": "DRV-005-21",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "source-integrity.pdf",
+        "sha256": "c004058d971c671b26fea15dc4d643ad0a92c723ee53651373f95a816af16fa5"
+      },
+      {
+        "content": "task_id: \"datadesk-005\"\ncase_reference: \"DATA-0005\"\nas_of: \"2026-03-09\"\nchecks:\n  - name: \"identity_linked\"\n    status: \"PASS\"\n    record: \"MDL-ATTR-T\"\n  - name: \"revision_current\"\n    status: \"PASS\"\n    record: \"v4\"\n  - name: \"authority_requires_live_read\"\n    status: \"OPEN\"\n    record: \"DEC-DATADESK-0005\"\n  - name: \"outcome_precomputed\"\n    status: \"NO\"\n    record: \"datadesk-005\"\n",
+        "file_id": "DRV-005-22",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "evidence-status.yaml",
+        "sha256": "09910d910ca21e9255941d6873ac2dce98ac1cc528b95c76d3e6bac9f3af3061"
+      },
+      {
+        "content": "2026-03-09T08:55:00Z INFO scope_created task=datadesk-005 case=DATA-0005\n2026-03-09T08:56:00Z INFO subject_linked family=datadesk subject=MDL-ATTR-T\n2026-03-09T08:57:00Z WARN retired_authority_present case=DATA-0005 action=ignore_until_current_scope_verified\n2026-03-09T08:58:00Z INFO provider_state_ready task=datadesk-005 expected_mutations=2\n",
+        "file_id": "DRV-005-23",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "text/plain",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "system-audit.log",
+        "sha256": "2f7beae662a04eb93aa5bd9043263dbdd1388282d34b549f57135ccc2303d32a"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"DATA-0005\",\n  \"messages\": [\n    {\n      \"author\": \"operations\",\n      \"sent_at\": \"2026-03-09T08:35:00\",\n      \"text\": \"Use immutable subject MDL-ATTR-T; the similarly named archived record is not in scope.\"\n    },\n    {\n      \"author\": \"governance\",\n      \"sent_at\": \"2026-03-09T08:41:00\",\n      \"text\": \"Current revision is v4. Confirm the signed approval before any state change.\"\n    },\n    {\n      \"author\": \"requester\",\n      \"sent_at\": \"2026-03-09T08:47:00\",\n      \"text\": \"Please leave the stakeholder communication as a draft for human review.\"\n    }\n  ],\n  \"thread_id\": \"OPS-DATADESK-0005\"\n}\n",
+        "file_id": "DRV-005-24",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "operations-thread.json",
+        "sha256": "c72f135a94d937bba84dbbfeba4c85e884c43e89179a8cead60bda8fdde3f6a9"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"DATA-0005\",\n  \"network\": \"closed benchmark world\",\n  \"read_semantics\": \"provider-shaped records backed by the seeded task world\",\n  \"schema_version\": \"hubbench.provider-contract.v1\",\n  \"state_scope\": \"isolated SQLite episode\",\n  \"subject_id\": \"MDL-ATTR-T\",\n  \"task_id\": \"datadesk-005\",\n  \"unsupported_claims\": [\n    \"byte parity with upstream providers\",\n    \"conversion of upstream benchmark tasks\",\n    \"upstream score comparability\"\n  ],\n  \"verifier_visibility\": \"hidden from the agent\",\n  \"write_semantics\": \"task-scoped, schema-validated, transactionally persisted and audited\"\n}\n",
+        "file_id": "DRV-005-25",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "provider-contracts.json",
+        "sha256": "6b788baaea98138d85c1d6f196004ea354cc6c8ea00d67c4b5e7c51ff312a341"
+      },
+      {
+        "content": "{\n  \"captured_as_of\": \"2026-03-09\",\n  \"case_reference\": \"DATA-0005\",\n  \"expected_mutation_count\": 2,\n  \"family\": \"datadesk\",\n  \"note\": \"Live provider state remains authoritative; this export is a correlation aid, not a write instruction.\",\n  \"organization\": \"Tidewater Supply Co. \\u2014 Data Platform\",\n  \"schema_version\": \"hubbench.live-snapshot.v1\",\n  \"state\": \"PRE_ACTION\",\n  \"subject_id\": \"MDL-ATTR-T\",\n  \"task_id\": \"datadesk-005\"\n}\n",
+        "file_id": "DRV-005-26",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "live-snapshot.json",
+        "sha256": "c43895b30d1031290b66be2ae9d5d42e83e4befde23fbc5d64a8cabe2c6470ec"
+      },
+      {
+        "content": "case_reference: \"DATA-0005\"\nas_of: \"2026-03-09\"\nfiles:\n  - path: \"policy/data-platform-operations-policy.md\"\n    kind: \"policy\"\n    media_type: \"text/markdown\"\n    sha256: \"fd50eeb1537ba0026b3fc803493733b8b4ab7810c26f32245d7750d59934159b\"\n  - path: \"policy/superseded-data-platform-policy-2025.md\"\n    kind: \"policy_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"350ce1b2193e5238d8170989b5f99aad5099a78b7d0382b59fa2d41d3c8d2d8e\"\n  - path: \"catalog/model-MDL-ATTR-T.json\"\n    kind: \"model_manifest\"\n    media_type: \"application/json\"\n    sha256: \"3e32b197c074a93387be90c9ae38c4798c166ac9ffc3c895bcdc8a9814ed3287\"\n  - path: \"sla/freshness-sla-register.csv\"\n    kind: \"sla_register\"\n    media_type: \"text/csv\"\n    sha256: \"b48cb4dc9328bb51b1c52e9a6bc1107360a7d6cea5e109d3534d21aabf53e89b\"\n  - path: \"pipelines/run-history-MDL-ATTR-T.xlsx\"\n    kind: \"run_history_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"559adac631382e8cffb6d6d0c4ec69f702af774c47bda0c0fc83d3b74d9576a3\"\n  - path: \"feeds/delivery-log-FEED-CORM-CLK.csv\"\n    kind: \"delivery_log\"\n    media_type: \"text/csv\"\n    sha256: \"d3a54d897d5f780da04af36d0d753e7f3f81ae8cf8424b0f6969e53a88fcccac\"\n  - path: \"feeds/redelivery-confirmation-CA-5519.pdf\"\n    kind: \"vendor_confirmation\"\n    media_type: \"application/pdf\"\n    sha256: \"4d41651c6c3c8e3aa6c3c690083cc8ff3bed73c45463df5585cd8a0aa5a27014\"\n  - path: \"warehouse/window-calendar-2026-03-09.xlsx\"\n    kind: \"window_calendar\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"cad7a8b9442d493fa9859acff6c46177f06069aa9611843f6656fb921aedfe09\"\n  - path: \"warehouse/cluster-roster.csv\"\n    kind: \"cluster_roster\"\n    media_type: \"text/csv\"\n    sha256: \"5173cccac5b7eab5a72686f664c28f3588c276d8d5e892b455a82bf9e5a82c21\"\n  - path: \"recon/certification-workbook-DATA-0005.xlsx\"\n    kind: \"certification_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"ba70127ede2439c515b10f3bf1f9d399081813684f4bd1ab119f333448e685cd\"\n  - path: \"pipelines/schedule-register.csv\"\n    kind: \"schedule_register\"\n    media_type: \"text/csv\"\n    sha256: \"4aafbda0d60ca51eae1a60177c06782b2ce430e43f4600cf0ed92d19373d9c87\"\n  - path: \"messages/THR-0005.eml\"\n    kind: \"email\"\n    media_type: \"message/rfc822\"\n    sha256: \"d4adf58005936df8515ff39ba9be8ce7bd7dc3229e26cd129e838ec720d43dc7\"\n  - path: \"chat/CHAT-0005.json\"\n    kind: \"chat_thread\"\n    media_type: \"application/json\"\n    sha256: \"38660cbba3433db2706cf4aa9b35193f3617ffbf99d8e9846fd9abe558522f45\"\n  - path: \"approvals/approval-AP-DD-0205.json\"\n    kind: \"approval\"\n    media_type: \"application/json\"\n    sha256: \"7625062d6865e3f4bed1c35ae1c7f0a0a5edb6db7cbd53a29a5485c92247f7e6\"\n  - path: \"exports/starting-state-datadesk-005.json\"\n    kind: \"starting_state\"\n    media_type: \"application/json\"\n    sha256: \"a957cd480c61178c836eb222212931d222b3854e9cf04555c2857469073371c0\"\n  - path: \"feeds/cormorant-schema-change-notice.md\"\n    kind: \"vendor_notice\"\n    media_type: \"text/markdown\"\n    sha256: \"2c550e83864b05eac1a4936db38c310c7e00c971e3af74771d58fb459f67f808\"\n  - path: \"provenance/harbor-open-source-anchors.json\"\n    kind: \"open_source_provenance\"\n    media_type: \"application/json\"\n    sha256: \"d775836bcd85eddcdb69a7bffd2a3cd13f06841f1908c23e65d20d8d2e96a16e\"\n  - path: \"lineage/record-lineage.csv\"\n    kind: \"record_lineage\"\n    media_type: \"text/csv\"\n    sha256: \"9e10dc1e8faa85937ed601f8e75878ad55257a67ea38f080b94e7b45ff62c55e\"\n  - path: \"controls/current-authority.md\"\n    kind: \"authority_current\"\n    media_type: \"text/markdown\"\n    sha256: \"6256c0a607a8c42a5893071342ee8e842d5c324ebca6a4821c5a9517e29dbe6c\"\n  - path: \"controls/retired-authority.md\"\n    kind: \"authority_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"992d88920e58b641570be2c5a0e30b0f3e8f130710e82875c2f5f67c109232e5\"\n  - path: \"approvals/decision-record.json\"\n    kind: \"approval_decision\"\n    media_type: \"application/json\"\n    sha256: \"0e63951b20905f498bc539ae49a7be68d557bb248ffe9ff29534738898e8d9ac\"\n  - path: \"workbooks/review-capacity.xlsx\"\n    kind: \"review_capacity_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"9395ede3da8b83f59269ab335133c14947b6a064a3e3502da9da8b9ca9d1680f\"\n  - path: \"controls/source-integrity.pdf\"\n    kind: \"source_integrity_control\"\n    media_type: \"application/pdf\"\n    sha256: \"c004058d971c671b26fea15dc4d643ad0a92c723ee53651373f95a816af16fa5\"\n  - path: \"audit/evidence-status.yaml\"\n    kind: \"evidence_status\"\n    media_type: \"application/yaml\"\n    sha256: \"09910d910ca21e9255941d6873ac2dce98ac1cc528b95c76d3e6bac9f3af3061\"\n  - path: \"audit/system-audit.log\"\n    kind: \"system_audit\"\n    media_type: \"text/plain\"\n    sha256: \"2f7beae662a04eb93aa5bd9043263dbdd1388282d34b549f57135ccc2303d32a\"\n  - path: \"communications/source-request.eml\"\n    kind: \"source_request\"\n    media_type: \"message/rfc822\"\n    sha256: \"04a753a62c3f3f184e3d208d0157578b5bbfe99eb4145e5c68de1a416ded7e85\"\n  - path: \"collaboration/operations-thread.json\"\n    kind: \"operations_thread\"\n    media_type: \"application/json\"\n    sha256: \"c72f135a94d937bba84dbbfeba4c85e884c43e89179a8cead60bda8fdde3f6a9\"\n  - path: \"contracts/provider-contracts.json\"\n    kind: \"provider_contract\"\n    media_type: \"application/json\"\n    sha256: \"6b788baaea98138d85c1d6f196004ea354cc6c8ea00d67c4b5e7c51ff312a341\"\n  - path: \"exports/live-snapshot.json\"\n    kind: \"live_snapshot\"\n    media_type: \"application/json\"\n    sha256: \"c43895b30d1031290b66be2ae9d5d42e83e4befde23fbc5d64a8cabe2c6470ec\"\n",
+        "file_id": "DRV-005-27",
+        "folder": "Data Platform/Cases/DATA-0005",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-03-08T19:30:00",
+        "name": "evidence-index.yaml",
+        "sha256": "043c9f7a51d5f26d7235ef20208e31f60fad4ba57d43c9d2be5756f9aa4a3a61"
+      }
+    ],
+    "evidence_files": [
+      {
+        "asset_id": "datadesk-005-01",
+        "kind": "policy",
+        "media_type": "text/markdown",
+        "path": "policy/data-platform-operations-policy.md",
+        "sha256": "fd50eeb1537ba0026b3fc803493733b8b4ab7810c26f32245d7750d59934159b",
+        "source": "drive",
+        "task_id": "datadesk-005",
+        "title": "Data Platform Operations Policy v4 (effective)"
+      },
+      {
+        "asset_id": "datadesk-005-02",
+        "kind": "policy_superseded",
+        "media_type": "text/markdown",
+        "path": "policy/superseded-data-platform-policy-2025.md",
+        "sha256": "350ce1b2193e5238d8170989b5f99aad5099a78b7d0382b59fa2d41d3c8d2d8e",
+        "source": "drive",
+        "task_id": "datadesk-005",
+        "title": "Data Platform Operations Policy 2025 (superseded)"
+      },
+      {
+        "asset_id": "datadesk-005-03",
+        "kind": "model_manifest",
+        "media_type": "application/json",
+        "path": "catalog/model-MDL-ATTR-T.json",
+        "sha256": "3e32b197c074a93387be90c9ae38c4798c166ac9ffc3c895bcdc8a9814ed3287",
+        "source": "warehouse_export",
+        "task_id": "datadesk-005",
+        "title": "Catalog manifest — fct_attribution_touch"
+      },
+      {
+        "asset_id": "datadesk-005-04",
+        "kind": "sla_register",
+        "media_type": "text/csv",
+        "path": "sla/freshness-sla-register.csv",
+        "sha256": "b48cb4dc9328bb51b1c52e9a6bc1107360a7d6cea5e109d3534d21aabf53e89b",
+        "source": "warehouse_export",
+        "task_id": "datadesk-005",
+        "title": "Freshness SLA register"
+      },
+      {
+        "asset_id": "datadesk-005-05",
+        "kind": "run_history_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "pipelines/run-history-MDL-ATTR-T.xlsx",
+        "sha256": "559adac631382e8cffb6d6d0c4ec69f702af774c47bda0c0fc83d3b74d9576a3",
+        "source": "pipeline_export",
+        "task_id": "datadesk-005",
+        "title": "Run history — fct_attribution_touch"
+      },
+      {
+        "asset_id": "datadesk-005-06",
+        "kind": "delivery_log",
+        "media_type": "text/csv",
+        "path": "feeds/delivery-log-FEED-CORM-CLK.csv",
+        "sha256": "d3a54d897d5f780da04af36d0d753e7f3f81ae8cf8424b0f6969e53a88fcccac",
+        "source": "ingestion_export",
+        "task_id": "datadesk-005",
+        "title": "Delivery log — Cormorant clickstream events"
+      },
+      {
+        "asset_id": "datadesk-005-07",
+        "kind": "vendor_confirmation",
+        "media_type": "application/pdf",
+        "path": "feeds/redelivery-confirmation-CA-5519.pdf",
+        "sha256": "4d41651c6c3c8e3aa6c3c690083cc8ff3bed73c45463df5585cd8a0aa5a27014",
+        "source": "email_attachment",
+        "task_id": "datadesk-005",
+        "title": "Vendor redelivery confirmation CA-5519"
+      },
+      {
+        "asset_id": "datadesk-005-08",
+        "kind": "window_calendar",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "warehouse/window-calendar-2026-03-09.xlsx",
+        "sha256": "cad7a8b9442d493fa9859acff6c46177f06069aa9611843f6656fb921aedfe09",
+        "source": "warehouse_export",
+        "task_id": "datadesk-005",
+        "title": "Warehouse window calendar, three weeks from 2026-03-09"
+      },
+      {
+        "asset_id": "datadesk-005-09",
+        "kind": "cluster_roster",
+        "media_type": "text/csv",
+        "path": "warehouse/cluster-roster.csv",
+        "sha256": "5173cccac5b7eab5a72686f664c28f3588c276d8d5e892b455a82bf9e5a82c21",
+        "source": "warehouse_export",
+        "task_id": "datadesk-005",
+        "title": "Cluster roster and backfill capability"
+      },
+      {
+        "asset_id": "datadesk-005-10",
+        "kind": "certification_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "recon/certification-workbook-DATA-0005.xlsx",
+        "sha256": "ba70127ede2439c515b10f3bf1f9d399081813684f4bd1ab119f333448e685cd",
+        "source": "recon_export",
+        "task_id": "datadesk-005",
+        "title": "Certification workbook — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-11",
+        "kind": "schedule_register",
+        "media_type": "text/csv",
+        "path": "pipelines/schedule-register.csv",
+        "sha256": "4aafbda0d60ca51eae1a60177c06782b2ce430e43f4600cf0ed92d19373d9c87",
+        "source": "pipeline_export",
+        "task_id": "datadesk-005",
+        "title": "Run schedule register"
+      },
+      {
+        "asset_id": "datadesk-005-12",
+        "kind": "email",
+        "media_type": "message/rfc822",
+        "path": "messages/THR-0005.eml",
+        "sha256": "d4adf58005936df8515ff39ba9be8ce7bd7dc3229e26cd129e838ec720d43dc7",
+        "source": "messages",
+        "task_id": "datadesk-005",
+        "title": "DATA-0005 attribution numbers wrong before Thursday review"
+      },
+      {
+        "asset_id": "datadesk-005-13",
+        "kind": "chat_thread",
+        "media_type": "application/json",
+        "path": "chat/CHAT-0005.json",
+        "sha256": "38660cbba3433db2706cf4aa9b35193f3617ffbf99d8e9846fd9abe558522f45",
+        "source": "chat",
+        "task_id": "datadesk-005",
+        "title": "DATA-0005 Cormorant schema cutover"
+      },
+      {
+        "asset_id": "datadesk-005-14",
+        "kind": "approval",
+        "media_type": "application/json",
+        "path": "approvals/approval-AP-DD-0205.json",
+        "sha256": "7625062d6865e3f4bed1c35ae1c7f0a0a5edb6db7cbd53a29a5485c92247f7e6",
+        "source": "approvals_export",
+        "task_id": "datadesk-005",
+        "title": "Approval record AP-DD-0205"
+      },
+      {
+        "asset_id": "datadesk-005-15",
+        "kind": "starting_state",
+        "media_type": "application/json",
+        "path": "exports/starting-state-datadesk-005.json",
+        "sha256": "a957cd480c61178c836eb222212931d222b3854e9cf04555c2857469073371c0",
+        "source": "pipeline_export",
+        "task_id": "datadesk-005",
+        "title": "Starting-state export (schedules, backfills, adjustments)"
+      },
+      {
+        "asset_id": "datadesk-005-16",
+        "kind": "vendor_notice",
+        "media_type": "text/markdown",
+        "path": "feeds/cormorant-schema-change-notice.md",
+        "sha256": "2c550e83864b05eac1a4936db38c310c7e00c971e3af74771d58fb459f67f808",
+        "source": "drive",
+        "task_id": "datadesk-005",
+        "title": "Cormorant Adtech — v3.0 event schema notice (received late)"
+      },
+      {
+        "asset_id": "datadesk-005-17",
+        "kind": "open_source_provenance",
+        "media_type": "application/json",
+        "path": "provenance/harbor-open-source-anchors.json",
+        "sha256": "d775836bcd85eddcdb69a7bffd2a3cd13f06841f1908c23e65d20d8d2e96a16e",
+        "source": "release_metadata",
+        "task_id": "datadesk-005",
+        "title": "Open-source benchmark provenance — DataDesk"
+      },
+      {
+        "asset_id": "datadesk-005-18",
+        "kind": "record_lineage",
+        "media_type": "text/csv",
+        "path": "lineage/record-lineage.csv",
+        "sha256": "9e10dc1e8faa85937ed601f8e75878ad55257a67ea38f080b94e7b45ff62c55e",
+        "source": "lineage_export",
+        "task_id": "datadesk-005",
+        "title": "Cross-system record lineage — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-19",
+        "kind": "authority_current",
+        "media_type": "text/markdown",
+        "path": "controls/current-authority.md",
+        "sha256": "6256c0a607a8c42a5893071342ee8e842d5c324ebca6a4821c5a9517e29dbe6c",
+        "source": "governance",
+        "task_id": "datadesk-005",
+        "title": "Current authority — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-20",
+        "kind": "authority_superseded",
+        "media_type": "text/markdown",
+        "path": "controls/retired-authority.md",
+        "sha256": "992d88920e58b641570be2c5a0e30b0f3e8f130710e82875c2f5f67c109232e5",
+        "source": "governance_archive",
+        "task_id": "datadesk-005",
+        "title": "Retired authority — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-21",
+        "kind": "approval_decision",
+        "media_type": "application/json",
+        "path": "approvals/decision-record.json",
+        "sha256": "0e63951b20905f498bc539ae49a7be68d557bb248ffe9ff29534738898e8d9ac",
+        "source": "approvals_export",
+        "task_id": "datadesk-005",
+        "title": "Decision control record — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-22",
+        "kind": "review_capacity_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "workbooks/review-capacity.xlsx",
+        "sha256": "9395ede3da8b83f59269ab335133c14947b6a064a3e3502da9da8b9ca9d1680f",
+        "source": "operations_workbook",
+        "task_id": "datadesk-005",
+        "title": "Review capacity — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-23",
+        "kind": "source_integrity_control",
+        "media_type": "application/pdf",
+        "path": "controls/source-integrity.pdf",
+        "sha256": "c004058d971c671b26fea15dc4d643ad0a92c723ee53651373f95a816af16fa5",
+        "source": "governance",
+        "task_id": "datadesk-005",
+        "title": "Source integrity control — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-24",
+        "kind": "evidence_status",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-status.yaml",
+        "sha256": "09910d910ca21e9255941d6873ac2dce98ac1cc528b95c76d3e6bac9f3af3061",
+        "source": "audit_export",
+        "task_id": "datadesk-005",
+        "title": "Evidence readiness — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-25",
+        "kind": "system_audit",
+        "media_type": "text/plain",
+        "path": "audit/system-audit.log",
+        "sha256": "2f7beae662a04eb93aa5bd9043263dbdd1388282d34b549f57135ccc2303d32a",
+        "source": "audit_export",
+        "task_id": "datadesk-005",
+        "title": "System audit log — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-26",
+        "kind": "source_request",
+        "media_type": "message/rfc822",
+        "path": "communications/source-request.eml",
+        "sha256": "04a753a62c3f3f184e3d208d0157578b5bbfe99eb4145e5c68de1a416ded7e85",
+        "source": "messages",
+        "task_id": "datadesk-005",
+        "title": "Source integrity request — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-27",
+        "kind": "operations_thread",
+        "media_type": "application/json",
+        "path": "collaboration/operations-thread.json",
+        "sha256": "c72f135a94d937bba84dbbfeba4c85e884c43e89179a8cead60bda8fdde3f6a9",
+        "source": "chat",
+        "task_id": "datadesk-005",
+        "title": "Operations thread — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-28",
+        "kind": "provider_contract",
+        "media_type": "application/json",
+        "path": "contracts/provider-contracts.json",
+        "sha256": "6b788baaea98138d85c1d6f196004ea354cc6c8ea00d67c4b5e7c51ff312a341",
+        "source": "release_metadata",
+        "task_id": "datadesk-005",
+        "title": "Provider contract — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-29",
+        "kind": "live_snapshot",
+        "media_type": "application/json",
+        "path": "exports/live-snapshot.json",
+        "sha256": "c43895b30d1031290b66be2ae9d5d42e83e4befde23fbc5d64a8cabe2c6470ec",
+        "source": "provider_export",
+        "task_id": "datadesk-005",
+        "title": "Live pre-action snapshot — DATA-0005"
+      },
+      {
+        "asset_id": "datadesk-005-30",
+        "kind": "evidence_index",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-index.yaml",
+        "sha256": "043c9f7a51d5f26d7235ef20208e31f60fad4ba57d43c9d2be5756f9aa4a3a61",
+        "source": "drive",
+        "task_id": "datadesk-005",
+        "title": "Evidence index"
+      }
+    ],
+    "feed_deliveries": [
+      {
+        "business_date": "2026-03-02",
+        "delivery_id": "DL-K0302",
+        "feed_id": "FEED-CORM-CLK",
+        "files_expected": 1,
+        "files_received": 1,
+        "note": "event schema v3.0 (unannounced cutover)",
+        "received_at": "2026-03-03T00:55:00",
+        "rows_duplicate": 0,
+        "rows_invalid": 210,
+        "rows_late": 0,
+        "rows_received": 88400,
+        "status": "LOADED"
+      },
+      {
+        "business_date": "2026-03-03",
+        "delivery_id": "DL-K0303",
+        "feed_id": "FEED-CORM-CLK",
+        "files_expected": 1,
+        "files_received": 1,
+        "note": "event schema v3.0",
+        "received_at": "2026-03-04T00:57:00",
+        "rows_duplicate": 0,
+        "rows_invalid": 195,
+        "rows_late": 0,
+        "rows_received": 87150,
+        "status": "LOADED"
+      },
+      {
+        "business_date": "2026-03-04",
+        "delivery_id": "DL-K0304",
+        "feed_id": "FEED-CORM-CLK",
+        "files_expected": 1,
+        "files_received": 1,
+        "note": "event schema v3.0",
+        "received_at": "2026-03-05T00:52:00",
+        "rows_duplicate": 0,
+        "rows_invalid": 240,
+        "rows_late": 0,
+        "rows_received": 90210,
+        "status": "LOADED"
+      },
+      {
+        "business_date": "2026-03-05",
+        "delivery_id": "DL-K0305",
+        "feed_id": "FEED-CORM-CLK",
+        "files_expected": 1,
+        "files_received": 1,
+        "note": "event schema v3.0; parser crashed mid-load",
+        "received_at": "2026-03-06T00:58:00",
+        "rows_duplicate": 0,
+        "rows_invalid": 225,
+        "rows_late": 0,
+        "rows_received": 89340,
+        "status": "LOADED"
+      },
+      {
+        "business_date": "2026-03-06",
+        "delivery_id": "DL-K0306",
+        "feed_id": "FEED-CORM-CLK",
+        "files_expected": 1,
+        "files_received": 1,
+        "note": "event schema v3.0",
+        "received_at": "2026-03-07T00:54:00",
+        "rows_duplicate": 0,
+        "rows_invalid": 180,
+        "rows_late": 0,
+        "rows_received": 86910,
+        "status": "LOADED"
+      }
+    ],
+    "feeds": [
+      {
+        "cadence": "daily",
+        "dataset": "clickstream",
+        "feed_id": "FEED-CORM-CLK",
+        "name": "Cormorant clickstream events",
+        "status": "ACTIVE",
+        "vendor_id": "VEND-CORM"
+      }
+    ],
+    "messages": [
+      {
+        "attachments_json": "[{\"name\": \"redelivery-confirmation-CA-5519.pdf\", \"mime_type\": \"application/pdf\"}]",
+        "body": "The growth review is Thursday 2026-03-12 15:00 and attribution has been drifting all week — Cormorant now admits they cut over to a new event schema without telling anyone and our parser has been dropping the consent fields since.\n\nTheir re-export confirmation is attached (CA-5519). Ingrid signed AP-DD-0205 for the reload on WH-STD including the expedite fee if it is the only way to make Thursday.\n\nWhich days are wrong, and when are they honestly certified again?\n\nSasha (growth lead)",
+        "channel": "email",
+        "labels": "growth,DATA-0005,DATA-0005",
+        "message_id": "MSG-0005-01",
+        "recipients": "data-platform@tidewater.example",
+        "sender": "growth-lead@tidewater.example",
+        "sent_at": "2026-03-09T08:18:00",
+        "subject": "DATA-0005 attribution numbers wrong before Thursday review",
+        "thread_id": "THR-0005"
+      },
+      {
+        "attachments_json": "[]",
+        "body": "Window calendar for the week of 2026-03-09 is posted on the shared drive. Protected close and replication windows are unchanged.",
+        "channel": "email",
+        "labels": "platform-ops",
+        "message_id": "MSG-0005-00",
+        "recipients": "data-platform@tidewater.example",
+        "sender": "rei.tanaka@tidewater.example",
+        "sent_at": "2026-03-08T18:30:00",
+        "subject": "Weekly platform ops note",
+        "thread_id": "THR-0005-OPS"
+      }
+    ],
+    "model_lineage": [
+      {
+        "child_model_id": "MDL-ATTR-T",
+        "parent_model_id": "MDL-STG-CLK",
+        "relationship": "ref"
+      },
+      {
+        "child_model_id": "MDL-DASH-GROWTH",
+        "parent_model_id": "MDL-ATTR-T",
+        "relationship": "ref"
+      }
+    ],
+    "models": [
+      {
+        "description": "Certified attribution touchpoints joining clickstream to orders.",
+        "layer": "mart",
+        "materialization": "incremental",
+        "model_id": "MDL-ATTR-T",
+        "name": "fct_attribution_touch",
+        "owner": "growth-analytics",
+        "schema_name": "mart_growth",
+        "status": "ACTIVE"
+      },
+      {
+        "description": "Cormorant clickstream events after schema and consent parsing.",
+        "layer": "staging",
+        "materialization": "incremental",
+        "model_id": "MDL-STG-CLK",
+        "name": "stg_cormorant_clickstream",
+        "owner": "data-platform",
+        "schema_name": "stg_cormorant",
+        "status": "ACTIVE"
+      },
+      {
+        "description": "Thursday growth review dashboard.",
+        "layer": "dashboard",
+        "materialization": "view",
+        "model_id": "MDL-DASH-GROWTH",
+        "name": "growth_review_dashboard",
+        "owner": "growth-analytics",
+        "schema_name": "mart_exec",
+        "status": "ACTIVE"
+      }
+    ],
+    "pipeline_runs": [
+      {
+        "duration_minutes": 44,
+        "model_id": "MDL-ATTR-T",
+        "note": null,
+        "partition_date": "2026-02-23",
+        "rows_processed": 86200,
+        "run_id": "RUN-9101",
+        "source_version": "EV-2.3",
+        "started_at": "2026-02-24T02:00:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 45,
+        "model_id": "MDL-ATTR-T",
+        "note": null,
+        "partition_date": "2026-02-24",
+        "rows_processed": 87400,
+        "run_id": "RUN-9102",
+        "source_version": "EV-2.3",
+        "started_at": "2026-02-25T02:00:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 43,
+        "model_id": "MDL-ATTR-T",
+        "note": null,
+        "partition_date": "2026-02-25",
+        "rows_processed": 85100,
+        "run_id": "RUN-9103",
+        "source_version": "EV-2.3",
+        "started_at": "2026-02-26T02:00:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 42,
+        "model_id": "MDL-ATTR-T",
+        "note": null,
+        "partition_date": "2026-02-26",
+        "rows_processed": 88900,
+        "run_id": "RUN-9104",
+        "source_version": "EV-2.3",
+        "started_at": "2026-02-27T02:00:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 41,
+        "model_id": "MDL-ATTR-T",
+        "note": null,
+        "partition_date": "2026-02-27",
+        "rows_processed": 84500,
+        "run_id": "RUN-9105",
+        "source_version": "EV-2.3",
+        "started_at": "2026-02-28T02:00:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 38,
+        "model_id": "MDL-ATTR-T",
+        "note": "consent fields silently dropped",
+        "partition_date": "2026-03-02",
+        "rows_processed": 88190,
+        "run_id": "RUN-9106",
+        "source_version": "EV-3.0-MISPARSED",
+        "started_at": "2026-03-03T02:00:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 40,
+        "model_id": "MDL-ATTR-T",
+        "note": "consent fields silently dropped",
+        "partition_date": "2026-03-03",
+        "rows_processed": 86955,
+        "run_id": "RUN-9107",
+        "source_version": "EV-3.0-MISPARSED",
+        "started_at": "2026-03-04T02:00:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 39,
+        "model_id": "MDL-ATTR-T",
+        "note": "consent fields silently dropped",
+        "partition_date": "2026-03-04",
+        "rows_processed": 89970,
+        "run_id": "RUN-9108",
+        "source_version": "EV-3.0-MISPARSED",
+        "started_at": "2026-03-05T02:00:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 7,
+        "model_id": "MDL-ATTR-T",
+        "note": "parser crash on nested consent payload; no successful load",
+        "partition_date": "2026-03-05",
+        "rows_processed": 0,
+        "run_id": "RUN-9109",
+        "source_version": "EV-3.0-MISPARSED",
+        "started_at": "2026-03-06T02:00:00",
+        "status": "FAILED",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 41,
+        "model_id": "MDL-ATTR-T",
+        "note": "consent fields silently dropped",
+        "partition_date": "2026-03-06",
+        "rows_processed": 86730,
+        "run_id": "RUN-9110",
+        "source_version": "EV-3.0-MISPARSED",
+        "started_at": "2026-03-07T02:00:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 16,
+        "model_id": "MDL-STG-CLK",
+        "note": null,
+        "partition_date": "2026-03-02",
+        "rows_processed": 88190,
+        "run_id": "RUN-9084",
+        "source_version": "EV-3.0",
+        "started_at": "2026-03-03T01:35:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      },
+      {
+        "duration_minutes": 15,
+        "model_id": "MDL-STG-CLK",
+        "note": null,
+        "partition_date": "2026-03-06",
+        "rows_processed": 86730,
+        "run_id": "RUN-9085",
+        "source_version": "EV-3.0",
+        "started_at": "2026-03-07T01:35:00",
+        "status": "SUCCESS",
+        "trigger": "scheduled"
+      }
+    ],
+    "recon_controls": [],
+    "run_schedules": [
+      {
+        "cluster_id": "WH-STD",
+        "description": "Nightly certified load (recurring)",
+        "duration_minutes": 45,
+        "end_time": null,
+        "last_updated": "2026-03-08T20:00:00",
+        "model_id": "MDL-ATTR-T",
+        "revision": 1,
+        "schedule_id": "SCH-4400",
+        "start_time": null,
+        "status": "recurring"
+      }
+    ],
+    "sla_targets": [
+      {
+        "breach_escalation": "data_platform_lead",
+        "business_reference": "Thursday growth review",
+        "effective_from": "2026-01-12",
+        "max_staleness_hours": 48,
+        "model_id": "MDL-ATTR-T",
+        "refresh_deadline": "09:00",
+        "sla_id": "SLA-ATTR-T",
+        "status": "ACTIVE"
+      }
+    ],
+    "users": [
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Analytics Engineer on call (you)",
+        "role": "analytics_engineer_oncall",
+        "user_id": "U-ONCALL"
+      },
+      {
+        "approval_limit_usd": 40000,
+        "display_name": "Ingrid Voss",
+        "role": "data_platform_lead",
+        "user_id": "U-VOSS"
+      },
+      {
+        "approval_limit_usd": 150000,
+        "display_name": "Femi Oyelaran",
+        "role": "head_of_data",
+        "user_id": "U-OYELARAN"
+      },
+      {
+        "approval_limit_usd": 25000,
+        "display_name": "Corin Marsh",
+        "role": "finance_controller",
+        "user_id": "U-MARSH"
+      },
+      {
+        "approval_limit_usd": 10000,
+        "display_name": "Rei Tanaka",
+        "role": "warehouse_operations_manager",
+        "user_id": "U-TANAKA"
+      }
+    ],
+    "vendor_confirmations": [
+      {
+        "confirmation_id": "CONF-CORM-5519",
+        "expedite_fee_usd": 320,
+        "expedited_redelivery_date": "2026-03-10",
+        "feed_id": "FEED-CORM-CLK",
+        "note": "Standard: Thursday export cycle. Expedited: out-of-cycle export, USD 320 flat. Files validate overnight and load the next batch day.",
+        "reference": "CA-5519",
+        "scope_note": "v2-compatible re-export of event days 2026-03-02..2026-03-06 with the consent fields restored.",
+        "standard_redelivery_date": "2026-03-12",
+        "status": "OPEN",
+        "valid_until": "2026-03-11",
+        "vendor_id": "VEND-CORM"
+      }
+    ],
+    "vendors": [
+      {
+        "account_number": "TW-3310",
+        "name": "Skyfield Commerce Cloud",
+        "vendor_id": "VEND-SKYF"
+      },
+      {
+        "account_number": "TW-1188",
+        "name": "Bluecrest Payment Systems",
+        "vendor_id": "VEND-BLUE"
+      },
+      {
+        "account_number": "TW-0921",
+        "name": "Cormorant Adtech",
+        "vendor_id": "VEND-CORM"
+      },
+      {
+        "account_number": "TW-2205",
+        "name": "Harrier Logistics Data",
+        "vendor_id": "VEND-HARR"
+      }
+    ],
+    "warehouse_slots": [
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-09",
+        "slot_id": "SLOT-ADHOC-20260309-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-09",
+        "slot_id": "SLOT-ADHOC-20260309-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-09",
+        "slot_id": "SLOT-STD-20260309-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-09",
+        "slot_id": "SLOT-STD-20260309-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-09",
+        "slot_id": "SLOT-XL-20260309-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-09",
+        "slot_id": "SLOT-XL-20260309-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-10",
+        "slot_id": "SLOT-ADHOC-20260310-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-10",
+        "slot_id": "SLOT-ADHOC-20260310-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-10",
+        "slot_id": "SLOT-STD-20260310-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-10",
+        "slot_id": "SLOT-STD-20260310-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-10",
+        "slot_id": "SLOT-XL-20260310-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-10",
+        "slot_id": "SLOT-XL-20260310-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-11",
+        "slot_id": "SLOT-ADHOC-20260311-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-11",
+        "slot_id": "SLOT-ADHOC-20260311-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": null,
+        "job_id": null,
+        "service_date": "2026-03-11",
+        "slot_id": "SLOT-STD-20260311-DAY",
+        "start_time": "13:00:00",
+        "status": "free",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-11",
+        "slot_id": "SLOT-STD-20260311-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-11",
+        "slot_id": "SLOT-XL-20260311-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-11",
+        "slot_id": "SLOT-XL-20260311-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-12",
+        "slot_id": "SLOT-ADHOC-20260312-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-12",
+        "slot_id": "SLOT-ADHOC-20260312-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-12",
+        "slot_id": "SLOT-STD-20260312-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "replication window (protected)",
+        "job_id": null,
+        "service_date": "2026-03-12",
+        "slot_id": "SLOT-STD-20260312-NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-12",
+        "slot_id": "SLOT-XL-20260312-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-12",
+        "slot_id": "SLOT-XL-20260312-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-13",
+        "slot_id": "SLOT-ADHOC-20260313-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-13",
+        "slot_id": "SLOT-ADHOC-20260313-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-13",
+        "slot_id": "SLOT-STD-20260313-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "job_id": null,
+        "service_date": "2026-03-13",
+        "slot_id": "SLOT-STD-20260313-NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-13",
+        "slot_id": "SLOT-XL-20260313-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-13",
+        "slot_id": "SLOT-XL-20260313-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-16",
+        "slot_id": "SLOT-ADHOC-20260316-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-16",
+        "slot_id": "SLOT-ADHOC-20260316-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-16",
+        "slot_id": "SLOT-STD-20260316-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-16",
+        "slot_id": "SLOT-STD-20260316-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-16",
+        "slot_id": "SLOT-XL-20260316-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-16",
+        "slot_id": "SLOT-XL-20260316-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-17",
+        "slot_id": "SLOT-ADHOC-20260317-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-17",
+        "slot_id": "SLOT-ADHOC-20260317-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-17",
+        "slot_id": "SLOT-STD-20260317-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-17",
+        "slot_id": "SLOT-STD-20260317-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-17",
+        "slot_id": "SLOT-XL-20260317-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-17",
+        "slot_id": "SLOT-XL-20260317-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-18",
+        "slot_id": "SLOT-ADHOC-20260318-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-18",
+        "slot_id": "SLOT-ADHOC-20260318-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-18",
+        "slot_id": "SLOT-STD-20260318-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-18",
+        "slot_id": "SLOT-STD-20260318-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-18",
+        "slot_id": "SLOT-XL-20260318-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-18",
+        "slot_id": "SLOT-XL-20260318-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-19",
+        "slot_id": "SLOT-ADHOC-20260319-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-19",
+        "slot_id": "SLOT-ADHOC-20260319-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-19",
+        "slot_id": "SLOT-STD-20260319-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-19",
+        "slot_id": "SLOT-STD-20260319-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-19",
+        "slot_id": "SLOT-XL-20260319-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-19",
+        "slot_id": "SLOT-XL-20260319-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-20",
+        "slot_id": "SLOT-ADHOC-20260320-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-20",
+        "slot_id": "SLOT-ADHOC-20260320-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-20",
+        "slot_id": "SLOT-STD-20260320-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-20",
+        "slot_id": "SLOT-STD-20260320-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-20",
+        "slot_id": "SLOT-XL-20260320-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-20",
+        "slot_id": "SLOT-XL-20260320-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-23",
+        "slot_id": "SLOT-ADHOC-20260323-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-23",
+        "slot_id": "SLOT-ADHOC-20260323-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-23",
+        "slot_id": "SLOT-STD-20260323-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-23",
+        "slot_id": "SLOT-STD-20260323-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-23",
+        "slot_id": "SLOT-XL-20260323-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-23",
+        "slot_id": "SLOT-XL-20260323-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-24",
+        "slot_id": "SLOT-ADHOC-20260324-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-24",
+        "slot_id": "SLOT-ADHOC-20260324-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-24",
+        "slot_id": "SLOT-STD-20260324-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-24",
+        "slot_id": "SLOT-STD-20260324-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-24",
+        "slot_id": "SLOT-XL-20260324-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-24",
+        "slot_id": "SLOT-XL-20260324-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-25",
+        "slot_id": "SLOT-ADHOC-20260325-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-25",
+        "slot_id": "SLOT-ADHOC-20260325-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-25",
+        "slot_id": "SLOT-STD-20260325-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-25",
+        "slot_id": "SLOT-STD-20260325-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-25",
+        "slot_id": "SLOT-XL-20260325-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-25",
+        "slot_id": "SLOT-XL-20260325-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-26",
+        "slot_id": "SLOT-ADHOC-20260326-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-26",
+        "slot_id": "SLOT-ADHOC-20260326-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-26",
+        "slot_id": "SLOT-STD-20260326-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-26",
+        "slot_id": "SLOT-STD-20260326-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-26",
+        "slot_id": "SLOT-XL-20260326-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-26",
+        "slot_id": "SLOT-XL-20260326-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-27",
+        "slot_id": "SLOT-ADHOC-20260327-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-ADHOC",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-27",
+        "slot_id": "SLOT-ADHOC-20260327-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-27",
+        "slot_id": "SLOT-STD-20260327-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-STD",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-27",
+        "slot_id": "SLOT-STD-20260327-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-27",
+        "slot_id": "SLOT-XL-20260327-DAY",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_name": "DAY"
+      },
+      {
+        "cluster_id": "WH-XL",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled load",
+        "job_id": null,
+        "service_date": "2026-03-27",
+        "slot_id": "SLOT-XL-20260327-NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_name": "NIGHT"
+      }
+    ]
+  },
+  "starting_records": [
+    {
+      "resource_id": "SCH-4400",
+      "resource_type": "RunSchedule",
+      "status": "recurring",
+      "system": "pipelines"
+    },
+    {
+      "resource_id": "BF-7100",
+      "resource_type": "BackfillJob",
+      "status": "COMPLETED",
+      "system": "pipelines"
+    },
+    {
+      "resource_id": "ADJ-3100",
+      "resource_type": "AdjustmentEntry",
+      "status": "POSTED",
+      "system": "recon"
+    }
+  ],
+  "task_id": "datadesk-005",
+  "title": "Reload the attribution days broken by Cormorant's schema cutover",
+  "world": {
+    "id": "tidewater-dataplatform-v1",
+    "name": "Tidewater Supply Co. — Data Platform",
+    "organization_id": "ORG-TIDEWATER",
+    "primary_site": "WH-PROD",
+    "systems": [
+      "warehouse",
+      "pipelines",
+      "feeds",
+      "recon",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

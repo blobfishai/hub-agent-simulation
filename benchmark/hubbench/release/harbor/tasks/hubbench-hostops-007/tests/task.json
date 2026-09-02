@@ -1,0 +1,2712 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "farm_windows",
+    "mutations",
+    "note_drafts",
+    "reservations"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_vendor_retrieval.",
+        "type": "string"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for keep_scheduled_date.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "earliest_qualified_base_window": {
+        "description": "First non-displacing farm window on or after standard staging readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for stage_purge_queued_set.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_completion_days_saved": {
+        "description": "Days the expedited retrieval saves versus the first window after standard readiness.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Ironhold's confirmed standard and expedited retrieval dates on RQ-66288.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered SEGMENT that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "purge-queued set 4408 segments and the checksum-failed set 4395 segment",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for restorable DB-CATALOG-30 segments at the nearline store before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "payload_unit": {
+        "description": "Unit of the baseline bundle size.",
+        "type": "string"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: SEGMENT.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing keep_scheduled_date, expedite_vendor_retrieval, stage_purge_queued_set.",
+        "enum": [
+          "keep_scheduled_date",
+          "expedite_vendor_retrieval",
+          "stage_purge_queued_set"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_payload_gb": {
+        "description": "Baseline bundle size from the rehearsal tier table at the current measured dataset size.",
+        "type": "integer"
+      },
+      "required_quantity": {
+        "description": "30 GB baseline segments required for one tier 300-900 GB rehearsal staging at the 2026-04-07 dataset metering of 640 GB",
+        "type": "integer"
+      },
+      "segments_per_unit": {
+        "description": "Whole 30 GB segments the baseline bundle occupies.",
+        "type": "integer"
+      },
+      "selected_runner_window": {
+        "description": "Runner and window used by the selected option, as RUNNER/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered SEGMENT after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Ironhold's confirmed standard and expedited retrieval dates on RQ-66288.",
+        "type": "string"
+      },
+      "units_in_scope": {
+        "description": "Rehearsal stagings in scope for this decision.",
+        "type": "integer"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing purge-queued set 4408 segments and the checksum-failed set 4395 segment.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "baseline_completion",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "earliest_qualified_base_window",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_completion_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "payload_unit",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_payload_gb",
+      "required_quantity",
+      "segments_per_unit",
+      "selected_runner_window",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "units_in_scope",
+      "usable_coverage_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-04-13",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "staging readiness versus the non-displacing window calendar before the power work; purge-queued set 4408 segments and the checksum-failed set 4395 segment = 3 SEGMENT; uncovered scope = 1 SEGMENT",
+    "calculations": [
+      {
+        "description": "Preserved 2026-04-24 as the documented control date for the advanced catalog migration rehearsal; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 3 SEGMENT for 30 GB baseline segments required for one tier 300-900 GB rehearsal staging at the 2026-04-07 dataset metering of 640 GB at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 5 SEGMENT of gross observed restorable DB-CATALOG-30 segments at the nearline store.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 3 SEGMENT for purge-queued set 4408 segments and the checksum-failed set 4395 segment.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 5 observed − 3 ineligible = 2 usable SEGMENT.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 3 required − 2 usable = 1 SEGMENT uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in SEGMENT.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated keep_scheduled_date outcome as 2026-05-01 under regular farm windows that do not displace protected blocks.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_vendor_retrieval outcome as 2026-04-23 using Ironhold's confirmed standard and expedited retrieval dates on RQ-66288.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated stage_purge_queued_set outcome as 2026-04-16 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-29 as the independently confirmed standard readiness date for Ironhold's confirmed standard and expedited retrieval dates on RQ-66288.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-22 as the independently confirmed expedited readiness date for Ironhold's confirmed standard and expedited retrieval dates on RQ-66288.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 1 SEGMENT uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied the 300-900 GB tier at the 2026-04-07 dataset metering of 640 GB → 90 GB baseline; did not use the superseded 60 GB ticket RT-50110.",
+        "field": "required_payload_gb",
+        "id": "calculate_metered_payload",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the baseline bundle size in GB.",
+        "field": "payload_unit",
+        "id": "preserve_payload_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Converted 90 GB into 3 immutable 30 GB segments.",
+        "field": "segments_per_unit",
+        "id": "convert_payload_to_segments",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept one staging in scope: the advanced rehearsal.",
+        "field": "units_in_scope",
+        "id": "apply_rehearsal_scope",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-04-30 (RUNNER-1 PM) as the first free window on or after the 2026-04-29 standard readiness; the existing 2026-05-01 slot is later still.",
+        "field": "earliest_qualified_base_window",
+        "id": "identify_first_nondisplacing_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the advanced staging to RUNNER-1/2026-04-23/AM, the first free window on or after the 2026-04-22 expedited readiness.",
+        "field": "selected_runner_window",
+        "id": "bind_selected_runner_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the expedited 2026-04-23 window date with the standard-readiness date 2026-04-30: expediting saves 7 days and is the only authorized path before the cutoff.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_window_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 95 as the documented incremental cost for expedite_vendor_retrieval; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that stage_purge_queued_set remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of keep_scheduled_date, expedite_vendor_retrieval, stage_purge_queued_set; selected expedite_vendor_retrieval because it alone gives the best currently authorized result under staging readiness versus the non-displacing window calendar before the power work.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-04-23 as the supported outcome date for expedite_vendor_retrieval.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-04-23 with the independent control date 2026-04-24 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located DB-CATALOG-30 using immutable identifiers and preserved effective revision v1: service code catalog-db resolves to SVC-21120 and active ticket RT-51295 with reservation RES-70895; RT-50110 is its superseded 60 GB ticket and catalog-search (RT-51298) is a different service.",
+        "sources": [
+          "cmdb",
+          "messages"
+        ],
+        "statement": "HOST-0007: service code catalog-db resolves to SVC-21120 and active ticket RT-51295 with reservation RES-70895; RT-50110 is its superseded 60 GB ticket and catalog-search (RT-51298) is a different service; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective ticket and runbook to establish 3 SEGMENT for 30 GB baseline segments required for one tier 300-900 GB rehearsal staging at the 2026-04-07 dataset metering of 640 GB, with control date 2026-04-24.",
+        "sources": [
+          "releases",
+          "drive"
+        ],
+        "statement": "The effective ticket and runbook establish 30 GB baseline segments required for one tier 300-900 GB rehearsal staging at the 2026-04-07 dataset metering of 640 GB = 3 SEGMENT: the tier table gives a 90 GB baseline (3 segments) for the 640 GB dataset; one advanced staging is in scope. The control date is 2026-04-24 (last farm day before the primary DC power remediation begins 2026-04-25 (the change owner allows advancing up to 7 days))."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 5 observed less 3 excluded to 2 supported SEGMENT for restorable DB-CATALOG-30 segments at the nearline store.",
+        "sources": [
+          "backup",
+          "buildfarm",
+          "drive"
+        ],
+        "statement": "the holdings workbook shows 5 DB-CATALOG-30 segments in gross; set 4408 (2) leaves retention 2026-04-21 inside the purge horizon and set 4395 (1) failed the scrub, so 2 segments are restorable and 1 is short; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-04-22 expedited readiness input for expedite_vendor_retrieval, then separately derived its 2026-04-23 operating outcome under staging readiness versus the non-displacing window calendar before the power work instead of treating a vendor promise as authorization or a completion date.",
+        "sources": [
+          "vendor",
+          "messages"
+        ],
+        "statement": "Ironhold's confirmed standard and expedited retrieval dates on RQ-66288: Ironhold RQ-66288 confirms standard retrieval 2026-04-28 and expedited 2026-04-21 (+USD 95); staging release is the next business day; a vendor confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied regular farm windows that do not displace protected blocks to derive the three option outcomes without using protected or blocked windows.",
+        "sources": [
+          "buildfarm",
+          "drive"
+        ],
+        "statement": "regular farm windows that do not displace protected blocks: the first free window on or after 2026-04-22 is RUNNER-1 AM on 2026-04-23; on or after 2026-04-29 it is RUNNER-1 PM on 2026-04-30; RUNNER-2 AM on 2026-04-20 is protected; protected and blocked windows cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-HO-0107 only to expedite_vendor_retrieval and DB-CATALOG-30; kept stage_purge_queued_set outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-HO-0107 covers one Ironhold retrieval up to 2 segments with an expedite fee up to USD 150; a retention extension for set 4408 needs the infrastructure director. The approval does not select an option in advance and does not authorize stage_purge_queued_set."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected expedite_vendor_retrieval: it is the best currently authorized response that satisfies staging readiness versus the non-displacing window calendar before the power work.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "the rehearsal must be staged by 2026-04-24, the last farm day before the power work; a faster or broader action has value only if it remains inside staging readiness versus the non-displacing window calendar before the power work."
+      }
+    ],
+    "mode": "plan",
+    "options": [
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-05-01",
+        "consequence": "keep scheduled date leaves RES-70895 on 2026-05-01 with standard retrieval; it costs nothing but lands inside the power-remediation window, 7 days after the control date.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "keep_scheduled_date",
+        "incremental_cost": 0,
+        "label": "keep_scheduled_date: outcome 2026-05-01, incremental cost USD 0, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "APPROVED",
+        "completion": "2026-04-23",
+        "consequence": "expedite vendor retrieval brings the 1 uncovered segment by 2026-04-21, staged 2026-04-22, and RUNNER-1's free AM window on 2026-04-23 stages the rehearsal one day before the cutoff for USD 95, inside AP-HO-0107.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "expedite_vendor_retrieval",
+        "incremental_cost": 95,
+        "label": "expedite_vendor_retrieval: outcome 2026-04-23, incremental cost USD 95, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-04-16",
+        "consequence": "stage purge-queued set would stage on 2026-04-16 (RUNNER-3 PM) from set 4408 at no cost, 7 days earlier, but a retention extension for a purge-queued set needs the infrastructure director, which AP-HO-0107 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "stage_purge_queued_set",
+        "incremental_cost": 0,
+        "label": "stage_purge_queued_set: outcome 2026-04-16, incremental cost USD 0, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "expedite_vendor_retrieval is the best currently authorized response that satisfies staging readiness versus the non-displacing window calendar before the power work and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-04-23",
+    "selected_cost": 95,
+    "selected_option": "expedite_vendor_retrieval"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "accelerated_completion": "2026-04-23",
+      "baseline_completion": "2026-05-01",
+      "business_need_date": "2026-04-24",
+      "coverage_item_or_resource": "DB-CATALOG-30",
+      "decision_timing_status": "ON_TIME",
+      "earliest_qualified_base_window": "2026-04-30",
+      "escalated_completion": "2026-04-16",
+      "escalation_approval_required": 1,
+      "expedite_completion_days_saved": 7,
+      "expedited_external_readiness": "2026-04-22",
+      "external_recovery_quantity": 1,
+      "ineligible_coverage_quantity": 3,
+      "observed_coverage_quantity": 5,
+      "outcome_vs_control_days": -1,
+      "payload_unit": "GB",
+      "quantity_unit": "SEGMENT",
+      "recommended_incremental_cost_usd": 95,
+      "recommended_option": "expedite_vendor_retrieval",
+      "recommended_outcome_date": "2026-04-23",
+      "required_payload_gb": 90,
+      "required_quantity": 3,
+      "segments_per_unit": 3,
+      "selected_runner_window": "RUNNER-1/2026-04-23/AM",
+      "shortage_quantity": 1,
+      "standard_external_readiness": "2026-04-29",
+      "units_in_scope": 1,
+      "usable_coverage_quantity": 2
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'expedite_vendor_retrieval', tied to DB-CATALOG-30, revision v1, and the selected expedite_vendor_retrieval outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-04-23', tied to DB-CATALOG-30, revision v1, and the selected expedite_vendor_retrieval outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported coverage item or resource as 'DB-CATALOG-30', tied to DB-CATALOG-30, revision v1, and the selected expedite_vendor_retrieval outcome.",
+        "field": "coverage_item_or_resource",
+        "id": "answer_coverage_item_or_resource",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported shortage quantity as 1, tied to DB-CATALOG-30, revision v1, and the selected expedite_vendor_retrieval outcome.",
+        "field": "shortage_quantity",
+        "id": "answer_shortage_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to DB-CATALOG-30, revision v1, and the selected expedite_vendor_retrieval outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required DB-CATALOG-30 to reach business outcome 'Rehearsal staging advanced' through buildfarm.reservations.update with exact provider-critical values reservation_id='RES-70895', runner_id='RUNNER-1', start_time='2026-04-23T08:00:00', end_time='2026-04-23T09:30:00', status='booked'. The audited change binds selected option expedite_vendor_retrieval, approval AP-HO-0107, and constraint staging readiness versus the non-displacing window calendar before the power work; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "reservation_id",
+          "runner_id",
+          "start_time",
+          "end_time",
+          "status"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "end_time": "2026-04-23T09:30:00",
+            "reservation_id": "RES-70895",
+            "runner_id": "RUNNER-1",
+            "start_time": "2026-04-23T08:00:00",
+            "status": "booked"
+          },
+          "tool": "buildfarm.reservations.update"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "RES-70895",
+          "status": "booked",
+          "table_name": "reservations",
+          "tool": "buildfarm.reservations.update"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "hostops-007-mutation-01",
+          "task_id": "hostops-007"
+        }
+      },
+      {
+        "description": "Persisted RES-70895 in reservations with the supported values (service_id='SVC-21120', ticket_id='RT-51295', runner_id='RUNNER-1', start_time='2026-04-23T08:00:00', end_time='2026-04-23T09:30:00', status='booked', revision=2) so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "reservations",
+        "values": {
+          "end_time": "2026-04-23T09:30:00",
+          "revision": 2,
+          "runner_id": "RUNNER-1",
+          "service_id": "SVC-21120",
+          "start_time": "2026-04-23T08:00:00",
+          "status": "booked",
+          "ticket_id": "RT-51295"
+        },
+        "weight": 2.0,
+        "where": {
+          "reservation_id": "RES-70895"
+        }
+      },
+      {
+        "description": "Held RUNNER-1's 2026-04-23 AM window for RES-70895.",
+        "id": "state_02",
+        "milestone_id": "state.primary",
+        "table": "farm_windows",
+        "values": {
+          "reservation_id": "RES-70895",
+          "status": "busy"
+        },
+        "weight": 1.0,
+        "where": {
+          "window_id": "WIN-1-20260423-AM"
+        }
+      },
+      {
+        "description": "Released the original 2026-05-01 RUNNER-2 AM window when the reservation moved.",
+        "id": "state_03",
+        "milestone_id": "state.primary",
+        "table": "farm_windows",
+        "values": {
+          "reservation_id": null,
+          "status": "free"
+        },
+        "weight": 0.5,
+        "where": {
+          "window_id": "WIN-2-20260501-AM"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying expedite_vendor_retrieval, the 2026-04-23 outcome, the binding constraint, and the HOST-0007 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "june.calloway@ridgeline.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "HOST-0007",
+            "catalog-db",
+            "RT-51295"
+          ]
+        ],
+        "payload_text_contains": [
+          "expedite_vendor_retrieval",
+          "2026-04-23"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "hostops-007-mutation-02",
+          "task_id": "hostops-007"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for HOST-0007: the primary change and the stakeholder draft; no additional restore, copy, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "hostops-007"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-04-24 as the documented control date for the advanced catalog migration rehearsal; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 3 SEGMENT for 30 GB baseline segments required for one tier 300-900 GB rehearsal staging at the 2026-04-07 dataset metering of 640 GB at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 5 SEGMENT of gross observed restorable DB-CATALOG-30 segments at the nearline store.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 3 SEGMENT for purge-queued set 4408 segments and the checksum-failed set 4395 segment.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 5 observed − 3 ineligible = 2 usable SEGMENT.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 3 required − 2 usable = 1 SEGMENT uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in SEGMENT.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated keep_scheduled_date outcome as 2026-05-01 under regular farm windows that do not displace protected blocks.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_vendor_retrieval outcome as 2026-04-23 using Ironhold's confirmed standard and expedited retrieval dates on RQ-66288.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated stage_purge_queued_set outcome as 2026-04-16 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-29 as the independently confirmed standard readiness date for Ironhold's confirmed standard and expedited retrieval dates on RQ-66288.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-22 as the independently confirmed expedited readiness date for Ironhold's confirmed standard and expedited retrieval dates on RQ-66288.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 1 SEGMENT uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied the 300-900 GB tier at the 2026-04-07 dataset metering of 640 GB → 90 GB baseline; did not use the superseded 60 GB ticket RT-50110.",
+        "field": "required_payload_gb",
+        "id": "calculate_metered_payload",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the baseline bundle size in GB.",
+        "field": "payload_unit",
+        "id": "preserve_payload_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Converted 90 GB into 3 immutable 30 GB segments.",
+        "field": "segments_per_unit",
+        "id": "convert_payload_to_segments",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept one staging in scope: the advanced rehearsal.",
+        "field": "units_in_scope",
+        "id": "apply_rehearsal_scope",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-04-30 (RUNNER-1 PM) as the first free window on or after the 2026-04-29 standard readiness; the existing 2026-05-01 slot is later still.",
+        "field": "earliest_qualified_base_window",
+        "id": "identify_first_nondisplacing_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the advanced staging to RUNNER-1/2026-04-23/AM, the first free window on or after the 2026-04-22 expedited readiness.",
+        "field": "selected_runner_window",
+        "id": "bind_selected_runner_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the expedited 2026-04-23 window date with the standard-readiness date 2026-04-30: expediting saves 7 days and is the only authorized path before the cutoff.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_window_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 95 as the documented incremental cost for expedite_vendor_retrieval; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that stage_purge_queued_set remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of keep_scheduled_date, expedite_vendor_retrieval, stage_purge_queued_set; selected expedite_vendor_retrieval because it alone gives the best currently authorized result under staging readiness versus the non-displacing window calendar before the power work.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-04-23 as the supported outcome date for expedite_vendor_retrieval.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-04-23 with the independent control date 2026-04-24 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "HOST-0007"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated HOST-0007 scope, immutable handles, mounted systems, and evidence index before investigating DB-CATALOG-30.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "HOST-0007"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1007-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for HOST-0007 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "catalog-db"
+            },
+            "expected_result_contains": {
+              "services": [
+                {
+                  "service_id": "SVC-21120"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cmdb.services.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved service code catalog-db to the immutable service record through an identifier search rather than a name match against a similarly named service.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "HOST-0007"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-007-13"
+                },
+                {
+                  "id": "DRV-007-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the HOST-0007 case folder on the shared drive and identified the approval record and the ticket export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "runbook"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-007-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the runbook folder and distinguished the effective v4 runbook from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "ticket_id": "RT-51295"
+            },
+            "expected_result_contains": {
+              "status": "open",
+              "ticket_id": "RT-51295"
+            },
+            "match": "result_contains",
+            "tool": "releases.tickets.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active ticket RT-51295: payload basis, units in scope, and run durations.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "metric": "DATASET-GB",
+              "service_id": "SVC-21120"
+            },
+            "expected_result_contains": {
+              "meterings": [
+                {
+                  "metering_id": "MTR-21120"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cmdb.meterings.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current final payload metering for SVC-21120 (DATASET-GB) and ignored the stale historical metering.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v4 runbook for the sizing, minimum-retention, staging, window, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "artifact_class": "DB-CATALOG-30"
+            },
+            "expected_result_contains": {
+              "artifact_class": "DB-CATALOG-30"
+            },
+            "match": "result_contains",
+            "tool": "backup.classes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the artifact class record for DB-CATALOG-30: segment size and minimum remaining retention.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "service_id": "SVC-21120"
+            },
+            "expected_result_contains": {
+              "tickets": [
+                {
+                  "ticket_id": "RT-51295"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "releases.tickets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the tickets that define the requirement (RT-51295) and excluded superseded or out-of-scope tickets.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-11",
+              "job_id": "JOB-PURGE",
+              "start_date": "2026-04-08"
+            },
+            "expected_result_contains": {
+              "runs": [
+                {
+                  "run_id": "JR-77880"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "jobs.runs.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the scheduler's run history for JOB-PURGE to ground what actually ran, what failed, and what the schedule does next.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "artifact_class": "DB-CATALOG-30"
+            },
+            "expected_result_contains": {
+              "sets": [
+                {
+                  "set_id": "SET-CAT-4420"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "backup.sets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every DB-CATALOG-30 segment set with count, retention expiry, checksum status, and reservations before netting the coverage.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-01",
+              "start_date": "2026-04-16"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "WIN-1-20260423-AM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "buildfarm.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the runner window calendar for 2026-04-16 onward to find the first free window that displaces no protected or blocked block.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-IRH-66288"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-IRH-66288",
+              "standard_ready_date": "2026-04-28"
+            },
+            "match": "result_contains",
+            "tool": "vendor.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the vendor retrieval confirmation CONF-IRH-66288 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-HO-0107"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-HO-0107"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-HO-0107 for its exact scope: record, quantity, vendor, fee allowance, and what it does not cover.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-13"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-13"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1007-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1007-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1007-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1007"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1007"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1007 for set, window, and authority remarks that qualify the system records.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "service_id": "SVC-21120"
+            },
+            "expected_result_contains": {
+              "reservations": [
+                {
+                  "id": "RES-70895"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "buildfarm.reservations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the farm reservations that fix the schedule scope by immutable id.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-27"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-27"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for HOST-0007 and confirmed that DB-CATALOG-30 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-18"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-18"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for HOST-0007 and joined DB-CATALOG-30 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for HOST-0007; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for HOST-0007 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for DB-CATALOG-30 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for HOST-0007 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for HOST-0007, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-007-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-007-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for HOST-0007: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "buildfarm.reservations.update",
+        "any_of": [
+          {
+            "arguments": {
+              "reservation_id": "RES-70895"
+            },
+            "expected_result_contains": {
+              "end": "2026-04-23T09:30:00",
+              "id": "RES-70895",
+              "meta": {
+                "versionId": "2"
+              },
+              "runner": "RUNNER-1",
+              "start": "2026-04-23T08:00:00",
+              "status": "booked"
+            },
+            "match": "result_contains",
+            "tool": "buildfarm.reservations.get"
+          }
+        ],
+        "description": "Read RES-70895 back through buildfarm.reservations.get after the change and confirmed the persisted provider values (id='RES-70895', status='booked', runner='RUNNER-1', start='2026-04-23T08:00:00', end='2026-04-23T09:30:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "end": "2026-04-23T09:30:00",
+          "id": "RES-70895",
+          "meta": {
+            "versionId": "2"
+          },
+          "runner": "RUNNER-1",
+          "start": "2026-04-23T08:00:00",
+          "status": "booked"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": false,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "reservation_id": "RES-70895"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "hostops",
+  "instruction": "The primary data centre goes dark for power remediation from the twenty-fifth and the catalog migration rehearsal is currently booked after that. The change owner says it can come forward. Its baseline depends on the dataset tier, the nearline segments are a mix of good, purge-queued, and one the scrub flagged, and Ironhold has quoted two retrieval dates. I need to know whether we can stage the rehearsal before the cutoff, on what day, and at what cost, and whether the purge-queued set could carry it instead. Rebook the reservation accordingly and draft the note for June.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "end_time": "2026-04-20T09:30:00",
+        "reservation_id": "RES-70895",
+        "runner_id": "RUNNER-2",
+        "start_time": "2026-04-20T08:00:00",
+        "status": "booked"
+      },
+      "tool": "buildfarm.reservations.update"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-007-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "buildfarm.reservations.update",
+      "any_of": [
+        {
+          "arguments": {
+            "reservation_id": "RES-70895"
+          },
+          "expected_result_contains": {
+            "end": "2026-04-23T09:30:00",
+            "id": "RES-70895",
+            "meta": {
+              "versionId": "2"
+            },
+            "runner": "RUNNER-1",
+            "start": "2026-04-23T08:00:00",
+            "status": "booked"
+          },
+          "match": "result_contains",
+          "tool": "buildfarm.reservations.get"
+        }
+      ],
+      "description": "Read RES-70895 back through buildfarm.reservations.get after the change and confirmed the persisted provider values (id='RES-70895', status='booked', runner='RUNNER-1', start='2026-04-23T08:00:00', end='2026-04-23T09:30:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "end": "2026-04-23T09:30:00",
+        "id": "RES-70895",
+        "meta": {
+          "versionId": "2"
+        },
+        "runner": "RUNNER-1",
+        "start": "2026-04-23T08:00:00",
+        "status": "booked"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": false,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "reservation_id": "RES-70895"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-HO-0107"
+    },
+    "backup": {
+      "artifact_class": "DB-CATALOG-30",
+      "stores": [
+        "STORE-NEAR"
+      ]
+    },
+    "buildfarm": {
+      "calendar_window": {
+        "end_date": "2026-05-01",
+        "start_date": "2026-04-16"
+      },
+      "pool": "release-pool"
+    },
+    "case_reference": "HOST-0007",
+    "chat": {
+      "thread_id": "CHAT-1007"
+    },
+    "cmdb": {
+      "service_code": "catalog-db",
+      "service_search": {
+        "arguments": {
+          "identifier": "catalog-db"
+        },
+        "tool": "cmdb.services.search"
+      }
+    },
+    "drive": {
+      "case_folder_query": "HOST-0007",
+      "runbook_query": "runbook"
+    },
+    "jobs": {
+      "job_id": "JOB-PURGE"
+    },
+    "messages": {
+      "search_query": "HOST-0007"
+    },
+    "vendor": {
+      "confirmation_id": "CONF-IRH-66288"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "HOST-0007"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated HOST-0007 scope, immutable handles, mounted systems, and evidence index before investigating DB-CATALOG-30.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "HOST-0007"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1007-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for HOST-0007 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "catalog-db"
+          },
+          "expected_result_contains": {
+            "services": [
+              {
+                "service_id": "SVC-21120"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cmdb.services.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved service code catalog-db to the immutable service record through an identifier search rather than a name match against a similarly named service.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "HOST-0007"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-007-13"
+              },
+              {
+                "id": "DRV-007-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the HOST-0007 case folder on the shared drive and identified the approval record and the ticket export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "runbook"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-007-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the runbook folder and distinguished the effective v4 runbook from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "ticket_id": "RT-51295"
+          },
+          "expected_result_contains": {
+            "status": "open",
+            "ticket_id": "RT-51295"
+          },
+          "match": "result_contains",
+          "tool": "releases.tickets.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active ticket RT-51295: payload basis, units in scope, and run durations.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "metric": "DATASET-GB",
+            "service_id": "SVC-21120"
+          },
+          "expected_result_contains": {
+            "meterings": [
+              {
+                "metering_id": "MTR-21120"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cmdb.meterings.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current final payload metering for SVC-21120 (DATASET-GB) and ignored the stale historical metering.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v4 runbook for the sizing, minimum-retention, staging, window, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "artifact_class": "DB-CATALOG-30"
+          },
+          "expected_result_contains": {
+            "artifact_class": "DB-CATALOG-30"
+          },
+          "match": "result_contains",
+          "tool": "backup.classes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the artifact class record for DB-CATALOG-30: segment size and minimum remaining retention.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "service_id": "SVC-21120"
+          },
+          "expected_result_contains": {
+            "tickets": [
+              {
+                "ticket_id": "RT-51295"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "releases.tickets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the tickets that define the requirement (RT-51295) and excluded superseded or out-of-scope tickets.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-11",
+            "job_id": "JOB-PURGE",
+            "start_date": "2026-04-08"
+          },
+          "expected_result_contains": {
+            "runs": [
+              {
+                "run_id": "JR-77880"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "jobs.runs.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the scheduler's run history for JOB-PURGE to ground what actually ran, what failed, and what the schedule does next.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "artifact_class": "DB-CATALOG-30"
+          },
+          "expected_result_contains": {
+            "sets": [
+              {
+                "set_id": "SET-CAT-4420"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "backup.sets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every DB-CATALOG-30 segment set with count, retention expiry, checksum status, and reservations before netting the coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-01",
+            "start_date": "2026-04-16"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "WIN-1-20260423-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "buildfarm.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the runner window calendar for 2026-04-16 onward to find the first free window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-IRH-66288"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-IRH-66288",
+            "standard_ready_date": "2026-04-28"
+          },
+          "match": "result_contains",
+          "tool": "vendor.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the vendor retrieval confirmation CONF-IRH-66288 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-HO-0107"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-HO-0107"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-HO-0107 for its exact scope: record, quantity, vendor, fee allowance, and what it does not cover.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-13"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-13"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1007-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1007-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1007-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1007"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1007"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1007 for set, window, and authority remarks that qualify the system records.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "service_id": "SVC-21120"
+          },
+          "expected_result_contains": {
+            "reservations": [
+              {
+                "id": "RES-70895"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "buildfarm.reservations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the farm reservations that fix the schedule scope by immutable id.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-27"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-27"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for HOST-0007 and confirmed that DB-CATALOG-30 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-18"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-18"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for HOST-0007 and joined DB-CATALOG-30 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for HOST-0007; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for HOST-0007 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for DB-CATALOG-30 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for HOST-0007 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for HOST-0007, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for HOST-0007: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "HOST-0007"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "HOST-0007"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1007-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "catalog-db"
+      },
+      "expected_result_contains": {
+        "services": [
+          {
+            "service_id": "SVC-21120"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cmdb.services.search"
+    },
+    {
+      "arguments": {
+        "q": "HOST-0007"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-007-13"
+          },
+          {
+            "id": "DRV-007-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "runbook"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-007-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "ticket_id": "RT-51295"
+      },
+      "expected_result_contains": {
+        "status": "open",
+        "ticket_id": "RT-51295"
+      },
+      "match": "result_contains",
+      "tool": "releases.tickets.get"
+    },
+    {
+      "arguments": {
+        "metric": "DATASET-GB",
+        "service_id": "SVC-21120"
+      },
+      "expected_result_contains": {
+        "meterings": [
+          {
+            "metering_id": "MTR-21120"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cmdb.meterings.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "artifact_class": "DB-CATALOG-30"
+      },
+      "expected_result_contains": {
+        "artifact_class": "DB-CATALOG-30"
+      },
+      "match": "result_contains",
+      "tool": "backup.classes.get"
+    },
+    {
+      "arguments": {
+        "service_id": "SVC-21120"
+      },
+      "expected_result_contains": {
+        "tickets": [
+          {
+            "ticket_id": "RT-51295"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "releases.tickets.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-11",
+        "job_id": "JOB-PURGE",
+        "start_date": "2026-04-08"
+      },
+      "expected_result_contains": {
+        "runs": [
+          {
+            "run_id": "JR-77880"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "jobs.runs.list"
+    },
+    {
+      "arguments": {
+        "artifact_class": "DB-CATALOG-30"
+      },
+      "expected_result_contains": {
+        "sets": [
+          {
+            "set_id": "SET-CAT-4420"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "backup.sets.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-01",
+        "start_date": "2026-04-16"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "WIN-1-20260423-AM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "buildfarm.windows.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-IRH-66288"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-IRH-66288",
+        "standard_ready_date": "2026-04-28"
+      },
+      "match": "result_contains",
+      "tool": "vendor.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-HO-0107"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-HO-0107"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-13"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-13"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1007-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1007-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1007"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1007"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "service_id": "SVC-21120"
+      },
+      "expected_result_contains": {
+        "reservations": [
+          {
+            "id": "RES-70895"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "buildfarm.reservations.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-27"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-27"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-18"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-18"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-28"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-28"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-007-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-007-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "cmdb.services.search",
+    "releases.tickets.list",
+    "releases.tickets.get",
+    "cmdb.meterings.list",
+    "jobs.runs.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "backup.classes.get",
+    "backup.sets.list",
+    "buildfarm.reservations.list",
+    "buildfarm.windows.list",
+    "vendor.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "platform_operations_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_20",
+        "investigation_21"
+      ],
+      "description": "Establish the isolated HOST-0007 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 7.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_22"
+      ],
+      "description": "Determine the operative v1 requirement for DB-CATALOG-30 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_23",
+        "investigation_24",
+        "investigation_26"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 5 observed less 3 excluded to 2 supported SEGMENT for restorable DB-CATALOG-30 segments at the nearline store. Applied regular farm windows that do not displace protected blocks to derive the three option outcomes without using protected or blocked windows. Used the independently confirmed 2026-04-22 expedited readiness input for expedite_vendor_retrieval, then separately derived its 2026-04-23 operating outcome under staging readiness versus the non-displacing window calendar before the power work instead of treating a vendor promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_15",
+        "investigation_16",
+        "investigation_25"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-HO-0107 only to expedite_vendor_retrieval and DB-CATALOG-30; kept stage_purge_queued_set outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_17",
+        "investigation_18",
+        "investigation_19",
+        "investigation_27"
+      ],
+      "description": "Correlate DB-CATALOG-30 by immutable identifiers across the systems of record (cmdb, releases, jobs, backup, buildfarm, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 23.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "derive_plan_requirement",
+        "read_gross_coverage",
+        "remove_ineligible_coverage",
+        "calculate_usable_coverage",
+        "calculate_plan_gap",
+        "preserve_plan_unit",
+        "compare_baseline_plan",
+        "compare_accelerated_plan",
+        "compare_escalated_plan",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "bound_external_recovery_quantity",
+        "calculate_metered_payload",
+        "preserve_payload_unit",
+        "convert_payload_to_segments",
+        "apply_rehearsal_scope",
+        "identify_first_nondisplacing_window",
+        "bind_selected_runner_window",
+        "test_expedite_against_window_calendar"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for the advanced catalog migration rehearsal.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for expedite_vendor_retrieval under the actual operating window and report whether the 2026-04-23 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select expedite_vendor_retrieval only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 6.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01",
+        "state_02",
+        "state_03"
+      ],
+      "description": "Persist exactly the supported 'Rehearsal staging advanced' change for DB-CATALOG-30 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read DB-CATALOG-30 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_coverage_item_or_resource",
+        "answer_shortage_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for the advanced catalog migration rehearsal.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside HOST-0007's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "d582bb1387a177813569141fc2a4dcb740dfc1db4c2266776d8636231346b157",
+  "starting_records": [
+    {
+      "resource_id": "RES-70895",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "buildfarm"
+    },
+    {
+      "resource_id": "RES-70896",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "buildfarm"
+    },
+    {
+      "resource_id": "RST-3400",
+      "resource_type": "RestoreJob",
+      "status": "RECEIVED",
+      "system": "backup"
+    }
+  ],
+  "task_id": "hostops-007",
+  "title": "Advance the catalog rehearsal before the power remediation",
+  "workflow": {
+    "answer_fields": 27,
+    "readbacks": 1,
+    "reads": 28,
+    "writes": 2
+  },
+  "world": {
+    "id": "ridgeline-platform-v1",
+    "name": "Ridgeline Systems — Platform Operations",
+    "organization_id": "ORG-RIDGELINE",
+    "primary_site": "STORE-NEAR",
+    "systems": [
+      "cmdb",
+      "releases",
+      "jobs",
+      "backup",
+      "buildfarm",
+      "vendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

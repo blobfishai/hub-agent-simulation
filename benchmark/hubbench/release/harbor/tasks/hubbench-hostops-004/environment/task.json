@@ -1,0 +1,2217 @@
+{
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_vendor_retrieval.",
+        "type": "string"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for standard_retrieval_plan.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "earliest_qualified_base_window": {
+        "description": "First non-displacing farm window on or after standard staging readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for pull_dr_replica_copy.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_completion_days_saved": {
+        "description": "Days the expedited retrieval saves after the window calendar is reapplied.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Ironhold's confirmed standard and expedited retrieval dates on RQ-66207.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered SEGMENT that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "set 5488 segments checksum-failed after the power event",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for restorable LOG-AUDIT-10 segments at the nearline store before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "payload_unit": {
+        "description": "Unit of the metered daily volume (GB).",
+        "type": "string"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: SEGMENT.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing standard_retrieval_plan, expedite_vendor_retrieval, pull_dr_replica_copy.",
+        "enum": [
+          "standard_retrieval_plan",
+          "expedite_vendor_retrieval",
+          "pull_dr_replica_copy"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_payload_gb": {
+        "description": "Daily log volume taken from the current final metering, not the January incident spike.",
+        "multipleOf": 0.01,
+        "type": "number"
+      },
+      "required_quantity": {
+        "description": "10 GB day segments required for the 2026-03-30 to 2026-04-05 week at the current 9.6 GB/day metering",
+        "type": "integer"
+      },
+      "segments_per_unit": {
+        "description": "Whole 10 GB day segments each metered day occupies.",
+        "type": "integer"
+      },
+      "selected_runner_window": {
+        "description": "Runner and window used by the selected option, as RUNNER/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered SEGMENT after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Ironhold's confirmed standard and expedited retrieval dates on RQ-66207.",
+        "type": "string"
+      },
+      "units_in_scope": {
+        "description": "Days in the requested restore window.",
+        "type": "integer"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing set 5488 segments checksum-failed after the power event.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "baseline_completion",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "earliest_qualified_base_window",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_completion_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "payload_unit",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_payload_gb",
+      "required_quantity",
+      "segments_per_unit",
+      "selected_runner_window",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "units_in_scope",
+      "usable_coverage_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-04-13",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "family": "hostops",
+  "instruction": "Compliance is pushing to get a week of audit logs restored and indexed quickly because the regulator session is Monday. The volume is metered per day and part of what we hold was flagged by the scrub after the power event. I need to know how many day segments the week really needs at the current metering, how much of our catalog can actually be used, whether Ironhold's standard or expedited retrieval gets us there in time for the date compliance gave, and what pulling the DR replica would involve. Place the restore job that is actually approved, then draft the update for Matteo and the on-call channel.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-HO-0104"
+    },
+    "backup": {
+      "artifact_class": "LOG-AUDIT-10",
+      "stores": [
+        "STORE-NEAR"
+      ]
+    },
+    "buildfarm": {
+      "calendar_window": {
+        "end_date": "2026-04-28",
+        "start_date": "2026-04-15"
+      },
+      "pool": "release-pool"
+    },
+    "case_reference": "HOST-0004",
+    "chat": {
+      "thread_id": "CHAT-1004"
+    },
+    "cmdb": {
+      "service_code": "telemetry-audit",
+      "service_search": {
+        "arguments": {
+          "identifier": "telemetry-audit"
+        },
+        "tool": "cmdb.services.search"
+      }
+    },
+    "drive": {
+      "case_folder_query": "HOST-0004",
+      "runbook_query": "runbook"
+    },
+    "jobs": {
+      "job_id": "JOB-AUDIT-SHIP"
+    },
+    "messages": {
+      "search_query": "HOST-0004"
+    },
+    "vendor": {
+      "confirmation_id": "CONF-IRH-66207"
+    }
+  },
+  "role": "platform_operations_coordinator",
+  "seed_tables": {
+    "approvals": [
+      {
+        "approval_id": "AP-HO-0104",
+        "approver_id": "U-VANCE",
+        "approver_role": "release_engineering_manager",
+        "granted_on": "2026-04-10",
+        "scope_json": "{\"artifact_class\": \"LOG-AUDIT-10\", \"expedite_fee_allowed_usd\": 200, \"max_segments\": 3, \"max_spend_usd\": 400, \"not_covered\": [\"cross-site DR replica copies (infrastructure director + replication waiver)\", \"staging checksum-failed set 5488 before disposition (infrastructure director)\"], \"record\": \"RT-51272\", \"vendor_id\": \"VND-IRONHOLD\"}",
+        "status": "APPROVED",
+        "subject": "Audit-log segment retrieval for HOST-0004 (RT-51272)"
+      },
+      {
+        "approval_id": "AP-HO-0090",
+        "approver_id": "U-VANCE",
+        "approver_role": "release_engineering_manager",
+        "granted_on": "2026-02-06",
+        "scope_json": "{\"category\": \"CONSUMABLES\", \"max_spend_usd\": 9000}",
+        "status": "APPROVED",
+        "subject": "Quarterly build-cache SSD replenishment standing order"
+      }
+    ],
+    "artifact_classes": [
+      {
+        "artifact_class": "LOG-AUDIT-10",
+        "display": "audit log archive, 10 GB day segments",
+        "interchangeable_with": null,
+        "minimum_retention_days": 14,
+        "segment_size_gb": 10,
+        "segment_unit": "GB",
+        "signed": 1,
+        "storage_tier": "release-signed archive"
+      }
+    ],
+    "backup_sets": [
+      {
+        "artifact_class": "LOG-AUDIT-10",
+        "reserved_for_ticket": null,
+        "retention_expiry": "2027-02-28",
+        "segment_count": 5,
+        "set_id": "SET-AUD-5501",
+        "set_label": "5501",
+        "status": "VERIFIED",
+        "status_reason": null,
+        "store_id": "STORE-NEAR"
+      },
+      {
+        "artifact_class": "LOG-AUDIT-10",
+        "reserved_for_ticket": null,
+        "retention_expiry": "2026-12-31",
+        "segment_count": 4,
+        "set_id": "SET-AUD-5488",
+        "set_label": "5488",
+        "status": "CHECKSUM_FAILED",
+        "status_reason": "scrub after the 2026-04-06 power event flagged CRC mismatches; awaiting vendor disposition",
+        "store_id": "STORE-NEAR"
+      }
+    ],
+    "chat_threads": [
+      {
+        "channel": "#platform-ops",
+        "messages_json": "[{\"author\": \"Imogen Vance\", \"ts\": \"2026-04-13T10:40:00\", \"text\": \"Set 5488 stays out until the vendor answers the CRC disposition. Do not count it. 5501 is clean.\"}, {\"author\": \"Bisi Oyelaran\", \"ts\": \"2026-04-13T11:02:00\", \"text\": \"If someone wants the DR replica instead, that is a replication waiver and it comes to me first. Not pre-approved.\"}, {\"author\": \"Annika Str\\u00f8m\", \"ts\": \"2026-04-13T11:30:00\", \"text\": \"Runner 2 AM on the 20th is the freeze verification; leave it.\"}]",
+        "thread_id": "CHAT-1004",
+        "title": "HOST-0004 audit-log restore"
+      },
+      {
+        "channel": "#platform-ops",
+        "messages_json": "[{\"author\": \"Annika Str\\u00f8m\", \"ts\": \"2026-04-09T16:40:00\", \"text\": \"Reminder: log every kernel flag change in the change tracker.\"}]",
+        "thread_id": "CHAT-0004-GEN",
+        "title": "General — kernel flags and cage access"
+      }
+    ],
+    "drive_files": [
+      {
+        "content": "# Platform Operations Runbook (v4, effective 2026-02-02)\n\nApplies to Ridgeline Systems Platform Operations: the nearline artifact store (STORE-NEAR), the Drayton DR object store (STORE-DR), the release staging store (STORE-STAGE), and the release build farm. This version supersedes the 2024 runbook in full.\n\n## 1. Recovery requirement\n\n1.1 Metered payloads (release bundle size, daily log volume) are sized at the most recent final metering for the service in the CMDB. A stale metering is never used.\n1.2 Tiered rehearsals use the rehearsal tier table at the current measured dataset size.\n1.3 Archive segments are immutable fixed-size objects. Every payload rounds up to whole segments; partial segments are never retrieved or copied.\n1.4 Release trains with a rollback gate within 7 days: both the release bundle and the rollback baseline bundle must be fully staged and verified before the train's verification run is scheduled. An open vendor retrieval is not a substitute for staged segments.\n1.5 A scheduled verification or rehearsal run may be advanced by up to 7 days with the change owner's written note.\n\n## 2. Restorable sources\n\n2.1 A segment set counts toward coverage only when its status is VERIFIED, it is not reserved for a named ticket or legal hold, and it retains at least the class minimum remaining retention (14 days from the planning date). On a planning date of 2026-04-13, sets whose retention expires on or before 2026-04-27 are inside the purge-queue horizon and are not restore-eligible.\n2.2 Checksum-failed, scrub-flagged, and durability-uncovered sets are never staged for release or evidence work. Release requires the infrastructure director, and the change board where a release exception is involved.\n2.3 Vendor-retrieved and DR-copied segments are checksum-verified and released to the staging store on the next business day after the retrieval-ready or copy date.\n2.4 Retrieval sizing: retrieve the uncovered requirement plus the class retrieval margin from the margin table. Inter-store copies move releasable sets only and cover only the receiving store's uncovered quantity.\n\n## 3. Build-farm windows\n\n3.1 Release-farm windows are AM 08:00-12:00 and PM 12:30-16:30, Monday to Friday, with operations coverage on shift. A run of up to 4 hours including verification occupies one window; a longer run requires both windows of one runner on one day.\n3.2 Protected windows (release-freeze verification, compliance batches) and blocked windows (hypervisor or firmware maintenance) are never displaced without the change advisory board.\n3.3 Two short runs of the same job class (2 hours or less each, including verification) may be sequenced in one window.\n3.4 Regulated restore rehearsals are one continuous run on an isolation-capable runner per the roster; they may not be split across windows on different days.\n3.5 Out-of-hours, weekend, and overtime windows require the SRE lead's separate approval.\n\n## 4. Authority\n\n4.1 Release engineering manager: restore jobs and retrievals within the signed approval's segment count, vendor, and spend, including any expedite fee the approval names.\n4.2 Infrastructure director: expedited retrieval not named in an approval, cross-site DR copies and direct retrievals outside an approval, retention extensions and purge-queue overrides, and release of checksum-failed or durability-uncovered sets.\n4.3 SRE lead: runner re-home plans, overtime, and out-of-hours windows.\n4.4 Change advisory board: displacing protected windows, release exceptions, and rescheduling a release train.\n4.5 An approval covers exactly the ticket, quantity, vendor, and options it names. It never selects an option in advance and never extends to a broader record.\n\n---\nEvidence-room mount: hostops-004 / HOST-0004.\n",
+        "file_id": "DRV-004-01",
+        "folder": "Platform Operations/Runbooks",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "platform-operations-runbook.md",
+        "sha256": "460221c02fe088b33393d50a64201d04230b1a35da99808c9cd0c7e1d4f2e7ae"
+      },
+      {
+        "content": "# Platform Operations Runbook (2024 edition) — SUPERSEDED\n\nThis edition was replaced by v4 on 2026-02-02 and is retained for audit only. Do not apply it.\n\n1. Payloads may be sized at the metering recorded when the service was onboarded.\n2. Minimum remaining retention at restore: 7 days.\n3. An open vendor retrieval counts toward release staging; the train may be scheduled once the retrieval is confirmed.\n4. Expedite fees up to USD 500 may be approved by the release engineering manager at discretion.\n5. The farm runs a single 08:00-16:00 block; long rehearsals may be split across two days with the owner's agreement.\n6. Protected windows may be displaced by the on-call engineer when a release is at risk.\n\n---\nEvidence-room mount: hostops-004 / HOST-0004.\n",
+        "file_id": "DRV-004-02",
+        "folder": "Platform Operations/Runbooks/Archive",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "superseded-operations-runbook-2024.md",
+        "sha256": "2de011ebc600e41ca6b96dba9275c8b641726ac2eaf3a031ab1e8b97ed79b4b8"
+      },
+      {
+        "content": "{\n  \"export\": \"releases.tickets.get\",\n  \"record\": {\n    \"artifact_class\": {\n      \"code\": \"LOG-AUDIT-10\",\n      \"display\": \"audit log archive, 10 GB day segments\",\n      \"segment_size_gb\": 10\n    },\n    \"build_minutes\": 150,\n    \"kind\": \"recovery\",\n    \"note\": \"Regulator session is Monday 2026-04-20; the indexed evidence must be ready before it. Size at the current daily-volume metering, not the January incident spike.\",\n    \"opened_at\": \"2026-04-10\",\n    \"priority\": \"routine\",\n    \"requested_by\": \"Engineer/ENG-ROSSI\",\n    \"scope_note\": \"restore the 2026-03-30 to 2026-04-05 audit-log week for the regulator review\",\n    \"service\": \"Service/SVC-21050\",\n    \"status\": \"open\",\n    \"ticket_id\": \"RT-51272\",\n    \"unit_basis\": \"metered\",\n    \"unit_gb\": null,\n    \"unit_kind\": \"day\",\n    \"units_in_scope\": 7,\n    \"verify_minutes\": 30\n  }\n}\n",
+        "file_id": "DRV-004-03",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "ticket-RT-51272.json",
+        "sha256": "03c5d78c503b15c7a9c67103dfdff64795c8ebafb7deb01f36b358a0e73f7923"
+      },
+      {
+        "content": "{\n  \"export\": \"cmdb.services.get + cmdb.meterings.list\",\n  \"meterings\": [\n    {\n      \"measured_at\": \"2026-04-10\",\n      \"metering_id\": \"MTR-21050\",\n      \"metric\": \"LOG-GB-PER-DAY\",\n      \"service\": \"Service/SVC-21050\",\n      \"status\": \"final\",\n      \"unit\": \"GB\",\n      \"value\": 9.6\n    },\n    {\n      \"measured_at\": \"2026-01-30\",\n      \"metering_id\": \"MTR-21050-2601\",\n      \"metric\": \"LOG-GB-PER-DAY\",\n      \"service\": \"Service/SVC-21050\",\n      \"status\": \"final\",\n      \"unit\": \"GB\",\n      \"value\": 14.8\n    }\n  ],\n  \"service\": {\n    \"code\": \"telemetry-audit\",\n    \"name\": \"Audit Log Pipeline\",\n    \"owner_team\": \"Data Platform\",\n    \"primary_engineer\": \"Engineer/ENG-ROSSI\",\n    \"service_id\": \"SVC-21050\",\n    \"tier\": \"tier-1\"\n  }\n}\n",
+        "file_id": "DRV-004-04",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "service-telemetry-audit-summary.json",
+        "sha256": "777725c8bac557ab09d74d9e3c099871a525b44fba6f8b8d78f5be7f96b365df"
+      },
+      {
+        "content": "artifact_class,display,segment_size_gb,storage_tier,minimum_retention_days,signed,interchangeable_with\nLOG-AUDIT-10,audit log archive, 10 GB day segments,10,release-signed archive,14,yes,\n",
+        "file_id": "DRV-004-05",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "artifact-class-catalog.csv",
+        "sha256": "f2735879a63746a609c9ead34212037389ba9fe88bf41a42a9da919e95a30479"
+      },
+      {
+        "content": "set_label,artifact_class,store_id,segment_count,retention_expiry\n5501,LOG-AUDIT-10,STORE-NEAR,5,2027-02-28\n5488,LOG-AUDIT-10,STORE-NEAR,4,2026-12-31\n",
+        "file_id": "DRV-004-06",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "segment-holdings-by-set.xlsx",
+        "sha256": "149fff014c9454dd15a1efa23eecf70d5a06b1cd3642bd851d1b52f7949e78f6"
+      },
+      {
+        "content": "set_label,artifact_class,store_id,status,status_reason,reserved_for_ticket,register_note\n5501,LOG-AUDIT-10,STORE-NEAR,VERIFIED,,,\n5488,LOG-AUDIT-10,STORE-NEAR,CHECKSUM_FAILED,scrub after the 2026-04-06 power event flagged CRC mismatches; awaiting vendor disposition,,\n",
+        "file_id": "DRV-004-07",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "set-status-register.csv",
+        "sha256": "959f2b2057abda14fcaa8b701f1c0ac7e0b99ae832073c3e8e5b14302da937ea"
+      },
+      {
+        "content": "run_id,job_id,job_name,kind,schedule,started_at,finished_at,status,exit_code,summary\nJR-77702,JOB-AUDIT-SHIP,audit-log-shipper,backup,cron hourly,2026-04-06T21:00:00,2026-04-06T21:18:00,FAILED,9,\"power event at the primary DC; two shipping batches written with CRC errors into set 5488\"\nJR-77719,JOB-AUDIT-SHIP,audit-log-shipper,backup,cron hourly,2026-04-07T09:00:00,2026-04-07T09:24:00,SUCCEEDED,0,\"backfill complete from 2026-04-07 onward\"\nJR-77731,JOB-SCRUB,object-store-scrub,verify,cron 04:00 Mon,2026-04-13T04:00:00,2026-04-13T04:52:00,SUCCEEDED,0,\"scrub flagged 4 segments in set 5488; set marked CHECKSUM_FAILED\"\n",
+        "file_id": "DRV-004-08",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "job-schedule-and-runs.csv",
+        "sha256": "552ccf37b00c3db111710d93a409ed2d9d6101d770fd9fc3ff0b3b5270bc8dd7"
+      },
+      {
+        "content": "service_date,runner_id,session,start,end,status,hold_reason\n2026-04-13,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-13,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-13,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-13,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-13,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-13,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-14,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-14,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-14,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-14,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-14,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-14,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-15,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-15,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-15,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-15,RUNNER-2,PM,12:30:00,16:30:00,free,\n2026-04-15,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-15,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-16,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-16,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-16,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-16,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-16,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-16,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-17,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-17,RUNNER-1,PM,12:30:00,16:30:00,free,\n2026-04-17,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-17,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-17,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-17,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-20,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-20,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-20,RUNNER-2,AM,08:00:00,12:00:00,protected,release-freeze verification block (protected)\n2026-04-20,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-20,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-20,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-21,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-21,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-21,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-21,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-21,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-21,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-22,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-22,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-22,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-22,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-22,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-22,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-23,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-23,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-23,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-23,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-23,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-23,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-24,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-24,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-24,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-24,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-24,RUNNER-3,AM,08:00:00,12:00:00,free,\n2026-04-24,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-27,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-27,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-27,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-27,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-27,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-27,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-28,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-28,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-28,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-28,RUNNER-2,PM,12:30:00,16:30:00,free,\n2026-04-28,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-28,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-29,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-29,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-29,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-29,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-29,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-29,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-30,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-30,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-30,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-30,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-04-30,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-04-30,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-05-01,RUNNER-1,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-05-01,RUNNER-1,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-05-01,RUNNER-2,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-05-01,RUNNER-2,PM,12:30:00,16:30:00,busy,scheduled ci load\n2026-05-01,RUNNER-3,AM,08:00:00,12:00:00,busy,scheduled ci load\n2026-05-01,RUNNER-3,PM,12:30:00,16:30:00,busy,scheduled ci load\n",
+        "file_id": "DRV-004-09",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "runner-calendar-2026-04-13.xlsx",
+        "sha256": "5508580d2a18b52229147bbe2a972048222299d6d7d21a9d819eee3b01ba9f3a"
+      },
+      {
+        "content": "runner_id,name,status,isolation_capable,note,hubbench_task_scope,hubbench_case_reference\nRUNNER-1,Release runner 1 (rack A),ACTIVE,yes,,hostops-004,HOST-0004\nRUNNER-2,Release runner 2 (rack A),ACTIVE,yes,,hostops-004,HOST-0004\nRUNNER-3,Release runner 3 (rack B),ACTIVE,yes,,hostops-004,HOST-0004\n",
+        "file_id": "DRV-004-10",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "runner-roster-and-capabilities.csv",
+        "sha256": "cc5b8737212a9638f8ea0ca09fdc2dc13f9c9368ac340125011c7c22fe3a5d5f"
+      },
+      {
+        "content": "Ironhold Data Custody\nRetrieval confirmation RQ-66207 (system reference CONF-IRH-66207)\nCustomer: Ridgeline Systems Platform Operations, account RS-0339\nCase reference: HOST-0004\nItem: LOG-AUDIT-10 — audit log archive, 10 GB day segments\nSegments available for this confirmation: 6\nPer-segment retrieval fee: USD 42.00\nStandard retrieval-ready date: 2026-04-23\nExpedited retrieval-ready date: 2026-04-16 (expedite fee USD 180, flat)\nValid until: 2026-04-15\nNotes: Audit archive allocation. Standard weekly vault run 2026-04-23; expedited courier link 2026-04-16 adds USD 180.\nSegments are delivered to the customer's receiving endpoint; staging release is subject to the customer's checksum verification.\n",
+        "file_id": "DRV-004-11",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "retrieval-confirmation-RQ-66207.pdf",
+        "sha256": "8e0dd762ce100a49c27960f6f344336e967eeeec4b9110d8e234c1f46743eb3f"
+      },
+      {
+        "content": "{\n  \"approval_id\": \"AP-HO-0104\",\n  \"approver_id\": \"U-VANCE\",\n  \"approver_role\": \"release_engineering_manager\",\n  \"case_reference\": \"HOST-0004\",\n  \"granted_on\": \"2026-04-10\",\n  \"scope\": {\n    \"artifact_class\": \"LOG-AUDIT-10\",\n    \"expedite_fee_allowed_usd\": 200,\n    \"max_segments\": 3,\n    \"max_spend_usd\": 400,\n    \"not_covered\": [\n      \"cross-site DR replica copies (infrastructure director + replication waiver)\",\n      \"staging checksum-failed set 5488 before disposition (infrastructure director)\"\n    ],\n    \"record\": \"RT-51272\",\n    \"vendor_id\": \"VND-IRONHOLD\"\n  },\n  \"status\": \"APPROVED\",\n  \"subject\": \"Audit-log segment retrieval for HOST-0004 (RT-51272)\"\n}\n",
+        "file_id": "DRV-004-12",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "approval-AP-HO-0104.json",
+        "sha256": "784e6370b1df49abbbee037a4fa8365345f0898e43ab4f4ddb6d622f73351e99"
+      },
+      {
+        "content": "{\n  \"as_of\": \"2026-04-13\",\n  \"case_reference\": \"HOST-0004\",\n  \"note\": \"Snapshot before any action; row order does not indicate applicability.\",\n  \"reservations\": [\n    {\n      \"end\": \"2026-04-28T14:30:00\",\n      \"reservation_id\": \"RES-70905\",\n      \"runner_id\": \"RUNNER-2\",\n      \"service_id\": \"SVC-21063\",\n      \"start\": \"2026-04-28T12:30:00\",\n      \"status\": \"pending\",\n      \"ticket_id\": \"RT-51268\"\n    }\n  ],\n  \"restore_jobs\": [\n    {\n      \"restore_id\": \"RST-3400\",\n      \"status\": \"RECEIVED\"\n    }\n  ],\n  \"store_copies\": []\n}\n",
+        "file_id": "DRV-004-13",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "starting-state-hostops-004.json",
+        "sha256": "990d433959843d0e4f67c50ddf668560b470e28e61973b6e111a419e80f98a92"
+      },
+      {
+        "content": "# DR replica status — audit-log archive\n\nThe Drayton DR store holds a replica of the audit-log archive with a 24 h replication lag. Cross-site copies out of the DR replica require the infrastructure director's replication waiver and a scheduled replication window; the waiver is not delegated. Replica pulls bill USD 60 per request.\n",
+        "file_id": "DRV-004-14",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "dr-replication-status.md",
+        "sha256": "51fdb5dd6f35a32e1875db170f0046f81067ae96c788dd1966db4343ea821448"
+      },
+      {
+        "content": "{\n  \"anchors\": [\n    {\n      \"evaluation_shape\": \"stateful sandbox tasks with deterministic end-state verification\",\n      \"harbor_dataset\": \"terminal-bench/terminal-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/terminal-bench/terminal-bench/latest\",\n      \"license\": \"Apache-2.0\",\n      \"name\": \"Terminal-Bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/harbor-framework/terminal-bench\"\n    },\n    {\n      \"evaluation_shape\": \"file operations, data processing, log analysis, and recovery tasks\",\n      \"harbor_dataset\": \"NovitaAI/tb21-file-recovery\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/NovitaAI/tb21-file-recovery/latest\",\n      \"license\": \"Apache-2.0\",\n      \"name\": \"Terminal-Bench 2.1 file recovery\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/harbor-framework/terminal-bench\"\n    }\n  ],\n  \"clean_room\": true,\n  \"family\": \"hostops\",\n  \"schema_version\": \"hubbench.provenance.v1\",\n  \"task_id\": \"hostops-004\",\n  \"upstream_scores_claimed\": false,\n  \"upstream_tasks_copied\": false\n}\n",
+        "file_id": "DRV-004-15",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "harbor-open-source-anchors.json",
+        "sha256": "55c249c4c7d51c587389e7f2501ab2ccd9fd17206ce428300e2c7a4b722905c5"
+      },
+      {
+        "content": "task_id,case_reference,subject_id,source_system,record_role,effective_revision\nhostops-004,HOST-0004,LOG-AUDIT-10,domain,authoritative_subject,v1\nhostops-004,HOST-0004,LOG-AUDIT-10,approvals,execution_authority,v1\nhostops-004,HOST-0004,LOG-AUDIT-10,drive,supporting_evidence,v1\n",
+        "file_id": "DRV-004-16",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "record-lineage.csv",
+        "sha256": "c6d66d9c6141f6325c0743c833285398e6a679b80e42de505fa9d323aa847c8c"
+      },
+      {
+        "content": "# Current execution authority — HOST-0004\n\nEffective 2026-04-13. Applies only to LOG-AUDIT-10 in HostOps. The signed approval record and provider contract jointly bound any write. A source record, search result, or prior decision never grants authority.\n\nRelease revision: v1. Task scope: hostops-004.\n",
+        "file_id": "DRV-004-17",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "current-authority.md",
+        "sha256": "79dc77733a4d2785baee19a89a89b619b2179fb5933b408d923aba6012904816"
+      },
+      {
+        "content": "# Retired authority — HOST-0004\n\nStatus: SUPERSEDED. This historical HostOps delegation ended before 2026-04-13. It references LOG-AUDIT-10 but cannot authorize a current action for hostops-004.\n",
+        "file_id": "DRV-004-18",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "retired-authority.md",
+        "sha256": "f1e1ae381e28f53e206272b755ce9e8e8f4d6c1efc035b40aa590af264567668"
+      },
+      {
+        "content": "{\n  \"approval_record\": \"DEC-HOSTOPS-0004\",\n  \"authority_source\": \"signed family approval plus provider contract\",\n  \"case_reference\": \"HOST-0004\",\n  \"effective_revision\": \"v1\",\n  \"prohibited_basis\": [\n    \"retired authority\",\n    \"search ranking\",\n    \"request urgency\"\n  ],\n  \"status\": \"REVIEW_REQUIRED\",\n  \"subject_id\": \"LOG-AUDIT-10\"\n}\n",
+        "file_id": "DRV-004-19",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "decision-record.json",
+        "sha256": "4c7ffad88ab35372f1bd35ffe5c1c4caadc6ffc2f07a0c7767b7abe2120646fb"
+      },
+      {
+        "content": "task_id,case_reference,review_lane,available_units,protected_units,effective_date\nhostops-004,HOST-0004,standard,12,2,2026-04-13\nhostops-004,HOST-0004,expedited,8,1,2026-04-13\n",
+        "file_id": "DRV-004-20",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "review-capacity.xlsx",
+        "sha256": "1e531765956e1013694f68027539282bb1f019cf8722149c58303ae12148a170"
+      },
+      {
+        "content": "Source integrity control\nTask: hostops-004\nCase: HOST-0004\nSubject: LOG-AUDIT-10\nEffective revision: v1\nRule: current provider state plus the signed approval govern. Search rank, filenames, request urgency, and archived authority do not.\n",
+        "file_id": "DRV-004-21",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "source-integrity.pdf",
+        "sha256": "52ce02ed3329997fa254739059cfd9ce222400814fa5110d98dc4cedc42ed678"
+      },
+      {
+        "content": "task_id: \"hostops-004\"\ncase_reference: \"HOST-0004\"\nas_of: \"2026-04-13\"\nchecks:\n  - name: \"identity_linked\"\n    status: \"PASS\"\n    record: \"LOG-AUDIT-10\"\n  - name: \"revision_current\"\n    status: \"PASS\"\n    record: \"v1\"\n  - name: \"authority_requires_live_read\"\n    status: \"OPEN\"\n    record: \"DEC-HOSTOPS-0004\"\n  - name: \"outcome_precomputed\"\n    status: \"NO\"\n    record: \"hostops-004\"\n",
+        "file_id": "DRV-004-22",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "evidence-status.yaml",
+        "sha256": "7e97fe62636f4c64e2b37b133d161faedd751461e5cbb26887a29ab79b70e0b2"
+      },
+      {
+        "content": "2026-04-13T08:55:00Z INFO scope_created task=hostops-004 case=HOST-0004\n2026-04-13T08:56:00Z INFO subject_linked family=hostops subject=LOG-AUDIT-10\n2026-04-13T08:57:00Z WARN retired_authority_present case=HOST-0004 action=ignore_until_current_scope_verified\n2026-04-13T08:58:00Z INFO provider_state_ready task=hostops-004 expected_mutations=2\n",
+        "file_id": "DRV-004-23",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "text/plain",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "system-audit.log",
+        "sha256": "35c455814ce193bfb03303137bf8082c6794c45943a18dc59fdbc194044de42c"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"HOST-0004\",\n  \"messages\": [\n    {\n      \"author\": \"operations\",\n      \"sent_at\": \"2026-04-13T08:35:00\",\n      \"text\": \"Use immutable subject LOG-AUDIT-10; the similarly named archived record is not in scope.\"\n    },\n    {\n      \"author\": \"governance\",\n      \"sent_at\": \"2026-04-13T08:41:00\",\n      \"text\": \"Current revision is v1. Confirm the signed approval before any state change.\"\n    },\n    {\n      \"author\": \"requester\",\n      \"sent_at\": \"2026-04-13T08:47:00\",\n      \"text\": \"Please leave the stakeholder communication as a draft for human review.\"\n    }\n  ],\n  \"thread_id\": \"OPS-HOSTOPS-0004\"\n}\n",
+        "file_id": "DRV-004-24",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "operations-thread.json",
+        "sha256": "18ce47cb5d717b69f67caa6ba72d3492cfb06c7ef57855fbd426986861bb5e98"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"HOST-0004\",\n  \"network\": \"closed benchmark world\",\n  \"read_semantics\": \"provider-shaped records backed by the seeded task world\",\n  \"schema_version\": \"hubbench.provider-contract.v1\",\n  \"state_scope\": \"isolated SQLite episode\",\n  \"subject_id\": \"LOG-AUDIT-10\",\n  \"task_id\": \"hostops-004\",\n  \"unsupported_claims\": [\n    \"byte parity with upstream providers\",\n    \"conversion of upstream benchmark tasks\",\n    \"upstream score comparability\"\n  ],\n  \"verifier_visibility\": \"hidden from the agent\",\n  \"write_semantics\": \"task-scoped, schema-validated, transactionally persisted and audited\"\n}\n",
+        "file_id": "DRV-004-25",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "provider-contracts.json",
+        "sha256": "59f0f6d9d179c312759eb603f9c6b9d5a3d25aafb2396973958a93572e2455d7"
+      },
+      {
+        "content": "{\n  \"captured_as_of\": \"2026-04-13\",\n  \"case_reference\": \"HOST-0004\",\n  \"expected_mutation_count\": 2,\n  \"family\": \"hostops\",\n  \"note\": \"Live provider state remains authoritative; this export is a correlation aid, not a write instruction.\",\n  \"organization\": \"Ridgeline Systems \\u2014 Platform Operations\",\n  \"schema_version\": \"hubbench.live-snapshot.v1\",\n  \"state\": \"PRE_ACTION\",\n  \"subject_id\": \"LOG-AUDIT-10\",\n  \"task_id\": \"hostops-004\"\n}\n",
+        "file_id": "DRV-004-26",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "live-snapshot.json",
+        "sha256": "0d4794afde5f2f2c9597633900df2c4bd1135fba265eb39199e91dda75007abc"
+      },
+      {
+        "content": "case_reference: \"HOST-0004\"\nas_of: \"2026-04-13\"\nfiles:\n  - path: \"runbook/platform-operations-runbook.md\"\n    kind: \"policy\"\n    media_type: \"text/markdown\"\n    sha256: \"460221c02fe088b33393d50a64201d04230b1a35da99808c9cd0c7e1d4f2e7ae\"\n  - path: \"runbook/superseded-operations-runbook-2024.md\"\n    kind: \"policy_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"2de011ebc600e41ca6b96dba9275c8b641726ac2eaf3a031ab1e8b97ed79b4b8\"\n  - path: \"releases/ticket-RT-51272.json\"\n    kind: \"ticket_export\"\n    media_type: \"application/json\"\n    sha256: \"03c5d78c503b15c7a9c67103dfdff64795c8ebafb7deb01f36b358a0e73f7923\"\n  - path: \"cmdb/service-telemetry-audit-summary.json\"\n    kind: \"service_summary\"\n    media_type: \"application/json\"\n    sha256: \"777725c8bac557ab09d74d9e3c099871a525b44fba6f8b8d78f5be7f96b365df\"\n  - path: \"backup/artifact-class-catalog.csv\"\n    kind: \"class_catalog\"\n    media_type: \"text/csv\"\n    sha256: \"f2735879a63746a609c9ead34212037389ba9fe88bf41a42a9da919e95a30479\"\n  - path: \"backup/segment-holdings-by-set.xlsx\"\n    kind: \"holdings_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"149fff014c9454dd15a1efa23eecf70d5a06b1cd3642bd851d1b52f7949e78f6\"\n  - path: \"backup/set-status-register.csv\"\n    kind: \"verification_register\"\n    media_type: \"text/csv\"\n    sha256: \"959f2b2057abda14fcaa8b701f1c0ac7e0b99ae832073c3e8e5b14302da937ea\"\n  - path: \"jobs/job-schedule-and-runs.csv\"\n    kind: \"job_schedule\"\n    media_type: \"text/csv\"\n    sha256: \"552ccf37b00c3db111710d93a409ed2d9d6101d770fd9fc3ff0b3b5270bc8dd7\"\n  - path: \"buildfarm/runner-calendar-2026-04-13.xlsx\"\n    kind: \"runner_calendar\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"5508580d2a18b52229147bbe2a972048222299d6d7d21a9d819eee3b01ba9f3a\"\n  - path: \"buildfarm/runner-roster-and-capabilities.csv\"\n    kind: \"runner_roster\"\n    media_type: \"text/csv\"\n    sha256: \"cc5b8737212a9638f8ea0ca09fdc2dc13f9c9368ac340125011c7c22fe3a5d5f\"\n  - path: \"vendor/retrieval-confirmation-RQ-66207.pdf\"\n    kind: \"vendor_confirmation\"\n    media_type: \"application/pdf\"\n    sha256: \"8e0dd762ce100a49c27960f6f344336e967eeeec4b9110d8e234c1f46743eb3f\"\n  - path: \"messages/THR-1004.eml\"\n    kind: \"email\"\n    media_type: \"message/rfc822\"\n    sha256: \"0bb7fc8f4089f2820b62d2cde27e7f58824df8210bc8e3ce270eca2d830f8e79\"\n  - path: \"chat/CHAT-1004.json\"\n    kind: \"chat_thread\"\n    media_type: \"application/json\"\n    sha256: \"34741dbd88298223b69a500504a283336dedd3f4f8d1492574592f9bb01fa257\"\n  - path: \"approvals/approval-AP-HO-0104.json\"\n    kind: \"approval\"\n    media_type: \"application/json\"\n    sha256: \"784e6370b1df49abbbee037a4fa8365345f0898e43ab4f4ddb6d622f73351e99\"\n  - path: \"exports/starting-state-hostops-004.json\"\n    kind: \"starting_state\"\n    media_type: \"application/json\"\n    sha256: \"990d433959843d0e4f67c50ddf668560b470e28e61973b6e111a419e80f98a92\"\n  - path: \"backup/dr-replication-status.md\"\n    kind: \"dr_status\"\n    media_type: \"text/markdown\"\n    sha256: \"51fdb5dd6f35a32e1875db170f0046f81067ae96c788dd1966db4343ea821448\"\n  - path: \"provenance/harbor-open-source-anchors.json\"\n    kind: \"open_source_provenance\"\n    media_type: \"application/json\"\n    sha256: \"55c249c4c7d51c587389e7f2501ab2ccd9fd17206ce428300e2c7a4b722905c5\"\n  - path: \"lineage/record-lineage.csv\"\n    kind: \"record_lineage\"\n    media_type: \"text/csv\"\n    sha256: \"c6d66d9c6141f6325c0743c833285398e6a679b80e42de505fa9d323aa847c8c\"\n  - path: \"controls/current-authority.md\"\n    kind: \"authority_current\"\n    media_type: \"text/markdown\"\n    sha256: \"79dc77733a4d2785baee19a89a89b619b2179fb5933b408d923aba6012904816\"\n  - path: \"controls/retired-authority.md\"\n    kind: \"authority_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"f1e1ae381e28f53e206272b755ce9e8e8f4d6c1efc035b40aa590af264567668\"\n  - path: \"approvals/decision-record.json\"\n    kind: \"approval_decision\"\n    media_type: \"application/json\"\n    sha256: \"4c7ffad88ab35372f1bd35ffe5c1c4caadc6ffc2f07a0c7767b7abe2120646fb\"\n  - path: \"workbooks/review-capacity.xlsx\"\n    kind: \"review_capacity_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"1e531765956e1013694f68027539282bb1f019cf8722149c58303ae12148a170\"\n  - path: \"controls/source-integrity.pdf\"\n    kind: \"source_integrity_control\"\n    media_type: \"application/pdf\"\n    sha256: \"52ce02ed3329997fa254739059cfd9ce222400814fa5110d98dc4cedc42ed678\"\n  - path: \"audit/evidence-status.yaml\"\n    kind: \"evidence_status\"\n    media_type: \"application/yaml\"\n    sha256: \"7e97fe62636f4c64e2b37b133d161faedd751461e5cbb26887a29ab79b70e0b2\"\n  - path: \"audit/system-audit.log\"\n    kind: \"system_audit\"\n    media_type: \"text/plain\"\n    sha256: \"35c455814ce193bfb03303137bf8082c6794c45943a18dc59fdbc194044de42c\"\n  - path: \"communications/source-request.eml\"\n    kind: \"source_request\"\n    media_type: \"message/rfc822\"\n    sha256: \"e94b53ae2fe71d847b6fbf7d6c34764791eab91601eb834493fb9fc7e5825358\"\n  - path: \"collaboration/operations-thread.json\"\n    kind: \"operations_thread\"\n    media_type: \"application/json\"\n    sha256: \"18ce47cb5d717b69f67caa6ba72d3492cfb06c7ef57855fbd426986861bb5e98\"\n  - path: \"contracts/provider-contracts.json\"\n    kind: \"provider_contract\"\n    media_type: \"application/json\"\n    sha256: \"59f0f6d9d179c312759eb603f9c6b9d5a3d25aafb2396973958a93572e2455d7\"\n  - path: \"exports/live-snapshot.json\"\n    kind: \"live_snapshot\"\n    media_type: \"application/json\"\n    sha256: \"0d4794afde5f2f2c9597633900df2c4bd1135fba265eb39199e91dda75007abc\"\n",
+        "file_id": "DRV-004-27",
+        "folder": "Platform Operations/Cases/HOST-0004",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-04-10T17:30:00",
+        "name": "evidence-index.yaml",
+        "sha256": "edb1bf5bd99dcf1ee0f1b54e7961281224c13a9e897504918247731b5c46b964"
+      }
+    ],
+    "engineers": [
+      {
+        "engineer_id": "ENG-TIDEMAND",
+        "focus": "Atlas platform",
+        "name": "Freya Tidemand",
+        "role": "release_owner"
+      },
+      {
+        "engineer_id": "ENG-BHATT",
+        "focus": "Payments",
+        "name": "Deepak Bhatt",
+        "role": "service_owner"
+      },
+      {
+        "engineer_id": "ENG-CALLOWAY",
+        "focus": "Analytics pipelines",
+        "name": "June Calloway",
+        "role": "data_engineering_lead"
+      },
+      {
+        "engineer_id": "ENG-ROSSI",
+        "focus": "Compliance and audit",
+        "name": "Matteo Rossi",
+        "role": "security_engineer"
+      },
+      {
+        "engineer_id": "ENG-OKONJO",
+        "focus": "Platform reliability",
+        "name": "Amara Okonjo",
+        "role": "sre_oncall"
+      }
+    ],
+    "evidence_files": [
+      {
+        "asset_id": "hostops-004-01",
+        "kind": "policy",
+        "media_type": "text/markdown",
+        "path": "runbook/platform-operations-runbook.md",
+        "sha256": "460221c02fe088b33393d50a64201d04230b1a35da99808c9cd0c7e1d4f2e7ae",
+        "source": "drive",
+        "task_id": "hostops-004",
+        "title": "Platform operations runbook v4 (effective)"
+      },
+      {
+        "asset_id": "hostops-004-02",
+        "kind": "policy_superseded",
+        "media_type": "text/markdown",
+        "path": "runbook/superseded-operations-runbook-2024.md",
+        "sha256": "2de011ebc600e41ca6b96dba9275c8b641726ac2eaf3a031ab1e8b97ed79b4b8",
+        "source": "drive",
+        "task_id": "hostops-004",
+        "title": "Platform operations runbook 2024 (superseded)"
+      },
+      {
+        "asset_id": "hostops-004-03",
+        "kind": "ticket_export",
+        "media_type": "application/json",
+        "path": "releases/ticket-RT-51272.json",
+        "sha256": "03c5d78c503b15c7a9c67103dfdff64795c8ebafb7deb01f36b358a0e73f7923",
+        "source": "releases_export",
+        "task_id": "hostops-004",
+        "title": "Ticket RT-51272 (releases export)"
+      },
+      {
+        "asset_id": "hostops-004-04",
+        "kind": "service_summary",
+        "media_type": "application/json",
+        "path": "cmdb/service-telemetry-audit-summary.json",
+        "sha256": "777725c8bac557ab09d74d9e3c099871a525b44fba6f8b8d78f5be7f96b365df",
+        "source": "cmdb_export",
+        "task_id": "hostops-004",
+        "title": "Service telemetry-audit summary with payload meterings (CMDB export)"
+      },
+      {
+        "asset_id": "hostops-004-05",
+        "kind": "class_catalog",
+        "media_type": "text/csv",
+        "path": "backup/artifact-class-catalog.csv",
+        "sha256": "f2735879a63746a609c9ead34212037389ba9fe88bf41a42a9da919e95a30479",
+        "source": "backup_export",
+        "task_id": "hostops-004",
+        "title": "Artifact class catalog: segment sizes and minimum retention"
+      },
+      {
+        "asset_id": "hostops-004-06",
+        "kind": "holdings_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "backup/segment-holdings-by-set.xlsx",
+        "sha256": "149fff014c9454dd15a1efa23eecf70d5a06b1cd3642bd851d1b52f7949e78f6",
+        "source": "backup_workbook",
+        "task_id": "hostops-004",
+        "title": "Catalogued segment holdings by set (gross)"
+      },
+      {
+        "asset_id": "hostops-004-07",
+        "kind": "verification_register",
+        "media_type": "text/csv",
+        "path": "backup/set-status-register.csv",
+        "sha256": "959f2b2057abda14fcaa8b701f1c0ac7e0b99ae832073c3e8e5b14302da937ea",
+        "source": "backup_export",
+        "task_id": "hostops-004",
+        "title": "Segment-set status register (checksum, reservation, durability notes)"
+      },
+      {
+        "asset_id": "hostops-004-08",
+        "kind": "job_schedule",
+        "media_type": "text/csv",
+        "path": "jobs/job-schedule-and-runs.csv",
+        "sha256": "552ccf37b00c3db111710d93a409ed2d9d6101d770fd9fc3ff0b3b5270bc8dd7",
+        "source": "scheduler_export",
+        "task_id": "hostops-004",
+        "title": "Scheduler jobs and recent runs"
+      },
+      {
+        "asset_id": "hostops-004-09",
+        "kind": "runner_calendar",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "buildfarm/runner-calendar-2026-04-13.xlsx",
+        "sha256": "5508580d2a18b52229147bbe2a972048222299d6d7d21a9d819eee3b01ba9f3a",
+        "source": "buildfarm_workbook",
+        "task_id": "hostops-004",
+        "title": "Runner window calendar, three weeks from 2026-04-13"
+      },
+      {
+        "asset_id": "hostops-004-10",
+        "kind": "runner_roster",
+        "media_type": "text/csv",
+        "path": "buildfarm/runner-roster-and-capabilities.csv",
+        "sha256": "cc5b8737212a9638f8ea0ca09fdc2dc13f9c9368ac340125011c7c22fe3a5d5f",
+        "source": "buildfarm_export",
+        "task_id": "hostops-004",
+        "title": "Runner roster and isolation capability"
+      },
+      {
+        "asset_id": "hostops-004-11",
+        "kind": "vendor_confirmation",
+        "media_type": "application/pdf",
+        "path": "vendor/retrieval-confirmation-RQ-66207.pdf",
+        "sha256": "8e0dd762ce100a49c27960f6f344336e967eeeec4b9110d8e234c1f46743eb3f",
+        "source": "email_attachment",
+        "task_id": "hostops-004",
+        "title": "Vault retrieval confirmation RQ-66207"
+      },
+      {
+        "asset_id": "hostops-004-12",
+        "kind": "email",
+        "media_type": "message/rfc822",
+        "path": "messages/THR-1004.eml",
+        "sha256": "0bb7fc8f4089f2820b62d2cde27e7f58824df8210bc8e3ce270eca2d830f8e79",
+        "source": "messages",
+        "task_id": "hostops-004",
+        "title": "HOST-0004 audit-log week — must be indexed before Monday the 20th"
+      },
+      {
+        "asset_id": "hostops-004-13",
+        "kind": "chat_thread",
+        "media_type": "application/json",
+        "path": "chat/CHAT-1004.json",
+        "sha256": "34741dbd88298223b69a500504a283336dedd3f4f8d1492574592f9bb01fa257",
+        "source": "chat",
+        "task_id": "hostops-004",
+        "title": "HOST-0004 audit-log restore"
+      },
+      {
+        "asset_id": "hostops-004-14",
+        "kind": "approval",
+        "media_type": "application/json",
+        "path": "approvals/approval-AP-HO-0104.json",
+        "sha256": "784e6370b1df49abbbee037a4fa8365345f0898e43ab4f4ddb6d622f73351e99",
+        "source": "approvals_export",
+        "task_id": "hostops-004",
+        "title": "Approval record AP-HO-0104"
+      },
+      {
+        "asset_id": "hostops-004-15",
+        "kind": "starting_state",
+        "media_type": "application/json",
+        "path": "exports/starting-state-hostops-004.json",
+        "sha256": "990d433959843d0e4f67c50ddf668560b470e28e61973b6e111a419e80f98a92",
+        "source": "buildfarm_export",
+        "task_id": "hostops-004",
+        "title": "Starting-state export (reservations, restores, copies)"
+      },
+      {
+        "asset_id": "hostops-004-16",
+        "kind": "dr_status",
+        "media_type": "text/markdown",
+        "path": "backup/dr-replication-status.md",
+        "sha256": "51fdb5dd6f35a32e1875db170f0046f81067ae96c788dd1966db4343ea821448",
+        "source": "drive",
+        "task_id": "hostops-004",
+        "title": "DR replica status — audit-log archive"
+      },
+      {
+        "asset_id": "hostops-004-17",
+        "kind": "open_source_provenance",
+        "media_type": "application/json",
+        "path": "provenance/harbor-open-source-anchors.json",
+        "sha256": "55c249c4c7d51c587389e7f2501ab2ccd9fd17206ce428300e2c7a4b722905c5",
+        "source": "release_metadata",
+        "task_id": "hostops-004",
+        "title": "Open-source benchmark provenance — HostOps"
+      },
+      {
+        "asset_id": "hostops-004-18",
+        "kind": "record_lineage",
+        "media_type": "text/csv",
+        "path": "lineage/record-lineage.csv",
+        "sha256": "c6d66d9c6141f6325c0743c833285398e6a679b80e42de505fa9d323aa847c8c",
+        "source": "lineage_export",
+        "task_id": "hostops-004",
+        "title": "Cross-system record lineage — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-19",
+        "kind": "authority_current",
+        "media_type": "text/markdown",
+        "path": "controls/current-authority.md",
+        "sha256": "79dc77733a4d2785baee19a89a89b619b2179fb5933b408d923aba6012904816",
+        "source": "governance",
+        "task_id": "hostops-004",
+        "title": "Current authority — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-20",
+        "kind": "authority_superseded",
+        "media_type": "text/markdown",
+        "path": "controls/retired-authority.md",
+        "sha256": "f1e1ae381e28f53e206272b755ce9e8e8f4d6c1efc035b40aa590af264567668",
+        "source": "governance_archive",
+        "task_id": "hostops-004",
+        "title": "Retired authority — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-21",
+        "kind": "approval_decision",
+        "media_type": "application/json",
+        "path": "approvals/decision-record.json",
+        "sha256": "4c7ffad88ab35372f1bd35ffe5c1c4caadc6ffc2f07a0c7767b7abe2120646fb",
+        "source": "approvals_export",
+        "task_id": "hostops-004",
+        "title": "Decision control record — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-22",
+        "kind": "review_capacity_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "workbooks/review-capacity.xlsx",
+        "sha256": "1e531765956e1013694f68027539282bb1f019cf8722149c58303ae12148a170",
+        "source": "operations_workbook",
+        "task_id": "hostops-004",
+        "title": "Review capacity — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-23",
+        "kind": "source_integrity_control",
+        "media_type": "application/pdf",
+        "path": "controls/source-integrity.pdf",
+        "sha256": "52ce02ed3329997fa254739059cfd9ce222400814fa5110d98dc4cedc42ed678",
+        "source": "governance",
+        "task_id": "hostops-004",
+        "title": "Source integrity control — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-24",
+        "kind": "evidence_status",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-status.yaml",
+        "sha256": "7e97fe62636f4c64e2b37b133d161faedd751461e5cbb26887a29ab79b70e0b2",
+        "source": "audit_export",
+        "task_id": "hostops-004",
+        "title": "Evidence readiness — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-25",
+        "kind": "system_audit",
+        "media_type": "text/plain",
+        "path": "audit/system-audit.log",
+        "sha256": "35c455814ce193bfb03303137bf8082c6794c45943a18dc59fdbc194044de42c",
+        "source": "audit_export",
+        "task_id": "hostops-004",
+        "title": "System audit log — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-26",
+        "kind": "source_request",
+        "media_type": "message/rfc822",
+        "path": "communications/source-request.eml",
+        "sha256": "e94b53ae2fe71d847b6fbf7d6c34764791eab91601eb834493fb9fc7e5825358",
+        "source": "messages",
+        "task_id": "hostops-004",
+        "title": "Source integrity request — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-27",
+        "kind": "operations_thread",
+        "media_type": "application/json",
+        "path": "collaboration/operations-thread.json",
+        "sha256": "18ce47cb5d717b69f67caa6ba72d3492cfb06c7ef57855fbd426986861bb5e98",
+        "source": "chat",
+        "task_id": "hostops-004",
+        "title": "Operations thread — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-28",
+        "kind": "provider_contract",
+        "media_type": "application/json",
+        "path": "contracts/provider-contracts.json",
+        "sha256": "59f0f6d9d179c312759eb603f9c6b9d5a3d25aafb2396973958a93572e2455d7",
+        "source": "release_metadata",
+        "task_id": "hostops-004",
+        "title": "Provider contract — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-29",
+        "kind": "live_snapshot",
+        "media_type": "application/json",
+        "path": "exports/live-snapshot.json",
+        "sha256": "0d4794afde5f2f2c9597633900df2c4bd1135fba265eb39199e91dda75007abc",
+        "source": "provider_export",
+        "task_id": "hostops-004",
+        "title": "Live pre-action snapshot — HOST-0004"
+      },
+      {
+        "asset_id": "hostops-004-30",
+        "kind": "evidence_index",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-index.yaml",
+        "sha256": "edb1bf5bd99dcf1ee0f1b54e7961281224c13a9e897504918247731b5c46b964",
+        "source": "drive",
+        "task_id": "hostops-004",
+        "title": "Evidence index"
+      }
+    ],
+    "farm_windows": [
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-13",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260413-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-13",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260413-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-13",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260413-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-13",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260413-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-13",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260413-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-13",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260413-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-14",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260414-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-14",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260414-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-14",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260414-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-14",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260414-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-14",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260414-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-14",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260414-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260415-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-15",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260415-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260415-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": null,
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-15",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "free",
+        "window_id": "WIN-2-20260415-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260415-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-15",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260415-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-16",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260416-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-16",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260416-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-16",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260416-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-16",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260416-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-16",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260416-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-16",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260416-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-17",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260417-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": null,
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-17",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "free",
+        "window_id": "WIN-1-20260417-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-17",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260417-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-17",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260417-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-17",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260417-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-17",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260417-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-20",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260420-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-20",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260420-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "release-freeze verification block (protected)",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-20",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "protected",
+        "window_id": "WIN-2-20260420-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-20",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260420-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-20",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260420-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-20",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260420-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-21",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260421-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-21",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260421-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-21",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260421-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-21",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260421-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-21",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260421-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-21",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260421-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260422-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-22",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260422-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260422-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-22",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260422-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260422-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-22",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260422-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-23",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260423-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-23",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260423-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-23",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260423-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-23",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260423-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-23",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260423-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-23",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260423-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-24",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260424-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-24",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260424-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-24",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260424-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-24",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260424-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": null,
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-24",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "free",
+        "window_id": "WIN-3-20260424-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-24",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260424-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-27",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260427-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-27",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260427-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-27",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260427-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-27",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260427-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-27",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260427-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-27",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260427-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-28",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260428-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-28",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260428-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-28",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260428-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": null,
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-28",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "free",
+        "window_id": "WIN-2-20260428-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-28",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260428-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-28",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260428-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-29",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260429-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-29",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260429-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-29",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260429-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-29",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260429-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-29",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260429-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-29",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260429-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-30",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260430-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-04-30",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260430-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-30",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260430-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-04-30",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260430-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-30",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260430-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-04-30",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260430-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-05-01",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260501-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-1",
+        "service_date": "2026-05-01",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-1-20260501-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-05-01",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260501-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-2",
+        "service_date": "2026-05-01",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-2-20260501-PM"
+      },
+      {
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-05-01",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260501-AM"
+      },
+      {
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled ci load",
+        "reservation_id": null,
+        "runner_id": "RUNNER-3",
+        "service_date": "2026-05-01",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "WIN-3-20260501-PM"
+      }
+    ],
+    "hosts": [
+      {
+        "host_id": "H-004-01",
+        "hostname": "telemetry-audit-01.prod.ridgeline.internal",
+        "os_release": "ridgeline-linux 12.4",
+        "role": "app",
+        "service_id": "SVC-21050",
+        "status": "in_service"
+      },
+      {
+        "host_id": "H-004-02",
+        "hostname": "telemetry-metrics-01.prod.ridgeline.internal",
+        "os_release": "ridgeline-linux 12.4",
+        "role": "app",
+        "service_id": "SVC-21063",
+        "status": "in_service"
+      },
+      {
+        "host_id": "H-004-90",
+        "hostname": "bastion-01.mgmt.ridgeline.internal",
+        "os_release": "ridgeline-linux 12.4",
+        "role": "bastion",
+        "service_id": null,
+        "status": "in_service"
+      }
+    ],
+    "job_runs": [
+      {
+        "exit_code": 9,
+        "finished_at": "2026-04-06T21:18:00",
+        "job_id": "JOB-AUDIT-SHIP",
+        "run_id": "JR-77702",
+        "started_at": "2026-04-06T21:00:00",
+        "status": "FAILED",
+        "summary": "power event at the primary DC; two shipping batches written with CRC errors into set 5488"
+      },
+      {
+        "exit_code": 0,
+        "finished_at": "2026-04-07T09:24:00",
+        "job_id": "JOB-AUDIT-SHIP",
+        "run_id": "JR-77719",
+        "started_at": "2026-04-07T09:00:00",
+        "status": "SUCCEEDED",
+        "summary": "backfill complete from 2026-04-07 onward"
+      },
+      {
+        "exit_code": 0,
+        "finished_at": "2026-04-13T04:52:00",
+        "job_id": "JOB-SCRUB",
+        "run_id": "JR-77731",
+        "started_at": "2026-04-13T04:00:00",
+        "status": "SUCCEEDED",
+        "summary": "scrub flagged 4 segments in set 5488; set marked CHECKSUM_FAILED"
+      }
+    ],
+    "jobs": [
+      {
+        "job_id": "JOB-AUDIT-SHIP",
+        "kind": "backup",
+        "name": "audit-log-shipper",
+        "schedule": "cron hourly",
+        "service_id": "SVC-21050",
+        "status": "enabled"
+      },
+      {
+        "job_id": "JOB-SCRUB",
+        "kind": "verify",
+        "name": "object-store-scrub",
+        "schedule": "cron 04:00 Mon",
+        "service_id": null,
+        "status": "enabled"
+      }
+    ],
+    "messages": [
+      {
+        "attachments_json": "[{\"name\": \"retrieval-confirmation-RQ-66207.pdf\", \"mime_type\": \"application/pdf\"}]",
+        "body": "The regulator session is Monday 2026-04-20 and the 2026-03-30 to 2026-04-05 audit-log week has to be restored and indexed before it. Part of that week is sitting in the set the scrub failed after the power event, so we cannot count on it.\n\nIronhold's allocation confirmation RQ-66207 is attached. Imogen has signed AP-HO-0104 for a retrieval including the expedite fee.\n\nPlease tell us which day is real.\n\nMatteo",
+        "channel": "email",
+        "labels": "compliance,HOST-0004,HOST-0004",
+        "message_id": "MSG-1004-01",
+        "recipients": "platform-ops@ridgeline.example",
+        "sender": "matteo.rossi@ridgeline.example",
+        "sent_at": "2026-04-10T15:05:00",
+        "subject": "HOST-0004 audit-log week — must be indexed before Monday the 20th",
+        "thread_id": "THR-1004"
+      },
+      {
+        "attachments_json": "[]",
+        "body": "On-call rota for the week of 2026-04-13 is posted. Runner capability flags are on the shared drive roster; no changes to protected blocks.",
+        "channel": "email",
+        "labels": "operations",
+        "message_id": "MSG-0004-00",
+        "recipients": "platform-ops@ridgeline.example",
+        "sender": "annika.strom@ridgeline.example",
+        "sent_at": "2026-04-10T08:00:00",
+        "subject": "Weekly operations note",
+        "thread_id": "THR-0004-OPS"
+      }
+    ],
+    "meterings": [
+      {
+        "measured_at": "2026-04-10",
+        "metering_id": "MTR-21050",
+        "metric": "LOG-GB-PER-DAY",
+        "service_id": "SVC-21050",
+        "status": "final",
+        "unit": "GB",
+        "value": 9.6
+      },
+      {
+        "measured_at": "2026-01-30",
+        "metering_id": "MTR-21050-2601",
+        "metric": "LOG-GB-PER-DAY",
+        "service_id": "SVC-21050",
+        "status": "final",
+        "unit": "GB",
+        "value": 14.8
+      },
+      {
+        "measured_at": "2026-04-10",
+        "metering_id": "MTR-21063",
+        "metric": "LOG-GB-PER-DAY",
+        "service_id": "SVC-21063",
+        "status": "final",
+        "unit": "GB",
+        "value": 22.5
+      }
+    ],
+    "reservations": [
+      {
+        "description": "metrics backfill spot-check — awaiting window",
+        "end_time": "2026-04-28T14:30:00",
+        "last_updated": "2026-04-10T12:00:00",
+        "reservation_id": "RES-70905",
+        "revision": 1,
+        "runner_id": "RUNNER-2",
+        "service_id": "SVC-21063",
+        "start_time": "2026-04-28T12:30:00",
+        "status": "pending",
+        "ticket_id": "RT-51268"
+      }
+    ],
+    "restore_jobs": [
+      {
+        "artifact_class": "LOG-AUDIT-10",
+        "confirmation_id": null,
+        "created_at": "2026-03-27T09:30:00",
+        "expected_ready_date": "2026-04-01",
+        "requested_by": "platform_operations_coordinator",
+        "restore_id": "RST-3400",
+        "retrieval_option": "standard",
+        "revision": 1,
+        "segment_count": 2,
+        "status": "RECEIVED",
+        "unit": "SEGMENT",
+        "vendor_id": "VND-IRONHOLD"
+      }
+    ],
+    "retrieval_confirmations": [
+      {
+        "artifact_class": "LOG-AUDIT-10",
+        "confirmation_id": "CONF-IRH-66207",
+        "expedite_fee_usd": 180,
+        "expedited_ready_date": "2026-04-16",
+        "note": "Audit archive allocation. Standard weekly vault run 2026-04-23; expedited courier link 2026-04-16 adds USD 180.",
+        "per_segment_fee_usd": 42.0,
+        "reference": "RQ-66207",
+        "segments_available": 6,
+        "standard_ready_date": "2026-04-23",
+        "status": "OPEN",
+        "valid_until": "2026-04-15",
+        "vendor_id": "VND-IRONHOLD"
+      },
+      {
+        "artifact_class": "LOG-AUDIT-10",
+        "confirmation_id": "CONF-IRH-66150",
+        "expedite_fee_usd": 180,
+        "expedited_ready_date": "2026-03-19",
+        "note": "Superseded by RQ-66207.",
+        "per_segment_fee_usd": 42.0,
+        "reference": "RQ-66150",
+        "segments_available": 6,
+        "standard_ready_date": "2026-03-26",
+        "status": "EXPIRED",
+        "valid_until": "2026-03-18",
+        "vendor_id": "VND-IRONHOLD"
+      }
+    ],
+    "runners": [
+      {
+        "isolation_capable": 1,
+        "name": "Release runner 1 (rack A)",
+        "pool": "release-pool",
+        "runner_id": "RUNNER-1",
+        "status": "ACTIVE",
+        "status_note": null
+      },
+      {
+        "isolation_capable": 1,
+        "name": "Release runner 2 (rack A)",
+        "pool": "release-pool",
+        "runner_id": "RUNNER-2",
+        "status": "ACTIVE",
+        "status_note": null
+      },
+      {
+        "isolation_capable": 1,
+        "name": "Release runner 3 (rack B)",
+        "pool": "release-pool",
+        "runner_id": "RUNNER-3",
+        "status": "ACTIVE",
+        "status_note": null
+      }
+    ],
+    "services": [
+      {
+        "code": "telemetry-audit",
+        "name": "Audit Log Pipeline",
+        "owner_team": "Data Platform",
+        "primary_engineer_id": "ENG-ROSSI",
+        "service_id": "SVC-21050",
+        "tier": "tier-1"
+      },
+      {
+        "code": "telemetry-metrics",
+        "name": "Metrics Aggregation Pipeline",
+        "owner_team": "Data Platform",
+        "primary_engineer_id": "ENG-CALLOWAY",
+        "service_id": "SVC-21063",
+        "tier": "tier-2"
+      }
+    ],
+    "store_copies": [],
+    "stores": [
+      {
+        "name": "Nearline artifact store (primary DC)",
+        "store_id": "STORE-NEAR",
+        "type": "nearline_store"
+      },
+      {
+        "name": "Drayton DR object store",
+        "store_id": "STORE-DR",
+        "type": "dr_store"
+      },
+      {
+        "name": "Release staging store",
+        "store_id": "STORE-STAGE",
+        "type": "staging_store"
+      }
+    ],
+    "tickets": [
+      {
+        "artifact_class": "LOG-AUDIT-10",
+        "build_minutes": 150,
+        "kind": "recovery",
+        "note": "Regulator session is Monday 2026-04-20; the indexed evidence must be ready before it. Size at the current daily-volume metering, not the January incident spike.",
+        "opened_at": "2026-04-10",
+        "priority": "routine",
+        "requested_by": "ENG-ROSSI",
+        "scope_note": "restore the 2026-03-30 to 2026-04-05 audit-log week for the regulator review",
+        "service_id": "SVC-21050",
+        "status": "open",
+        "ticket_id": "RT-51272",
+        "unit_basis": "metered",
+        "unit_gb": null,
+        "unit_kind": "day",
+        "units_in_scope": 7,
+        "verify_minutes": 30
+      },
+      {
+        "artifact_class": "LOG-AUDIT-10",
+        "build_minutes": 90,
+        "kind": "recovery",
+        "note": "Routine spot-check; can wait for the standard run.",
+        "opened_at": "2026-04-08",
+        "priority": "low",
+        "requested_by": "ENG-CALLOWAY",
+        "scope_note": "metrics backfill spot-check (not part of the review)",
+        "service_id": "SVC-21063",
+        "status": "open",
+        "ticket_id": "RT-51268",
+        "unit_basis": "fixed",
+        "unit_gb": 22.5,
+        "unit_kind": "day",
+        "units_in_scope": 2,
+        "verify_minutes": 30
+      }
+    ],
+    "users": [
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Platform Operations Coordinator (you)",
+        "role": "platform_operations_coordinator",
+        "user_id": "U-OPS"
+      },
+      {
+        "approval_limit_usd": 20000,
+        "display_name": "Imogen Vance",
+        "role": "release_engineering_manager",
+        "user_id": "U-VANCE"
+      },
+      {
+        "approval_limit_usd": 120000,
+        "display_name": "Bisi Oyelaran",
+        "role": "infrastructure_director",
+        "user_id": "U-OYELARAN"
+      },
+      {
+        "approval_limit_usd": 15000,
+        "display_name": "Annika Strøm",
+        "role": "sre_lead",
+        "user_id": "U-STROM"
+      },
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Marta Kessler",
+        "role": "change_board_chair",
+        "user_id": "U-KESSLER"
+      }
+    ],
+    "vendors": [
+      {
+        "account_number": "RS-1104",
+        "name": "Coldspur Archival Vaults",
+        "vendor_id": "VND-COLDSPUR"
+      },
+      {
+        "account_number": "RS-0339",
+        "name": "Ironhold Data Custody",
+        "vendor_id": "VND-IRONHOLD"
+      }
+    ]
+  },
+  "starting_records": [
+    {
+      "resource_id": "RES-70905",
+      "resource_type": "Reservation",
+      "status": "pending",
+      "system": "buildfarm"
+    },
+    {
+      "resource_id": "RST-3400",
+      "resource_type": "RestoreJob",
+      "status": "RECEIVED",
+      "system": "backup"
+    }
+  ],
+  "task_id": "hostops-004",
+  "title": "Restore the audit-log week before the regulator session",
+  "world": {
+    "id": "ridgeline-platform-v1",
+    "name": "Ridgeline Systems — Platform Operations",
+    "organization_id": "ORG-RIDGELINE",
+    "primary_site": "STORE-NEAR",
+    "systems": [
+      "cmdb",
+      "releases",
+      "jobs",
+      "backup",
+      "buildfarm",
+      "vendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

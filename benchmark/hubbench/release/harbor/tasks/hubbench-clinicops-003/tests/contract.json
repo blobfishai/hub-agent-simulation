@@ -1,0 +1,931 @@
+{
+  "answer": {
+    "affected_resource_or_operation": "APPT-24507",
+    "base_completion": "2026-03-13",
+    "business_need_date": "2026-03-13",
+    "candidate_capacity": 16,
+    "capacity_gap": 3,
+    "capacity_unit": "CHAIR_HOUR",
+    "decision_timing_status": "ON_TIME",
+    "drug_vials_required": 2,
+    "drug_vials_usable": 3,
+    "escalated_completion": "2026-03-12",
+    "escalation_approval_required": 1,
+    "expedited_external_readiness": "2026-03-18",
+    "net_usable_capacity": 4,
+    "outcome_vs_control_days": 0,
+    "qualified_alternative_completion": "2026-03-12",
+    "recommended_incremental_cost_usd": 0,
+    "recommended_option": "book_first_nondisplacing_full_day",
+    "recommended_outcome_date": "2026-03-13",
+    "requested_day": "2026-03-12",
+    "required_capacity": 7,
+    "selected_resource_or_control": "CHAIR-2/2026-03-13/AM+PM",
+    "sessions_required": 2,
+    "standard_external_readiness": "2026-03-23",
+    "unavailable_or_protected_capacity": 12
+  },
+  "answer_checks": [
+    {
+      "description": "Reported recommended option as 'book_first_nondisplacing_full_day', tied to APPT-24507, revision v1, and the selected book_first_nondisplacing_full_day outcome.",
+      "field": "recommended_option",
+      "id": "answer_recommended_option",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported recommended outcome date as '2026-03-13', tied to APPT-24507, revision v1, and the selected book_first_nondisplacing_full_day outcome.",
+      "field": "recommended_outcome_date",
+      "id": "answer_recommended_outcome_date",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported affected resource or operation as 'APPT-24507', tied to APPT-24507, revision v1, and the selected book_first_nondisplacing_full_day outcome.",
+      "field": "affected_resource_or_operation",
+      "id": "answer_affected_resource_or_operation",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported capacity gap as 3, tied to APPT-24507, revision v1, and the selected book_first_nondisplacing_full_day outcome.",
+      "field": "capacity_gap",
+      "id": "answer_capacity_gap",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported decision timing status as 'ON_TIME', tied to APPT-24507, revision v1, and the selected book_first_nondisplacing_full_day outcome.",
+      "field": "decision_timing_status",
+      "id": "answer_decision_timing_status",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    }
+  ],
+  "assertions": [
+    {
+      "description": "Required APPT-24507 to reach business outcome 'Pending appointment booked' through scheduling.appointments.update with exact provider-critical values appointment_id='APPT-24507', chair_id='CHAIR-2', start_time='2026-03-13T08:00:00', end_time='2026-03-13T15:00:00', status='booked'. The audited change binds selected option book_first_nondisplacing_full_day, approval AP-CO-0103, and constraint continuous monitoring on a first-dose-capable chair without displacing protected sessions; no other record satisfies this state criterion.",
+      "id": "mutation_01",
+      "milestone_id": "state.primary",
+      "payload_allowed_argument_paths": [
+        "appointment_id",
+        "chair_id",
+        "start_time",
+        "end_time",
+        "status"
+      ],
+      "payload_contains": {
+        "arguments": {
+          "appointment_id": "APPT-24507",
+          "chair_id": "CHAIR-2",
+          "end_time": "2026-03-13T15:00:00",
+          "start_time": "2026-03-13T08:00:00",
+          "status": "booked"
+        },
+        "tool": "scheduling.appointments.update"
+      },
+      "table": "mutations",
+      "values": {
+        "record_id": "APPT-24507",
+        "status": "booked",
+        "table_name": "appointments",
+        "tool": "scheduling.appointments.update"
+      },
+      "weight": 3.0,
+      "where": {
+        "mutation_id": "clinicops-003-mutation-01",
+        "task_id": "clinicops-003"
+      }
+    },
+    {
+      "description": "Persisted APPT-24507 in appointments with the supported values (patient_id='PAT-10877', request_id='MR-70402', chair_id='CHAIR-2', start_time='2026-03-13T08:00:00', end_time='2026-03-13T15:00:00', status='booked', revision=2) so a later reader sees the change, not just the acknowledgement.",
+      "id": "state_01",
+      "milestone_id": "state.primary",
+      "table": "appointments",
+      "values": {
+        "chair_id": "CHAIR-2",
+        "end_time": "2026-03-13T15:00:00",
+        "patient_id": "PAT-10877",
+        "request_id": "MR-70402",
+        "revision": 2,
+        "start_time": "2026-03-13T08:00:00",
+        "status": "booked"
+      },
+      "weight": 2.0,
+      "where": {
+        "appointment_id": "APPT-24507"
+      }
+    },
+    {
+      "description": "Held CHAIR-2's 2026-03-13 AM session (and PM) for APPT-24507 without touching the protected Thursday blocks.",
+      "id": "state_02",
+      "milestone_id": "state.primary",
+      "table": "slots",
+      "values": {
+        "appointment_id": "APPT-24507",
+        "status": "busy"
+      },
+      "weight": 1.0,
+      "where": {
+        "slot_id": "SLOT-2-20260313-AM"
+      }
+    },
+    {
+      "description": "Created — but did not send — the stakeholder draft carrying book_first_nondisplacing_full_day, the 2026-03-13 outcome, the binding constraint, and the CLIN-0003 business reference.",
+      "id": "mutation_02",
+      "milestone_id": "state.collaboration",
+      "payload_contains": {
+        "arguments": {
+          "recipient": "rheum-coordinator@northlake.example"
+        },
+        "tool": "notes.drafts.create"
+      },
+      "payload_text_any_of": [
+        [
+          "CLIN-0003",
+          "MRN-519204",
+          "MR-70402"
+        ]
+      ],
+      "payload_text_contains": [
+        "book_first_nondisplacing_full_day",
+        "2026-03-13"
+      ],
+      "table": "mutations",
+      "values": {
+        "status": "DRAFT",
+        "table_name": "note_drafts",
+        "tool": "notes.drafts.create"
+      },
+      "weight": 1.5,
+      "where": {
+        "mutation_id": "clinicops-003-mutation-02",
+        "task_id": "clinicops-003"
+      }
+    },
+    {
+      "count": 2,
+      "description": "Made exactly two state changes for CLIN-0003: the primary change and the stakeholder draft; no additional order, transfer, or booking.",
+      "id": "containment_01",
+      "milestone_id": "containment.scope",
+      "table": "mutations",
+      "weight": 1.0,
+      "where": {
+        "task_id": "clinicops-003"
+      }
+    }
+  ],
+  "calculations": [
+    {
+      "description": "Preserved 2026-03-13 as the documented control date for Anneliese Varga's first rituximab infusion; did not infer urgency from a title or a request tone.",
+      "field": "business_need_date",
+      "id": "identify_business_date",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 7 CHAIR_HOUR for chair-hours for one continuous first-dose rituximab infusion (360 min infusion + 60 min observation).",
+      "field": "required_capacity",
+      "id": "calculate_required_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Established 16 gross candidate CHAIR_HOUR associated with chair-hours on first-dose-capable chairs (CHAIR-1, CHAIR-2) on the requested Thursday 2026-03-12; did not call it usable before applying protected load.",
+      "field": "candidate_capacity",
+      "id": "establish_candidate_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Excluded 12 CHAIR_HOUR for Thursday chair-hours already booked or held as protected oncology blocks.",
+      "field": "unavailable_or_protected_capacity",
+      "id": "remove_protected_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Calculated 16 candidate − 12 unavailable/protected = 4 net usable CHAIR_HOUR.",
+      "field": "net_usable_capacity",
+      "id": "calculate_net_usable_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 7 required − 4 net usable = 3 CHAIR_HOUR uncovered inside the requested window.",
+      "field": "capacity_gap",
+      "id": "calculate_capacity_gap",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Kept load and availability in CHAIR_HOUR.",
+      "field": "capacity_unit",
+      "id": "preserve_capacity_unit",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Bound the recovery to provider identifier CHAIR-2/2026-03-13/AM+PM only after confirming continuous monitoring on a first-dose-capable chair without displacing protected sessions.",
+      "field": "selected_resource_or_control",
+      "id": "identify_selected_resource_or_control",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Calculated 2026-03-13 for book_first_nondisplacing_full_day.",
+      "field": "base_completion",
+      "id": "compare_base_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 2026-03-12 for split_infusion_across_two_sessions using free full-day chair sessions with first-dose nursing cover.",
+      "field": "qualified_alternative_completion",
+      "id": "compare_qualified_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 2026-03-12 for extend_thursday_with_overtime_nursing and retained its authority constraint.",
+      "field": "escalated_completion",
+      "id": "compare_escalated_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-03-23 as the independently confirmed standard readiness date for Cascadia's confirmed day-15 restock dates on Q-77901.",
+      "field": "standard_external_readiness",
+      "id": "read_standard_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-03-18 as the independently confirmed expedited readiness date for Cascadia's confirmed day-15 restock dates on Q-77901.",
+      "field": "expedited_external_readiness",
+      "id": "read_expedited_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Converted the 1000 mg day-1 dose into 2 single-use 500 mg vials.",
+      "field": "drug_vials_required",
+      "id": "derive_dose_vials",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Confirmed 3 dispensable RITUX-500 vials (lot 4410) cover day 1; lot 4402 (expires 2026-03-19) was excluded and the 100 mg oncology vials are a different item.",
+      "field": "drug_vials_usable",
+      "id": "confirm_drug_coverage",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Converted 360 + 60 minutes into a 7-hour continuous block that needs both sessions of one chair on one day.",
+      "field": "sessions_required",
+      "id": "convert_duration_to_sessions",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Kept 2026-03-12 as the prescriber's requested day and tested it honestly rather than assuming it.",
+      "field": "requested_day",
+      "id": "preserve_requested_day",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Applied USD 0 as the documented incremental cost for book_first_nondisplacing_full_day; did not invent a premium where spend is not a decision driver.",
+      "field": "recommended_incremental_cost_usd",
+      "id": "calculate_selected_cost",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Recognized that extend_thursday_with_overtime_nursing remains outside current authority and requires an additional approval.",
+      "field": "escalation_approval_required",
+      "id": "apply_escalation_authority",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Compared the timing, cost, control status, and consequence of book_first_nondisplacing_full_day, split_infusion_across_two_sessions, extend_thursday_with_overtime_nursing; selected book_first_nondisplacing_full_day because it alone gives the best currently authorized result under continuous monitoring on a first-dose-capable chair without displacing protected sessions.",
+      "field": "recommended_option",
+      "id": "choose_task_specific_option",
+      "milestone_id": "decision.options",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 2026-03-13 as the supported outcome date for book_first_nondisplacing_full_day.",
+      "field": "recommended_outcome_date",
+      "id": "calculate_recommended_outcome",
+      "milestone_id": "analysis.timeline",
+      "weight": 2.0
+    },
+    {
+      "description": "Compared 2026-03-13 with the independent control date 2026-03-13 and calculated a signed variance of 0 day(s).",
+      "field": "outcome_vs_control_days",
+      "id": "calculate_outcome_variance",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.5
+    },
+    {
+      "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+      "field": "decision_timing_status",
+      "id": "state_honest_timing_status",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    }
+  ],
+  "investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "CLIN-0003"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated CLIN-0003 scope, immutable handles, mounted systems, and evidence index before investigating APPT-24507.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0003"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-0003-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for CLIN-0003 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "MRN-519204"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "PAT-10877"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.patients.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved MRN-519204 to the immutable Patient record through an identifier search rather than a name match against a similarly named patient.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "CLIN-0003"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-003-12"
+              },
+              {
+                "id": "DRV-003-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the CLIN-0003 case folder on the shared drive and identified the approval record and the order export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "policy"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-003-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the policy folder and distinguished the effective v3 policy from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "request_id": "MR-70402"
+          },
+          "expected_result_contains": {
+            "id": "MR-70402",
+            "status": "active"
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active order MR-70402: dose basis, regimen, doses in scope, and infusion and observation minutes.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "code": "29463-7",
+            "patient_id": "PAT-10877"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "OBS-WT-10877"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.observations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current measured weight for PAT-10877 (Observation 29463-7) and ignored the historical 2025 weight.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v3 policy for the rounding, minimum-dating, stocking, chair, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "RITUX-500"
+          },
+          "expected_result_contains": {
+            "medication_code": "RITUX-500"
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.medications.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the formulary record for RITUX-500: vial strength and minimum remaining dating.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "patient_id": "PAT-10877"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "MR-70402"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ehr.medication_requests.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the active orders that define the requirement (MR-70402) and excluded superseded or out-of-scope orders.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "medication_code": "RITUX-500"
+          },
+          "expected_result_contains": {
+            "lots": [
+              {
+                "lot_id": "LOT-RTX-4410"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "pharmacy.lots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every RITUX-500 lot with quantity, expiry, quarantine status, and reservations before netting the on-hand coverage.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-03-18",
+            "location_id": "LOC-INF",
+            "start_date": "2026-03-11"
+          },
+          "expected_result_contains": {
+            "slots": [
+              {
+                "id": "SLOT-2-20260313-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scheduling.slots.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the chair schedule (FHIR Slot sessions) for 2026-03-12 onward to find the first free session that displaces no protected or blocked slot.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-CAS-77901"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-CAS-77901",
+            "standard_delivery_date": "2026-03-20"
+          },
+          "match": "result_contains",
+          "tool": "supplier.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the supplier confirmation CONF-CAS-77901 for the independently confirmed standard and expedited delivery dates and the expedite fee.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-CO-0103"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-CO-0103"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-CO-0103 for its exact scope: record, quantity, supplier, fee allowance, and what it does not cover.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-12"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-12"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-0003-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-0003-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-0003-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-0003"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-0003"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-0003 for lot, chair, and authority remarks that qualify the system records.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "patient_id": "PAT-10877"
+          },
+          "expected_result_contains": {
+            "entry": [
+              {
+                "resource": {
+                  "id": "APPT-24507"
+                }
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scheduling.appointments.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the appointment records that fix the schedule scope by immutable id.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for CLIN-0003 and confirmed that APPT-24507 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-16"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-16"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for CLIN-0003 and joined APPT-24507 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for CLIN-0003; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for CLIN-0003 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for APPT-24507 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for CLIN-0003 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for CLIN-0003, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for CLIN-0003: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "post_write_verifications": [
+    {
+      "after_tool": "scheduling.appointments.update",
+      "any_of": [
+        {
+          "arguments": {
+            "appointment_id": "APPT-24507"
+          },
+          "expected_result_contains": {
+            "chair": "CHAIR-2",
+            "end": "2026-03-13T15:00:00",
+            "id": "APPT-24507",
+            "meta": {
+              "versionId": "2"
+            },
+            "start": "2026-03-13T08:00:00",
+            "status": "booked"
+          },
+          "match": "result_contains",
+          "tool": "scheduling.appointments.get"
+        }
+      ],
+      "description": "Read APPT-24507 back through scheduling.appointments.get after the change and confirmed the persisted provider values (id='APPT-24507', status='booked', chair='CHAIR-2', start='2026-03-13T08:00:00', end='2026-03-13T15:00:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "chair": "CHAIR-2",
+        "end": "2026-03-13T15:00:00",
+        "id": "APPT-24507",
+        "meta": {
+          "versionId": "2"
+        },
+        "start": "2026-03-13T08:00:00",
+        "status": "booked"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": false,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "appointment_id": "APPT-24507"
+      },
+      "weight": 2.0
+    }
+  ]
+}
