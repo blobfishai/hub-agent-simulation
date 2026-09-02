@@ -1275,7 +1275,7 @@ Harbor dataset: `{HARBOR_DATASET}` ({len(harbor['tasks'])} task packages `{HARBO
 - `contracts/tools.json` — the provider-shaped MCP tool contracts per family.
 - `verifiers/<task>.json` — the sealed verifier contracts (expected answer, assertions, calculations, required investigations, readbacks). Keep them away from the agent.
 - `ANCHORS.md` — public Harbor Hub anchors and the clean-room boundary per family.
-- `trajectories/` — placeholder for published model trajectories.
+- `trajectories/` — `index.json` plus one JSON file per trajectory: `reference/` (the packaged oracle replayed through MCP/REST/CLI/submit inside Harbor under Docker, graded by the packaged verifier) and `model/<run>/` (imported model runs with the durable world call trace, HubScore verdict, and token/cost receipt; `run.json` states whether the run is ranked or a disclosed partial run — qualification controls are never ranked as models).
 
 ## Synthetic-data notice
 
@@ -1293,6 +1293,45 @@ def _span(values: Any) -> str:
 def _hops(chain: dict[str, Any]) -> str:
     coverage = chain["hopCoverage"]
     return f"{min(coverage.values())}–{max(coverage.values())}/{chain['measuredTasks']}" if min(coverage.values()) != max(coverage.values()) else f"{max(coverage.values())}/{chain['measuredTasks']} on every hop"
+
+
+def write_hf_trajectories(target: Path, version: str) -> dict[str, Any]:
+    """Publish the committed reference and model trajectories (``reports/reference-trajectories``, ``model_runs``)."""
+
+    reference_dir = HUBBENCH_ROOT / "reports" / "reference-trajectories"
+    model_dir = HUBBENCH_ROOT / "model_runs"
+    index: dict[str, Any] = {"schema_version": "hubbench.trajectory-index.v1", "version": version, "reference": [], "model_runs": []}
+    for path in (sorted(reference_dir.glob("*.json")) if reference_dir.is_dir() else []):
+        record = json.loads(path.read_text(encoding="utf-8"))
+        _write_json(target / "reference" / path.name, record)
+        index["reference"].append({"task_id": record["task_id"], "harbor_task": record["harbor_task"], "job": record["job"], "score": record["score"], "strict_pass": record["strict_pass"], "tool_calls": len(record["trace"]), "path": f"reference/{path.name}"})
+    run_dirs = sorted(path for path in model_dir.iterdir() if (path / "run.json").is_file()) if model_dir.is_dir() else []
+    for run_dir in run_dirs:
+        run = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+        _write_json(target / "model" / run_dir.name / "run.json", run)
+        trials = []
+        for path in sorted((run_dir / "trials").glob("*.json")):
+            record = json.loads(path.read_text(encoding="utf-8"))
+            _write_json(target / "model" / run_dir.name / "trials" / path.name, record)
+            trials.append({"task_id": record["task_id"], "score": record["score"], "strict_pass": record["strict_pass"], "tool_calls": record["tool_calls"], "cost_usd": record["cost_usd"], "path": f"model/{run_dir.name}/trials/{path.name}"})
+        index["model_runs"].append({"slug": run["slug"], "label": run["label"], "harness": run["harness"], "kind": run["kind"], "ranked": run["ranked"], "dataset": run["dataset"], "harbor_tag": run["harbor_tag"], "trials_completed": run["trials_completed"], "published_tasks": run["published_tasks"], "errors": run["errors"], "mean_score": run["mean_score"], "strict_passes": run["strict_passes"], "mean_cost_usd": run["mean_cost_usd"], "note": run["note"], "trials": trials})
+    _write_json(target / "index.json", index)
+    runs = "\n".join(
+        f"- **{run['label']}** — `{run['harness']}` — {run['kind']}: {run['trials_completed']}/{run['published_tasks']} tasks, mean HubScore {run['mean_score']}, strict passes {run['strict_passes']}, mean cost ${run['mean_cost_usd']}. {run['note']}"
+        for run in index["model_runs"]
+    ) or "- none imported yet"
+    _write_text(
+        target / "README.md",
+        f"# Trajectories\n\n`index.json` lists every trajectory. **Reference** trajectories are the durable world call traces of the packaged oracle "
+        f"replayed through the public surfaces (MCP over HTTP, REST, the `tool` CLI, answer submission) inside Harbor under Docker and graded by "
+        f"the packaged verifier — {len(index['reference'])} published. **Model** trajectories come from imported Harbor runs of `{HARBOR_DATASET}` with the "
+        f"same durable trace, the HubScore verdict, and the token/cost receipt per trial; a run is ranked only when it completed every published task "
+        f"once with zero errors and zero retries, otherwise it is a disclosed partial run. Qualification controls are never ranked as models.\n\n"
+        f"## Model runs\n\n{runs}\n\nEach trace lists every tool call the world recorded (tool, arguments, success, result — long results are truncated with a "
+        f"character count). Traces from v1.0.0 packages include repeated argument-free `hubbench.context.get` reads caused by the compose healthcheck "
+        f"polling the task endpoint; v1.1.0 packages probe the private `/health` endpoint instead.\n",
+    )
+    return {"reference": len(index["reference"]), "model_runs": len(index["model_runs"]), "model_trials": sum(len(run["trials"]) for run in index["model_runs"])}
 
 
 def write_huggingface(output: Path, families: list[FamilyInputs], harbor: dict[str, Any], totals: dict[str, Any], version: str) -> dict[str, Any]:
@@ -1326,13 +1365,10 @@ def write_huggingface(output: Path, families: list[FamilyInputs], harbor: dict[s
         hf / "LICENSE",
         f"{BENCHMARK} task data, evidence files, and contracts: Creative Commons Attribution 4.0 International (CC BY 4.0)\nhttps://creativecommons.org/licenses/by/4.0/\n\nThe HubBench engine and task-package runtime are Apache-2.0 (Copyright (c) 2026 BlobfishAI).\n",
     )
-    _write_text(
-        hf / "trajectories" / "README.md",
-        f"# Trajectories\n\nModel trajectories are published here after complete, version-pinned Harbor runs of `{HARBOR_DATASET}@v{version}` with inspectable receipts. Reference (oracle) trajectories are reproducible from each Harbor task package's `solution/solve.py`, which replays the oracle policy through the public surfaces; qualification controls are never ranked as models.\n",
-    )
+    trajectories = write_hf_trajectories(hf / "trajectories", version)
     _write_text(hf / "README.md", _hf_card(version, families, totals, harbor))
     manifest_sha256, files, size = payload_manifest(hf)
-    return {"dataset": HF_DATASET, "payload_manifest_sha256": manifest_sha256, "files": files, "bytes": size}
+    return {"dataset": HF_DATASET, "payload_manifest_sha256": manifest_sha256, "files": files, "bytes": size, "trajectories": trajectories}
 
 
 # --------------------------------------------------------------------------- #

@@ -94,7 +94,7 @@ Harbor dataset: `blobfishai/hubbench` (56 task packages `blobfishai/hubbench-<fa
 - `contracts/tools.json` — the provider-shaped MCP tool contracts per family.
 - `verifiers/<task>.json` — the sealed verifier contracts (expected answer, assertions, calculations, required investigations, readbacks). Keep them away from the agent.
 - `ANCHORS.md` — public Harbor Hub anchors and the clean-room boundary per family.
-- `trajectories/` — placeholder for published model trajectories.
+- `trajectories/` — `index.json` plus one JSON file per trajectory: `reference/` (the packaged oracle replayed through MCP/REST/CLI/submit inside Harbor under Docker, graded by the packaged verifier) and `model/<run>/` (imported model runs with the durable world call trace, HubScore verdict, and token/cost receipt; `run.json` states whether the run is ranked or a disclosed partial run — qualification controls are never ranked as models).
 
 ## Synthetic-data notice
 

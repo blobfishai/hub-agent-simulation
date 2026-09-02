@@ -15,7 +15,7 @@ Totals: 56 tasks, 269 tools, 1767 evidence files, 3649 atomic criteria; 56/56 or
 ## Layout
 
 - `harbor/` — Harbor dataset `blobfishai/hubbench` v1.1.0: `dataset.toml`, `task-digests.json`, and 56 self-contained task packages under `tasks/hubbench-<family>-NNN/` (`task.toml`, `instruction.md`, `README.md`, `environment/`, `tests/`, `solution/`). Root digest `2183793bdcc8f820933c32c65f7e853afdb9bb71ab10a19e6cbd29e2e1ebff3f`.
-- `huggingface/` — Hugging Face dataset payload (`README.md` card, `data/tasks.jsonl`, `assets/`, `contracts/`, `verifiers/`, `ANCHORS.md`, `LICENSE`, `trajectories/`). Payload manifest `b69cff331cd1c33bc09278e6ee1755ac19e1fc6140a28b6554dbf4e3397166c3`.
+- `huggingface/` — Hugging Face dataset payload (`README.md` card, `data/tasks.jsonl`, `assets/`, `contracts/`, `verifiers/`, `ANCHORS.md`, `LICENSE`, `trajectories/`). Payload manifest `a463ad564b5fa0e7a814e280093ac54afa997713c2ac55046c60c9e6adfafaba`.
 - `reports/` — `release.json` (aggregate receipt with input digests) plus verbatim copies of every family's qualification and reasoning-chain report.
 - `tasks/` — one public record per task (no gold values).
 

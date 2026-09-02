@@ -382,9 +382,15 @@ packaged oracle through MCP/REST/CLI/submit, and grades it with the packaged
 verifier to reward 1.0 (the private channel refuses requests without the token).
 
 Publish order (from a frozen copy under `$HOME`, never a rebuilding tree):
-`harbor run -p <tasks> -a oracle` gate → `harbor publish tasks --public -t v1.0.0`
-→ `harbor publish <dataset.toml dir> --public --no-tasks` →
-`hf upload-large-folder SamuelChien821/hubbench release/huggingface --repo-type dataset`.
+`harbor run -p <tasks> -a oracle` gate → `harbor publish tasks/* --public -t v<version>`
+→ `yes | harbor publish <dataset.toml dir> --public --no-tasks -t v<version>` (the
+dataset publish prompts for confirmation) → registry round-trip
+`harbor run -d blobfishai/hubbench@v<version> -a oracle -i blobfishai/hubbench-<family>-NNN` →
+`hf upload-large-folder SamuelChien821/hubbench <frozen>/huggingface --repo-type dataset`
+→ `curl "https://huggingface.co/api/datasets/SamuelChien821/hubbench?blobs=true"` →
+`python3 benchmark/hubbench/publication_receipt.py …` (writes `reports/publication.json`
+only if every gate trial and round-trip scored 1.0 and the Hugging Face payload verifies
+byte-for-byte) → `site_data.py` / `build_hubbench_site_data.py`.
 
 ## Adding a family (checklist)
 
