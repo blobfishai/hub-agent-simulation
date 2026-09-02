@@ -23,12 +23,15 @@ stakeholder draft → the exact graded answer with every intermediate derivation
 
 ## Releases
 
-**v1.3.0 release candidate (qualified 2026-09-02)** — 13 families / 104 tasks,
-554 tools, 3,450 agent-visible evidence files, and 7,001 deterministic criteria.
+**v1.3.0 (published 2026-09-02)** — 13 families / 104 tasks on Harbor and
+Hugging Face, 554 tools, 3,450 agent-visible evidence files, and 7,001
+deterministic criteria.
 Every task passed the exact Docker package gate at reward 1.0 with zero task errors
-or retries in the clean full run; the candidate Hugging Face payload includes all
-104 oracle traces plus five disclosed model-pilot traces. Public registry receipts
-remain on immutable **v1.2.0** until this candidate is published.
+or retries in the clean full run; the Hugging Face payload includes all 104 oracle
+traces plus five disclosed model-pilot traces. A second Docker run fetched one
+published Harbor package per family and passed 13/13 at reward 1.0 with zero errors
+or retries. The immutable receipt is archived at
+`benchmark/hubbench/reports/publications/v1.3.0.json`.
 
 | Family | Hub cluster | Tasks | MCP servers | Tools |
 |---|---|---|---|---|
@@ -46,7 +49,7 @@ remain on immutable **v1.2.0** until this candidate is published.
 | WebStudio (`webstudio`) | web-product-design | 8 | 13 | 44 |
 | Workplace (`workplace`) | customer-workplace-agents | 8 | 13 | 47 |
 
-Qualification across the 104 candidate tasks (1,456 executions): 104/104 oracle
+Qualification across the 104 released tasks (1,456 executions): 104/104 oracle
 strict passes at a mean HubScore of 100.0, 104/104 byte-identical replays,
 1,040 negative-control executions across 10 attack policies with 0 false
 accepts, 208/208 mutation omissions detected; reasoning-chain audit
@@ -65,7 +68,7 @@ other released family.
 - **Website** — https://blobfish.ai/benchmarks/hubbench (leaderboard, task
   browser, asset room, environment and tool contract, trajectories, methodology)
 - **Harbor** — https://hub.harborframework.com/datasets/blobfishai/hubbench
-  (`harbor run -d blobfishai/hubbench@v1.2.0 -a <agent>`; task packages
+  (`harbor run -d blobfishai/hubbench@v1.3.0 -a <agent>`; task packages
   `blobfishai/hubbench-<family>-NNN`)
 - **Hugging Face** — https://huggingface.co/datasets/SamuelChien821/hubbench
   (dataset card, public task records, evidence files, tool contracts, sealed
@@ -96,7 +99,7 @@ python3 benchmark/hubbench/chain_adapter.py --family scilab --write
 python3 benchmark/hubbench/build_distribution.py
 
 # Run the packaged oracle against a published task from the registry (Docker)
-harbor run -d blobfishai/hubbench@v1.2.0 -a oracle
+harbor run -d blobfishai/hubbench@v1.3.0 -a oracle
 ```
 
 Python 3.12 standard library only — no third-party runtime dependency; `pytest`
