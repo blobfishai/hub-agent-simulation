@@ -1,0 +1,11 @@
+FROM python:3.12-slim@sha256:7a8b475003c4fe15a2cd4e55e5cfc2f3560bdc9333d624f24cdd6d4340fd7a17
+RUN install -d -o root -g root -m 0700 /var/lib/hubbench \
+    && install -d -o root -g root -m 0755 /opt/hubbench
+COPY hubbench /opt/hubbench/hubbench
+COPY task.json tools.json /opt/hubbench/
+RUN chown -R root:root /opt/hubbench \
+    && chmod -R u=rwX,go=rX /opt/hubbench \
+    && chmod 0444 /opt/hubbench/task.json /opt/hubbench/tools.json
+WORKDIR /opt/hubbench
+ENV PYTHONPATH=/opt/hubbench PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 HUBBENCH_FAMILY=deskops HUBBENCH_VERIFIER_TOKEN_SHA256=74cf2a4686e4528acf87e7f546e1c68bea8b2712613fbee793da0d166e098d4c
+CMD ["python3", "-m", "hubbench.engine.world_service", "--family", "deskops", "--task", "/opt/hubbench/task.json", "--db", "/var/lib/hubbench/world.db", "--fresh", "--host", "0.0.0.0", "--port", "8765", "--private-port", "8766"]

@@ -1,6 +1,6 @@
 # hubbench-itsmdesk-008 — Cover Sunday's search-index migration with a certified secondary
 
-HubBench 1.2.0 · family **ITSMDesk** (`itsmdesk`, cluster `it-operations-observability`) · decision mode `quantity` · role `service_operations_coordinator` · as of 2026-04-14.
+HubBench 1.3.0 · family **ITSMDesk** (`itsmdesk`, cluster `it-operations-observability`) · decision mode `quantity` · role `service_operations_coordinator` · as of 2026-04-14.
 
 Change-scheduling decisions against a ServiceNow-shaped ITSM (CIs, incidents, problems, change requests, outage notices), Grafana-shaped SLOs and error budgets, a change calendar with lanes and freeze windows, a PagerDuty-shaped on-call plane, vendor patch advisories, and approval records.
 

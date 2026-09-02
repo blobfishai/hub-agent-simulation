@@ -1,6 +1,6 @@
 # hubbench-webstudio-003 — Fit the product tour release before the partner summit
 
-HubBench 1.2.0 · family **WebStudio** (`webstudio`, cluster `web-product-design`) · decision mode `schedule` · role `web_release_coordinator` · as of 2026-05-11.
+HubBench 1.3.0 · family **WebStudio** (`webstudio`, cluster `web-product-design`) · decision mode `schedule` · role `web_release_coordinator` · as of 2026-05-11.
 
 Design-operations release decisions against a headless CMS, a design-token and component registry, a design-file index, an asset library with licence grants and vendor quotes, a release checklist, CDN deploy lanes, and approval records.
 

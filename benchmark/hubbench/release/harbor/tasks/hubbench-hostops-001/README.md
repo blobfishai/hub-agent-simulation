@@ -1,6 +1,6 @@
 # hubbench-hostops-001 — Stage the Atlas 26.1 release after the failed nightly publish
 
-HubBench 1.2.0 · family **HostOps** (`hostops`, cluster `terminal-operations`) · decision mode `plan` · role `platform_operations_coordinator` · as of 2026-04-13.
+HubBench 1.3.0 · family **HostOps** (`hostops`, cluster `terminal-operations`) · decision mode `plan` · role `platform_operations_coordinator` · as of 2026-04-13.
 
 Host-operations recovery decisions against a Linux service inventory, cron/CI scheduler, backup catalog with retention and vendor retrievals, release build farm, and approval records.
 
