@@ -1,6 +1,6 @@
 # hubbench-datadesk-002 — Backfill the margin partitions poisoned by Harrier's reference cut
 
-HubBench 1.0.0 · family **DataDesk** (`datadesk`, cluster `data-engineering-analytics`) · decision mode `plan` · role `analytics_engineer_oncall` · as of 2026-03-09.
+HubBench 1.1.0 · family **DataDesk** (`datadesk`, cluster `data-engineering-analytics`) · decision mode `plan` · role `analytics_engineer_oncall` · as of 2026-03-09.
 
 Data engineering decisions against a dbt-style warehouse catalog, pipeline run history, vendor feed deliveries, freshness SLAs, batch-window capacity, and finance reconciliation controls.
 

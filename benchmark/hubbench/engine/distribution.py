@@ -41,7 +41,7 @@ from .tasks import HUBBENCH_ROOT, load_release_contract, load_release_tasks, rel
 
 BENCHMARK = "HubBench"
 METRIC = "HubScore"
-DEFAULT_VERSION = "1.0.0"
+DEFAULT_VERSION = "1.1.0"
 HARBOR_ORG = "blobfishai"
 HARBOR_DATASET = f"{HARBOR_ORG}/hubbench"
 HARBOR_URL = f"https://hub.harborframework.com/datasets/{HARBOR_DATASET}/latest"
@@ -670,7 +670,7 @@ DOCKER_COMPOSE = f'''services:
       context: .
       dockerfile: Dockerfile.world
     healthcheck:
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:{WORLD_PORT}/api/v1/task', timeout=1)"]
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:{PRIVATE_PORT}/health', timeout=1)"]
       interval: 1s
       timeout: 2s
       retries: 30

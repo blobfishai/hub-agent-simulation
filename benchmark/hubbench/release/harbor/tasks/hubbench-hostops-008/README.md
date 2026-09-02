@@ -1,6 +1,6 @@
 # hubbench-hostops-008 — Replace the scrub-flagged storefront segments before Monday's trains
 
-HubBench 1.0.0 · family **HostOps** (`hostops`, cluster `terminal-operations`) · decision mode `quantity` · role `platform_operations_coordinator` · as of 2026-04-13.
+HubBench 1.1.0 · family **HostOps** (`hostops`, cluster `terminal-operations`) · decision mode `quantity` · role `platform_operations_coordinator` · as of 2026-04-13.
 
 Host-operations recovery decisions against a Linux service inventory, cron/CI scheduler, backup catalog with retention and vendor retrievals, release build farm, and approval records.
 

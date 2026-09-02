@@ -86,6 +86,16 @@ harbor run -d blobfishai/hubbench@v1.0.0 -a oracle
 Python 3.12 standard library only — no third-party runtime dependency; `pytest`
 for the test suite.
 
+## Model runs
+
+`benchmark/hubbench/model_runs/` holds imported Harbor model jobs (durable world
+call trace, HubScore verdict, token and cost receipt per trial). A run is ranked
+only when it completed every published task once with zero errors and retries;
+the stratified GPT-5.6 Luna pilot (Codex 0.151.0, max reasoning; one task per
+published family) is a disclosed partial run: 5/5 completed, 0 errors, HubScore
+52.35–74.41 (mean 66.22), no strict passes, about $0.07 per task — trajectories
+only, never ranked.
+
 ## Repository layout
 
 ```text

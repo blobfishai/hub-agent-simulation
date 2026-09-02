@@ -1,0 +1,3134 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "bookings",
+    "calendar_blocks",
+    "mutations",
+    "note_drafts"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "affected_resource_or_operation": {
+        "description": "Immutable appointment, order, or resource record in the recovery scope.",
+        "type": "string"
+      },
+      "base_completion": {
+        "description": "Completion under book_first_free_qualified_block.",
+        "type": "string"
+      },
+      "blocks_required": {
+        "description": "Calendar blocks the 3-hour session occupies.",
+        "type": "integer"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "candidate_capacity": {
+        "description": "Gross candidate capacity associated with engineer-hours of billing-engine engineers (Priya Raghunathan, Tomasz Wierzbicki, Ines Marquardt) on the customer's Wednesday-Thursday window before protected or unavailable load is removed.",
+        "type": "integer"
+      },
+      "capacity_gap": {
+        "description": "Uncovered ENGINEER_HOUR after applying finite availability inside the requested window.",
+        "type": "integer"
+      },
+      "capacity_unit": {
+        "description": "Capacity unit used throughout the schedule comparison: ENGINEER_HOUR.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Completion under use_associate_engineer_wednesday.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Mireille's change-board confirmation MF-CAB-61240 of the hotfix release windows.",
+        "type": "string"
+      },
+      "free_blocks_in_window": {
+        "description": "Free blocks of qualified engineers inside the customer's window.",
+        "type": "integer"
+      },
+      "leave_blocks_in_window": {
+        "description": "Blocks of qualified engineers on approved leave inside the window.",
+        "type": "integer"
+      },
+      "net_usable_capacity": {
+        "description": "Candidate capacity remaining after removing window blocks that are on-call protected, on approved leave, booked, or committed sprint work.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "qualified_alternative_completion": {
+        "description": "Completion under swap_oncall_engineer_into_wednesday.",
+        "type": "string"
+      },
+      "qualified_engineers": {
+        "description": "Squad engineers holding billing-engine at level 2 or above.",
+        "type": "integer"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing book_first_free_qualified_block, swap_oncall_engineer_into_wednesday, use_associate_engineer_wednesday.",
+        "enum": [
+          "book_first_free_qualified_block",
+          "swap_oncall_engineer_into_wednesday",
+          "use_associate_engineer_wednesday"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "requested_day": {
+        "description": "First day of the customer's window (ISO date), tested against the calendar before being replaced.",
+        "type": "string"
+      },
+      "required_capacity": {
+        "description": "engineer-hours for the pairing session (150 min pairing + 30 min verification)",
+        "type": "integer"
+      },
+      "selected_resource_or_control": {
+        "description": "Provider identifier of the qualified resource and session used by the selected recovery.",
+        "type": "string"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Mireille's change-board confirmation MF-CAB-61240 of the hotfix release windows.",
+        "type": "string"
+      },
+      "unavailable_or_protected_capacity": {
+        "description": "window blocks that are on-call protected, on approved leave, booked, or committed sprint work",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "affected_resource_or_operation",
+      "base_completion",
+      "blocks_required",
+      "business_need_date",
+      "candidate_capacity",
+      "capacity_gap",
+      "capacity_unit",
+      "decision_timing_status",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedited_external_readiness",
+      "free_blocks_in_window",
+      "leave_blocks_in_window",
+      "net_usable_capacity",
+      "outcome_vs_control_days",
+      "qualified_alternative_completion",
+      "qualified_engineers",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "requested_day",
+      "required_capacity",
+      "selected_resource_or_control",
+      "standard_external_readiness",
+      "unavailable_or_protected_capacity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-04-14",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "one qualified level-2 billing engineer on a free block without displacing protected or leave blocks; window blocks that are on-call protected, on approved leave, booked, or committed sprint work = 44 ENGINEER_HOUR; uncovered scope = 0 ENGINEER_HOUR",
+    "calculations": [
+      {
+        "description": "Preserved 2026-04-17 as the documented control date for the Mireille tax-rounding hotfix pairing session; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 3 ENGINEER_HOUR for engineer-hours for the pairing session (150 min pairing + 30 min verification).",
+        "field": "required_capacity",
+        "id": "calculate_required_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Established 48 gross candidate ENGINEER_HOUR associated with engineer-hours of billing-engine engineers (Priya Raghunathan, Tomasz Wierzbicki, Ines Marquardt) on the customer's Wednesday-Thursday window; did not call it usable before applying protected load.",
+        "field": "candidate_capacity",
+        "id": "establish_candidate_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Excluded 44 ENGINEER_HOUR for window blocks that are on-call protected, on approved leave, booked, or committed sprint work.",
+        "field": "unavailable_or_protected_capacity",
+        "id": "remove_protected_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 48 candidate − 44 unavailable/protected = 4 net usable ENGINEER_HOUR.",
+        "field": "net_usable_capacity",
+        "id": "calculate_net_usable_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 3 required − 4 net usable = 0 ENGINEER_HOUR uncovered inside the requested window.",
+        "field": "capacity_gap",
+        "id": "calculate_capacity_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept load and availability in ENGINEER_HOUR.",
+        "field": "capacity_unit",
+        "id": "preserve_capacity_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Bound the recovery to provider identifier EMP-1041/2026-04-16/PM only after confirming one qualified level-2 billing engineer on a free block without displacing protected or leave blocks.",
+        "field": "selected_resource_or_control",
+        "id": "identify_selected_resource_or_control",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 2026-04-16 for book_first_free_qualified_block.",
+        "field": "base_completion",
+        "id": "compare_base_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 2026-04-15 for swap_oncall_engineer_into_wednesday using free blocks of qualified engineers on the staff calendar.",
+        "field": "qualified_alternative_completion",
+        "id": "compare_qualified_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 2026-04-15 for use_associate_engineer_wednesday and retained its authority constraint.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-22 as the independently confirmed standard readiness date for Mireille's change-board confirmation MF-CAB-61240 of the hotfix release windows.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-20 as the independently confirmed expedited readiness date for Mireille's change-board confirmation MF-CAB-61240 of the hotfix release windows.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Converted 150 + 30 minutes into a 3-hour session that fits one AM or PM block.",
+        "field": "blocks_required",
+        "id": "convert_session_to_blocks",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept 2026-04-15 as the first day of the customer's window and tested it honestly.",
+        "field": "requested_day",
+        "id": "preserve_requested_day",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Kept Priya (level 3), Tomasz (level 2), and Ines (level 2) as the 3 billing-qualified engineers; Callum is level 1 and Nadia level 1.",
+        "field": "qualified_engineers",
+        "id": "count_qualified_engineers",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Found 1 free qualified block in the window (Priya's PM on 2026-04-16); Ines is on-call protected, Tomasz is booked Wednesday and on leave Thursday, and Priya's Wednesday is the go/no-go review plus sprint work.",
+        "field": "free_blocks_in_window",
+        "id": "count_free_blocks",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted Tomasz's 2 Thursday blocks as approved leave that is never booked.",
+        "field": "leave_blocks_in_window",
+        "id": "count_leave_blocks",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental cost for book_first_free_qualified_block; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that swap_oncall_engineer_into_wednesday remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of book_first_free_qualified_block, swap_oncall_engineer_into_wednesday, use_associate_engineer_wednesday; selected book_first_free_qualified_block because it alone gives the best currently authorized result under one qualified level-2 billing engineer on a free block without displacing protected or leave blocks.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-04-16 as the supported outcome date for book_first_free_qualified_block.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-04-16 with the independent control date 2026-04-17 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located ESC-3155 using immutable identifiers and preserved effective revision v1: customer CUST-2266 (Mireille Foods) resolves to open escalation ESC-3155 on ticket TCK-88503; TCK-88497 is an unrelated resolved ticket.",
+        "sources": [
+          "helpdesk",
+          "mail"
+        ],
+        "statement": "WORK-0006: customer CUST-2266 (Mireille Foods) resolves to open escalation ESC-3155 on ticket TCK-88503; TCK-88497 is an unrelated resolved ticket; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the escalation record and the v5 standard to establish 3 ENGINEER_HOUR for engineer-hours for the pairing session (150 min pairing + 30 min verification), with control date 2026-04-17.",
+        "sources": [
+          "helpdesk",
+          "tracker",
+          "wiki",
+          "contracts"
+        ],
+        "statement": "The effective escalation record and the v5 standard establish engineer-hours for the pairing session (150 min pairing + 30 min verification) = 3 ENGINEER_HOUR: the close calendar and the escalation record size the session at 150 + 30 minutes = 3 engineer-hours on a level-2 billing-engine engineer. The control date is 2026-04-17 (the hotfix validation is registered for 2026-04-17 (CMT-4472) ahead of the 2026-04-20 close run)."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 48 observed less 44 excluded to 4 supported ENGINEER_HOUR for engineer-hours of billing-engine engineers (Priya Raghunathan, Tomasz Wierzbicki, Ines Marquardt) on the customer's Wednesday-Thursday window.",
+        "sources": [
+          "tracker",
+          "hris",
+          "calendar",
+          "contracts"
+        ],
+        "statement": "across Wednesday and Thursday the three qualified engineers offer 48 engineer-hours in gross; Ines's four blocks are on-call protected, Tomasz's Wednesday afternoon is booked and Thursday is leave, and Priya's Wednesday is protected and committed, leaving 4 usable hours — enough for the 3 required; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-04-22 standard and 2026-04-20 expedited readiness inputs from Mireille's change-board confirmation MF-CAB-61240 of the hotfix release windows, then separately derived each alternative's operating outcome under one qualified level-2 billing engineer on a free block without displacing protected or leave blocks instead of treating a counterparty promise as authorization or a completion date.",
+        "sources": [
+          "portal",
+          "mail"
+        ],
+        "statement": "Mireille's change-board confirmation MF-CAB-61240 of the hotfix release windows: Mireille's change board MF-CAB-61240 confirms the hotfix release standard 2026-04-21 and emergency 2026-04-17 (+USD 300), confirmed the next business day; the validation precedes either; a counterparty confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied free blocks of qualified engineers on the staff calendar to derive the three option outcomes without displacing protected blocks or committed dates.",
+        "sources": [
+          "calendar",
+          "tracker",
+          "contracts"
+        ],
+        "statement": "free blocks of qualified engineers on the staff calendar: the first free qualified block on or after 2026-04-15 is Priya Raghunathan's PM block on 2026-04-16; Callum's free Wednesday afternoon does not count because he is level 1; protected and leave blocks cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-WP-0106 only to book_first_free_qualified_block and ESC-3155; kept swap_oncall_engineer_into_wednesday outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-WP-0106 authorizes free regular blocks on Priya or Tomasz with no on-call swap; a swap or a protected block needs the engineering lead and a level-1 engineer is prohibited by the standard. The approval does not select an option in advance and does not authorize swap_oncall_engineer_into_wednesday."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected book_first_free_qualified_block: it is the best currently authorized response that satisfies one qualified level-2 billing engineer on a free block without displacing protected or leave blocks.",
+        "sources": [
+          "mail",
+          "chat",
+          "contracts"
+        ],
+        "statement": "the validation must complete by 2026-04-17 or the 2026-04-20 close run (USD 900 per week) slips; a faster or broader action has value only if it remains inside one qualified level-2 billing engineer on a free block without displacing protected or leave blocks."
+      }
+    ],
+    "mode": "schedule",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-04-16",
+        "consequence": "book first free qualified block runs the 3-hour pairing session on Priya Raghunathan's free PM block on 2026-04-16, one day before the control date, at no incremental cost.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "book_first_free_qualified_block",
+        "incremental_cost": 0,
+        "label": "book_first_free_qualified_block: outcome 2026-04-16, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-04-15",
+        "consequence": "swap on-call engineer into Wednesday would put Ines Marquardt on the session on 2026-04-15, one day earlier, but her blocks are protected by the on-call shift and a swap needs the engineering lead, which AP-WP-0106 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "swap_oncall_engineer_into_wednesday",
+        "incremental_cost": 0,
+        "label": "swap_oncall_engineer_into_wednesday: outcome 2026-04-15, incremental cost USD 0, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      },
+      {
+        "approval": "NOT_SUPPORTED_BY_CURRENT_EVIDENCE",
+        "completion": "2026-04-15",
+        "consequence": "use associate engineer Wednesday would use Callum Brody's free PM block on 2026-04-15, but he holds billing-engine at level 1 and the standard requires level 2 for customer-facing sessions, so the evidence does not support it.",
+        "control_status": "FAILS_CURRENT_CONTROL",
+        "id": "use_associate_engineer_wednesday",
+        "incremental_cost": 0,
+        "label": "use_associate_engineer_wednesday: outcome 2026-04-15, incremental cost USD 0, FAILS_CURRENT_CONTROL",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "book_first_free_qualified_block is the best currently authorized response that satisfies one qualified level-2 billing engineer on a free block without displacing protected or leave blocks and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-04-16",
+    "selected_cost": 0,
+    "selected_option": "book_first_free_qualified_block"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "affected_resource_or_operation": "ESC-3155",
+      "base_completion": "2026-04-16",
+      "blocks_required": 1,
+      "business_need_date": "2026-04-17",
+      "candidate_capacity": 48,
+      "capacity_gap": 0,
+      "capacity_unit": "ENGINEER_HOUR",
+      "decision_timing_status": "ON_TIME",
+      "escalated_completion": "2026-04-15",
+      "escalation_approval_required": 1,
+      "expedited_external_readiness": "2026-04-20",
+      "free_blocks_in_window": 1,
+      "leave_blocks_in_window": 2,
+      "net_usable_capacity": 4,
+      "outcome_vs_control_days": -1,
+      "qualified_alternative_completion": "2026-04-15",
+      "qualified_engineers": 3,
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "book_first_free_qualified_block",
+      "recommended_outcome_date": "2026-04-16",
+      "requested_day": "2026-04-15",
+      "required_capacity": 3,
+      "selected_resource_or_control": "EMP-1041/2026-04-16/PM",
+      "standard_external_readiness": "2026-04-22",
+      "unavailable_or_protected_capacity": 44
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'book_first_free_qualified_block', tied to ESC-3155, revision v1, and the selected book_first_free_qualified_block outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-04-16', tied to ESC-3155, revision v1, and the selected book_first_free_qualified_block outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported affected resource or operation as 'ESC-3155', tied to ESC-3155, revision v1, and the selected book_first_free_qualified_block outcome.",
+        "field": "affected_resource_or_operation",
+        "id": "answer_affected_resource_or_operation",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported capacity gap as 0, tied to ESC-3155, revision v1, and the selected book_first_free_qualified_block outcome.",
+        "field": "capacity_gap",
+        "id": "answer_capacity_gap",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to ESC-3155, revision v1, and the selected book_first_free_qualified_block outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required ESC-3155 to reach business outcome 'Pairing session booked' through calendar.bookings.create with exact provider-critical values employee_id='EMP-1041', escalation_id='ESC-3155', start='2026-04-16T13:30:00', end='2026-04-16T16:30:00', description='Mireille tax-rounding hotfix pairing (WORK-0006)'. The audited change binds selected option book_first_free_qualified_block, approval AP-WP-0106, and constraint one qualified level-2 billing engineer on a free block without displacing protected or leave blocks; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "employee_id",
+          "escalation_id",
+          "start",
+          "end",
+          "description"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "description": "Mireille tax-rounding hotfix pairing (WORK-0006)",
+            "employee_id": "EMP-1041",
+            "end": "2026-04-16T16:30:00",
+            "escalation_id": "ESC-3155",
+            "start": "2026-04-16T13:30:00"
+          },
+          "tool": "calendar.bookings.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "BKG-5289",
+          "status": "booked",
+          "table_name": "bookings",
+          "tool": "calendar.bookings.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "workplace-006-mutation-01",
+          "task_id": "workplace-006"
+        }
+      },
+      {
+        "description": "Persisted BKG-5289 in bookings with the supported values (employee_id='EMP-1041', escalation_id='ESC-3155', start_time='2026-04-16T13:30:00', end_time='2026-04-16T16:30:00', status='booked') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "bookings",
+        "values": {
+          "employee_id": "EMP-1041",
+          "end_time": "2026-04-16T16:30:00",
+          "escalation_id": "ESC-3155",
+          "start_time": "2026-04-16T13:30:00",
+          "status": "booked"
+        },
+        "weight": 2.0,
+        "where": {
+          "booking_id": "BKG-5289"
+        }
+      },
+      {
+        "description": "Held Priya Raghunathan's 2026-04-16 PM block for BKG-5289 and left the on-call and leave blocks untouched.",
+        "id": "state_02",
+        "milestone_id": "state.primary",
+        "table": "calendar_blocks",
+        "values": {
+          "booking_id": "BKG-5289",
+          "status": "busy"
+        },
+        "weight": 1.0,
+        "where": {
+          "block_id": "BLK-1041-20260416-PM"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying book_first_free_qualified_block, the 2026-04-16 outcome, the binding constraint, and the WORK-0006 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "elodie.brandt@ferngate.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "WORK-0006",
+            "ESC-3155",
+            "TCK-88503"
+          ]
+        ],
+        "payload_text_contains": [
+          "book_first_free_qualified_block",
+          "2026-04-16"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "workplace-006-mutation-02",
+          "task_id": "workplace-006"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for WORK-0006: the primary change and the stakeholder draft; no additional booking, credit, assignment, or commitment change.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "workplace-006"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-04-17 as the documented control date for the Mireille tax-rounding hotfix pairing session; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 3 ENGINEER_HOUR for engineer-hours for the pairing session (150 min pairing + 30 min verification).",
+        "field": "required_capacity",
+        "id": "calculate_required_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Established 48 gross candidate ENGINEER_HOUR associated with engineer-hours of billing-engine engineers (Priya Raghunathan, Tomasz Wierzbicki, Ines Marquardt) on the customer's Wednesday-Thursday window; did not call it usable before applying protected load.",
+        "field": "candidate_capacity",
+        "id": "establish_candidate_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Excluded 44 ENGINEER_HOUR for window blocks that are on-call protected, on approved leave, booked, or committed sprint work.",
+        "field": "unavailable_or_protected_capacity",
+        "id": "remove_protected_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 48 candidate − 44 unavailable/protected = 4 net usable ENGINEER_HOUR.",
+        "field": "net_usable_capacity",
+        "id": "calculate_net_usable_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 3 required − 4 net usable = 0 ENGINEER_HOUR uncovered inside the requested window.",
+        "field": "capacity_gap",
+        "id": "calculate_capacity_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept load and availability in ENGINEER_HOUR.",
+        "field": "capacity_unit",
+        "id": "preserve_capacity_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Bound the recovery to provider identifier EMP-1041/2026-04-16/PM only after confirming one qualified level-2 billing engineer on a free block without displacing protected or leave blocks.",
+        "field": "selected_resource_or_control",
+        "id": "identify_selected_resource_or_control",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 2026-04-16 for book_first_free_qualified_block.",
+        "field": "base_completion",
+        "id": "compare_base_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 2026-04-15 for swap_oncall_engineer_into_wednesday using free blocks of qualified engineers on the staff calendar.",
+        "field": "qualified_alternative_completion",
+        "id": "compare_qualified_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 2026-04-15 for use_associate_engineer_wednesday and retained its authority constraint.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-22 as the independently confirmed standard readiness date for Mireille's change-board confirmation MF-CAB-61240 of the hotfix release windows.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-20 as the independently confirmed expedited readiness date for Mireille's change-board confirmation MF-CAB-61240 of the hotfix release windows.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Converted 150 + 30 minutes into a 3-hour session that fits one AM or PM block.",
+        "field": "blocks_required",
+        "id": "convert_session_to_blocks",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept 2026-04-15 as the first day of the customer's window and tested it honestly.",
+        "field": "requested_day",
+        "id": "preserve_requested_day",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Kept Priya (level 3), Tomasz (level 2), and Ines (level 2) as the 3 billing-qualified engineers; Callum is level 1 and Nadia level 1.",
+        "field": "qualified_engineers",
+        "id": "count_qualified_engineers",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Found 1 free qualified block in the window (Priya's PM on 2026-04-16); Ines is on-call protected, Tomasz is booked Wednesday and on leave Thursday, and Priya's Wednesday is the go/no-go review plus sprint work.",
+        "field": "free_blocks_in_window",
+        "id": "count_free_blocks",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted Tomasz's 2 Thursday blocks as approved leave that is never booked.",
+        "field": "leave_blocks_in_window",
+        "id": "count_leave_blocks",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental cost for book_first_free_qualified_block; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that swap_oncall_engineer_into_wednesday remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of book_first_free_qualified_block, swap_oncall_engineer_into_wednesday, use_associate_engineer_wednesday; selected book_first_free_qualified_block because it alone gives the best currently authorized result under one qualified level-2 billing engineer on a free block without displacing protected or leave blocks.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-04-16 as the supported outcome date for book_first_free_qualified_block.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-04-16 with the independent control date 2026-04-17 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "WORK-0006"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated WORK-0006 scope, immutable handles, mounted systems, and evidence index before investigating ESC-3155.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "WORK-0006"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1006-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "mail.messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for WORK-0006 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "customer_id": "CUST-2266"
+            },
+            "expected_result_contains": {
+              "customer_id": "CUST-2266"
+            },
+            "match": "result_contains",
+            "tool": "helpdesk.customers.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved customer CUST-2266 to the immutable account record rather than matching on a similarly named organisation.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "customer_id": "CUST-2266",
+              "status": "open"
+            },
+            "expected_result_contains": {
+              "escalations": [
+                {
+                  "escalation_id": "ESC-3155"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "helpdesk.escalations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed CUST-2266's open escalations and identified ESC-3155 by immutable id, not by the ticket subject.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "WORK-0006"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-006-16"
+                },
+                {
+                  "id": "DRV-006-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the WORK-0006 case folder on the shared drive and identified the approval record and the escalation export by immutable file id.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "Escalation Handling Standard"
+            },
+            "expected_result_contains": {
+              "pages": [
+                {
+                  "page_id": "WIKI-4410"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "wiki.pages.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Searched the wiki and distinguished the effective v5 Escalation Handling Standard from the superseded v4 edition by page identity, not title.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "escalation_id": "ESC-3155"
+            },
+            "expected_result_contains": {
+              "escalation_id": "ESC-3155",
+              "status": "open"
+            },
+            "match": "result_contains",
+            "tool": "helpdesk.escalations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the escalation record ESC-3155: required skill, session sizing, claimed tickets, and current status.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "ticket_id": "TCK-88503"
+            },
+            "expected_result_contains": {
+              "priority": "P1",
+              "ticket_id": "TCK-88503"
+            },
+            "match": "result_contains",
+            "tool": "helpdesk.tickets.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the escalated ticket TCK-88503 with its SLA timeline, priority, and duplicate link.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "customer_id": "CUST-2266"
+            },
+            "expected_result_contains": {
+              "tickets": [
+                {
+                  "ticket_id": "TCK-88503"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "helpdesk.tickets.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed CUST-2266's tickets and separated the escalated ticket from duplicates and unrelated tickets by immutable id.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "page_id": "WIKI-4410"
+            },
+            "expected_result_contains": {
+              "page_id": "WIKI-4410",
+              "status": "current",
+              "version": 5
+            },
+            "match": "result_contains",
+            "tool": "wiki.pages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the effective v5 standard for the requirement, capacity, calendar, partner, credit, and authority rules; did not apply the superseded v4 edition.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "sla_policy_id": "SLA-ENT-2026"
+            },
+            "expected_result_contains": {
+              "sla_policy_id": "SLA-ENT-2026"
+            },
+            "match": "result_contains",
+            "tool": "helpdesk.sla_policies.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read SLA policy SLA-ENT-2026 for the per-priority targets and the credit scope.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "agreement_id": "AGR-7793"
+            },
+            "expected_result_contains": {
+              "agreement_id": "AGR-7793",
+              "monthly_fee_usd": 14000
+            },
+            "match": "result_contains",
+            "tool": "contracts.agreements.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read agreement AGR-7793: monthly fee, credit percentage, cap, and term.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "agreement_id": "AGR-7793"
+            },
+            "expected_result_contains": {
+              "commitments": [
+                {
+                  "commitment_id": "CMT-4472"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "contracts.commitments.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the commitment register for AGR-7793 to take the documented control date from CMT-4472.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "escalation_id": "ESC-3155"
+            },
+            "expected_result_contains": {
+              "issues": [
+                {
+                  "key": "BILL-2431"
+                },
+                {
+                  "key": "BILL-2432"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "tracker.issues.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the tracker issues linked to ESC-3155 and counted only open Fix, Test, and Verification issues (BILL-2431, BILL-2432).",
+        "id": "investigation_14",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "sprint_id": "SPR-27"
+            },
+            "expected_result_contains": {
+              "end_date": "2026-04-24",
+              "sprint_id": "SPR-27"
+            },
+            "match": "result_contains",
+            "tool": "tracker.sprints.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read sprint SPR-27 for the sprint window and end date that bounds 'this sprint'.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "skill_code": "billing-engine"
+            },
+            "expected_result_contains": {
+              "skills": [
+                {
+                  "employee_id": "EMP-1041",
+                  "level": 3
+                },
+                {
+                  "employee_id": "EMP-1057",
+                  "level": 2
+                },
+                {
+                  "employee_id": "EMP-1103",
+                  "level": 2
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "hris.skills.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the certified billing-engine holders on the roster and kept only level 2+ engineers (EMP-1041, EMP-1057, EMP-1103).",
+        "id": "investigation_16",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-16",
+              "start_date": "2026-04-14",
+              "status": "approved"
+            },
+            "expected_result_contains": {
+              "timeoff": [
+                {
+                  "timeoff_id": "TO-7712"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.timeoff.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approved leave between 2026-04-14 and 2026-04-16 from the staff calendar, the only source that reflects it.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-16",
+              "start_date": "2026-04-14"
+            },
+            "expected_result_contains": {
+              "shifts": [
+                {
+                  "shift_id": "OC-2716"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.oncall.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the on-call rota between 2026-04-14 and 2026-04-16; the on-call engineer's blocks are protected and carry no feature capacity.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-17",
+              "start_date": "2026-04-15"
+            },
+            "expected_result_contains": {
+              "blocks": [
+                {
+                  "id": "BLK-1041-20260416-PM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.blocks.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the staff calendar blocks for 2026-04-15 onward to find the first free block of a qualified engineer that displaces no protected or leave block.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CNF-MF-61240"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CNF-MF-61240",
+              "standard_date": "2026-04-21"
+            },
+            "match": "result_contains",
+            "tool": "portal.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the external counterpart confirmation CNF-MF-61240 for the independently confirmed standard and expedited dates and the fee.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "escalation_id": "ESC-3155"
+            },
+            "expected_result_contains": {
+              "total": 0
+            },
+            "match": "result_contains",
+            "tool": "calendar.bookings.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the session bookings for ESC-3155 by immutable id.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "agreement_id": "AGR-7793"
+            },
+            "expected_result_contains": {
+              "total": 0
+            },
+            "match": "result_contains",
+            "tool": "contracts.credits.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the credit ledger for AGR-7793 so the stakeholder note states the credit position honestly.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-WP-0106"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-WP-0106"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-WP-0106 for its exact scope: escalation, quantity, counterparty, fee allowance, and what it does not cover.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-16"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-16"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1006-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1006-01"
+            },
+            "match": "result_contains",
+            "tool": "mail.messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1006-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1006"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1006"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the squad chat thread CHAT-1006 for capacity, calendar, and authority remarks that qualify the system records.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "page_id": "WIKI-4410"
+            },
+            "expected_result_contains": {
+              "versions": [
+                {
+                  "status": "current",
+                  "version": 5
+                },
+                {
+                  "status": "superseded",
+                  "version": 4
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "wiki.versions.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the standard's version history: v5 is current and v4 is superseded, so only v5 governs.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for WORK-0006 and confirmed that ESC-3155 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for WORK-0006 and joined ESC-3155 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for WORK-0006; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_30",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for WORK-0006 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_31",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-30"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-30"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for ESC-3155 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_32",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for WORK-0006 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_33",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for WORK-0006, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_34",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for WORK-0006: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_35",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "calendar.bookings.create",
+        "any_of": [
+          {
+            "arguments": {
+              "booking_id": "BKG-5289"
+            },
+            "expected_result_contains": {
+              "employee": "EMP-1041",
+              "end": "2026-04-16T16:30:00",
+              "id": "BKG-5289",
+              "start": "2026-04-16T13:30:00",
+              "status": "booked"
+            },
+            "match": "result_contains",
+            "tool": "calendar.bookings.get"
+          }
+        ],
+        "description": "Read BKG-5289 back through calendar.bookings.get after the change and confirmed the persisted provider values (id='BKG-5289', status='booked', employee='EMP-1041', start='2026-04-16T13:30:00', end='2026-04-16T16:30:00') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "employee": "EMP-1041",
+          "end": "2026-04-16T16:30:00",
+          "id": "BKG-5289",
+          "start": "2026-04-16T13:30:00",
+          "status": "booked"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "booking_id": "BKG-5289"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "workplace",
+  "instruction": "Mireille cannot run month-end close until the tax-rounding fix is validated with their finance lead, and she can pair on Wednesday or Thursday this week. Work out how much engineer time the session needs, which billing-qualified engineers genuinely have a free block in that window once on-call, leave, and existing bookings are respected, and whether anything earlier would be possible and on whose authority. Book the session on the block the evidence supports and leave Elodie a note with the day, what constrained it, and what the other routes would have required.",
+  "level": "employee-decision",
+  "mode": "schedule",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "description": "Mireille tax-rounding hotfix pairing (WORK-0006)",
+        "employee_id": "EMP-1103",
+        "end": "2026-04-15T12:00:00",
+        "escalation_id": "ESC-3155",
+        "start": "2026-04-15T09:00:00"
+      },
+      "tool": "calendar.bookings.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-006-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "calendar.bookings.create",
+      "any_of": [
+        {
+          "arguments": {
+            "booking_id": "BKG-5289"
+          },
+          "expected_result_contains": {
+            "employee": "EMP-1041",
+            "end": "2026-04-16T16:30:00",
+            "id": "BKG-5289",
+            "start": "2026-04-16T13:30:00",
+            "status": "booked"
+          },
+          "match": "result_contains",
+          "tool": "calendar.bookings.get"
+        }
+      ],
+      "description": "Read BKG-5289 back through calendar.bookings.get after the change and confirmed the persisted provider values (id='BKG-5289', status='booked', employee='EMP-1041', start='2026-04-16T13:30:00', end='2026-04-16T16:30:00') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "employee": "EMP-1041",
+        "end": "2026-04-16T16:30:00",
+        "id": "BKG-5289",
+        "start": "2026-04-16T13:30:00",
+        "status": "booked"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "booking_id": "BKG-5289"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-WP-0106"
+    },
+    "calendar": {
+      "calendar_window": {
+        "end_date": "2026-04-17",
+        "start_date": "2026-04-15"
+      }
+    },
+    "case_reference": "WORK-0006",
+    "chat": {
+      "thread_id": "CHAT-1006"
+    },
+    "contracts": {
+      "agreement_id": "AGR-7793"
+    },
+    "drive": {
+      "case_folder_query": "WORK-0006",
+      "standard_query": "Escalation Handling Standard"
+    },
+    "helpdesk": {
+      "customer_id": "CUST-2266",
+      "escalation_search": {
+        "arguments": {
+          "customer_id": "CUST-2266",
+          "status": "open"
+        },
+        "tool": "helpdesk.escalations.list"
+      }
+    },
+    "mail": {
+      "search_query": "WORK-0006"
+    },
+    "portal": {
+      "confirmation_id": "CNF-MF-61240"
+    },
+    "tracker": {
+      "active_sprint": "SPR-27",
+      "board": "Customer Delivery"
+    },
+    "wiki": {
+      "standard_query": "Escalation Handling Standard"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "WORK-0006"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated WORK-0006 scope, immutable handles, mounted systems, and evidence index before investigating ESC-3155.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "WORK-0006"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1006-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "mail.messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for WORK-0006 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "customer_id": "CUST-2266"
+          },
+          "expected_result_contains": {
+            "customer_id": "CUST-2266"
+          },
+          "match": "result_contains",
+          "tool": "helpdesk.customers.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved customer CUST-2266 to the immutable account record rather than matching on a similarly named organisation.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "customer_id": "CUST-2266",
+            "status": "open"
+          },
+          "expected_result_contains": {
+            "escalations": [
+              {
+                "escalation_id": "ESC-3155"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "helpdesk.escalations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed CUST-2266's open escalations and identified ESC-3155 by immutable id, not by the ticket subject.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "WORK-0006"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-006-16"
+              },
+              {
+                "id": "DRV-006-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the WORK-0006 case folder on the shared drive and identified the approval record and the escalation export by immutable file id.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "Escalation Handling Standard"
+          },
+          "expected_result_contains": {
+            "pages": [
+              {
+                "page_id": "WIKI-4410"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "wiki.pages.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Searched the wiki and distinguished the effective v5 Escalation Handling Standard from the superseded v4 edition by page identity, not title.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "escalation_id": "ESC-3155"
+          },
+          "expected_result_contains": {
+            "escalation_id": "ESC-3155",
+            "status": "open"
+          },
+          "match": "result_contains",
+          "tool": "helpdesk.escalations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the escalation record ESC-3155: required skill, session sizing, claimed tickets, and current status.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "ticket_id": "TCK-88503"
+          },
+          "expected_result_contains": {
+            "priority": "P1",
+            "ticket_id": "TCK-88503"
+          },
+          "match": "result_contains",
+          "tool": "helpdesk.tickets.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the escalated ticket TCK-88503 with its SLA timeline, priority, and duplicate link.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "customer_id": "CUST-2266"
+          },
+          "expected_result_contains": {
+            "tickets": [
+              {
+                "ticket_id": "TCK-88503"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "helpdesk.tickets.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed CUST-2266's tickets and separated the escalated ticket from duplicates and unrelated tickets by immutable id.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "page_id": "WIKI-4410"
+          },
+          "expected_result_contains": {
+            "page_id": "WIKI-4410",
+            "status": "current",
+            "version": 5
+          },
+          "match": "result_contains",
+          "tool": "wiki.pages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the effective v5 standard for the requirement, capacity, calendar, partner, credit, and authority rules; did not apply the superseded v4 edition.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "sla_policy_id": "SLA-ENT-2026"
+          },
+          "expected_result_contains": {
+            "sla_policy_id": "SLA-ENT-2026"
+          },
+          "match": "result_contains",
+          "tool": "helpdesk.sla_policies.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read SLA policy SLA-ENT-2026 for the per-priority targets and the credit scope.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "agreement_id": "AGR-7793"
+          },
+          "expected_result_contains": {
+            "agreement_id": "AGR-7793",
+            "monthly_fee_usd": 14000
+          },
+          "match": "result_contains",
+          "tool": "contracts.agreements.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read agreement AGR-7793: monthly fee, credit percentage, cap, and term.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "agreement_id": "AGR-7793"
+          },
+          "expected_result_contains": {
+            "commitments": [
+              {
+                "commitment_id": "CMT-4472"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "contracts.commitments.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the commitment register for AGR-7793 to take the documented control date from CMT-4472.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "escalation_id": "ESC-3155"
+          },
+          "expected_result_contains": {
+            "issues": [
+              {
+                "key": "BILL-2431"
+              },
+              {
+                "key": "BILL-2432"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "tracker.issues.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the tracker issues linked to ESC-3155 and counted only open Fix, Test, and Verification issues (BILL-2431, BILL-2432).",
+      "id": "investigation_14",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "sprint_id": "SPR-27"
+          },
+          "expected_result_contains": {
+            "end_date": "2026-04-24",
+            "sprint_id": "SPR-27"
+          },
+          "match": "result_contains",
+          "tool": "tracker.sprints.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read sprint SPR-27 for the sprint window and end date that bounds 'this sprint'.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "skill_code": "billing-engine"
+          },
+          "expected_result_contains": {
+            "skills": [
+              {
+                "employee_id": "EMP-1041",
+                "level": 3
+              },
+              {
+                "employee_id": "EMP-1057",
+                "level": 2
+              },
+              {
+                "employee_id": "EMP-1103",
+                "level": 2
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "hris.skills.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the certified billing-engine holders on the roster and kept only level 2+ engineers (EMP-1041, EMP-1057, EMP-1103).",
+      "id": "investigation_16",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-16",
+            "start_date": "2026-04-14",
+            "status": "approved"
+          },
+          "expected_result_contains": {
+            "timeoff": [
+              {
+                "timeoff_id": "TO-7712"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.timeoff.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approved leave between 2026-04-14 and 2026-04-16 from the staff calendar, the only source that reflects it.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-16",
+            "start_date": "2026-04-14"
+          },
+          "expected_result_contains": {
+            "shifts": [
+              {
+                "shift_id": "OC-2716"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.oncall.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the on-call rota between 2026-04-14 and 2026-04-16; the on-call engineer's blocks are protected and carry no feature capacity.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-17",
+            "start_date": "2026-04-15"
+          },
+          "expected_result_contains": {
+            "blocks": [
+              {
+                "id": "BLK-1041-20260416-PM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.blocks.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the staff calendar blocks for 2026-04-15 onward to find the first free block of a qualified engineer that displaces no protected or leave block.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CNF-MF-61240"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CNF-MF-61240",
+            "standard_date": "2026-04-21"
+          },
+          "match": "result_contains",
+          "tool": "portal.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the external counterpart confirmation CNF-MF-61240 for the independently confirmed standard and expedited dates and the fee.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "escalation_id": "ESC-3155"
+          },
+          "expected_result_contains": {
+            "total": 0
+          },
+          "match": "result_contains",
+          "tool": "calendar.bookings.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the session bookings for ESC-3155 by immutable id.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "agreement_id": "AGR-7793"
+          },
+          "expected_result_contains": {
+            "total": 0
+          },
+          "match": "result_contains",
+          "tool": "contracts.credits.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the credit ledger for AGR-7793 so the stakeholder note states the credit position honestly.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-WP-0106"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-WP-0106"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-WP-0106 for its exact scope: escalation, quantity, counterparty, fee allowance, and what it does not cover.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-16"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-16"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1006-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1006-01"
+          },
+          "match": "result_contains",
+          "tool": "mail.messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1006-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1006"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1006"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the squad chat thread CHAT-1006 for capacity, calendar, and authority remarks that qualify the system records.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "page_id": "WIKI-4410"
+          },
+          "expected_result_contains": {
+            "versions": [
+              {
+                "status": "current",
+                "version": 5
+              },
+              {
+                "status": "superseded",
+                "version": 4
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "wiki.versions.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the standard's version history: v5 is current and v4 is superseded, so only v5 governs.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for WORK-0006 and confirmed that ESC-3155 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for WORK-0006 and joined ESC-3155 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for WORK-0006; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_30",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for WORK-0006 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_31",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-30"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-30"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for ESC-3155 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_32",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for WORK-0006 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_33",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for WORK-0006, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_34",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for WORK-0006: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_35",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "WORK-0006"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "WORK-0006"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1006-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "mail.messages.list"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUST-2266"
+      },
+      "expected_result_contains": {
+        "customer_id": "CUST-2266"
+      },
+      "match": "result_contains",
+      "tool": "helpdesk.customers.get"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUST-2266",
+        "status": "open"
+      },
+      "expected_result_contains": {
+        "escalations": [
+          {
+            "escalation_id": "ESC-3155"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "helpdesk.escalations.list"
+    },
+    {
+      "arguments": {
+        "q": "WORK-0006"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-006-16"
+          },
+          {
+            "id": "DRV-006-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "Escalation Handling Standard"
+      },
+      "expected_result_contains": {
+        "pages": [
+          {
+            "page_id": "WIKI-4410"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "wiki.pages.search"
+    },
+    {
+      "arguments": {
+        "escalation_id": "ESC-3155"
+      },
+      "expected_result_contains": {
+        "escalation_id": "ESC-3155",
+        "status": "open"
+      },
+      "match": "result_contains",
+      "tool": "helpdesk.escalations.get"
+    },
+    {
+      "arguments": {
+        "ticket_id": "TCK-88503"
+      },
+      "expected_result_contains": {
+        "priority": "P1",
+        "ticket_id": "TCK-88503"
+      },
+      "match": "result_contains",
+      "tool": "helpdesk.tickets.get"
+    },
+    {
+      "arguments": {
+        "customer_id": "CUST-2266"
+      },
+      "expected_result_contains": {
+        "tickets": [
+          {
+            "ticket_id": "TCK-88503"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "helpdesk.tickets.search"
+    },
+    {
+      "arguments": {
+        "page_id": "WIKI-4410"
+      },
+      "expected_result_contains": {
+        "page_id": "WIKI-4410",
+        "status": "current",
+        "version": 5
+      },
+      "match": "result_contains",
+      "tool": "wiki.pages.get"
+    },
+    {
+      "arguments": {
+        "sla_policy_id": "SLA-ENT-2026"
+      },
+      "expected_result_contains": {
+        "sla_policy_id": "SLA-ENT-2026"
+      },
+      "match": "result_contains",
+      "tool": "helpdesk.sla_policies.get"
+    },
+    {
+      "arguments": {
+        "agreement_id": "AGR-7793"
+      },
+      "expected_result_contains": {
+        "agreement_id": "AGR-7793",
+        "monthly_fee_usd": 14000
+      },
+      "match": "result_contains",
+      "tool": "contracts.agreements.get"
+    },
+    {
+      "arguments": {
+        "agreement_id": "AGR-7793"
+      },
+      "expected_result_contains": {
+        "commitments": [
+          {
+            "commitment_id": "CMT-4472"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "contracts.commitments.list"
+    },
+    {
+      "arguments": {
+        "escalation_id": "ESC-3155"
+      },
+      "expected_result_contains": {
+        "issues": [
+          {
+            "key": "BILL-2431"
+          },
+          {
+            "key": "BILL-2432"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "tracker.issues.search"
+    },
+    {
+      "arguments": {
+        "sprint_id": "SPR-27"
+      },
+      "expected_result_contains": {
+        "end_date": "2026-04-24",
+        "sprint_id": "SPR-27"
+      },
+      "match": "result_contains",
+      "tool": "tracker.sprints.get"
+    },
+    {
+      "arguments": {
+        "skill_code": "billing-engine"
+      },
+      "expected_result_contains": {
+        "skills": [
+          {
+            "employee_id": "EMP-1041",
+            "level": 3
+          },
+          {
+            "employee_id": "EMP-1057",
+            "level": 2
+          },
+          {
+            "employee_id": "EMP-1103",
+            "level": 2
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "hris.skills.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-16",
+        "start_date": "2026-04-14",
+        "status": "approved"
+      },
+      "expected_result_contains": {
+        "timeoff": [
+          {
+            "timeoff_id": "TO-7712"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.timeoff.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-16",
+        "start_date": "2026-04-14"
+      },
+      "expected_result_contains": {
+        "shifts": [
+          {
+            "shift_id": "OC-2716"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.oncall.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-17",
+        "start_date": "2026-04-15"
+      },
+      "expected_result_contains": {
+        "blocks": [
+          {
+            "id": "BLK-1041-20260416-PM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.blocks.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CNF-MF-61240"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CNF-MF-61240",
+        "standard_date": "2026-04-21"
+      },
+      "match": "result_contains",
+      "tool": "portal.confirmations.get"
+    },
+    {
+      "arguments": {
+        "escalation_id": "ESC-3155"
+      },
+      "expected_result_contains": {
+        "total": 0
+      },
+      "match": "result_contains",
+      "tool": "calendar.bookings.list"
+    },
+    {
+      "arguments": {
+        "agreement_id": "AGR-7793"
+      },
+      "expected_result_contains": {
+        "total": 0
+      },
+      "match": "result_contains",
+      "tool": "contracts.credits.list"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-WP-0106"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-WP-0106"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-16"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-16"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1006-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1006-01"
+      },
+      "match": "result_contains",
+      "tool": "mail.messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1006"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1006"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "page_id": "WIKI-4410"
+      },
+      "expected_result_contains": {
+        "versions": [
+          {
+            "status": "current",
+            "version": 5
+          },
+          {
+            "status": "superseded",
+            "version": 4
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "wiki.versions.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-29"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-29"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-30"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-30"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "mail.messages.list",
+    "helpdesk.customers.get",
+    "helpdesk.escalations.list",
+    "drive.files.list",
+    "wiki.pages.search",
+    "helpdesk.escalations.get",
+    "helpdesk.tickets.get",
+    "helpdesk.tickets.search",
+    "wiki.pages.get",
+    "helpdesk.sla_policies.get",
+    "contracts.agreements.get",
+    "contracts.commitments.list",
+    "tracker.issues.search",
+    "tracker.sprints.get",
+    "hris.skills.list",
+    "calendar.timeoff.list",
+    "calendar.oncall.list",
+    "calendar.blocks.list",
+    "portal.confirmations.get",
+    "calendar.bookings.list",
+    "contracts.credits.list",
+    "approvals.get",
+    "drive.files.export",
+    "mail.messages.get",
+    "chat.threads.get",
+    "wiki.versions.list",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "customer_delivery_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 8.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_06",
+        "investigation_28",
+        "investigation_29"
+      ],
+      "description": "Establish the isolated WORK-0006 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 9.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_30"
+      ],
+      "description": "Determine the operative v1 requirement for ESC-3155 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 9.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_15",
+        "investigation_16",
+        "investigation_17",
+        "investigation_18",
+        "investigation_19",
+        "investigation_20",
+        "investigation_31",
+        "investigation_32",
+        "investigation_34"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 48 observed less 44 excluded to 4 supported ENGINEER_HOUR for engineer-hours of billing-engine engineers (Priya Raghunathan, Tomasz Wierzbicki, Ines Marquardt) on the customer's Wednesday-Thursday window. Applied free blocks of qualified engineers on the staff calendar to derive the three option outcomes without displacing protected blocks or committed dates. Used the independently confirmed 2026-04-22 standard and 2026-04-20 expedited readiness inputs from Mireille's change-board confirmation MF-CAB-61240 of the hotfix release windows, then separately derived each alternative's operating outcome under one qualified level-2 billing engineer on a free block without displacing protected or leave blocks instead of treating a counterparty promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_23",
+        "investigation_24",
+        "investigation_33"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-WP-0106 only to book_first_free_qualified_block and ESC-3155; kept swap_oncall_engineer_into_wednesday outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_21",
+        "investigation_22",
+        "investigation_25",
+        "investigation_26",
+        "investigation_27",
+        "investigation_35"
+      ],
+      "description": "Correlate ESC-3155 by immutable identifiers across the systems of record (helpdesk, tracker, wiki, calendar, hris, contracts, portal, mail, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 21.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "calculate_required_capacity",
+        "establish_candidate_capacity",
+        "remove_protected_capacity",
+        "calculate_net_usable_capacity",
+        "calculate_capacity_gap",
+        "preserve_capacity_unit",
+        "identify_selected_resource_or_control",
+        "compare_base_schedule",
+        "compare_qualified_schedule",
+        "compare_escalated_schedule",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "convert_session_to_blocks",
+        "preserve_requested_day",
+        "count_qualified_engineers",
+        "count_free_blocks",
+        "count_leave_blocks"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for the Mireille tax-rounding hotfix pairing session.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for book_first_free_qualified_block under the actual operating window and report whether the 2026-04-16 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select book_first_free_qualified_block only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01",
+        "state_02"
+      ],
+      "description": "Persist exactly the supported 'Pairing session booked' change for ESC-3155 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read ESC-3155 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_affected_resource_or_operation",
+        "answer_capacity_gap",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for the Mireille tax-rounding hotfix pairing session.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside WORK-0006's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "9b5d341b1ee0f17982b0b4a91345b245215aa4f101f9d6d84e1cf6f3ebb34b2d",
+  "starting_records": [
+    {
+      "resource_id": "ESC-3155",
+      "resource_type": "Escalation",
+      "status": "open",
+      "system": "helpdesk"
+    },
+    {
+      "resource_id": "BKG-5288",
+      "resource_type": "Booking",
+      "status": "booked",
+      "system": "calendar"
+    }
+  ],
+  "task_id": "workplace-006",
+  "title": "Book the Mireille hotfix pairing session before the close run",
+  "workflow": {
+    "answer_fields": 25,
+    "readbacks": 1,
+    "reads": 35,
+    "writes": 2
+  },
+  "world": {
+    "id": "ferngate-delivery-v1",
+    "name": "Ferngate Software — Customer Delivery",
+    "organization_id": "ORG-FERNGATE",
+    "primary_site": "Customer Delivery squad",
+    "systems": [
+      "helpdesk",
+      "tracker",
+      "wiki",
+      "calendar",
+      "hris",
+      "contracts",
+      "portal",
+      "approvals",
+      "mail",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

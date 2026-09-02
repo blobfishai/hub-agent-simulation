@@ -1,6 +1,6 @@
 # hubbench-researchdesk-005 — Build the market-expansion eligibility packet
 
-HubBench 1.0.0 · family **ResearchDesk** (`researchdesk`, cluster `reasoning-knowledge-qa`) · decision mode `plan` · role `research_analyst` · as of 2026-07-13.
+HubBench 1.1.0 · family **ResearchDesk** (`researchdesk`, cluster `reasoning-knowledge-qa`) · decision mode `plan` · role `research_analyst` · as of 2026-07-13.
 
 Multi-source internal research across versioned knowledge, metric definitions, source provenance, ranked search, approvals, review capacity, published claims, and evidence packets.
 

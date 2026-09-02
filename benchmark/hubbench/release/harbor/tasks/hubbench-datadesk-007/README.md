@@ -1,6 +1,6 @@
 # hubbench-datadesk-007 — Close the inventory snapshot gap before the S&OP review
 
-HubBench 1.0.0 · family **DataDesk** (`datadesk`, cluster `data-engineering-analytics`) · decision mode `quantity` · role `analytics_engineer_oncall` · as of 2026-03-09.
+HubBench 1.1.0 · family **DataDesk** (`datadesk`, cluster `data-engineering-analytics`) · decision mode `quantity` · role `analytics_engineer_oncall` · as of 2026-03-09.
 
 Data engineering decisions against a dbt-style warehouse catalog, pipeline run history, vendor feed deliveries, freshness SLAs, batch-window capacity, and finance reconciliation controls.
 

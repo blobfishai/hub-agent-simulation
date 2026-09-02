@@ -1,6 +1,6 @@
 # hubbench-scilab-003 — Fit the HbA1c validation run before the audit deadline
 
-HubBench 1.0.0 · family **SciLab** (`scilab`, cluster `scientific-research`) · decision mode `schedule` · role `assay_operations_coordinator` · as of 2026-05-11.
+HubBench 1.1.0 · family **SciLab** (`scilab`, cluster `scientific-research`) · decision mode `schedule` · role `assay_operations_coordinator` · as of 2026-05-11.
 
 Assay-operations decisions against a LIMS with versioned protocols and QC results, an analyser schedule with calibration certificates, a reagent-lot inventory with expiry and quarantine state, supplier shipment confirmations, ELN method notes, and approval records.
 

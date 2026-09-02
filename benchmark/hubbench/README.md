@@ -5,8 +5,8 @@ One Blobfish-authored benchmark family per professional-domain cluster on
 open-source benchmark domain on the hub has an executable, oracle-proven
 Blobfish counterpart. The cluster map and family plan live in
 [`benchmark/reports/harbor-hub-coverage.json`](../reports/harbor-hub-coverage.json)
-(`hubbench` block): thirteen families, eight tasks minimum each. Five families
-and 40 tasks are currently released and qualified.
+(`hubbench` block): thirteen families, eight tasks minimum each. Seven families
+and 56 tasks are currently released and qualified.
 
 | Cluster | Family | Status |
 |---|---|---|
@@ -16,10 +16,10 @@ and 40 tasks are currently released and qualified.
 | reasoning-knowledge-qa | **researchdesk** | **released here — 8/8 reasoning-chain qualified** |
 | computer-use-gui | deskops | planned |
 | web-product-design | webstudio | planned |
-| policy-compliance-instruction-following | policydesk | planned |
+| policy-compliance-instruction-following | **policydesk** | **released here — 8/8 reasoning-chain qualified** |
 | it-operations-observability | itsmdesk | planned |
 | security | secops | planned |
-| customer-workplace-agents | workplace | planned |
+| customer-workplace-agents | **workplace** | **released here — 8/8 reasoning-chain qualified** |
 | scientific-research | **scilab** | **released here — 8/8 reasoning-chain qualified** |
 | manufacturing-engineering-design | designops | planned |
 | software-engineering | repodesk | planned |
@@ -385,3 +385,36 @@ Publish order (from a frozen copy under `$HOME`, never a rebuilding tree):
 `harbor run -p <tasks> -a oracle` gate → `harbor publish tasks --public -t v1.0.0`
 → `harbor publish <dataset.toml dir> --public --no-tasks` →
 `hf upload-large-folder SamuelChien821/hubbench release/huggingface --repo-type dataset`.
+
+## Adding a family (checklist)
+
+A family lands as `families/<slug>/` (+ its `release/`), `tests/test_family_<slug>.py`,
+`reports/<slug>-qualification.json`, and `reports/reasoning-chain/<slug>.json`. The
+committed derivatives must then be regenerated in the same PR, or the suites go red:
+
+```bash
+python3 benchmark/hubbench/build_distribution.py            # release/ (byte-stable; tests/test_distribution.py)
+python3 benchmark/harbor_hub_coverage.py --write            # reports/harbor-hub-coverage.json released counts
+python3 benchmark/build_hubbench_site_data.py               # website hubbench-data.json
+python3 benchmark/hubbench/site_data.py                     # website hubbench-explorer-data.json
+python3 -m pytest benchmark/hubbench benchmark/tests/test_harbor_hub_census.py -q
+```
+
+Keep `tools.py` self-contained (the vendored Harbor runtime ships only `schema.sql`
+and `tools.py` for the family), update the table above, and never edit
+`reports/publication.json` — it describes the tagged release that was actually
+published; newer families wait for the next tag.
+
+## Model runs (`model_run.py`, `model_runs/`)
+
+`python3 benchmark/hubbench/model_run.py <harbor-job-dir> --slug <slug> --label "<model>" [--allow-partial]`
+imports a Harbor model job fail-closed: every trial must come from the published
+dataset and a published task, carry a HubScore verdict that equals the Harbor
+reward, and be free of errors. The importer keeps the durable world call trace the
+packaged verifier pulled (provider-independent — every surface), the verdict with
+per-category earned weight, and the agent's token and cost receipt under
+`model_runs/<slug>/`. A run is **ranked** only when it completed every published
+task exactly once with zero errors and zero retries; anything else is a
+**disclosed partial run** whose trajectories are published and whose scores are
+never ranked. `site_data.py` turns ranked runs into leaderboard rows and every
+run into model trajectories on the page.

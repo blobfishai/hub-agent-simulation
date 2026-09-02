@@ -3845,6 +3845,1531 @@
         }
       ]
     },
+    "policydesk": {
+      "cluster": "policy-compliance-instruction-following",
+      "servers": {
+        "approvals": {
+          "description": "Approval workflow records with exact scope.",
+          "tools": [
+            "approvals.get",
+            "approvals.list"
+          ]
+        },
+        "audit": {
+          "description": "Audit-finding tracker with grant-blocking findings.",
+          "tools": [
+            "audit.findings.get",
+            "audit.findings.list"
+          ]
+        },
+        "chat": {
+          "description": "Access-governance team chat threads.",
+          "tools": [
+            "chat.threads.get",
+            "chat.threads.list"
+          ]
+        },
+        "directory": {
+          "description": "Identity directory and approver directory with authority tiers and availability.",
+          "tools": [
+            "directory.approvers.get",
+            "directory.approvers.list",
+            "directory.people.get"
+          ]
+        },
+        "drive": {
+          "description": "Shared drive holding policies, registers, calendars, and exports.",
+          "tools": [
+            "drive.files.export",
+            "drive.files.get",
+            "drive.files.list"
+          ]
+        },
+        "exceptions": {
+          "description": "Exceptions register with compensating controls, approver tiers, and expiry.",
+          "tools": [
+            "exceptions.create",
+            "exceptions.get",
+            "exceptions.list"
+          ]
+        },
+        "grants": {
+          "description": "Entitlement grant store with segregation-of-duties rules, covered counts, and expiry.",
+          "tools": [
+            "grants.create",
+            "grants.get",
+            "grants.list",
+            "grants.sod.check"
+          ]
+        },
+        "hubbench": {
+          "description": "Benchmark-only discovery and structured answer submission controls.",
+          "tools": [
+            "hubbench.context.get",
+            "hubbench.submit_answer"
+          ]
+        },
+        "messages": {
+          "description": "Access-governance mailbox.",
+          "tools": [
+            "messages.get",
+            "messages.list"
+          ]
+        },
+        "notes": {
+          "description": "Stakeholder draft notes (never sent by the benchmark).",
+          "tools": [
+            "notes.drafts.create"
+          ]
+        },
+        "policy": {
+          "description": "Policy library: access-governance standards with numbered clauses, versions, and effective dates.",
+          "tools": [
+            "policy.clauses.list",
+            "policy.documents.get",
+            "policy.library.list"
+          ]
+        },
+        "requests": {
+          "description": "Access-request queue with requester, role, duration, justification, attestation, and duplicate links.",
+          "tools": [
+            "requests.decide",
+            "requests.get",
+            "requests.queue.list"
+          ]
+        },
+        "resources": {
+          "description": "Resource catalog: systems, sensitivity tiers, and segregation-of-duties domains.",
+          "tools": [
+            "resources.get",
+            "resources.search"
+          ]
+        },
+        "reviews": {
+          "description": "Approver review-session calendar, windows, and sessions.",
+          "tools": [
+            "reviews.sessions.create",
+            "reviews.sessions.get",
+            "reviews.sessions.list",
+            "reviews.sessions.update",
+            "reviews.windows.list"
+          ]
+        },
+        "screening": {
+          "description": "External screening / credentialing vendor confirmations.",
+          "tools": [
+            "screening.confirmations.get",
+            "screening.confirmations.list"
+          ]
+        },
+        "training": {
+          "description": "Training and attestation records with completion and expiry dates.",
+          "tools": [
+            "training.records.get",
+            "training.records.list"
+          ]
+        }
+      },
+      "tools": [
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "policy",
+              "shape": "policy library index"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "policy.library.list"
+          },
+          "description": "List access-governance policy documents, optionally by status (EFFECTIVE / SUPERSEDED).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "status": {
+                "description": "policy status",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "policy.library.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "policy",
+              "shape": "policy document record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "policy.documents.get"
+          },
+          "description": "Read one policy document record: code, version, effective date, and status.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "policy_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "policy_id"
+            ],
+            "type": "object"
+          },
+          "name": "policy.documents.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "policy",
+              "shape": "policy clause register"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "policy.clauses.list"
+          },
+          "description": "List the numbered clauses of a policy, optionally for one sensitivity tier: max grant days, required approver tier, required training, allowed compensating control.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "policy_id": {
+                "type": "string"
+              },
+              "sensitivity_tier": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "policy_id"
+            ],
+            "type": "object"
+          },
+          "name": "policy.clauses.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "requests",
+              "shape": "access-request queue"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "requests.queue.list"
+          },
+          "description": "List access requests by resource, status, or requester, with role, duration, justification, attestation, and duplicate links.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "requester_id": {
+                "type": "string"
+              },
+              "resource_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "requests.queue.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "requests",
+              "shape": "access-request record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "requests.get"
+          },
+          "description": "Read one access request with its attributes and any decision.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "request_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "request_id"
+            ],
+            "type": "object"
+          },
+          "name": "requests.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "requests",
+              "shape": "access-request decision"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "requests.decide"
+          },
+          "description": "Record a disposition on a pending access request (APPROVE / EXCEPTION / REFUSE). A request the policy does not permit to be approved as requested cannot be APPROVEd.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "decided_days": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "decision": {
+                "enum": [
+                  "APPROVE",
+                  "EXCEPTION",
+                  "REFUSE"
+                ],
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              },
+              "request_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "request_id",
+              "decision"
+            ],
+            "type": "object"
+          },
+          "name": "requests.decide"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "resources",
+              "shape": "resource catalog search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "resources.search"
+          },
+          "description": "Search access resources by immutable resource code or by name.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "identifier": {
+                "description": "resource code",
+                "type": "string"
+              },
+              "name": {
+                "description": "name fragment",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "resources.search"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "resources",
+              "shape": "resource catalog record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "resources.get"
+          },
+          "description": "Read one resource: system, sensitivity tier, segregation-of-duties domain, and owner.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "resource_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "resource_id"
+            ],
+            "type": "object"
+          },
+          "name": "resources.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "grants",
+              "shape": "entitlement grant register"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "grants.list"
+          },
+          "description": "List entitlement grants by resource, status, or segregation-of-duties domain, with covered count and expiry.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "resource_id": {
+                "type": "string"
+              },
+              "sod_domain": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "grants.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "grants",
+              "shape": "entitlement grant record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "grants.get"
+          },
+          "description": "Read one entitlement grant.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "grant_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "grant_id"
+            ],
+            "type": "object"
+          },
+          "name": "grants.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "grants",
+              "shape": "segregation-of-duties check"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "grants.sod.check"
+          },
+          "description": "Return the segregation-of-duties rules touching a resource's domain and any active grants in the conflicting domains.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "resource_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "resource_id"
+            ],
+            "type": "object"
+          },
+          "name": "grants.sod.check"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "grants",
+              "shape": "entitlement grant create"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "grants.create"
+          },
+          "description": "Provision a time-boxed entitlement grant for the eligible cohort against a signed approval. Rejects a duration beyond the operative clause maximum, a covered count beyond the approval scope, a resource mismatch, or a resource with an open grant-blocking audit finding.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "approval_id": {
+                "type": "string"
+              },
+              "covers_request_count": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "duration_days": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "expires_on": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "request_id": {
+                "type": "string"
+              },
+              "resource_id": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "resource_id",
+              "role",
+              "covers_request_count",
+              "duration_days",
+              "expires_on",
+              "approval_id"
+            ],
+            "type": "object"
+          },
+          "name": "grants.create"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "exceptions",
+              "shape": "exceptions register"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "exceptions.list"
+          },
+          "description": "List exceptions-register entries by resource or status, with compensating control, approver tier, covered count, and expiry.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "resource_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "exceptions.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "exceptions",
+              "shape": "exceptions register record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "exceptions.get"
+          },
+          "description": "Read one exceptions-register entry.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "exception_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "exception_id"
+            ],
+            "type": "object"
+          },
+          "name": "exceptions.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "exceptions",
+              "shape": "exception register create"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "exceptions.create"
+          },
+          "description": "Enter a time-boxed exception covering a blocked-but-recoverable cohort with a documented compensating control. Rejects an approver tier below the clause requirement, a missing or unlisted control, or a covered count beyond the approval scope.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "approval_id": {
+                "type": "string"
+              },
+              "approver_tier": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "compensating_control": {
+                "type": "string"
+              },
+              "covers_request_count": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "expires_on": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              },
+              "request_id": {
+                "type": "string"
+              },
+              "resource_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "resource_id",
+              "reason",
+              "compensating_control",
+              "approver_tier",
+              "covers_request_count",
+              "expires_on",
+              "approval_id"
+            ],
+            "type": "object"
+          },
+          "name": "exceptions.create"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "directory",
+              "shape": "identity directory record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "directory.people.get"
+          },
+          "description": "Read one person record: title, department, and manager.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "person_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "person_id"
+            ],
+            "type": "object"
+          },
+          "name": "directory.people.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "directory",
+              "shape": "approver directory"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "directory.approvers.list"
+          },
+          "description": "List approvers in the directory, optionally at or above an authority tier, with maximum sensitivity tier and availability.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "min_tier": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "directory.approvers.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "directory",
+              "shape": "approver directory record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "directory.approvers.get"
+          },
+          "description": "Read one approver: authority tier, maximum sensitivity tier, status, and availability.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "approver_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "approver_id"
+            ],
+            "type": "object"
+          },
+          "name": "directory.approvers.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "training",
+              "shape": "training attestation register"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "training.records.list"
+          },
+          "description": "List training and attestation records by person, training code, or status, with completion and expiry dates.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "person_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "training_code": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "training.records.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "training",
+              "shape": "training attestation record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "training.records.get"
+          },
+          "description": "Read one training or attestation record.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "record_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "record_id"
+            ],
+            "type": "object"
+          },
+          "name": "training.records.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "audit",
+              "shape": "audit finding tracker"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "audit.findings.list"
+          },
+          "description": "List audit findings by resource, status, or severity, including whether each blocks new grants.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "resource_id": {
+                "type": "string"
+              },
+              "severity": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "audit.findings.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "audit",
+              "shape": "audit finding record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "audit.findings.get"
+          },
+          "description": "Read one audit finding.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "finding_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "finding_id"
+            ],
+            "type": "object"
+          },
+          "name": "audit.findings.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "screening",
+              "shape": "screening vendor confirmation"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "screening.confirmations.list"
+          },
+          "description": "List external screening / credentialing vendor confirmations.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "credential": {
+                "type": "string"
+              },
+              "vendor_id": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "screening.confirmations.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "screening",
+              "shape": "screening vendor confirmation"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "screening.confirmations.get"
+          },
+          "description": "Read one screening vendor confirmation: standard and expedited clearance dates, expedite fee, slots, and validity.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "confirmation_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "confirmation_id"
+            ],
+            "type": "object"
+          },
+          "name": "screening.confirmations.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "reviews",
+              "shape": "review-session window calendar"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "reviews.windows.list"
+          },
+          "description": "List approver review-session windows between two dates with free / busy / protected / blocked status and hold reason.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "approver_id": {
+                "type": "string"
+              },
+              "end_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "start_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "start_date",
+              "end_date"
+            ],
+            "type": "object"
+          },
+          "name": "reviews.windows.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "reviews",
+              "shape": "review-session search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "reviews.sessions.list"
+          },
+          "description": "List approver review sessions by request, approver, resource, status, or date window.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "approver_id": {
+                "type": "string"
+              },
+              "end_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "request_id": {
+                "type": "string"
+              },
+              "resource_id": {
+                "type": "string"
+              },
+              "start_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "reviews.sessions.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "reviews",
+              "shape": "review-session record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "reviews.sessions.get"
+          },
+          "description": "Read one approver review session.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "session_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "session_id"
+            ],
+            "type": "object"
+          },
+          "name": "reviews.sessions.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "reviews",
+              "shape": "review-session create"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "reviews.sessions.create"
+          },
+          "description": "Book an approver review session for a cohort on an available approver. Every window the interval touches must be free; protected and blocked windows are never displaced, and the approver's tier must cover the cohort.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "approver_id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "end_time": {
+                "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+                "type": "string"
+              },
+              "request_id": {
+                "type": "string"
+              },
+              "resource_id": {
+                "type": "string"
+              },
+              "start_time": {
+                "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+                "type": "string"
+              }
+            },
+            "required": [
+              "resource_id",
+              "approver_id",
+              "start_time",
+              "end_time"
+            ],
+            "type": "object"
+          },
+          "name": "reviews.sessions.create"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "reviews",
+              "shape": "review-session update"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "reviews.sessions.update"
+          },
+          "description": "Move, book, or cancel an existing review session. Moving re-validates the target windows and approver; the record revision increments.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "approver_id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "end_time": {
+                "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+                "type": "string"
+              },
+              "session_id": {
+                "type": "string"
+              },
+              "start_time": {
+                "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "booked",
+                  "pending",
+                  "cancelled"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "session_id"
+            ],
+            "type": "object"
+          },
+          "name": "reviews.sessions.update"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "approvals",
+              "shape": "approval workflow record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "approvals.list"
+          },
+          "description": "List approval records, optionally by keyword.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "q": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "approvals.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "approvals",
+              "shape": "approval workflow record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "approvals.get"
+          },
+          "description": "Read one approval record with its exact scope and approver.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "approval_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "approval_id"
+            ],
+            "type": "object"
+          },
+          "name": "approvals.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "messages",
+              "shape": "mailbox search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "messages.list"
+          },
+          "description": "Search the governance mailbox by keyword (subject, body, labels).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "max_results": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "q": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "q"
+            ],
+            "type": "object"
+          },
+          "name": "messages.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "messages",
+              "shape": "mailbox message"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "messages.get"
+          },
+          "description": "Read one message with body and attachment list.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "message_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "message_id"
+            ],
+            "type": "object"
+          },
+          "name": "messages.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "chat",
+              "shape": "team chat search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "chat.threads.list"
+          },
+          "description": "Search team chat threads by keyword.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "q": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "q"
+            ],
+            "type": "object"
+          },
+          "name": "chat.threads.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "chat",
+              "shape": "team chat thread"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "chat.threads.get"
+          },
+          "description": "Read one team chat thread.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "thread_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "thread_id"
+            ],
+            "type": "object"
+          },
+          "name": "chat.threads.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "drive",
+              "shape": "shared drive search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "drive.files.list"
+          },
+          "description": "Search shared-drive files by keyword (name, folder, content).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "q": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "q"
+            ],
+            "type": "object"
+          },
+          "name": "drive.files.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "drive",
+              "shape": "shared drive file"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "drive.files.get"
+          },
+          "description": "Read shared-drive file metadata.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "file_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "file_id"
+            ],
+            "type": "object"
+          },
+          "name": "drive.files.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "drive",
+              "shape": "shared drive export"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "drive.files.export"
+          },
+          "description": "Export a shared-drive file as text (spreadsheets as CSV, PDFs as extracted text).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "file_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "file_id"
+            ],
+            "type": "object"
+          },
+          "name": "drive.files.export"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "notes",
+              "shape": "collaboration draft"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "notes.drafts.create"
+          },
+          "description": "Create, but do not send, a stakeholder draft note.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "body": {
+                "type": "string"
+              },
+              "recipient": {
+                "type": "string"
+              },
+              "related_request_id": {
+                "type": "string"
+              },
+              "related_resource_id": {
+                "type": "string"
+              },
+              "subject": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "recipient",
+              "subject",
+              "body"
+            ],
+            "type": "object"
+          },
+          "name": "notes.drafts.create"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "hubbench",
+              "shape": "benchmark control"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "hubbench.context.get"
+          },
+          "description": "Return the isolated task scope: case reference, immutable record handles, mounted servers, identity, and the evidence index.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+          },
+          "name": "hubbench.context.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "hubbench",
+              "shape": "benchmark control"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "hubbench.submit_answer"
+          },
+          "description": "Record the structured decision for the current task. Every field of the task's answer contract is required; resubmission replaces earlier values.",
+          "inputSchema": {
+            "additionalProperties": true,
+            "properties": {},
+            "required": [],
+            "type": "object"
+          },
+          "name": "hubbench.submit_answer"
+        }
+      ]
+    },
     "researchdesk": {
       "cluster": "reasoning-knowledge-qa",
       "servers": {
@@ -6563,8 +8088,1740 @@
           "name": "hubbench.submit_answer"
         }
       ]
+    },
+    "workplace": {
+      "cluster": "customer-workplace-agents",
+      "servers": {
+        "approvals": {
+          "description": "Approval workflow records with exact scope.",
+          "tools": [
+            "approvals.get",
+            "approvals.list"
+          ]
+        },
+        "calendar": {
+          "description": "Staff calendar: AM/PM blocks, leave, on-call shifts, and customer-facing session bookings.",
+          "tools": [
+            "calendar.blocks.list",
+            "calendar.bookings.create",
+            "calendar.bookings.get",
+            "calendar.bookings.list",
+            "calendar.bookings.update",
+            "calendar.oncall.list",
+            "calendar.timeoff.list"
+          ]
+        },
+        "chat": {
+          "description": "Customer Delivery chat threads.",
+          "tools": [
+            "chat.threads.get",
+            "chat.threads.list"
+          ]
+        },
+        "contracts": {
+          "description": "Contract register: agreements, customer commitments, the credit ledger, and billing runs.",
+          "tools": [
+            "contracts.agreements.get",
+            "contracts.agreements.list",
+            "contracts.billing_runs.list",
+            "contracts.commitments.list",
+            "contracts.credits.create",
+            "contracts.credits.get",
+            "contracts.credits.list"
+          ]
+        },
+        "drive": {
+          "description": "Shared drive holding the standard, exports, registers, calendars, and confirmations.",
+          "tools": [
+            "drive.files.export",
+            "drive.files.get",
+            "drive.files.list"
+          ]
+        },
+        "helpdesk": {
+          "description": "Customer support desk: customer accounts, tickets with SLA timelines, escalations, and SLA policies.",
+          "tools": [
+            "helpdesk.customers.get",
+            "helpdesk.escalations.get",
+            "helpdesk.escalations.list",
+            "helpdesk.escalations.update",
+            "helpdesk.sla_policies.get",
+            "helpdesk.tickets.get",
+            "helpdesk.tickets.search"
+          ]
+        },
+        "hris": {
+          "description": "HRIS roster: employees, contractors, and certified skill levels.",
+          "tools": [
+            "hris.employees.get",
+            "hris.employees.search",
+            "hris.skills.list"
+          ]
+        },
+        "hubbench": {
+          "description": "Benchmark-only discovery and structured answer submission controls.",
+          "tools": [
+            "hubbench.context.get",
+            "hubbench.submit_answer"
+          ]
+        },
+        "mail": {
+          "description": "Customer Delivery mailbox.",
+          "tools": [
+            "mail.messages.get",
+            "mail.messages.list"
+          ]
+        },
+        "notes": {
+          "description": "Stakeholder draft notes (never sent by the benchmark).",
+          "tools": [
+            "notes.drafts.create"
+          ]
+        },
+        "portal": {
+          "description": "Counterparty portal: partner staffing confirmations, customer change-window confirmations, and customer billing-run confirmations.",
+          "tools": [
+            "portal.confirmations.get",
+            "portal.confirmations.list"
+          ]
+        },
+        "tracker": {
+          "description": "Delivery tracker: issues, sprints, and planning-time capacity reports.",
+          "tools": [
+            "tracker.issues.get",
+            "tracker.issues.search",
+            "tracker.issues.update",
+            "tracker.sprints.capacity",
+            "tracker.sprints.get",
+            "tracker.sprints.list"
+          ]
+        },
+        "wiki": {
+          "description": "Team wiki: the Escalation Handling Standard and its version history.",
+          "tools": [
+            "wiki.pages.get",
+            "wiki.pages.search",
+            "wiki.versions.list"
+          ]
+        }
+      },
+      "tools": [
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "helpdesk",
+              "shape": "helpdesk customer record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "helpdesk.customers.get"
+          },
+          "description": "Read one customer account record by immutable customer id.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "customer_id"
+            ],
+            "type": "object"
+          },
+          "name": "helpdesk.customers.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "helpdesk",
+              "shape": "helpdesk ticket search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "helpdesk.tickets.search"
+          },
+          "description": "Search support tickets by customer, escalation, status, priority, or subject fragment.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              },
+              "escalation_id": {
+                "type": "string"
+              },
+              "priority": {
+                "type": "string"
+              },
+              "query": {
+                "description": "subject or id fragment",
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "helpdesk.tickets.search"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "helpdesk",
+              "shape": "helpdesk ticket record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "helpdesk.tickets.get"
+          },
+          "description": "Read one ticket with its SLA timeline (opened, first response, resolved), duplicate link, and exemption.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "ticket_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "ticket_id"
+            ],
+            "type": "object"
+          },
+          "name": "helpdesk.tickets.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "helpdesk",
+              "shape": "helpdesk escalation search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "helpdesk.escalations.list"
+          },
+          "description": "List escalations by customer, status, or level.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              },
+              "level": {
+                "type": "integer"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "helpdesk.escalations.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "helpdesk",
+              "shape": "helpdesk escalation record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "helpdesk.escalations.get"
+          },
+          "description": "Read one escalation: level, required skill, session sizing, claimed tickets, target date, and plan.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "escalation_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "escalation_id"
+            ],
+            "type": "object"
+          },
+          "name": "helpdesk.escalations.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "helpdesk",
+              "shape": "helpdesk escalation update"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "helpdesk.escalations.update"
+          },
+          "description": "Commit or re-plan an escalation: status (open / committed / monitoring), target date, sprint, and resolution plan. A target date later than a registered customer commitment is rejected.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "escalation_id": {
+                "type": "string"
+              },
+              "resolution_plan": {
+                "type": "string"
+              },
+              "sprint_id": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "open",
+                  "committed",
+                  "monitoring"
+                ],
+                "type": "string"
+              },
+              "target_date": {
+                "description": "ISO date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "escalation_id"
+            ],
+            "type": "object"
+          },
+          "name": "helpdesk.escalations.update"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "helpdesk",
+              "shape": "helpdesk SLA policy"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "helpdesk.sla_policies.get"
+          },
+          "description": "Read an SLA policy: per-priority response and resolution targets and scope.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "sla_policy_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "sla_policy_id"
+            ],
+            "type": "object"
+          },
+          "name": "helpdesk.sla_policies.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "tracker",
+              "shape": "tracker issue search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "tracker.issues.search"
+          },
+          "description": "Search tracker issues by escalation, sprint, project, status, or assignee.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "assignee_id": {
+                "type": "string"
+              },
+              "escalation_id": {
+                "type": "string"
+              },
+              "project": {
+                "type": "string"
+              },
+              "sprint_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "tracker.issues.search"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "tracker",
+              "shape": "tracker issue record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "tracker.issues.get"
+          },
+          "description": "Read one tracker issue with type, status, story points, sprint, and assignee.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "issue_key": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "issue_key"
+            ],
+            "type": "object"
+          },
+          "name": "tracker.issues.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "tracker",
+              "shape": "tracker issue update"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "tracker.issues.update"
+          },
+          "description": "Move an issue into a sprint and/or assign it. Assignees must hold the required skill at level 2+; moving into the active sprint is bounded by the assignee's remaining capacity after leave and on-call.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "assignee_id": {
+                "type": "string"
+              },
+              "issue_key": {
+                "type": "string"
+              },
+              "sprint_id": {
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "To Do",
+                  "In Progress",
+                  "In Review"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "issue_key"
+            ],
+            "type": "object"
+          },
+          "name": "tracker.issues.update"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "tracker",
+              "shape": "tracker sprint list"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "tracker.sprints.list"
+          },
+          "description": "List sprints on the delivery board, optionally by state.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "board": {
+                "type": "string"
+              },
+              "state": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "tracker.sprints.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "tracker",
+              "shape": "tracker sprint record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "tracker.sprints.get"
+          },
+          "description": "Read one sprint: state, dates, and goal.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "sprint_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "sprint_id"
+            ],
+            "type": "object"
+          },
+          "name": "tracker.sprints.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "tracker",
+              "shape": "tracker capacity report"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "tracker.sprints.capacity"
+          },
+          "description": "Planning-time capacity report for a sprint: capacity, committed, and remaining points per engineer (leave, on-call, and skills not applied).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "sprint_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "sprint_id"
+            ],
+            "type": "object"
+          },
+          "name": "tracker.sprints.capacity"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "wiki",
+              "shape": "wiki page search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "wiki.pages.search"
+          },
+          "description": "Search wiki pages by title or body fragment, optionally within a space.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "q": {
+                "type": "string"
+              },
+              "space": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "q"
+            ],
+            "type": "object"
+          },
+          "name": "wiki.pages.search"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "wiki",
+              "shape": "wiki page record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "wiki.pages.get"
+          },
+          "description": "Read one wiki page with its body, version, and status.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "page_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "page_id"
+            ],
+            "type": "object"
+          },
+          "name": "wiki.pages.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "wiki",
+              "shape": "wiki version history"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "wiki.versions.list"
+          },
+          "description": "List the version history of a wiki page (current and superseded editions).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "page_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "page_id"
+            ],
+            "type": "object"
+          },
+          "name": "wiki.versions.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "calendar",
+              "shape": "staff calendar blocks"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "calendar.blocks.list"
+          },
+          "description": "List staff calendar blocks between two dates with free / busy / protected / pto status.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "employee_id": {
+                "type": "string"
+              },
+              "end_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "start_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "start_date",
+              "end_date"
+            ],
+            "type": "object"
+          },
+          "name": "calendar.blocks.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "calendar",
+              "shape": "staff calendar leave"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "calendar.timeoff.list"
+          },
+          "description": "List leave requests overlapping a date range.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "employee_id": {
+                "type": "string"
+              },
+              "end_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "start_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "start_date",
+              "end_date"
+            ],
+            "type": "object"
+          },
+          "name": "calendar.timeoff.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "calendar",
+              "shape": "staff calendar on-call"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "calendar.oncall.list"
+          },
+          "description": "List on-call shifts overlapping a date range.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "end_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "rota": {
+                "type": "string"
+              },
+              "start_date": {
+                "description": "ISO date",
+                "type": "string"
+              }
+            },
+            "required": [
+              "start_date",
+              "end_date"
+            ],
+            "type": "object"
+          },
+          "name": "calendar.oncall.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "calendar",
+              "shape": "staff calendar booking search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "calendar.bookings.list"
+          },
+          "description": "List customer-facing session bookings by employee, escalation, status, or date window.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "employee_id": {
+                "type": "string"
+              },
+              "end_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "escalation_id": {
+                "type": "string"
+              },
+              "start_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "calendar.bookings.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "calendar",
+              "shape": "staff calendar booking record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "calendar.bookings.get"
+          },
+          "description": "Read one session booking.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "booking_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "booking_id"
+            ],
+            "type": "object"
+          },
+          "name": "calendar.bookings.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "calendar",
+              "shape": "staff calendar booking create"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "calendar.bookings.create"
+          },
+          "description": "Book a customer-facing session for an escalation on an engineer's free blocks. Protected, leave, and booked blocks are never displaced; the engineer must hold the required skill at level 2+.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "employee_id": {
+                "type": "string"
+              },
+              "end": {
+                "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+                "type": "string"
+              },
+              "escalation_id": {
+                "type": "string"
+              },
+              "issue_key": {
+                "type": "string"
+              },
+              "start": {
+                "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+                "type": "string"
+              }
+            },
+            "required": [
+              "employee_id",
+              "escalation_id",
+              "start",
+              "end"
+            ],
+            "type": "object"
+          },
+          "name": "calendar.bookings.create"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "calendar",
+              "shape": "staff calendar booking update"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "calendar.bookings.update"
+          },
+          "description": "Move, book, or cancel an existing session booking. Booking re-validates the target blocks; the record revision increments.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "booking_id": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "employee_id": {
+                "type": "string"
+              },
+              "end": {
+                "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+                "type": "string"
+              },
+              "start": {
+                "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+                "type": "string"
+              },
+              "status": {
+                "enum": [
+                  "booked",
+                  "pending",
+                  "cancelled"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "booking_id"
+            ],
+            "type": "object"
+          },
+          "name": "calendar.bookings.update"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "hris",
+              "shape": "HRIS roster search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "hris.employees.search"
+          },
+          "description": "Search the roster by name fragment, team, or status.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "team": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "hris.employees.search"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "hris",
+              "shape": "HRIS roster record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "hris.employees.get"
+          },
+          "description": "Read one roster record with skills and levels.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "employee_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "employee_id"
+            ],
+            "type": "object"
+          },
+          "name": "hris.employees.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "hris",
+              "shape": "HRIS skill register"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "hris.skills.list"
+          },
+          "description": "List certified skills by skill code or employee, with level.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "employee_id": {
+                "type": "string"
+              },
+              "skill_code": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "hris.skills.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "contracts",
+              "shape": "contract register agreement search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "contracts.agreements.list"
+          },
+          "description": "List agreements for a customer (current and prior).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "customer_id"
+            ],
+            "type": "object"
+          },
+          "name": "contracts.agreements.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "contracts",
+              "shape": "contract register agreement"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "contracts.agreements.get"
+          },
+          "description": "Read one agreement: plan, monthly fee, SLA policy, credit percentage and cap, term, status.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "agreement_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "agreement_id"
+            ],
+            "type": "object"
+          },
+          "name": "contracts.agreements.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "contracts",
+              "shape": "contract register commitment"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "contracts.commitments.list"
+          },
+          "description": "List registered customer commitments (committed dates, weekly penalty, acceptance).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "agreement_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "contracts.commitments.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "contracts",
+              "shape": "credit ledger"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "contracts.credits.list"
+          },
+          "description": "List the credit ledger for an agreement or escalation (gross: issued, pending, voided, expired).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "agreement_id": {
+                "type": "string"
+              },
+              "escalation_id": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "contracts.credits.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "contracts",
+              "shape": "credit ledger entry"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "contracts.credits.get"
+          },
+          "description": "Read one credit ledger entry.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "credit_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "credit_id"
+            ],
+            "type": "object"
+          },
+          "name": "contracts.credits.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "contracts",
+              "shape": "credit memo"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "contracts.credits.create"
+          },
+          "description": "Submit a credit memo against an agreement and escalation on a customer billing-run confirmation. The amount plus credits already issued or pending for the escalation may not exceed the agreement's cap.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "agreement_id": {
+                "type": "string"
+              },
+              "amount_usd": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "basis": {
+                "enum": [
+                  "sla_response",
+                  "sla_resolution",
+                  "delivery_commitment",
+                  "goodwill"
+                ],
+                "type": "string"
+              },
+              "billing_option": {
+                "enum": [
+                  "standard_cycle",
+                  "off_cycle"
+                ],
+                "type": "string"
+              },
+              "confirmation_id": {
+                "type": "string"
+              },
+              "escalation_id": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "agreement_id",
+              "escalation_id",
+              "amount_usd",
+              "basis",
+              "billing_option",
+              "confirmation_id"
+            ],
+            "type": "object"
+          },
+          "name": "contracts.credits.create"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "contracts",
+              "shape": "billing run schedule"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "contracts.billing_runs.list"
+          },
+          "description": "List scheduled invoice runs with their credit-memo cut-off dates.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "end_date": {
+                "description": "ISO date",
+                "type": "string"
+              },
+              "start_date": {
+                "description": "ISO date",
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "contracts.billing_runs.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "portal",
+              "shape": "counterparty confirmation"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "portal.confirmations.list"
+          },
+          "description": "List counterparty confirmations (partner staffing, customer change windows, customer billing runs).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "customer_id": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "portal.confirmations.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "portal",
+              "shape": "counterparty confirmation"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "portal.confirmations.get"
+          },
+          "description": "Read one counterparty confirmation: standard and expedited dates, fee, coverage, validity.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "confirmation_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "confirmation_id"
+            ],
+            "type": "object"
+          },
+          "name": "portal.confirmations.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "approvals",
+              "shape": "approval workflow record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "approvals.list"
+          },
+          "description": "List approval records, optionally by keyword.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "q": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "name": "approvals.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "approvals",
+              "shape": "approval workflow record"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "approvals.get"
+          },
+          "description": "Read one approval record with its exact scope and approver.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "approval_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "approval_id"
+            ],
+            "type": "object"
+          },
+          "name": "approvals.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "mail",
+              "shape": "mailbox search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "mail.messages.list"
+          },
+          "description": "Search the delivery mailbox by keyword (subject, body, labels).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "max_results": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "q": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "q"
+            ],
+            "type": "object"
+          },
+          "name": "mail.messages.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "mail",
+              "shape": "mailbox message"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "mail.messages.get"
+          },
+          "description": "Read one message with body and attachment list.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "message_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "message_id"
+            ],
+            "type": "object"
+          },
+          "name": "mail.messages.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "chat",
+              "shape": "team chat search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "chat.threads.list"
+          },
+          "description": "Search team chat threads by keyword.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "q": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "q"
+            ],
+            "type": "object"
+          },
+          "name": "chat.threads.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "chat",
+              "shape": "team chat thread"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "chat.threads.get"
+          },
+          "description": "Read one team chat thread.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "thread_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "thread_id"
+            ],
+            "type": "object"
+          },
+          "name": "chat.threads.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "drive",
+              "shape": "shared drive search"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "drive.files.list"
+          },
+          "description": "Search shared-drive files by keyword (name, folder, content).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "q": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "q"
+            ],
+            "type": "object"
+          },
+          "name": "drive.files.list"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "drive",
+              "shape": "shared drive file"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "drive.files.get"
+          },
+          "description": "Read shared-drive file metadata.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "file_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "file_id"
+            ],
+            "type": "object"
+          },
+          "name": "drive.files.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "drive",
+              "shape": "shared drive export"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "drive.files.export"
+          },
+          "description": "Export a shared-drive file as text (spreadsheets as CSV, PDFs as extracted text).",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "file_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "file_id"
+            ],
+            "type": "object"
+          },
+          "name": "drive.files.export"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "notes",
+              "shape": "collaboration draft"
+            }
+          },
+          "annotations": {
+            "destructiveHint": true,
+            "idempotentHint": false,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "notes.drafts.create"
+          },
+          "description": "Create, but do not send, a stakeholder draft note.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "body": {
+                "type": "string"
+              },
+              "recipient": {
+                "type": "string"
+              },
+              "related_customer_id": {
+                "type": "string"
+              },
+              "related_escalation_id": {
+                "type": "string"
+              },
+              "subject": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "recipient",
+              "subject",
+              "body"
+            ],
+            "type": "object"
+          },
+          "name": "notes.drafts.create"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "read",
+              "server": "hubbench",
+              "shape": "benchmark control"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": true,
+            "title": "hubbench.context.get"
+          },
+          "description": "Return the isolated task scope: case reference, immutable record handles, mounted servers, identity, and the evidence index.",
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+          },
+          "name": "hubbench.context.get"
+        },
+        {
+          "_meta": {
+            "hubbench": {
+              "hint": "write",
+              "server": "hubbench",
+              "shape": "benchmark control"
+            }
+          },
+          "annotations": {
+            "destructiveHint": false,
+            "idempotentHint": true,
+            "openWorldHint": false,
+            "readOnlyHint": false,
+            "title": "hubbench.submit_answer"
+          },
+          "description": "Record the structured decision for the current task. Every field of the task's answer contract is required; resubmission replaces earlier values.",
+          "inputSchema": {
+            "additionalProperties": true,
+            "properties": {},
+            "required": [],
+            "type": "object"
+          },
+          "name": "hubbench.submit_answer"
+        }
+      ]
     }
   },
   "schema_version": "hubbench.tool-contract.v1",
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

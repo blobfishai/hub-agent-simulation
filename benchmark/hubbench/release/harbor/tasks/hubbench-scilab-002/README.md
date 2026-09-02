@@ -1,6 +1,6 @@
 # hubbench-scilab-002 — Size the lipid control order for the week of 18 May
 
-HubBench 1.0.0 · family **SciLab** (`scilab`, cluster `scientific-research`) · decision mode `quantity` · role `assay_operations_coordinator` · as of 2026-05-11.
+HubBench 1.1.0 · family **SciLab** (`scilab`, cluster `scientific-research`) · decision mode `quantity` · role `assay_operations_coordinator` · as of 2026-05-11.
 
 Assay-operations decisions against a LIMS with versioned protocols and QC results, an analyser schedule with calibration certificates, a reagent-lot inventory with expiry and quarantine state, supplier shipment confirmations, ELN method notes, and approval records.
 

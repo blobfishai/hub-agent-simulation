@@ -129,8 +129,12 @@ def live_links(pub: dict[str, Any]) -> dict[str, str]:
     return links
 
 
+def is_published(pub: dict[str, Any], hf_task_id: str) -> bool:
+    return bool(pub.get("huggingFaceUrl")) and hf_task_id in set(pub.get("publishedTasks") or [])
+
+
 def asset_url(pub: dict[str, Any], hf_task_id: str, path: str) -> str | None:
-    if not pub.get("huggingFaceUrl"):
+    if not is_published(pub, hf_task_id):
         return None
     revision = pub.get("huggingFaceRevision") or "main"
     return f"{pub['huggingFaceUrl']}/blob/{revision}/assets/{hf_task_id}/{path}"
@@ -191,7 +195,7 @@ def task_summary(entry: dict[str, Any], task: dict[str, Any], ordinal: int, pub:
         "referenceToolCalls": len(task["oracle_steps"]),
         "sample": True,
     }
-    if pub.get("huggingFaceUrl"):
+    if is_published(pub, hf_task_id):
         revision = pub.get("huggingFaceRevision") or "main"
         summary["datasetUrl"] = f"{pub['huggingFaceUrl']}/blob/{revision}/verifiers/{hf_task_id}.json"
     return summary
@@ -320,19 +324,36 @@ def stage_for(tool: str, write_tools: set[str], seen_write: bool) -> str:
     return "readback" if seen_write else "investigation"
 
 
-def trajectory_from_trace(task: dict[str, Any], family_tools: list[dict[str, Any]], trace: list[dict[str, Any]], meta: dict[str, Any]) -> dict[str, Any]:
+def trajectory_from_trace(task: dict[str, Any], family_tools: list[dict[str, Any]], trace: list[dict[str, Any]], meta: dict[str, Any], *, result_limit: int = RESULT_LIMIT) -> dict[str, Any]:
     write_tools = {tool["name"] for tool in family_tools if not (tool.get("annotations") or {}).get("readOnlyHint", True)}
     events: list[dict[str, Any]] = [
         {"index": 0, "kind": "message", "role": "employee-request", "stage": "context", "text": task["instruction"]},
     ]
     seen_write = False
     calls = 0
+    raw_calls = len(trace)
+    collapsed: list[dict[str, Any]] = []
     for record in trace:
+        previous = collapsed[-1] if collapsed else None
+        if (
+            previous is not None
+            and record["tool"] == CONTEXT_TOOL
+            and previous["tool"] == CONTEXT_TOOL
+            and not (record.get("arguments") or {})
+            and not (previous.get("arguments") or {})
+        ):
+            previous["_repeats"] = previous.get("_repeats", 1) + 1
+            continue
+        collapsed.append(dict(record))
+    for record in collapsed:
         tool = record["tool"]
         stage = stage_for(tool, write_tools, seen_write)
         if stage == "write":
             seen_write = True
         calls += 1
+        arguments = record.get("arguments") or {}
+        if len(json.dumps(arguments, ensure_ascii=False)) > max(result_limit, 160):
+            arguments = {"_compact": compact(arguments, max(result_limit, 160))}
         events.append({
             "index": len(events),
             "kind": "tool",
@@ -340,9 +361,14 @@ def trajectory_from_trace(task: dict[str, Any], family_tools: list[dict[str, Any
             "call": calls,
             "tool": tool,
             "server": tool.split(".", 1)[0],
-            "arguments": record.get("arguments") or {},
+            "arguments": arguments,
             "outcome": "ok" if record.get("success", True) else "error",
-            "result": compact(record.get("result")),
+            "result": (
+                f"(repeated ×{record['_repeats']}: identical argument-free context reads collapsed — in v1.0.0 packages the compose "
+                f"healthcheck polled the task endpoint through the graded trace; v1.1.0 probes the private /health endpoint) "
+                if record.get("_repeats", 1) > 1
+                else ""
+            ) + compact(record.get("result"), result_limit),
         })
     stages = [{"key": key, "label": label} for key, label in (("context", "Context"), ("investigation", "Investigation"), ("write", "State change"), ("readback", "Readback"), ("answer", "Answer"))]
     used = {event.get("stage") for event in events}
@@ -356,6 +382,7 @@ def trajectory_from_trace(task: dict[str, Any], family_tools: list[dict[str, Any
         "passed": meta.get("passed"),
         "score": meta.get("score"),
         "toolCalls": calls,
+        "rawToolCalls": raw_calls,
         "stages": [stage for stage in stages if stage["key"] in used],
         "events": events,
     }
@@ -456,7 +483,7 @@ def model_runs(entries: list[dict[str, Any]], total_tasks: int) -> tuple[list[di
                 "score": trial.get("score"),
                 "traceSource": trial.get("trace_source", "harbor trial receipt"),
             }
-            trajectory = trajectory_from_trace(task, entry["tools"], trace["trace"], meta)
+            trajectory = trajectory_from_trace(task, entry["tools"], trace["trace"], meta, result_limit=120)
             if trial.get("cost_usd") is not None:
                 trajectory["costUsd"] = trial["cost_usd"]
             if trial.get("tokens"):
@@ -466,6 +493,16 @@ def model_runs(entries: list[dict[str, Any]], total_tasks: int) -> tuple[list[di
     for index, row in enumerate(rows, start=1):
         row["rank"] = index
     return rows, trajectories
+
+
+def model_run_summaries() -> list[dict[str, Any]]:
+    if not MODEL_RUNS.is_dir():
+        return []
+    summaries = []
+    for run_dir in sorted(path for path in MODEL_RUNS.iterdir() if (path / "run.json").is_file()):
+        run = read_json(run_dir / "run.json")
+        summaries.append({key: run[key] for key in ("slug", "label", "harness", "kind", "ranked", "version", "trials_completed", "published_tasks", "errors", "retries", "mean_score", "median_score", "min_score", "max_score", "strict_passes", "mean_cost_usd", "total_cost_usd", "mean_tool_calls", "note")})
+    return summaries
 
 
 def build() -> dict[str, Any]:
@@ -497,6 +534,14 @@ def build() -> dict[str, Any]:
         pins.append({"name": "Hugging Face payload manifest", "value": receipt["huggingface_manifest_sha256"]})
     if pub.get("huggingFaceRevision"):
         pins.append({"name": "Hugging Face revision", "value": pub["huggingFaceRevision"]})
+    if pub.get("publishedTasks"):
+        published = len(pub["publishedTasks"])
+        queued = len(all_tasks) - published
+        pins.append({
+            "name": "Published",
+            "value": f"{published} of {len(all_tasks)} released tasks in v{pub['version']} ({', '.join(pub['publishedFamilies'])})"
+            + (f"; {queued} newer tasks queued for the next tagged release" if queued else ""),
+        })
     families_meta = [
         {"key": entry["slug"], "label": entry["family"].name, "count": len(entry["tasks"])}
         for entry in entries
@@ -556,6 +601,7 @@ def build() -> dict[str, Any]:
             "evidenceReadsPerTask": bounds([len(task["required_investigations"]) for task in all_tasks]),
             "gradedAnswerFieldsPerTask": bounds([len(task["expected"]["answer"]) for task in all_tasks]),
             "publication": pub,
+            "modelRuns": model_run_summaries(),
         },
     }
 
