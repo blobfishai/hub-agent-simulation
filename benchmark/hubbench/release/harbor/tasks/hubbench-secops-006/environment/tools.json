@@ -1,0 +1,1851 @@
+{
+  "benchmark": "HubBench",
+  "family": "secops",
+  "schema_version": "hubbench.tool-contract.v1",
+  "servers": {
+    "approvals": {
+      "description": "Approval workflow records with exact scope.",
+      "tools": [
+        "approvals.get",
+        "approvals.list"
+      ]
+    },
+    "chat": {
+      "description": "SOC incident chat threads.",
+      "tools": [
+        "chat.threads.get",
+        "chat.threads.list"
+      ]
+    },
+    "cloudiam": {
+      "description": "Cloud key registry: access-key register and gross credential-object balances.",
+      "tools": [
+        "cloudiam.keys.inventory",
+        "cloudiam.keys.list"
+      ]
+    },
+    "drive": {
+      "description": "Shared drive holding playbooks, registers, calendars, and exports.",
+      "tools": [
+        "drive.files.export",
+        "drive.files.get",
+        "drive.files.list"
+      ]
+    },
+    "edr": {
+      "description": "Endpoint detection and response: host inventory with isolation state and detections.",
+      "tools": [
+        "edr.detections.get",
+        "edr.detections.list",
+        "edr.hosts.get",
+        "edr.hosts.list"
+      ]
+    },
+    "hubbench": {
+      "description": "Benchmark-only discovery and structured answer submission controls.",
+      "tools": [
+        "hubbench.context.get",
+        "hubbench.submit_answer"
+      ]
+    },
+    "iam": {
+      "description": "Workforce identity register: identities, owners, inventory snapshots, sessions, MFA factors, credential classes, grant register, and tenant revocations.",
+      "tools": [
+        "iam.analysts.get",
+        "iam.classes.get",
+        "iam.factors.list",
+        "iam.grants.list",
+        "iam.identities.get",
+        "iam.identities.search",
+        "iam.inventory.list",
+        "iam.revocations.create",
+        "iam.revocations.get",
+        "iam.sessions.list"
+      ]
+    },
+    "idpvendor": {
+      "description": "Identity-provider and key-custody vendor portal: invalidation confirmations and orders.",
+      "tools": [
+        "idpvendor.confirmations.get",
+        "idpvendor.confirmations.list",
+        "idpvendor.orders.create",
+        "idpvendor.orders.get",
+        "idpvendor.orders.list"
+      ]
+    },
+    "messages": {
+      "description": "Security-operations mailbox.",
+      "tools": [
+        "messages.get",
+        "messages.list"
+      ]
+    },
+    "notes": {
+      "description": "Stakeholder draft notes (never sent by the benchmark).",
+      "tools": [
+        "notes.drafts.create"
+      ]
+    },
+    "oncall": {
+      "description": "On-call roster: responders, window calendar, and incident bridges.",
+      "tools": [
+        "oncall.bridges.create",
+        "oncall.bridges.get",
+        "oncall.bridges.list",
+        "oncall.bridges.update",
+        "oncall.responders.list",
+        "oncall.windows.list"
+      ]
+    },
+    "playbooks": {
+      "description": "Containment playbook library: tier records with revocation rules and authority levels.",
+      "tools": [
+        "playbooks.tiers.get",
+        "playbooks.tiers.list"
+      ]
+    },
+    "servicedesk": {
+      "description": "Security ticket queue with object basis, tier, and review durations.",
+      "tools": [
+        "servicedesk.tickets.get",
+        "servicedesk.tickets.list"
+      ]
+    },
+    "siem": {
+      "description": "Security information and event management: alerts, correlated events, and versioned detection rules.",
+      "tools": [
+        "siem.alerts.get",
+        "siem.alerts.search",
+        "siem.events.list",
+        "siem.rules.get",
+        "siem.rules.list"
+      ]
+    }
+  },
+  "task_id": "hubbench-secops-006",
+  "tools": [
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "siem",
+          "shape": "SIEM alert search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "siem.alerts.search"
+      },
+      "description": "Search SIEM alerts by immutable alert id, by identity, or by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "identifier": {
+            "description": "alert id",
+            "type": "string"
+          },
+          "identity_id": {
+            "type": "string"
+          },
+          "q": {
+            "description": "keyword",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "siem.alerts.search"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "siem",
+          "shape": "SIEM alert record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "siem.alerts.get"
+      },
+      "description": "Read one SIEM alert with its detection rule name, version, and status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "alert_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "alert_id"
+        ],
+        "type": "object"
+      },
+      "name": "siem.alerts.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "siem",
+          "shape": "SIEM correlated events"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "siem.events.list"
+      },
+      "description": "List the correlated events behind an alert, optionally by kind or date window.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "alert_id": {
+            "type": "string"
+          },
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "alert_id"
+        ],
+        "type": "object"
+      },
+      "name": "siem.events.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "siem",
+          "shape": "SIEM detection rule"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "siem.rules.get"
+      },
+      "description": "Read one detection rule: name, version, and enabled / retired status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "rule_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_id"
+        ],
+        "type": "object"
+      },
+      "name": "siem.rules.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "siem",
+          "shape": "SIEM detection rule list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "siem.rules.list"
+      },
+      "description": "List detection rules, optionally by status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "siem.rules.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "edr",
+          "shape": "EDR host inventory"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "edr.hosts.list"
+      },
+      "description": "List EDR-enrolled hosts, optionally for one identity.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "identity_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "edr.hosts.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "edr",
+          "shape": "EDR host record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "edr.hosts.get"
+      },
+      "description": "Read one host record with isolation state.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "host_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "host_id"
+        ],
+        "type": "object"
+      },
+      "name": "edr.hosts.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "edr",
+          "shape": "EDR detection search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "edr.detections.list"
+      },
+      "description": "List EDR detections by host, status, or severity.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "host_id": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "edr.detections.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "edr",
+          "shape": "EDR detection record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "edr.detections.get"
+      },
+      "description": "Read one EDR detection.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "detection_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "detection_id"
+        ],
+        "type": "object"
+      },
+      "name": "edr.detections.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "iam",
+          "shape": "IAM identity search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "iam.identities.search"
+      },
+      "description": "Search identities by immutable username or by display name.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "identifier": {
+            "description": "username",
+            "type": "string"
+          },
+          "name": {
+            "description": "name fragment",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "iam.identities.search"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "iam",
+          "shape": "IAM identity record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "iam.identities.get"
+      },
+      "description": "Read one identity record by id.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "identity_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "identity_id"
+        ],
+        "type": "object"
+      },
+      "name": "iam.identities.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "iam",
+          "shape": "IAM owner record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "iam.analysts.get"
+      },
+      "description": "Read one analyst or owner record.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "analyst_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "analyst_id"
+        ],
+        "type": "object"
+      },
+      "name": "iam.analysts.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "iam",
+          "shape": "IAM inventory snapshot"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "iam.inventory.list"
+      },
+      "description": "List final credential-inventory snapshots for an identity, optionally by metric (LIVE-GRANTS, LIVE-KEYS, LIVE-SESSIONS), newest first.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "identity_id": {
+            "type": "string"
+          },
+          "metric": {
+            "description": "metric code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "identity_id"
+        ],
+        "type": "object"
+      },
+      "name": "iam.inventory.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "iam",
+          "shape": "IAM session list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "iam.sessions.list"
+      },
+      "description": "List sessions for an identity with source, geo, device, and risk, optionally by status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "identity_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "identity_id"
+        ],
+        "type": "object"
+      },
+      "name": "iam.sessions.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "iam",
+          "shape": "IAM factor list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "iam.factors.list"
+      },
+      "description": "List MFA factors enrolled for an identity.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "identity_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "identity_id"
+        ],
+        "type": "object"
+      },
+      "name": "iam.factors.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "iam",
+          "shape": "IAM credential class record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "iam.classes.get"
+      },
+      "description": "Read a credential class: object kind, revocation channel, and privilege.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "credential_class": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "credential_class"
+        ],
+        "type": "object"
+      },
+      "name": "iam.classes.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "iam",
+          "shape": "IAM grant register"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "iam.grants.list"
+      },
+      "description": "List registered credential-object grants for a class with object count, expiry, status, owner deferrals, and register flags.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "credential_class": {
+            "type": "string"
+          },
+          "identity_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "system": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "credential_class"
+        ],
+        "type": "object"
+      },
+      "name": "iam.grants.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "iam",
+          "shape": "IAM tenant revocation"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "iam.revocations.get"
+      },
+      "description": "Read one tenant revocation record.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "revocation_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revocation_id"
+        ],
+        "type": "object"
+      },
+      "name": "iam.revocations.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "iam",
+          "shape": "IAM tenant revocation"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "iam.revocations.create"
+      },
+      "description": "Schedule a tenant revocation of credential objects for an identity. Only ACTIVE objects that are neither deferred for an owner ticket nor register-flagged as provider-issued may be revoked by the tenant.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "credential_class": {
+            "type": "string"
+          },
+          "effective_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "identity_id": {
+            "type": "string"
+          },
+          "object_count": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "system": {
+            "enum": [
+              "iam",
+              "cloudiam"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "credential_class",
+          "object_count",
+          "identity_id",
+          "system",
+          "effective_date"
+        ],
+        "type": "object"
+      },
+      "name": "iam.revocations.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cloudiam",
+          "shape": "cloud key register"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cloudiam.keys.list"
+      },
+      "description": "List access keys registered in the cloud key registry, optionally by class, identity, or status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "credential_class": {
+            "type": "string"
+          },
+          "identity_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "cloudiam.keys.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cloudiam",
+          "shape": "cloud key balance"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cloudiam.keys.inventory"
+      },
+      "description": "Gross registered credential-object balances by class, identity, and system (no netting of expiry, rotation, or deferral state).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "credential_class": {
+            "type": "string"
+          },
+          "identity_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "cloudiam.keys.inventory"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "servicedesk",
+          "shape": "security ticket search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "servicedesk.tickets.list"
+      },
+      "description": "List security tickets by identity, credential class, or status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "credential_class": {
+            "type": "string"
+          },
+          "identity_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "servicedesk.tickets.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "servicedesk",
+          "shape": "security ticket record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "servicedesk.tickets.get"
+      },
+      "description": "Read one security ticket with object basis, scope, tier, and review durations.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "ticket_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticket_id"
+        ],
+        "type": "object"
+      },
+      "name": "servicedesk.tickets.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "playbooks",
+          "shape": "containment tier record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "playbooks.tiers.get"
+      },
+      "description": "Read one containment tier: immediate-revocation rule, owner-confirmation rule, authority level, and SLA.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "tier_code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "tier_code"
+        ],
+        "type": "object"
+      },
+      "name": "playbooks.tiers.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "playbooks",
+          "shape": "containment tier list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "playbooks.tiers.list"
+      },
+      "description": "List containment tiers.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "playbooks.tiers.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "oncall",
+          "shape": "on-call responder roster"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "oncall.responders.list"
+      },
+      "description": "List on-call responders with status and Tier-2 qualification.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "pool": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "oncall.responders.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "oncall",
+          "shape": "on-call window calendar"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "oncall.windows.list"
+      },
+      "description": "List responder windows between two dates with free / busy / protected / blocked status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "responder_id": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date"
+        ],
+        "type": "object"
+      },
+      "name": "oncall.windows.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "oncall",
+          "shape": "incident bridge search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "oncall.bridges.list"
+      },
+      "description": "List incident bridges by ticket, responder, identity, status, or date window.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "identity_id": {
+            "type": "string"
+          },
+          "responder_id": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "ticket_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "oncall.bridges.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "oncall",
+          "shape": "incident bridge record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "oncall.bridges.get"
+      },
+      "description": "Read one incident bridge.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "bridge_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bridge_id"
+        ],
+        "type": "object"
+      },
+      "name": "oncall.bridges.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "oncall",
+          "shape": "incident bridge create"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "oncall.bridges.create"
+      },
+      "description": "Book an incident bridge for a ticket on a responder. Every window the interval touches must be free; protected and blocked windows are never displaced.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "end_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "responder_id": {
+            "type": "string"
+          },
+          "start_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "ticket_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticket_id",
+          "responder_id",
+          "start_time",
+          "end_time"
+        ],
+        "type": "object"
+      },
+      "name": "oncall.bridges.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "oncall",
+          "shape": "incident bridge update"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "oncall.bridges.update"
+      },
+      "description": "Move, book, or cancel an existing incident bridge. Moving re-validates the target windows; the record revision increments.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "bridge_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "end_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "responder_id": {
+            "type": "string"
+          },
+          "start_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "booked",
+              "pending",
+              "cancelled"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "bridge_id"
+        ],
+        "type": "object"
+      },
+      "name": "oncall.bridges.update"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "idpvendor",
+          "shape": "vendor invalidation confirmation"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "idpvendor.confirmations.list"
+      },
+      "description": "List identity-provider and key-custody vendor invalidation confirmations.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "credential_class": {
+            "type": "string"
+          },
+          "vendor_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "idpvendor.confirmations.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "idpvendor",
+          "shape": "vendor invalidation confirmation"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "idpvendor.confirmations.get"
+      },
+      "description": "Read one invalidation confirmation: objects, standard and expedited job dates, fee, validity.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirmation_id"
+        ],
+        "type": "object"
+      },
+      "name": "idpvendor.confirmations.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "idpvendor",
+          "shape": "vendor invalidation order"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "idpvendor.orders.list"
+      },
+      "description": "List vendor invalidation orders.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "credential_class": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "idpvendor.orders.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "idpvendor",
+          "shape": "vendor invalidation order"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "idpvendor.orders.get"
+      },
+      "description": "Read one vendor invalidation order.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "type": "object"
+      },
+      "name": "idpvendor.orders.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "idpvendor",
+          "shape": "vendor invalidation order"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "idpvendor.orders.create"
+      },
+      "description": "Place a vendor invalidation order against an open confirmation. The expected ready date is taken from the confirmation for the chosen service option.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation_id": {
+            "type": "string"
+          },
+          "credential_class": {
+            "type": "string"
+          },
+          "object_count": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "service_option": {
+            "enum": [
+              "standard",
+              "expedited"
+            ],
+            "type": "string"
+          },
+          "vendor_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vendor_id",
+          "confirmation_id",
+          "credential_class",
+          "object_count",
+          "service_option"
+        ],
+        "type": "object"
+      },
+      "name": "idpvendor.orders.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.list"
+      },
+      "description": "List approval records, optionally by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "approvals.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.get"
+      },
+      "description": "Read one approval record with its exact scope and approver.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "approval_id"
+        ],
+        "type": "object"
+      },
+      "name": "approvals.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "messages",
+          "shape": "mailbox search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "messages.list"
+      },
+      "description": "Search the security-operations mailbox by keyword (subject, body, labels).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_results": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "messages.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "messages",
+          "shape": "mailbox message"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "messages.get"
+      },
+      "description": "Read one message with body and attachment list.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "message_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message_id"
+        ],
+        "type": "object"
+      },
+      "name": "messages.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.list"
+      },
+      "description": "Search SOC chat threads by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat thread"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.get"
+      },
+      "description": "Read one SOC chat thread.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "thread_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "thread_id"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.list"
+      },
+      "description": "Search shared-drive files by keyword (name, folder, content).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive file"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.get"
+      },
+      "description": "Read shared-drive file metadata.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive export"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.export"
+      },
+      "description": "Export a shared-drive file as text (spreadsheets as CSV, PDFs as extracted text).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.export"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "notes",
+          "shape": "collaboration draft"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "notes.drafts.create"
+      },
+      "description": "Create, but do not send, a stakeholder draft note.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "related_identity_id": {
+            "type": "string"
+          },
+          "related_ticket_id": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipient",
+          "subject",
+          "body"
+        ],
+        "type": "object"
+      },
+      "name": "notes.drafts.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "hubbench.context.get"
+      },
+      "description": "Return the isolated task scope: case reference, immutable record handles, mounted servers, identity, and the evidence index.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "hubbench.context.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "hubbench.submit_answer"
+      },
+      "description": "Record the structured decision for the current task. Every field of the task's answer contract is required; resubmission replaces earlier values.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "affected_resource_or_operation": {
+            "description": "Immutable appointment, order, or resource record in the recovery scope.",
+            "type": "string"
+          },
+          "base_completion": {
+            "description": "Completion under review_first_free_qualified_window.",
+            "type": "string"
+          },
+          "business_need_date": {
+            "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+            "type": "string"
+          },
+          "candidate_capacity": {
+            "description": "Gross candidate capacity associated with responder-hours on Tier-2 responders (RESP-1, RESP-2, RESP-3) on the requested Tuesday 2026-06-09 before protected or unavailable load is removed.",
+            "type": "integer"
+          },
+          "capacity_gap": {
+            "description": "Uncovered RESPONDER_HOUR after applying finite availability inside the requested window.",
+            "type": "integer"
+          },
+          "capacity_unit": {
+            "description": "Capacity unit used throughout the schedule comparison: RESPONDER_HOUR.",
+            "type": "string"
+          },
+          "decision_timing_status": {
+            "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+            "enum": [
+              "ON_TIME",
+              "LATE"
+            ],
+            "type": "string"
+          },
+          "escalated_completion": {
+            "description": "Completion under displace_major_incident_bridge.",
+            "type": "string"
+          },
+          "escalation_approval_required": {
+            "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+            "type": "integer"
+          },
+          "expedited_external_readiness": {
+            "description": "Expedited readiness date independently confirmed for Halyard's confirmed federated VPN assertion invalidation dates on IR-88410.",
+            "type": "string"
+          },
+          "net_usable_capacity": {
+            "description": "Candidate capacity remaining after removing Tuesday responder-hours held as the protected major-incident bridge, blocked for maintenance, or on scheduled load.",
+            "type": "integer"
+          },
+          "outcome_vs_control_days": {
+            "description": "Selected outcome date minus the documented control date; positive means late.",
+            "type": "integer"
+          },
+          "qualified_alternative_completion": {
+            "description": "Completion under run_review_on_blocked_maintenance_window.",
+            "type": "string"
+          },
+          "recommended_incremental_cost_usd": {
+            "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+            "type": "integer"
+          },
+          "recommended_option": {
+            "description": "Best authorized option identifier after comparing review_first_free_qualified_window, run_review_on_blocked_maintenance_window, displace_major_incident_bridge.",
+            "enum": [
+              "review_first_free_qualified_window",
+              "run_review_on_blocked_maintenance_window",
+              "displace_major_incident_bridge"
+            ],
+            "type": "string"
+          },
+          "recommended_outcome_date": {
+            "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+            "type": "string"
+          },
+          "register_objects_required": {
+            "description": "VPN session objects the ticket requires contained for the identity.",
+            "type": "integer"
+          },
+          "register_objects_usable": {
+            "description": "Tenant-revocable SESSION-VPN objects in the register after excluding the already-revoked session and the shared-desk kiosk sessions.",
+            "type": "integer"
+          },
+          "requested_day": {
+            "description": "The day the requester asked for (ISO date), tested against capacity before being replaced.",
+            "type": "string"
+          },
+          "required_capacity": {
+            "description": "responder-hours for one continuous T2 VPN session review (120 min containment + 60 min owner confirmation)",
+            "type": "integer"
+          },
+          "selected_resource_or_control": {
+            "description": "Provider identifier of the qualified resource and session used by the selected recovery.",
+            "type": "string"
+          },
+          "standard_external_readiness": {
+            "description": "Standard readiness date independently confirmed for Halyard's confirmed federated VPN assertion invalidation dates on IR-88410.",
+            "type": "string"
+          },
+          "unavailable_or_protected_capacity": {
+            "description": "Tuesday responder-hours held as the protected major-incident bridge, blocked for maintenance, or on scheduled load",
+            "type": "integer"
+          },
+          "windows_required": {
+            "description": "Responder windows one continuous 3-hour review occupies.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "affected_resource_or_operation",
+          "base_completion",
+          "business_need_date",
+          "candidate_capacity",
+          "capacity_gap",
+          "capacity_unit",
+          "decision_timing_status",
+          "escalated_completion",
+          "escalation_approval_required",
+          "expedited_external_readiness",
+          "net_usable_capacity",
+          "outcome_vs_control_days",
+          "qualified_alternative_completion",
+          "recommended_incremental_cost_usd",
+          "recommended_option",
+          "recommended_outcome_date",
+          "register_objects_required",
+          "register_objects_usable",
+          "requested_day",
+          "required_capacity",
+          "selected_resource_or_control",
+          "standard_external_readiness",
+          "unavailable_or_protected_capacity",
+          "windows_required"
+        ],
+        "type": "object"
+      },
+      "name": "hubbench.submit_answer"
+    }
+  ]
+}

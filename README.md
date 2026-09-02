@@ -23,35 +23,40 @@ stakeholder draft → the exact graded answer with every intermediate derivation
 
 ## Releases
 
-**v1.1.0 (published 2026-09-01)** — 7 families / 56 tasks on Harbor and Hugging Face,
-269 tools, 1,767 agent-visible evidence files, and 3,649 deterministic criteria.
-Every task passed the exact Docker package gate at reward 1.0 with zero errors or
-retries; the Hugging Face payload publishes all 56 oracle traces plus five disclosed
-model-pilot traces. The compose healthcheck probes the world service's private
-`/health` endpoint instead of the graded task endpoint. **v1.0.0** remains the
-immutable five-family / 40-task predecessor.
+**v1.2.0 release candidate (qualified 2026-09-02)** — 12 families / 96 tasks,
+503 tools, 3,157 agent-visible evidence files, and 6,424 deterministic criteria.
+Every task passed the exact Docker package gate at reward 1.0 with zero task errors
+or retries in the clean full run; the candidate Hugging Face payload includes all
+96 oracle traces plus five disclosed model-pilot traces. Public registry receipts
+remain on immutable **v1.1.0** until this candidate is published.
 
 | Family | Hub cluster | Tasks | MCP servers | Tools |
 |---|---|---|---|---|
 | ClinicOps (`clinicops`) | healthcare | 8 | 10 | 34 |
 | DataDesk (`datadesk`) | data-engineering-analytics | 8 | 10 | 33 |
+| DesignOps (`designops`) | manufacturing-engineering-design | 8 | 13 | 42 |
 | HostOps (`hostops`) | terminal-operations | 8 | 12 | 39 |
+| ITSMDesk (`itsmdesk`) | it-operations-observability | 8 | 11 | 43 |
 | PolicyDesk (`policydesk`) | policy-compliance-instruction-following | 8 | 16 | 41 |
+| RepoDesk (`repodesk`) | software-engineering | 8 | 13 | 57 |
 | ResearchDesk (`researchdesk`) | reasoning-knowledge-qa | 8 | 12 | 32 |
 | SciLab (`scilab`) | scientific-research | 8 | 11 | 43 |
+| SecOps (`secops`) | security | 8 | 14 | 48 |
+| WebStudio (`webstudio`) | web-product-design | 8 | 13 | 44 |
 | Workplace (`workplace`) | customer-workplace-agents | 8 | 13 | 47 |
 
-Qualification across the 56 released tasks (784 executions): 56/56 oracle strict
-passes at a mean HubScore of 100.0, 56/56 byte-identical replays,
-560 negative-control executions across 10 attack policies with 0 false
-accepts, 112/112 mutation omissions detected; reasoning-chain audit
-56/56 with hop classes H1–H13 covered. Every number is recomputed from
+Qualification across the 96 candidate tasks (1,344 executions): 96/96 oracle strict
+passes at a mean HubScore of 100.0, 96/96 byte-identical replays,
+960 negative-control executions across 10 attack policies with 0 false
+accepts, 192/192 mutation omissions detected; reasoning-chain audit
+96/96 with hop classes H1–H13 covered. Every number is recomputed from
 `benchmark/hubbench/reports/` and `benchmark/hubbench/release/reports/release.json`
 by the tests — nothing here is typed by hand.
 
-6 more families (deskops, webstudio, itsmdesk, secops, designops, repodesk) complete the thirteen-cluster map and
-are released as they clear the same admission gate; each new tag republishes
-Harbor and Hugging Face and updates `benchmark/hubbench/reports/publication.json`.
+DeskOps remains the one planned family needed to complete the thirteen-cluster map.
+It will be released only after it clears the same admission and Docker package gates;
+each new tag republishes Harbor and Hugging Face and updates
+`benchmark/hubbench/reports/publication.json`.
 
 ## Distribution
 

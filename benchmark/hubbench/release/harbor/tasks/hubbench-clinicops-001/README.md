@@ -1,6 +1,6 @@
 # hubbench-clinicops-001 — Book Teodor Delacroix's infliximab induction
 
-HubBench 1.1.0 · family **ClinicOps** (`clinicops`, cluster `healthcare`) · decision mode `plan` · role `infusion_operations_coordinator` · as of 2026-03-09.
+HubBench 1.2.0 · family **ClinicOps** (`clinicops`, cluster `healthcare`) · decision mode `plan` · role `infusion_operations_coordinator` · as of 2026-03-09.
 
 Infusion operations decisions against a FHIR-shaped EHR, chair scheduling, pharmacy inventory, supplier confirmations, and approval records.
 

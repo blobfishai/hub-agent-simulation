@@ -1,0 +1,2805 @@
+{
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "affected_changes": {
+        "description": "Change records stranded by the LANE-1 outage inside the SLA windows.",
+        "type": "integer"
+      },
+      "affected_resource_or_operation": {
+        "description": "Immutable appointment, order, or resource record in the recovery scope.",
+        "type": "string"
+      },
+      "base_completion": {
+        "description": "Completion under rehome_series_to_open_windows.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "candidate_capacity": {
+        "description": "Gross candidate capacity associated with lane-hours on LANE-2 and LANE-3 between 2026-05-05 and 2026-05-08 before protected or unavailable load is removed.",
+        "type": "integer"
+      },
+      "capacity_gap": {
+        "description": "Uncovered LANE_HOUR after applying finite availability inside the requested window.",
+        "type": "integer"
+      },
+      "capacity_unit": {
+        "description": "Capacity unit used throughout the schedule comparison: LANE_HOUR.",
+        "type": "string"
+      },
+      "changes_per_window": {
+        "description": "Remediation deploys the playbook allows in one 4-hour window.",
+        "type": "integer"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Completion under displace_protected_freeze_window.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Corvane's confirmed June image-baseline attestation dates on CQ-88420.",
+        "type": "string"
+      },
+      "gate_results_required": {
+        "description": "GATE-INFRA-1 attestation runs the four stranded deploys read.",
+        "type": "integer"
+      },
+      "gate_results_usable": {
+        "description": "Usable attestation runs on hand after excluding the expiring set.",
+        "type": "integer"
+      },
+      "net_usable_capacity": {
+        "description": "Candidate capacity remaining after removing lane-hours already booked, held as protected freeze or compliance blocks, or blocked for maintenance.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "qualified_alternative_completion": {
+        "description": "Completion under wait_for_lane_1_return.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing rehome_series_to_open_windows, wait_for_lane_1_return, displace_protected_freeze_window.",
+        "enum": [
+          "rehome_series_to_open_windows",
+          "wait_for_lane_1_return",
+          "displace_protected_freeze_window"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_capacity": {
+        "description": "lane-hours for four 2-hour remediation deploys (60 min rollout + 60 min attestation bake each)",
+        "type": "integer"
+      },
+      "selected_resource_or_control": {
+        "description": "Provider identifier of the qualified resource and session used by the selected recovery.",
+        "type": "string"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Corvane's confirmed June image-baseline attestation dates on CQ-88420.",
+        "type": "string"
+      },
+      "unavailable_or_protected_capacity": {
+        "description": "lane-hours already booked, held as protected freeze or compliance blocks, or blocked for maintenance",
+        "type": "integer"
+      },
+      "windows_required": {
+        "description": "Free windows the four deploys need when two are sequenced per window.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "affected_changes",
+      "affected_resource_or_operation",
+      "base_completion",
+      "business_need_date",
+      "candidate_capacity",
+      "capacity_gap",
+      "capacity_unit",
+      "changes_per_window",
+      "decision_timing_status",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedited_external_readiness",
+      "gate_results_required",
+      "gate_results_usable",
+      "net_usable_capacity",
+      "outcome_vs_control_days",
+      "qualified_alternative_completion",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_capacity",
+      "selected_resource_or_control",
+      "standard_external_readiness",
+      "unavailable_or_protected_capacity",
+      "windows_required"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-05-04",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "family": "repodesk",
+  "instruction": "Lane one's deploy controller failed this morning's attestation and it is fenced until the fifteenth, which strands the CVE remediation deploys booked on it this week. Security and Pellworth's addendum are firm that none of them can slip past a week beyond their due date. Figure out how much lane time those deploys need, what is honestly open on the other two lanes without touching the protected blocks, and how far into next week the last of them lands. Move the first affected change to the window you settle on, and leave Siobhan a note that lays out the rest and any option that would need Marcus.",
+  "level": "employee-decision",
+  "mode": "schedule",
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-RD-0106"
+    },
+    "case_reference": "SHIP-0006",
+    "chat": {
+      "thread_id": "CHAT-1006"
+    },
+    "ci": {
+      "pipeline_id": "PIPE-ATTEST",
+      "pool_id": "POOL-IMAGES",
+      "sources": [
+        "CI-MAIN"
+      ],
+      "verification_class": "GATE-INFRA-1"
+    },
+    "deploy": {
+      "calendar_window": {
+        "end_date": "2026-05-15",
+        "start_date": "2026-05-05"
+      },
+      "lanes": [
+        "LANE-1",
+        "LANE-2",
+        "LANE-3"
+      ]
+    },
+    "drive": {
+      "case_folder_query": "SHIP-0006",
+      "playbook_query": "playbook"
+    },
+    "messages": {
+      "search_query": "SHIP-0006"
+    },
+    "partners": {
+      "confirmation_id": "CONF-CRV-88420"
+    },
+    "scm": {
+      "branch": "main",
+      "component_code": "edge-proxy",
+      "fix_pull_request": "PR-INF-400",
+      "repo_id": "REPO-INFRA"
+    },
+    "success": {
+      "commitment_id": "COM-PEL-SEC-0512",
+      "customer_id": "CUST-PELLWORTH"
+    },
+    "tracker": {
+      "issue_key": "LKS-4510",
+      "issue_search": {
+        "arguments": {
+          "key": "LKS-4510"
+        },
+        "tool": "tracker.issues.search"
+      }
+    }
+  },
+  "role": "release_engineering_coordinator",
+  "seed_tables": {
+    "approvals": [
+      {
+        "approval_id": "AP-RD-0106",
+        "approver_id": "U-SOLBERG",
+        "approver_role": "sre_lead",
+        "granted_on": "2026-05-04",
+        "scope_json": "{\"changes\": [\"CHG-70850\", \"CHG-70851\", \"CHG-70852\", \"CHG-70853\"], \"lanes\": [\"LANE-2\", \"LANE-3\"], \"not_covered\": [\"displacing protected freeze or compliance windows (change advisory board)\", \"using the blocked storage-fabric maintenance window\", \"out-of-hours windows\"], \"windows\": \"free regular windows only; two remediation deploys may be sequenced in one window\"}",
+        "status": "APPROVED",
+        "subject": "Re-home the CVE remediation deploys stranded by the LANE-1 outage (SHIP-0006)"
+      },
+      {
+        "approval_id": "AP-RD-0090",
+        "approver_id": "U-RAGHUNATHAN",
+        "approver_role": "release_engineering_manager",
+        "granted_on": "2026-02-09",
+        "scope_json": "{\"category\": \"RUNNER_CAPACITY\", \"max_spend_usd\": 9000}",
+        "status": "APPROVED",
+        "subject": "Quarterly CI runner capacity standing order"
+      }
+    ],
+    "backport_requests": [],
+    "branch_rules": [
+      {
+        "branch": "main",
+        "codeowner_review_required": 1,
+        "repo_id": "REPO-INFRA",
+        "required_approvals": 2,
+        "required_checks_json": "[\"image-cve-attestation\"]",
+        "rule_id": "BR-INFRA-MAIN",
+        "status": "ACTIVE"
+      }
+    ],
+    "certification_orders": [
+      {
+        "confirmation_id": null,
+        "created_at": "2026-04-17T09:30:00",
+        "expected_ready_date": "2026-04-22",
+        "order_id": "ORD-3400",
+        "partner_id": "PRT-BRIGHTWATER",
+        "requested_by": "release_engineering_coordinator",
+        "revision": 1,
+        "run_count": 2,
+        "service_option": "standard",
+        "status": "RECEIVED",
+        "unit": "CHECK_RUN",
+        "verification_class": "GATE-INFRA-1"
+      }
+    ],
+    "change_records": [
+      {
+        "change_id": "CHG-70850",
+        "component_id": "CMP-31201",
+        "description": "CVE remediation deploy (stranded by the LANE-1 outage)",
+        "end_time": "2026-05-05T10:00:00",
+        "issue_key": "LKS-4510",
+        "lane_id": "LANE-1",
+        "last_updated": "2026-05-01T12:00:00",
+        "revision": 1,
+        "start_time": "2026-05-05T08:00:00",
+        "status": "booked"
+      },
+      {
+        "change_id": "CHG-70851",
+        "component_id": "CMP-31214",
+        "description": "CVE remediation deploy (stranded by the LANE-1 outage)",
+        "end_time": "2026-05-05T15:00:00",
+        "issue_key": "LKS-4511",
+        "lane_id": "LANE-1",
+        "last_updated": "2026-05-01T12:00:00",
+        "revision": 1,
+        "start_time": "2026-05-05T13:00:00",
+        "status": "booked"
+      },
+      {
+        "change_id": "CHG-70852",
+        "component_id": "CMP-31227",
+        "description": "CVE remediation deploy (stranded by the LANE-1 outage)",
+        "end_time": "2026-05-06T10:00:00",
+        "issue_key": "LKS-4512",
+        "lane_id": "LANE-1",
+        "last_updated": "2026-05-01T12:00:00",
+        "revision": 1,
+        "start_time": "2026-05-06T08:00:00",
+        "status": "booked"
+      },
+      {
+        "change_id": "CHG-70853",
+        "component_id": "CMP-31233",
+        "description": "CVE remediation deploy (stranded by the LANE-1 outage)",
+        "end_time": "2026-05-07T10:00:00",
+        "issue_key": "LKS-4513",
+        "lane_id": "LANE-1",
+        "last_updated": "2026-05-01T12:00:00",
+        "revision": 1,
+        "start_time": "2026-05-07T08:00:00",
+        "status": "booked"
+      }
+    ],
+    "chat_threads": [
+      {
+        "channel": "#release-eng",
+        "messages_json": "[{\"author\": \"Hanna Solberg\", \"ts\": \"2026-05-04T08:05:00\", \"text\": \"Lane 3 PM on the 8th is storage-fabric maintenance, not usable. Lane 2 AM on the 7th and PM on the 6th are protected \\u2014 Marcus only.\"}, {\"author\": \"Priya Raghunathan\", \"ts\": \"2026-05-04T08:12:00\", \"text\": \"Six runs of attestation set 8810 cover all four; 8795 is inside the validity horizon (05-14) and not for these.\"}, {\"author\": \"Hanna Solberg\", \"ts\": \"2026-05-04T08:20:00\", \"text\": \"The playbook lets two remediation deploys run back to back in one window.\"}]",
+        "thread_id": "CHAT-1006",
+        "title": "SHIP-0006 lane 1 outage — CVE deploys"
+      },
+      {
+        "channel": "#release-eng",
+        "messages_json": "[{\"author\": \"Hanna Solberg\", \"ts\": \"2026-04-30T16:40:00\", \"text\": \"Reminder: log every feature-flag change in the change tracker.\"}]",
+        "thread_id": "CHAT-0006-GEN",
+        "title": "General — flag hygiene and lane access"
+      }
+    ],
+    "commit_modules": [
+      {
+        "module_id": "MOD-INF-EDGE",
+        "sha": "c0e0f0a0"
+      },
+      {
+        "module_id": "MOD-INF-QUEUE",
+        "sha": "c1e1f1a1"
+      },
+      {
+        "module_id": "MOD-INF-DNS",
+        "sha": "c2e2f2a2"
+      },
+      {
+        "module_id": "MOD-INF-VPN",
+        "sha": "c3e3f3a3"
+      }
+    ],
+    "commitments": [
+      {
+        "commitment_id": "COM-PEL-SEC-0512",
+        "contract_ref": "MSA-PEL-2025 security addendum §3",
+        "customer_id": "CUST-PELLWORTH",
+        "cutover_date": "2026-05-12",
+        "issue_key": "LKS-4510",
+        "kind": "security_sla",
+        "note": "critical CVE remediation within 7 days of the due date; earliest pair due 2026-05-05; USD 6,000 per day of slip",
+        "penalty_usd": 6000,
+        "status": "ACTIVE"
+      }
+    ],
+    "commits": [
+      {
+        "author_id": "ENG-ACHEBE",
+        "authored_at": "2026-04-29T10:00:00",
+        "backported_to": null,
+        "branch": "main",
+        "fix_for": "LKS-4510",
+        "message": "images: rebuild edge-proxy on the patched base (LKS-4510)",
+        "pr_number": 400,
+        "repo_id": "REPO-INFRA",
+        "sha": "c0e0f0a0",
+        "status": "merged"
+      },
+      {
+        "author_id": "ENG-ACHEBE",
+        "authored_at": "2026-04-29T11:00:00",
+        "backported_to": null,
+        "branch": "main",
+        "fix_for": "LKS-4511",
+        "message": "images: rebuild queue-broker on the patched base (LKS-4511)",
+        "pr_number": 401,
+        "repo_id": "REPO-INFRA",
+        "sha": "c1e1f1a1",
+        "status": "merged"
+      },
+      {
+        "author_id": "ENG-ACHEBE",
+        "authored_at": "2026-04-30T12:00:00",
+        "backported_to": null,
+        "branch": "main",
+        "fix_for": "LKS-4512",
+        "message": "images: rebuild dns-edge on the patched base (LKS-4512)",
+        "pr_number": 402,
+        "repo_id": "REPO-INFRA",
+        "sha": "c2e2f2a2",
+        "status": "merged"
+      },
+      {
+        "author_id": "ENG-ACHEBE",
+        "authored_at": "2026-04-30T13:00:00",
+        "backported_to": null,
+        "branch": "main",
+        "fix_for": "LKS-4513",
+        "message": "images: rebuild vpn-concentrator on the patched base (LKS-4513)",
+        "pr_number": 403,
+        "repo_id": "REPO-INFRA",
+        "sha": "c3e3f3a3",
+        "status": "merged"
+      }
+    ],
+    "components": [
+      {
+        "code": "edge-proxy",
+        "component_id": "CMP-31201",
+        "name": "Edge Proxy Fleet",
+        "owner_team": "Infrastructure SRE",
+        "primary_engineer_id": "ENG-FARRELL",
+        "repo_id": "REPO-INFRA",
+        "tier": "tier-1"
+      },
+      {
+        "code": "queue-broker",
+        "component_id": "CMP-31214",
+        "name": "Queue Broker Fleet",
+        "owner_team": "Infrastructure SRE",
+        "primary_engineer_id": "ENG-FARRELL",
+        "repo_id": "REPO-INFRA",
+        "tier": "tier-1"
+      },
+      {
+        "code": "dns-edge",
+        "component_id": "CMP-31227",
+        "name": "DNS Edge Fleet",
+        "owner_team": "Infrastructure SRE",
+        "primary_engineer_id": "ENG-FARRELL",
+        "repo_id": "REPO-INFRA",
+        "tier": "tier-1"
+      },
+      {
+        "code": "vpn-concentrator",
+        "component_id": "CMP-31233",
+        "name": "VPN Concentrator Fleet",
+        "owner_team": "Infrastructure SRE",
+        "primary_engineer_id": "ENG-FARRELL",
+        "repo_id": "REPO-INFRA",
+        "tier": "tier-2"
+      }
+    ],
+    "coverage_reports": [
+      {
+        "build_sha": "c0e0f0a0",
+        "generated_at": "2026-04-29T12:30:00",
+        "line_coverage": 0.0,
+        "module_id": "MOD-INF-EDGE",
+        "report_id": "CR-4510-01",
+        "status": "NOT_APPLICABLE",
+        "threshold": 0.0
+      }
+    ],
+    "customers": [
+      {
+        "account_owner": "Declan Moriarty",
+        "customer_id": "CUST-PELLWORTH",
+        "environment_id": "ENV-PROD-DEDICATED",
+        "name": "Pellworth Logistics",
+        "tier": "enterprise"
+      }
+    ],
+    "drive_files": [
+      {
+        "content": "# Release Engineering Playbook (v5, effective 2026-03-02)\n\nApplies to Larkspur Systems Release Engineering: the platform monorepo (REPO-PLATFORM), the infra image repository (REPO-INFRA), the release verification pipeline (CI-MAIN), the external certification partners, and the three release lanes. This version supersedes the 2024 playbook in full.\n\n## 1. Fix requirement\n\n1.1 The affected-module count of a regression is the most recent final impact analysis for the component in the SCM impact register. A stale impact analysis is never used.\n1.2 Modules whose offending commit has already been reverted on the release branch, or whose change is behind a disabled feature flag, are gated and drop out of the requirement; every other touched module needs its release gate.\n1.3 The gate class of the touched modules fixes the required check runs per module; the protected-branch rule names the checks. Runs are counted per module per environment in scope.\n1.4 Dedicated-tenant cutovers inside 7 days: the gate runs on both the shared pipeline and the dedicated-tenant pipeline before the change is booked. An open partner certification is not a substitute for imported results.\n1.5 A booked change may be advanced by up to 7 days with the change owner's written note.\n\n## 2. Usable evidence\n\n2.1 A verification-result set counts toward coverage only when its status is PASSED, it is not held for a named issue, it comes from a release-eligible source, and it stays valid for at least the class minimum (14 days from the planning date). On a planning date of 2026-05-04, result sets whose validity ends on or before 2026-05-18 are inside the expiry horizon and do not count.\n2.2 Failed, quarantined, and incident-flagged result sets are never reused for a release gate. Reuse requires the director of engineering, and the change advisory board where a release exception is involved.\n2.3 Partner-certified runs are imported and re-verified into the release evidence on the next business day after the partner's ready date.\n2.4 Order sizing: order the uncovered requirement plus the class re-run margin from the margin table. Backports carry only eligible commits (merged, not reverted, not embargoed, not docs-only) and only the commits the target branch is missing.\n\n## 3. Release lanes\n\n3.1 Lane windows are AM 08:00-12:00 and PM 13:00-17:00, Monday to Friday, with release engineering on shift. A change of up to 4 hours including the canary bake occupies one window; a longer change requires both windows of one lane on one day.\n3.2 Protected windows (release-freeze verification, compliance batches, customer blackouts) and blocked windows (cluster or deploy-controller maintenance) are never displaced without the change advisory board.\n3.3 Two short changes of the same class (2 hours or less each, including the bake) may be sequenced in one window.\n3.4 Dedicated-tenant cutover rehearsals are one continuous run on a tenant-isolation-capable lane per the roster; they may not be split across windows on different days.\n3.5 Out-of-hours, weekend, and overtime windows require the SRE lead's separate approval.\n\n## 4. Authority\n\n4.1 Release engineering manager: certification orders, backports, and lane bookings within the signed approval's run count, partner, and spend, including any expedite fee the approval names.\n4.2 Director of engineering: expedited certification not named in an approval, expedited-review exceptions, validity extensions for expiring result sets, and reuse of failed or incident-flagged result sets.\n4.3 SRE lead: lane re-home plans, overtime, and out-of-hours windows.\n4.4 Change advisory board: displacing protected windows, release exceptions, and rescheduling a customer cutover.\n4.5 Bypassing a required check is never supported, whatever the approval. An approval covers exactly the issue, quantity, partner, and options it names. It never selects an option in advance and never extends to a broader record.\n\n---\nEvidence-room mount: repodesk-006 / SHIP-0006.\n",
+        "file_id": "DRV-006-01",
+        "folder": "Release Engineering/Playbooks",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "release-engineering-playbook.md",
+        "sha256": "5dd2a5555657243f8d2bd96c19c7662e187114f64574deb1cea4cfaed9c37ef5"
+      },
+      {
+        "content": "# Release Engineering Playbook (2024 edition) — SUPERSEDED\n\nThis edition was replaced by v5 on 2026-03-02 and is retained for audit only. Do not apply it.\n\n1. Affected modules may be counted from the impact analysis recorded at first triage.\n2. Minimum remaining validity for a result set at release: 7 days.\n3. An open partner certification counts toward the release gate; the change may be booked once the partner confirms.\n4. Expedite fees up to USD 500 may be approved by the release engineering manager at discretion.\n5. Lanes run a single 08:00-17:00 block; long rehearsals may be split across two days with the owner's agreement.\n6. Protected windows may be displaced by the on-call engineer when a cutover is at risk, and a required check may be waived by the component owner.\n\n---\nEvidence-room mount: repodesk-006 / SHIP-0006.\n",
+        "file_id": "DRV-006-02",
+        "folder": "Release Engineering/Playbooks/Archive",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "superseded-release-playbook-2024.md",
+        "sha256": "a157cf6849fd3a6b08d8b36e427926150a2c75e70589073ef82eae26a69652af"
+      },
+      {
+        "content": "# Deploy-controller attestation notice (closed)\n\nAsset: green-cluster deploy controller LS-DC-4478 (LANE-3). Out of service 2025-11-03 to 2025-11-07 after a failed attestation. Re-attested and returned to service 2025-11-07. No current restriction.\n",
+        "file_id": "DRV-006-03",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "attestation-notice-lane-3-2025-11.md",
+        "sha256": "d941794c1f8e8c49946df7daee5e52086df3a7aff90e8fbeeab6b39cff3db37a"
+      },
+      {
+        "content": "{\n  \"export\": \"tracker.issues.get\",\n  \"record\": {\n    \"bake_minutes\": 60,\n    \"basis\": \"fixed\",\n    \"build_minutes\": 60,\n    \"commitment\": \"Commitment/COM-PEL-SEC-0512\",\n    \"component\": \"Component/CMP-31201\",\n    \"customer\": \"Customer/CUST-PELLWORTH\",\n    \"duplicate_of\": null,\n    \"environments_in_scope\": 1,\n    \"fix_version\": null,\n    \"fixed_modules\": 1,\n    \"gated_modules\": 0,\n    \"issue_key\": \"LKS-4510\",\n    \"kind\": \"cve_remediation\",\n    \"note\": \"Due 2026-05-05; may not slip more than 7 days past due under the Pellworth security addendum.\",\n    \"opened_at\": \"2026-04-29\",\n    \"regression_range\": {\n      \"from\": null,\n      \"to\": null\n    },\n    \"requested_by\": \"Engineer/ENG-ACHEBE\",\n    \"scope_note\": \"CVE remediation image deploy with attestation bake\",\n    \"severity\": \"S2\",\n    \"status\": \"open\",\n    \"title\": \"CVE-2026-3107 remediation for edge-proxy\",\n    \"verification_class\": {\n      \"code\": \"GATE-INFRA-1\",\n      \"display\": \"infra image CVE gate, 1 attestation run per module\",\n      \"runs_per_module\": 1\n    }\n  }\n}\n",
+        "file_id": "DRV-006-04",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "issue-LKS-4510.json",
+        "sha256": "fc15aaeeffb0c59dd06c812f6bbe3823769367d07996dfb17e6f728e3f9636cb"
+      },
+      {
+        "content": "{\n  \"component\": {\n    \"code\": \"edge-proxy\",\n    \"component_id\": \"CMP-31201\",\n    \"name\": \"Edge Proxy Fleet\",\n    \"owner_team\": \"Infrastructure SRE\",\n    \"primary_engineer\": \"Engineer/ENG-FARRELL\",\n    \"repository\": \"Repository/REPO-INFRA\",\n    \"tier\": \"tier-1\"\n  },\n  \"export\": \"scm.components.get + scm.impact.list\",\n  \"impact_reports\": [\n    {\n      \"component\": \"Component/CMP-31201\",\n      \"generated_at\": \"2026-04-29\",\n      \"metric\": \"TOUCHED-MODULES\",\n      \"report_id\": \"IMP-31201\",\n      \"status\": \"final\",\n      \"unit\": \"MODULE\",\n      \"value\": 1\n    }\n  ]\n}\n",
+        "file_id": "DRV-006-05",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "component-edge-proxy-impact.json",
+        "sha256": "7fcd1205cb901e57f720856c84b6597d12fd5d67f1a62da661b04991efa34806"
+      },
+      {
+        "content": "sha,branch,authored_at,author,message,pull_request,status,backported_to,fix_for,touched_modules\nc0e0f0a0,main,2026-04-29T10:00:00,Chidi Achebe,\"images: rebuild edge-proxy on the patched base (LKS-4510)\",400,merged,,LKS-4510,MOD-INF-EDGE\nc1e1f1a1,main,2026-04-29T11:00:00,Chidi Achebe,\"images: rebuild queue-broker on the patched base (LKS-4511)\",401,merged,,LKS-4511,MOD-INF-QUEUE\nc2e2f2a2,main,2026-04-30T12:00:00,Chidi Achebe,\"images: rebuild dns-edge on the patched base (LKS-4512)\",402,merged,,LKS-4512,MOD-INF-DNS\nc3e3f3a3,main,2026-04-30T13:00:00,Chidi Achebe,\"images: rebuild vpn-concentrator on the patched base (LKS-4513)\",403,merged,,LKS-4513,MOD-INF-VPN\n",
+        "file_id": "DRV-006-06",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "commits-main-fix-range.csv",
+        "sha256": "cd2f75ff8c14bb5957edfa1ff03595269328c2aa0c93c3d963a207d10463e2d8"
+      },
+      {
+        "content": "{\n  \"branch_rule\": {\n    \"branch\": \"main\",\n    \"required_approvals\": 2,\n    \"required_checks\": [\n      \"image-cve-attestation\"\n    ],\n    \"rule_id\": \"BR-INFRA-MAIN\"\n  },\n  \"case_reference\": \"SHIP-0006\",\n  \"pull_requests\": [\n    {\n      \"base_branch\": \"main\",\n      \"head_sha\": \"c0e0f0a0\",\n      \"issue_key\": \"LKS-4510\",\n      \"number\": 400,\n      \"opened_at\": \"2026-04-29T08:00:00\",\n      \"pr_id\": \"PR-INF-400\",\n      \"status\": \"merged\",\n      \"superseded_by\": null,\n      \"title\": \"images: patched base for edge-proxy (LKS-4510)\"\n    },\n    {\n      \"base_branch\": \"main\",\n      \"head_sha\": \"c1e1f1a1\",\n      \"issue_key\": \"LKS-4511\",\n      \"number\": 401,\n      \"opened_at\": \"2026-04-29T09:00:00\",\n      \"pr_id\": \"PR-INF-401\",\n      \"status\": \"merged\",\n      \"superseded_by\": null,\n      \"title\": \"images: patched base for queue-broker (LKS-4511)\"\n    },\n    {\n      \"base_branch\": \"main\",\n      \"head_sha\": \"c2e2f2a2\",\n      \"issue_key\": \"LKS-4512\",\n      \"number\": 402,\n      \"opened_at\": \"2026-04-29T010:00:00\",\n      \"pr_id\": \"PR-INF-402\",\n      \"status\": \"merged\",\n      \"superseded_by\": null,\n      \"title\": \"images: patched base for dns-edge (LKS-4512)\"\n    },\n    {\n      \"base_branch\": \"main\",\n      \"head_sha\": \"c3e3f3a3\",\n      \"issue_key\": \"LKS-4513\",\n      \"number\": 403,\n      \"opened_at\": \"2026-04-29T011:00:00\",\n      \"pr_id\": \"PR-INF-403\",\n      \"status\": \"merged\",\n      \"superseded_by\": null,\n      \"title\": \"images: patched base for vpn-concentrator (LKS-4513)\"\n    }\n  ],\n  \"reviews\": [\n    {\n      \"pr_id\": \"PR-INF-400\",\n      \"review_id\": \"RV-INF-400-1\",\n      \"reviewer\": \"Siobhan Farrell\",\n      \"state\": \"APPROVED\",\n      \"submitted_at\": \"2026-04-29T12:00:00\"\n    }\n  ]\n}\n",
+        "file_id": "DRV-006-07",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "pull-requests-and-reviews.json",
+        "sha256": "178628d084e0b9a2be8322904d8584b78c9517c1e822cdba453be070f1b3586a"
+      },
+      {
+        "content": "module_id,path,component_id,owner_team,codeowner,verification_class,gate,gate_note\nMOD-INF-EDGE,images/edge-proxy,CMP-31201,Infrastructure SRE,Siobhan Farrell,GATE-INFRA-1,,\nMOD-INF-QUEUE,images/queue-broker,CMP-31214,Infrastructure SRE,Siobhan Farrell,GATE-INFRA-1,,\nMOD-INF-DNS,images/dns-edge,CMP-31227,Infrastructure SRE,Siobhan Farrell,GATE-INFRA-1,,\nMOD-INF-VPN,images/vpn-concentrator,CMP-31233,Infrastructure SRE,Siobhan Farrell,GATE-INFRA-1,,\n",
+        "file_id": "DRV-006-08",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "module-registry.csv",
+        "sha256": "09a93cf25d371567e9ccbc1ca7b2376ef89b734032b765230c338fff18871e9d"
+      },
+      {
+        "content": "verification_class,display,runs_per_module,required_checks,evidence_tier,minimum_validity_days,release_eligible,interchangeable_with\nGATE-INFRA-1,infra image CVE gate, 1 attestation run per module,1,image-cve-attestation,release-gate evidence,14,yes,\n",
+        "file_id": "DRV-006-09",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "gate-class-catalog.csv",
+        "sha256": "9aae0cf4ada60c59a4a53b8232d67138f02420c466239241ce953940ab9e2e8e"
+      },
+      {
+        "content": "result_label,verification_class,source_id,run_count,valid_until\n8810,GATE-INFRA-1,CI-MAIN,6,2026-12-31\n8795,GATE-INFRA-1,CI-MAIN,2,2026-05-14\n",
+        "file_id": "DRV-006-10",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "verification-results-by-set.xlsx",
+        "sha256": "5949b01c6f573ab660185f40795c159e34b7767fe77090d0b1e4ff2ecc73860c"
+      },
+      {
+        "content": "result_label,verification_class,source_id,status,status_reason,held_for_issue,register_note\n8810,GATE-INFRA-1,CI-MAIN,PASSED,,,\n8795,GATE-INFRA-1,CI-MAIN,PASSED,,,validity ends 2026-05-14, inside the horizon\n",
+        "file_id": "DRV-006-11",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "result-status-register.csv",
+        "sha256": "ab6e5e8717fd24af982bbaef64d4863df4b528cb604cd2ed367ae3498a127f23"
+      },
+      {
+        "content": "run_id,pipeline_id,pipeline_name,kind,trigger,head_sha,started_at,finished_at,status,exit_code,summary\nPR-77850,PIPE-ATTEST,deploy-controller-attestation,attestation,cron 06:00 daily,,2026-05-04T06:00:00,2026-05-04T06:04:00,FAILED,3,\"LANE-1 deploy controller failed firmware attestation; lane fenced and removed from the roster\"\nPR-77851,PIPE-ATTEST,deploy-controller-attestation,attestation,cron 06:00 daily,,2026-05-04T06:10:00,2026-05-04T06:14:00,SUCCEEDED,0,\"LANE-2 and LANE-3 attested clean\"\n",
+        "file_id": "DRV-006-12",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "pipeline-runs.csv",
+        "sha256": "52695d23b1bd1ef67dc03de787e1e6407890c5b5a66a262425a82d9183499363"
+      },
+      {
+        "content": "flaky_id,check_name,module_id,quarantined_since,retry_minutes,status,note,hubbench_task_scope,hubbench_case_reference\nFLK-160,image-cve-attestation/manifest-sign,MOD-INF-EDGE,2026-04-15,6,CLEARED,cleared 2026-04-27,repodesk-006,SHIP-0006\n",
+        "file_id": "DRV-006-13",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "flaky-test-registry.csv",
+        "sha256": "a69a91bc9ac25a9c3c7dcf5eda7cafc4ceccc8af2a70de4dd37ba8cff3b63023"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SHIP-0006\",\n  \"pipelines\": [\n    {\n      \"base_minutes\": 5,\n      \"kind\": \"attestation\",\n      \"name\": \"deploy-controller-attestation\",\n      \"pipeline_id\": \"PIPE-ATTEST\"\n    },\n    {\n      \"base_minutes\": 240,\n      \"kind\": \"release_load\",\n      \"name\": \"scheduled-release-load\",\n      \"pipeline_id\": \"PIPE-RELEASE-LOAD\"\n    }\n  ],\n  \"pool\": {\n    \"capacity\": 3,\n    \"name\": \"image-attestation pool\",\n    \"note\": \"\",\n    \"pool_id\": \"POOL-IMAGES\",\n    \"queue_minutes\": 10,\n    \"status\": \"ACTIVE\"\n  }\n}\n",
+        "file_id": "DRV-006-14",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "runner-pool-capacity.json",
+        "sha256": "5fef3a91f436f78d4a102b01125b430c4c96694bfef67db31dd84eaf02c172a3"
+      },
+      {
+        "content": "service_date,lane_id,session,start,end,status,hold_reason\n2026-05-04,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-04,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-04,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-04,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-04,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-04,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-05,LANE-1,AM,08:00:00,12:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-05,LANE-1,PM,13:00:00,17:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-05,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-05,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-05,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-05,LANE-3,PM,13:00:00,17:00:00,protected,nightly compliance batch overflow (protected)\n2026-05-06,LANE-1,AM,08:00:00,12:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-06,LANE-1,PM,13:00:00,17:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-06,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-06,LANE-2,PM,13:00:00,17:00:00,protected,26.1 GA freeze verification block (protected)\n2026-05-06,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-06,LANE-3,PM,13:00:00,17:00:00,free,\n2026-05-07,LANE-1,AM,08:00:00,12:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-07,LANE-1,PM,13:00:00,17:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-07,LANE-2,AM,08:00:00,12:00:00,protected,26.1 GA freeze verification block (protected)\n2026-05-07,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-07,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-07,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-08,LANE-1,AM,08:00:00,12:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-08,LANE-1,PM,13:00:00,17:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-08,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-08,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-08,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-08,LANE-3,PM,13:00:00,17:00:00,blocked,storage fabric maintenance (blocked)\n2026-05-11,LANE-1,AM,08:00:00,12:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-11,LANE-1,PM,13:00:00,17:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-11,LANE-2,AM,08:00:00,12:00:00,free,\n2026-05-11,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-11,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-11,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-12,LANE-1,AM,08:00:00,12:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-12,LANE-1,PM,13:00:00,17:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-12,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-12,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-12,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-12,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-13,LANE-1,AM,08:00:00,12:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-13,LANE-1,PM,13:00:00,17:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-13,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-13,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-13,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-13,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-14,LANE-1,AM,08:00:00,12:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-14,LANE-1,PM,13:00:00,17:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-14,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-14,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-14,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-14,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-15,LANE-1,AM,08:00:00,12:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-15,LANE-1,PM,13:00:00,17:00:00,blocked,deploy controller fenced after failed attestation (blocked)\n2026-05-15,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-15,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-15,LANE-3,AM,08:00:00,12:00:00,free,\n2026-05-15,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-18,LANE-1,AM,08:00:00,12:00:00,free,\n2026-05-18,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-18,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-18,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-18,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-18,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-19,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-19,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-19,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-19,LANE-2,PM,13:00:00,17:00:00,free,\n2026-05-19,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-19,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-20,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-20,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-20,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-20,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-20,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-20,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-21,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-21,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-21,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-21,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-21,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-21,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-22,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-22,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-22,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-22,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-22,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-22,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n",
+        "file_id": "DRV-006-15",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "lane-calendar-2026-05-04.xlsx",
+        "sha256": "e7cacd1437a07aca118554cc798592cf4f34d64d3ed45d424e39cc70a914cdce"
+      },
+      {
+        "content": "lane_id,name,cluster,status,isolation_capable,note,hubbench_task_scope,hubbench_case_reference\nLANE-1,Release lane 1 (blue cluster),blue,OUT_OF_SERVICE,yes,blue-cluster deploy controller failed attestation 2026-05-04; return to service 2026-05-15,repodesk-006,SHIP-0006\nLANE-2,Release lane 2 (blue cluster),blue,ACTIVE,yes,,repodesk-006,SHIP-0006\nLANE-3,Release lane 3 (green cluster),green,ACTIVE,yes,,repodesk-006,SHIP-0006\n",
+        "file_id": "DRV-006-16",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "lane-roster-and-capabilities.csv",
+        "sha256": "5121d49cd2ef1eac4c95889c1f61d039123ffa93ae92dfff7d92d9c08779a9ec"
+      },
+      {
+        "content": "Corvane Certification Labs\nCertification confirmation CQ-88420 (system reference CONF-CRV-88420)\nCustomer: Larkspur Systems Release Engineering, account LS-2210\nCase reference: SHIP-0006\nGate class: GATE-INFRA-1 — infra image CVE gate, 1 attestation run per module\nCertified runs available for this confirmation: 6\nPer-run certification fee: USD 40.00\nStandard ready date: 2026-05-13\nExpedited ready date: 2026-05-07 (expedite fee USD 175, flat)\nValid until: 2026-05-06\nNotes: June image-baseline attestation refresh. Standard bench 2026-05-13; expedited adds USD 175.\nCertified results are delivered to the customer's evidence import endpoint; release use is subject to the customer's re-verification.\n",
+        "file_id": "DRV-006-17",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "certification-confirmation-CQ-88420.pdf",
+        "sha256": "c95a5476fb8abb6b3744d8ec1488d8aba19c1ce67da0eb86600d128e1e131505"
+      },
+      {
+        "content": "{\n  \"commitment\": {\n    \"commitment_id\": \"COM-PEL-SEC-0512\",\n    \"contract_ref\": \"MSA-PEL-2025 security addendum \\u00a73\",\n    \"customer_id\": \"CUST-PELLWORTH\",\n    \"customer_name\": \"Pellworth Logistics\",\n    \"cutover_date\": \"2026-05-12\",\n    \"issue_key\": \"LKS-4510\",\n    \"kind\": \"security_sla\",\n    \"note\": \"critical CVE remediation within 7 days of the due date; earliest pair due 2026-05-05; USD 6,000 per day of slip\",\n    \"penalty_usd\": 6000,\n    \"status\": \"ACTIVE\"\n  },\n  \"export\": \"success.commitments.get\"\n}\n",
+        "file_id": "DRV-006-18",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "commitment-COM-PEL-SEC-0512.json",
+        "sha256": "45e013a9776a7d51d2454c00f190d91c9549f3ae1b3cfde79c640f1a6d55a32b"
+      },
+      {
+        "content": "{\n  \"approval_id\": \"AP-RD-0106\",\n  \"approver_id\": \"U-SOLBERG\",\n  \"approver_role\": \"sre_lead\",\n  \"case_reference\": \"SHIP-0006\",\n  \"granted_on\": \"2026-05-04\",\n  \"scope\": {\n    \"changes\": [\n      \"CHG-70850\",\n      \"CHG-70851\",\n      \"CHG-70852\",\n      \"CHG-70853\"\n    ],\n    \"lanes\": [\n      \"LANE-2\",\n      \"LANE-3\"\n    ],\n    \"not_covered\": [\n      \"displacing protected freeze or compliance windows (change advisory board)\",\n      \"using the blocked storage-fabric maintenance window\",\n      \"out-of-hours windows\"\n    ],\n    \"windows\": \"free regular windows only; two remediation deploys may be sequenced in one window\"\n  },\n  \"status\": \"APPROVED\",\n  \"subject\": \"Re-home the CVE remediation deploys stranded by the LANE-1 outage (SHIP-0006)\"\n}\n",
+        "file_id": "DRV-006-19",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "approval-AP-RD-0106.json",
+        "sha256": "b68646d34031b6c4eed8affee2dd1f070ced21df3a0cae8d6940e48b3b2adb99"
+      },
+      {
+        "content": "{\n  \"as_of\": \"2026-05-04\",\n  \"backport_requests\": [],\n  \"case_reference\": \"SHIP-0006\",\n  \"certification_orders\": [\n    {\n      \"order_id\": \"ORD-3400\",\n      \"status\": \"RECEIVED\"\n    }\n  ],\n  \"changes\": [\n    {\n      \"change_id\": \"CHG-70850\",\n      \"component_id\": \"CMP-31201\",\n      \"end\": \"2026-05-05T10:00:00\",\n      \"issue_key\": \"LKS-4510\",\n      \"lane_id\": \"LANE-1\",\n      \"start\": \"2026-05-05T08:00:00\",\n      \"status\": \"booked\"\n    },\n    {\n      \"change_id\": \"CHG-70851\",\n      \"component_id\": \"CMP-31214\",\n      \"end\": \"2026-05-05T15:00:00\",\n      \"issue_key\": \"LKS-4511\",\n      \"lane_id\": \"LANE-1\",\n      \"start\": \"2026-05-05T13:00:00\",\n      \"status\": \"booked\"\n    },\n    {\n      \"change_id\": \"CHG-70852\",\n      \"component_id\": \"CMP-31227\",\n      \"end\": \"2026-05-06T10:00:00\",\n      \"issue_key\": \"LKS-4512\",\n      \"lane_id\": \"LANE-1\",\n      \"start\": \"2026-05-06T08:00:00\",\n      \"status\": \"booked\"\n    },\n    {\n      \"change_id\": \"CHG-70853\",\n      \"component_id\": \"CMP-31233\",\n      \"end\": \"2026-05-07T10:00:00\",\n      \"issue_key\": \"LKS-4513\",\n      \"lane_id\": \"LANE-1\",\n      \"start\": \"2026-05-07T08:00:00\",\n      \"status\": \"booked\"\n    }\n  ],\n  \"note\": \"Snapshot before any action; row order does not indicate applicability.\"\n}\n",
+        "file_id": "DRV-006-20",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "starting-state-repodesk-006.json",
+        "sha256": "84d109ec5380d44395842c4749271432ec1e9b6d9071c618aa0691f7453f23ef"
+      },
+      {
+        "content": "availability_id,engineer,service_date,session,status,note,hubbench_task_scope,hubbench_case_reference\nAV-1006-01,Chidi Achebe,2026-05-06,PM,available,security engineer on shift,repodesk-006,SHIP-0006\nAV-1006-02,Siobhan Farrell,2026-05-11,AM,available,,repodesk-006,SHIP-0006\n",
+        "file_id": "DRV-006-21",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "reviewer-availability.csv",
+        "sha256": "4d08075afa4617b46dddae36d5fe3540e785ce0f05177d78dcdece9b38fab9d5"
+      },
+      {
+        "content": "# Deploy-controller attestation notice\n\nAsset: blue-cluster deploy controller LS-DC-4471 (LANE-1). Failed firmware attestation 2026-05-04 06:00. Lane fenced and removed from the release roster. Expected return to service: 2026-05-15 (controller board on order). No spare lane available this week.\n\nLANE-3 storage-fabric maintenance remains scheduled for 2026-05-08 PM.\n",
+        "file_id": "DRV-006-22",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "attestation-notice-lane-1.md",
+        "sha256": "955381b6e24bd891cf3d2b29dda34a4f0f75d06dcdd164ab770164a8461463fb"
+      },
+      {
+        "content": "change_id,component_id,issue_key,due_date,latest_acceptable_date\nCHG-70850,CMP-31201,LKS-4510,2026-05-05,2026-05-12\nCHG-70851,CMP-31214,LKS-4511,2026-05-05,2026-05-12\nCHG-70852,CMP-31227,LKS-4512,2026-05-06,2026-05-13\nCHG-70853,CMP-31233,LKS-4513,2026-05-07,2026-05-14\n",
+        "file_id": "DRV-006-23",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "security-sla-deadlines.csv",
+        "sha256": "918f65f387fb1678743527387dad056673a6e9cbacfd24204a7c11559a15f928"
+      },
+      {
+        "content": "{\n  \"anchors\": [\n    {\n      \"distribution_note\": \"no upstream tasks, repositories, patches, or scores redistributed; this family covers the release-engineering decision around a fix that patch grading does not\",\n      \"evaluation_shape\": \"issue-to-patch tasks in real repositories graded by executable tests\",\n      \"harbor_dataset\": \"swe-bench/swe-bench-verified\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/swe-bench/swe-bench-verified/latest\",\n      \"license\": \"MIT\",\n      \"name\": \"SWE-bench Verified\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/SWE-bench/SWE-bench\"\n    },\n    {\n      \"distribution_note\": \"no upstream tasks or scores redistributed\",\n      \"evaluation_shape\": \"long-horizon repository tasks with hidden executable tests\",\n      \"harbor_dataset\": \"scale-ai/swe-bench-pro\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/scale-ai/swe-bench-pro/latest\",\n      \"name\": \"SWE-bench Pro\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/scaleapi/SWE-bench_Pro-os\"\n    },\n    {\n      \"distribution_note\": \"no upstream exercises or scores redistributed\",\n      \"evaluation_shape\": \"multi-language coding exercises graded by unit tests\",\n      \"harbor_dataset\": \"aider/aider-polyglot\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/aider/aider-polyglot/latest\",\n      \"name\": \"Aider Polyglot\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/Aider-AI/polyglot-benchmark\"\n    }\n  ],\n  \"clean_room\": true,\n  \"family\": \"repodesk\",\n  \"schema_version\": \"hubbench.provenance.v1\",\n  \"task_id\": \"repodesk-006\",\n  \"upstream_scores_claimed\": false,\n  \"upstream_tasks_copied\": false\n}\n",
+        "file_id": "DRV-006-24",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "harbor-open-source-anchors.json",
+        "sha256": "d9c15b69a0876b2472a54d296e0dec3a8d43dd80e2b484b8511bec114ade792b"
+      },
+      {
+        "content": "task_id,case_reference,subject_id,source_system,record_role,effective_revision\nrepodesk-006,SHIP-0006,CHG-70850,domain,authoritative_subject,v1\nrepodesk-006,SHIP-0006,CHG-70850,approvals,execution_authority,v1\nrepodesk-006,SHIP-0006,CHG-70850,drive,supporting_evidence,v1\n",
+        "file_id": "DRV-006-25",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "record-lineage.csv",
+        "sha256": "2e45d267f315ec9b77a75cbe35f056db2c53c8be844d9b2f475da16cad5a151a"
+      },
+      {
+        "content": "# Current execution authority — SHIP-0006\n\nEffective 2026-05-04. Applies only to CHG-70850 in RepoDesk. The signed approval record and provider contract jointly bound any write. A source record, search result, or prior decision never grants authority.\n\nRelease revision: v1. Task scope: repodesk-006.\n",
+        "file_id": "DRV-006-26",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "current-authority.md",
+        "sha256": "afcb5ec10168b2d486c28efc2fb3641155f1d2f0a14551f87c6fb5c9f459482d"
+      },
+      {
+        "content": "# Retired authority — SHIP-0006\n\nStatus: SUPERSEDED. This historical RepoDesk delegation ended before 2026-05-04. It references CHG-70850 but cannot authorize a current action for repodesk-006.\n",
+        "file_id": "DRV-006-27",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "retired-authority.md",
+        "sha256": "1da8a7499fa98ee6ad61e41225d306429c17b748072b2b2cd4d6968e7de1889a"
+      },
+      {
+        "content": "{\n  \"approval_record\": \"DEC-REPODESK-0006\",\n  \"authority_source\": \"signed family approval plus provider contract\",\n  \"case_reference\": \"SHIP-0006\",\n  \"effective_revision\": \"v1\",\n  \"prohibited_basis\": [\n    \"retired authority\",\n    \"search ranking\",\n    \"request urgency\"\n  ],\n  \"status\": \"REVIEW_REQUIRED\",\n  \"subject_id\": \"CHG-70850\"\n}\n",
+        "file_id": "DRV-006-28",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "decision-record.json",
+        "sha256": "70a110e7cd4e7e332a5fec77f1a04a5c140d112fb881452ad0cf85bad7193029"
+      },
+      {
+        "content": "task_id,case_reference,review_lane,available_units,protected_units,effective_date\nrepodesk-006,SHIP-0006,standard,14,2,2026-05-04\nrepodesk-006,SHIP-0006,expedited,10,1,2026-05-04\n",
+        "file_id": "DRV-006-29",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "review-capacity.xlsx",
+        "sha256": "69f9eeb0b9aee5a1cfeeff6a221fa9ea39ae7094e34cecf1dd36c11ba2f63df4"
+      },
+      {
+        "content": "Source integrity control\nTask: repodesk-006\nCase: SHIP-0006\nSubject: CHG-70850\nEffective revision: v1\nRule: current provider state plus the signed approval govern. Search rank, filenames, request urgency, and archived authority do not.\n",
+        "file_id": "DRV-006-30",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "source-integrity.pdf",
+        "sha256": "f395d0b8c8b61141ed7a3142a9dd79729d78b6b464d9d0f3ebeadbf4ade8aa0d"
+      },
+      {
+        "content": "task_id: \"repodesk-006\"\ncase_reference: \"SHIP-0006\"\nas_of: \"2026-05-04\"\nchecks:\n  - name: \"identity_linked\"\n    status: \"PASS\"\n    record: \"CHG-70850\"\n  - name: \"revision_current\"\n    status: \"PASS\"\n    record: \"v1\"\n  - name: \"authority_requires_live_read\"\n    status: \"OPEN\"\n    record: \"DEC-REPODESK-0006\"\n  - name: \"outcome_precomputed\"\n    status: \"NO\"\n    record: \"repodesk-006\"\n",
+        "file_id": "DRV-006-31",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "evidence-status.yaml",
+        "sha256": "fadf72991fe5d6fbf9d94ccb9d9f65b2b44dffc5fd4cea0780db0f418bed1701"
+      },
+      {
+        "content": "2026-05-04T08:55:00Z INFO scope_created task=repodesk-006 case=SHIP-0006\n2026-05-04T08:56:00Z INFO subject_linked family=repodesk subject=CHG-70850\n2026-05-04T08:57:00Z WARN retired_authority_present case=SHIP-0006 action=ignore_until_current_scope_verified\n2026-05-04T08:58:00Z INFO provider_state_ready task=repodesk-006 expected_mutations=2\n",
+        "file_id": "DRV-006-32",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "text/plain",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "system-audit.log",
+        "sha256": "4f21642368c5aa3dff7ccb6167151774aa939edf05434e313a350108fe8ab135"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SHIP-0006\",\n  \"messages\": [\n    {\n      \"author\": \"operations\",\n      \"sent_at\": \"2026-05-04T08:35:00\",\n      \"text\": \"Use immutable subject CHG-70850; the similarly named archived record is not in scope.\"\n    },\n    {\n      \"author\": \"governance\",\n      \"sent_at\": \"2026-05-04T08:41:00\",\n      \"text\": \"Current revision is v1. Confirm the signed approval before any state change.\"\n    },\n    {\n      \"author\": \"requester\",\n      \"sent_at\": \"2026-05-04T08:47:00\",\n      \"text\": \"Please leave the stakeholder communication as a draft for human review.\"\n    }\n  ],\n  \"thread_id\": \"OPS-REPODESK-0006\"\n}\n",
+        "file_id": "DRV-006-33",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "operations-thread.json",
+        "sha256": "ee5c1d31eaf4468ad1eb2025353bc97e0888773eb73a9e86d593b4da6b3770cb"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SHIP-0006\",\n  \"network\": \"closed benchmark world\",\n  \"read_semantics\": \"provider-shaped records backed by the seeded task world\",\n  \"schema_version\": \"hubbench.provider-contract.v1\",\n  \"state_scope\": \"isolated SQLite episode\",\n  \"subject_id\": \"CHG-70850\",\n  \"task_id\": \"repodesk-006\",\n  \"unsupported_claims\": [\n    \"byte parity with upstream providers\",\n    \"conversion of upstream benchmark tasks\",\n    \"upstream score comparability\"\n  ],\n  \"verifier_visibility\": \"hidden from the agent\",\n  \"write_semantics\": \"task-scoped, schema-validated, transactionally persisted and audited\"\n}\n",
+        "file_id": "DRV-006-34",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "provider-contracts.json",
+        "sha256": "bd93f3f8e11b347f535e4d88641346943d50f59f0502d19b4ccf011ebccc5398"
+      },
+      {
+        "content": "{\n  \"captured_as_of\": \"2026-05-04\",\n  \"case_reference\": \"SHIP-0006\",\n  \"expected_mutation_count\": 2,\n  \"family\": \"repodesk\",\n  \"note\": \"Live provider state remains authoritative; this export is a correlation aid, not a write instruction.\",\n  \"organization\": \"Larkspur Systems \\u2014 Release Engineering\",\n  \"schema_version\": \"hubbench.live-snapshot.v1\",\n  \"state\": \"PRE_ACTION\",\n  \"subject_id\": \"CHG-70850\",\n  \"task_id\": \"repodesk-006\"\n}\n",
+        "file_id": "DRV-006-35",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "live-snapshot.json",
+        "sha256": "ddf336779c6805aadf0d65b54c5bcf8a7a8ecc3e9a31c60e29c0ea3000946161"
+      },
+      {
+        "content": "case_reference: \"SHIP-0006\"\nas_of: \"2026-05-04\"\nfiles:\n  - path: \"playbook/release-engineering-playbook.md\"\n    kind: \"policy\"\n    media_type: \"text/markdown\"\n    sha256: \"5dd2a5555657243f8d2bd96c19c7662e187114f64574deb1cea4cfaed9c37ef5\"\n  - path: \"playbook/superseded-release-playbook-2024.md\"\n    kind: \"policy_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"a157cf6849fd3a6b08d8b36e427926150a2c75e70589073ef82eae26a69652af\"\n  - path: \"deploy/attestation-notice-lane-3-2025-11.md\"\n    kind: \"stale_notice\"\n    media_type: \"text/markdown\"\n    sha256: \"d941794c1f8e8c49946df7daee5e52086df3a7aff90e8fbeeab6b39cff3db37a\"\n  - path: \"tracker/issue-LKS-4510.json\"\n    kind: \"issue_export\"\n    media_type: \"application/json\"\n    sha256: \"fc15aaeeffb0c59dd06c812f6bbe3823769367d07996dfb17e6f728e3f9636cb\"\n  - path: \"scm/component-edge-proxy-impact.json\"\n    kind: \"component_summary\"\n    media_type: \"application/json\"\n    sha256: \"7fcd1205cb901e57f720856c84b6597d12fd5d67f1a62da661b04991efa34806\"\n  - path: \"scm/commits-main-fix-range.csv\"\n    kind: \"commit_range\"\n    media_type: \"text/csv\"\n    sha256: \"cd2f75ff8c14bb5957edfa1ff03595269328c2aa0c93c3d963a207d10463e2d8\"\n  - path: \"scm/pull-requests-and-reviews.json\"\n    kind: \"pull_requests\"\n    media_type: \"application/json\"\n    sha256: \"178628d084e0b9a2be8322904d8584b78c9517c1e822cdba453be070f1b3586a\"\n  - path: \"scm/module-registry.csv\"\n    kind: \"module_registry\"\n    media_type: \"text/csv\"\n    sha256: \"09a93cf25d371567e9ccbc1ca7b2376ef89b734032b765230c338fff18871e9d\"\n  - path: \"ci/gate-class-catalog.csv\"\n    kind: \"class_catalog\"\n    media_type: \"text/csv\"\n    sha256: \"9aae0cf4ada60c59a4a53b8232d67138f02420c466239241ce953940ab9e2e8e\"\n  - path: \"ci/verification-results-by-set.xlsx\"\n    kind: \"evidence_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"5949b01c6f573ab660185f40795c159e34b7767fe77090d0b1e4ff2ecc73860c\"\n  - path: \"ci/result-status-register.csv\"\n    kind: \"verification_register\"\n    media_type: \"text/csv\"\n    sha256: \"ab6e5e8717fd24af982bbaef64d4863df4b528cb604cd2ed367ae3498a127f23\"\n  - path: \"ci/pipeline-runs.csv\"\n    kind: \"pipeline_runs\"\n    media_type: \"text/csv\"\n    sha256: \"52695d23b1bd1ef67dc03de787e1e6407890c5b5a66a262425a82d9183499363\"\n  - path: \"ci/flaky-test-registry.csv\"\n    kind: \"flaky_registry\"\n    media_type: \"text/csv\"\n    sha256: \"a69a91bc9ac25a9c3c7dcf5eda7cafc4ceccc8af2a70de4dd37ba8cff3b63023\"\n  - path: \"ci/runner-pool-capacity.json\"\n    kind: \"pool_capacity\"\n    media_type: \"application/json\"\n    sha256: \"5fef3a91f436f78d4a102b01125b430c4c96694bfef67db31dd84eaf02c172a3\"\n  - path: \"deploy/lane-calendar-2026-05-04.xlsx\"\n    kind: \"lane_calendar\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"e7cacd1437a07aca118554cc798592cf4f34d64d3ed45d424e39cc70a914cdce\"\n  - path: \"deploy/lane-roster-and-capabilities.csv\"\n    kind: \"lane_roster\"\n    media_type: \"text/csv\"\n    sha256: \"5121d49cd2ef1eac4c95889c1f61d039123ffa93ae92dfff7d92d9c08779a9ec\"\n  - path: \"partners/certification-confirmation-CQ-88420.pdf\"\n    kind: \"partner_confirmation\"\n    media_type: \"application/pdf\"\n    sha256: \"c95a5476fb8abb6b3744d8ec1488d8aba19c1ce67da0eb86600d128e1e131505\"\n  - path: \"success/commitment-COM-PEL-SEC-0512.json\"\n    kind: \"customer_commitment\"\n    media_type: \"application/json\"\n    sha256: \"45e013a9776a7d51d2454c00f190d91c9549f3ae1b3cfde79c640f1a6d55a32b\"\n  - path: \"messages/THR-1006.eml\"\n    kind: \"email\"\n    media_type: \"message/rfc822\"\n    sha256: \"2587e5640b2e463e63e5080e2d3c15dfd9e2d20c383c3fe8cfc998bdd1ab98da\"\n  - path: \"chat/CHAT-1006.json\"\n    kind: \"chat_thread\"\n    media_type: \"application/json\"\n    sha256: \"7f0c2393e5c5074a460f3c70fe3100687f14a055383ea56c65a1ce965fc497f1\"\n  - path: \"approvals/approval-AP-RD-0106.json\"\n    kind: \"approval\"\n    media_type: \"application/json\"\n    sha256: \"b68646d34031b6c4eed8affee2dd1f070ced21df3a0cae8d6940e48b3b2adb99\"\n  - path: \"exports/starting-state-repodesk-006.json\"\n    kind: \"starting_state\"\n    media_type: \"application/json\"\n    sha256: \"84d109ec5380d44395842c4749271432ec1e9b6d9071c618aa0691f7453f23ef\"\n  - path: \"oncall/reviewer-availability.csv\"\n    kind: \"reviewer_availability\"\n    media_type: \"text/csv\"\n    sha256: \"4d08075afa4617b46dddae36d5fe3540e785ce0f05177d78dcdece9b38fab9d5\"\n  - path: \"deploy/attestation-notice-lane-1.md\"\n    kind: \"attestation_notice\"\n    media_type: \"text/markdown\"\n    sha256: \"955381b6e24bd891cf3d2b29dda34a4f0f75d06dcdd164ab770164a8461463fb\"\n  - path: \"deploy/security-sla-deadlines.csv\"\n    kind: \"deadline_table\"\n    media_type: \"text/csv\"\n    sha256: \"918f65f387fb1678743527387dad056673a6e9cbacfd24204a7c11559a15f928\"\n  - path: \"provenance/harbor-open-source-anchors.json\"\n    kind: \"open_source_provenance\"\n    media_type: \"application/json\"\n    sha256: \"d9c15b69a0876b2472a54d296e0dec3a8d43dd80e2b484b8511bec114ade792b\"\n  - path: \"lineage/record-lineage.csv\"\n    kind: \"record_lineage\"\n    media_type: \"text/csv\"\n    sha256: \"2e45d267f315ec9b77a75cbe35f056db2c53c8be844d9b2f475da16cad5a151a\"\n  - path: \"controls/current-authority.md\"\n    kind: \"authority_current\"\n    media_type: \"text/markdown\"\n    sha256: \"afcb5ec10168b2d486c28efc2fb3641155f1d2f0a14551f87c6fb5c9f459482d\"\n  - path: \"controls/retired-authority.md\"\n    kind: \"authority_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"1da8a7499fa98ee6ad61e41225d306429c17b748072b2b2cd4d6968e7de1889a\"\n  - path: \"approvals/decision-record.json\"\n    kind: \"approval_decision\"\n    media_type: \"application/json\"\n    sha256: \"70a110e7cd4e7e332a5fec77f1a04a5c140d112fb881452ad0cf85bad7193029\"\n  - path: \"workbooks/review-capacity.xlsx\"\n    kind: \"review_capacity_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"69f9eeb0b9aee5a1cfeeff6a221fa9ea39ae7094e34cecf1dd36c11ba2f63df4\"\n  - path: \"controls/source-integrity.pdf\"\n    kind: \"source_integrity_control\"\n    media_type: \"application/pdf\"\n    sha256: \"f395d0b8c8b61141ed7a3142a9dd79729d78b6b464d9d0f3ebeadbf4ade8aa0d\"\n  - path: \"audit/evidence-status.yaml\"\n    kind: \"evidence_status\"\n    media_type: \"application/yaml\"\n    sha256: \"fadf72991fe5d6fbf9d94ccb9d9f65b2b44dffc5fd4cea0780db0f418bed1701\"\n  - path: \"audit/system-audit.log\"\n    kind: \"system_audit\"\n    media_type: \"text/plain\"\n    sha256: \"4f21642368c5aa3dff7ccb6167151774aa939edf05434e313a350108fe8ab135\"\n  - path: \"communications/source-request.eml\"\n    kind: \"source_request\"\n    media_type: \"message/rfc822\"\n    sha256: \"d82056a995353c1446b560d401f63ae7e1bf452ef8f1c93e9e84c08266978fd6\"\n  - path: \"collaboration/operations-thread.json\"\n    kind: \"operations_thread\"\n    media_type: \"application/json\"\n    sha256: \"ee5c1d31eaf4468ad1eb2025353bc97e0888773eb73a9e86d593b4da6b3770cb\"\n  - path: \"contracts/provider-contracts.json\"\n    kind: \"provider_contract\"\n    media_type: \"application/json\"\n    sha256: \"bd93f3f8e11b347f535e4d88641346943d50f59f0502d19b4ccf011ebccc5398\"\n  - path: \"exports/live-snapshot.json\"\n    kind: \"live_snapshot\"\n    media_type: \"application/json\"\n    sha256: \"ddf336779c6805aadf0d65b54c5bcf8a7a8ecc3e9a31c60e29c0ea3000946161\"\n",
+        "file_id": "DRV-006-36",
+        "folder": "Release Engineering/Cases/SHIP-0006",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "evidence-index.yaml",
+        "sha256": "a37bdbeef29d1da7c0d43c5432236c3ecfebacd4cf3612cd80a1a52a2ec7fc19"
+      }
+    ],
+    "engineers": [
+      {
+        "engineer_id": "ENG-KOWALCZYK",
+        "focus": "Checkout and storefront",
+        "name": "Ines Kowalczyk",
+        "role": "component_owner"
+      },
+      {
+        "engineer_id": "ENG-DESHPANDE",
+        "focus": "Payments",
+        "name": "Rohan Deshpande",
+        "role": "component_owner"
+      },
+      {
+        "engineer_id": "ENG-LINDGREN",
+        "focus": "Ledger, catalog, and ingest",
+        "name": "Maja Lindgren",
+        "role": "data_platform_lead"
+      },
+      {
+        "engineer_id": "ENG-ACHEBE",
+        "focus": "Compliance and CVE remediation",
+        "name": "Chidi Achebe",
+        "role": "security_engineer"
+      },
+      {
+        "engineer_id": "ENG-FARRELL",
+        "focus": "Platform reliability",
+        "name": "Siobhan Farrell",
+        "role": "sre_oncall"
+      }
+    ],
+    "environments": [
+      {
+        "cluster": "blue",
+        "environment_id": "ENV-PROD-SHARED",
+        "kind": "production",
+        "name": "Production (shared multi-tenant)"
+      },
+      {
+        "cluster": "green",
+        "environment_id": "ENV-PROD-DEDICATED",
+        "kind": "production",
+        "name": "Production (dedicated single-tenant pool)"
+      },
+      {
+        "cluster": "blue",
+        "environment_id": "ENV-STAGE",
+        "kind": "staging",
+        "name": "Staging"
+      }
+    ],
+    "evidence_files": [
+      {
+        "asset_id": "repodesk-006-01",
+        "kind": "policy",
+        "media_type": "text/markdown",
+        "path": "playbook/release-engineering-playbook.md",
+        "sha256": "5dd2a5555657243f8d2bd96c19c7662e187114f64574deb1cea4cfaed9c37ef5",
+        "source": "drive",
+        "task_id": "repodesk-006",
+        "title": "Release engineering playbook v5 (effective)"
+      },
+      {
+        "asset_id": "repodesk-006-02",
+        "kind": "policy_superseded",
+        "media_type": "text/markdown",
+        "path": "playbook/superseded-release-playbook-2024.md",
+        "sha256": "a157cf6849fd3a6b08d8b36e427926150a2c75e70589073ef82eae26a69652af",
+        "source": "drive",
+        "task_id": "repodesk-006",
+        "title": "Release engineering playbook 2024 (superseded)"
+      },
+      {
+        "asset_id": "repodesk-006-03",
+        "kind": "stale_notice",
+        "media_type": "text/markdown",
+        "path": "deploy/attestation-notice-lane-3-2025-11.md",
+        "sha256": "d941794c1f8e8c49946df7daee5e52086df3a7aff90e8fbeeab6b39cff3db37a",
+        "source": "drive",
+        "task_id": "repodesk-006",
+        "title": "Deploy-controller attestation notice — LANE-3 (November 2025, closed)"
+      },
+      {
+        "asset_id": "repodesk-006-04",
+        "kind": "issue_export",
+        "media_type": "application/json",
+        "path": "tracker/issue-LKS-4510.json",
+        "sha256": "fc15aaeeffb0c59dd06c812f6bbe3823769367d07996dfb17e6f728e3f9636cb",
+        "source": "tracker_export",
+        "task_id": "repodesk-006",
+        "title": "Issue LKS-4510 (tracker export)"
+      },
+      {
+        "asset_id": "repodesk-006-05",
+        "kind": "component_summary",
+        "media_type": "application/json",
+        "path": "scm/component-edge-proxy-impact.json",
+        "sha256": "7fcd1205cb901e57f720856c84b6597d12fd5d67f1a62da661b04991efa34806",
+        "source": "scm_export",
+        "task_id": "repodesk-006",
+        "title": "Component edge-proxy summary with impact analyses (SCM export)"
+      },
+      {
+        "asset_id": "repodesk-006-06",
+        "kind": "commit_range",
+        "media_type": "text/csv",
+        "path": "scm/commits-main-fix-range.csv",
+        "sha256": "cd2f75ff8c14bb5957edfa1ff03595269328c2aa0c93c3d963a207d10463e2d8",
+        "source": "scm_export",
+        "task_id": "repodesk-006",
+        "title": "Commits on main around the fix range (SCM export)"
+      },
+      {
+        "asset_id": "repodesk-006-07",
+        "kind": "pull_requests",
+        "media_type": "application/json",
+        "path": "scm/pull-requests-and-reviews.json",
+        "sha256": "178628d084e0b9a2be8322904d8584b78c9517c1e822cdba453be070f1b3586a",
+        "source": "scm_export",
+        "task_id": "repodesk-006",
+        "title": "Pull requests and reviews linked to the case (SCM export)"
+      },
+      {
+        "asset_id": "repodesk-006-08",
+        "kind": "module_registry",
+        "media_type": "text/csv",
+        "path": "scm/module-registry.csv",
+        "sha256": "09a93cf25d371567e9ccbc1ca7b2376ef89b734032b765230c338fff18871e9d",
+        "source": "scm_export",
+        "task_id": "repodesk-006",
+        "title": "Module registry: codeowners, gate class, revert / flag gates"
+      },
+      {
+        "asset_id": "repodesk-006-09",
+        "kind": "class_catalog",
+        "media_type": "text/csv",
+        "path": "ci/gate-class-catalog.csv",
+        "sha256": "9aae0cf4ada60c59a4a53b8232d67138f02420c466239241ce953940ab9e2e8e",
+        "source": "ci_export",
+        "task_id": "repodesk-006",
+        "title": "Gate class catalog: runs per module and minimum validity"
+      },
+      {
+        "asset_id": "repodesk-006-10",
+        "kind": "evidence_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "ci/verification-results-by-set.xlsx",
+        "sha256": "5949b01c6f573ab660185f40795c159e34b7767fe77090d0b1e4ff2ecc73860c",
+        "source": "ci_workbook",
+        "task_id": "repodesk-006",
+        "title": "Registered verification results by set (gross)"
+      },
+      {
+        "asset_id": "repodesk-006-11",
+        "kind": "verification_register",
+        "media_type": "text/csv",
+        "path": "ci/result-status-register.csv",
+        "sha256": "ab6e5e8717fd24af982bbaef64d4863df4b528cb604cd2ed367ae3498a127f23",
+        "source": "ci_export",
+        "task_id": "repodesk-006",
+        "title": "Result-set status register (status, holds, incident notes)"
+      },
+      {
+        "asset_id": "repodesk-006-12",
+        "kind": "pipeline_runs",
+        "media_type": "text/csv",
+        "path": "ci/pipeline-runs.csv",
+        "sha256": "52695d23b1bd1ef67dc03de787e1e6407890c5b5a66a262425a82d9183499363",
+        "source": "ci_export",
+        "task_id": "repodesk-006",
+        "title": "Pipelines and recent runs"
+      },
+      {
+        "asset_id": "repodesk-006-13",
+        "kind": "flaky_registry",
+        "media_type": "text/csv",
+        "path": "ci/flaky-test-registry.csv",
+        "sha256": "a69a91bc9ac25a9c3c7dcf5eda7cafc4ceccc8af2a70de4dd37ba8cff3b63023",
+        "source": "ci_export",
+        "task_id": "repodesk-006",
+        "title": "Flaky-test registry (quarantine and retry exposure)"
+      },
+      {
+        "asset_id": "repodesk-006-14",
+        "kind": "pool_capacity",
+        "media_type": "application/json",
+        "path": "ci/runner-pool-capacity.json",
+        "sha256": "5fef3a91f436f78d4a102b01125b430c4c96694bfef67db31dd84eaf02c172a3",
+        "source": "ci_export",
+        "task_id": "repodesk-006",
+        "title": "Runner pool capacity and queue — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-15",
+        "kind": "lane_calendar",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "deploy/lane-calendar-2026-05-04.xlsx",
+        "sha256": "e7cacd1437a07aca118554cc798592cf4f34d64d3ed45d424e39cc70a914cdce",
+        "source": "deploy_workbook",
+        "task_id": "repodesk-006",
+        "title": "Lane window calendar, three weeks from 2026-05-04"
+      },
+      {
+        "asset_id": "repodesk-006-16",
+        "kind": "lane_roster",
+        "media_type": "text/csv",
+        "path": "deploy/lane-roster-and-capabilities.csv",
+        "sha256": "5121d49cd2ef1eac4c95889c1f61d039123ffa93ae92dfff7d92d9c08779a9ec",
+        "source": "deploy_export",
+        "task_id": "repodesk-006",
+        "title": "Lane roster and tenant-isolation capability"
+      },
+      {
+        "asset_id": "repodesk-006-17",
+        "kind": "partner_confirmation",
+        "media_type": "application/pdf",
+        "path": "partners/certification-confirmation-CQ-88420.pdf",
+        "sha256": "c95a5476fb8abb6b3744d8ec1488d8aba19c1ce67da0eb86600d128e1e131505",
+        "source": "email_attachment",
+        "task_id": "repodesk-006",
+        "title": "Certification confirmation CQ-88420"
+      },
+      {
+        "asset_id": "repodesk-006-18",
+        "kind": "customer_commitment",
+        "media_type": "application/json",
+        "path": "success/commitment-COM-PEL-SEC-0512.json",
+        "sha256": "45e013a9776a7d51d2454c00f190d91c9549f3ae1b3cfde79c640f1a6d55a32b",
+        "source": "success_export",
+        "task_id": "repodesk-006",
+        "title": "Customer commitment COM-PEL-SEC-0512 (customer-success export)"
+      },
+      {
+        "asset_id": "repodesk-006-19",
+        "kind": "email",
+        "media_type": "message/rfc822",
+        "path": "messages/THR-1006.eml",
+        "sha256": "2587e5640b2e463e63e5080e2d3c15dfd9e2d20c383c3fe8cfc998bdd1ab98da",
+        "source": "messages",
+        "task_id": "repodesk-006",
+        "title": "SHIP-0006 CVE deploys stranded by lane 1"
+      },
+      {
+        "asset_id": "repodesk-006-20",
+        "kind": "chat_thread",
+        "media_type": "application/json",
+        "path": "chat/CHAT-1006.json",
+        "sha256": "7f0c2393e5c5074a460f3c70fe3100687f14a055383ea56c65a1ce965fc497f1",
+        "source": "chat",
+        "task_id": "repodesk-006",
+        "title": "SHIP-0006 lane 1 outage — CVE deploys"
+      },
+      {
+        "asset_id": "repodesk-006-21",
+        "kind": "approval",
+        "media_type": "application/json",
+        "path": "approvals/approval-AP-RD-0106.json",
+        "sha256": "b68646d34031b6c4eed8affee2dd1f070ced21df3a0cae8d6940e48b3b2adb99",
+        "source": "approvals_export",
+        "task_id": "repodesk-006",
+        "title": "Approval record AP-RD-0106"
+      },
+      {
+        "asset_id": "repodesk-006-22",
+        "kind": "starting_state",
+        "media_type": "application/json",
+        "path": "exports/starting-state-repodesk-006.json",
+        "sha256": "84d109ec5380d44395842c4749271432ec1e9b6d9071c618aa0691f7453f23ef",
+        "source": "deploy_export",
+        "task_id": "repodesk-006",
+        "title": "Starting-state export (changes, certification orders, backports)"
+      },
+      {
+        "asset_id": "repodesk-006-23",
+        "kind": "reviewer_availability",
+        "media_type": "text/csv",
+        "path": "oncall/reviewer-availability.csv",
+        "sha256": "4d08075afa4617b46dddae36d5fe3540e785ce0f05177d78dcdece9b38fab9d5",
+        "source": "oncall_export",
+        "task_id": "repodesk-006",
+        "title": "Reviewer and on-call availability"
+      },
+      {
+        "asset_id": "repodesk-006-24",
+        "kind": "attestation_notice",
+        "media_type": "text/markdown",
+        "path": "deploy/attestation-notice-lane-1.md",
+        "sha256": "955381b6e24bd891cf3d2b29dda34a4f0f75d06dcdd164ab770164a8461463fb",
+        "source": "drive",
+        "task_id": "repodesk-006",
+        "title": "Deploy-controller attestation notice — LANE-1"
+      },
+      {
+        "asset_id": "repodesk-006-25",
+        "kind": "deadline_table",
+        "media_type": "text/csv",
+        "path": "deploy/security-sla-deadlines.csv",
+        "sha256": "918f65f387fb1678743527387dad056673a6e9cbacfd24204a7c11559a15f928",
+        "source": "drive",
+        "task_id": "repodesk-006",
+        "title": "Security patch SLA deadlines (security engineering)"
+      },
+      {
+        "asset_id": "repodesk-006-26",
+        "kind": "open_source_provenance",
+        "media_type": "application/json",
+        "path": "provenance/harbor-open-source-anchors.json",
+        "sha256": "d9c15b69a0876b2472a54d296e0dec3a8d43dd80e2b484b8511bec114ade792b",
+        "source": "release_metadata",
+        "task_id": "repodesk-006",
+        "title": "Open-source benchmark provenance — RepoDesk"
+      },
+      {
+        "asset_id": "repodesk-006-27",
+        "kind": "record_lineage",
+        "media_type": "text/csv",
+        "path": "lineage/record-lineage.csv",
+        "sha256": "2e45d267f315ec9b77a75cbe35f056db2c53c8be844d9b2f475da16cad5a151a",
+        "source": "lineage_export",
+        "task_id": "repodesk-006",
+        "title": "Cross-system record lineage — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-28",
+        "kind": "authority_current",
+        "media_type": "text/markdown",
+        "path": "controls/current-authority.md",
+        "sha256": "afcb5ec10168b2d486c28efc2fb3641155f1d2f0a14551f87c6fb5c9f459482d",
+        "source": "governance",
+        "task_id": "repodesk-006",
+        "title": "Current authority — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-29",
+        "kind": "authority_superseded",
+        "media_type": "text/markdown",
+        "path": "controls/retired-authority.md",
+        "sha256": "1da8a7499fa98ee6ad61e41225d306429c17b748072b2b2cd4d6968e7de1889a",
+        "source": "governance_archive",
+        "task_id": "repodesk-006",
+        "title": "Retired authority — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-30",
+        "kind": "approval_decision",
+        "media_type": "application/json",
+        "path": "approvals/decision-record.json",
+        "sha256": "70a110e7cd4e7e332a5fec77f1a04a5c140d112fb881452ad0cf85bad7193029",
+        "source": "approvals_export",
+        "task_id": "repodesk-006",
+        "title": "Decision control record — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-31",
+        "kind": "review_capacity_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "workbooks/review-capacity.xlsx",
+        "sha256": "69f9eeb0b9aee5a1cfeeff6a221fa9ea39ae7094e34cecf1dd36c11ba2f63df4",
+        "source": "operations_workbook",
+        "task_id": "repodesk-006",
+        "title": "Review capacity — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-32",
+        "kind": "source_integrity_control",
+        "media_type": "application/pdf",
+        "path": "controls/source-integrity.pdf",
+        "sha256": "f395d0b8c8b61141ed7a3142a9dd79729d78b6b464d9d0f3ebeadbf4ade8aa0d",
+        "source": "governance",
+        "task_id": "repodesk-006",
+        "title": "Source integrity control — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-33",
+        "kind": "evidence_status",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-status.yaml",
+        "sha256": "fadf72991fe5d6fbf9d94ccb9d9f65b2b44dffc5fd4cea0780db0f418bed1701",
+        "source": "audit_export",
+        "task_id": "repodesk-006",
+        "title": "Evidence readiness — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-34",
+        "kind": "system_audit",
+        "media_type": "text/plain",
+        "path": "audit/system-audit.log",
+        "sha256": "4f21642368c5aa3dff7ccb6167151774aa939edf05434e313a350108fe8ab135",
+        "source": "audit_export",
+        "task_id": "repodesk-006",
+        "title": "System audit log — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-35",
+        "kind": "source_request",
+        "media_type": "message/rfc822",
+        "path": "communications/source-request.eml",
+        "sha256": "d82056a995353c1446b560d401f63ae7e1bf452ef8f1c93e9e84c08266978fd6",
+        "source": "messages",
+        "task_id": "repodesk-006",
+        "title": "Source integrity request — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-36",
+        "kind": "operations_thread",
+        "media_type": "application/json",
+        "path": "collaboration/operations-thread.json",
+        "sha256": "ee5c1d31eaf4468ad1eb2025353bc97e0888773eb73a9e86d593b4da6b3770cb",
+        "source": "chat",
+        "task_id": "repodesk-006",
+        "title": "Operations thread — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-37",
+        "kind": "provider_contract",
+        "media_type": "application/json",
+        "path": "contracts/provider-contracts.json",
+        "sha256": "bd93f3f8e11b347f535e4d88641346943d50f59f0502d19b4ccf011ebccc5398",
+        "source": "release_metadata",
+        "task_id": "repodesk-006",
+        "title": "Provider contract — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-38",
+        "kind": "live_snapshot",
+        "media_type": "application/json",
+        "path": "exports/live-snapshot.json",
+        "sha256": "ddf336779c6805aadf0d65b54c5bcf8a7a8ecc3e9a31c60e29c0ea3000946161",
+        "source": "provider_export",
+        "task_id": "repodesk-006",
+        "title": "Live pre-action snapshot — SHIP-0006"
+      },
+      {
+        "asset_id": "repodesk-006-39",
+        "kind": "evidence_index",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-index.yaml",
+        "sha256": "a37bdbeef29d1da7c0d43c5432236c3ecfebacd4cf3612cd80a1a52a2ec7fc19",
+        "source": "drive",
+        "task_id": "repodesk-006",
+        "title": "Evidence index"
+      }
+    ],
+    "feature_flags": [
+      {
+        "environment_id": "ENV-PROD-SHARED",
+        "flag_key": "infra.edge_proxy.patched_base",
+        "last_updated": "2026-05-01T12:00:00",
+        "note": null,
+        "revision": 1,
+        "scope": "kill switch",
+        "state": "off"
+      }
+    ],
+    "flaky_tests": [
+      {
+        "check_name": "image-cve-attestation/manifest-sign",
+        "flaky_id": "FLK-160",
+        "module_id": "MOD-INF-EDGE",
+        "note": "cleared 2026-04-27",
+        "quarantined_since": "2026-04-15",
+        "retry_minutes": 6,
+        "status": "CLEARED"
+      }
+    ],
+    "impact_reports": [
+      {
+        "component_id": "CMP-31201",
+        "generated_at": "2026-04-29",
+        "metric": "TOUCHED-MODULES",
+        "report_id": "IMP-31201",
+        "status": "final",
+        "unit": "MODULE",
+        "value": 1
+      },
+      {
+        "component_id": "CMP-31214",
+        "generated_at": "2026-04-29",
+        "metric": "TOUCHED-MODULES",
+        "report_id": "IMP-31214",
+        "status": "final",
+        "unit": "MODULE",
+        "value": 1
+      },
+      {
+        "component_id": "CMP-31227",
+        "generated_at": "2026-04-29",
+        "metric": "TOUCHED-MODULES",
+        "report_id": "IMP-31227",
+        "status": "final",
+        "unit": "MODULE",
+        "value": 1
+      },
+      {
+        "component_id": "CMP-31233",
+        "generated_at": "2026-04-30",
+        "metric": "TOUCHED-MODULES",
+        "report_id": "IMP-31233",
+        "status": "final",
+        "unit": "MODULE",
+        "value": 1
+      }
+    ],
+    "issues": [
+      {
+        "bake_minutes": 60,
+        "basis": "fixed",
+        "build_minutes": 60,
+        "commitment_id": "COM-PEL-SEC-0512",
+        "component_id": "CMP-31201",
+        "customer_id": "CUST-PELLWORTH",
+        "duplicate_of": null,
+        "environments_in_scope": 1,
+        "fix_version": null,
+        "fixed_modules": 1,
+        "gated_modules": 0,
+        "issue_key": "LKS-4510",
+        "kind": "cve_remediation",
+        "note": "Due 2026-05-05; may not slip more than 7 days past due under the Pellworth security addendum.",
+        "opened_at": "2026-04-29",
+        "regression_from": null,
+        "regression_to": null,
+        "requested_by": "ENG-ACHEBE",
+        "scope_note": "CVE remediation image deploy with attestation bake",
+        "severity": "S2",
+        "status": "open",
+        "title": "CVE-2026-3107 remediation for edge-proxy",
+        "verification_class": "GATE-INFRA-1"
+      },
+      {
+        "bake_minutes": 60,
+        "basis": "fixed",
+        "build_minutes": 60,
+        "commitment_id": null,
+        "component_id": "CMP-31214",
+        "customer_id": null,
+        "duplicate_of": null,
+        "environments_in_scope": 1,
+        "fix_version": null,
+        "fixed_modules": 1,
+        "gated_modules": 0,
+        "issue_key": "LKS-4511",
+        "kind": "cve_remediation",
+        "note": "Due 2026-05-05; may not slip more than 7 days past due under the Pellworth security addendum.",
+        "opened_at": "2026-04-29",
+        "regression_from": null,
+        "regression_to": null,
+        "requested_by": "ENG-ACHEBE",
+        "scope_note": "CVE remediation image deploy with attestation bake",
+        "severity": "S2",
+        "status": "open",
+        "title": "CVE-2026-3117 remediation for queue-broker",
+        "verification_class": "GATE-INFRA-1"
+      },
+      {
+        "bake_minutes": 60,
+        "basis": "fixed",
+        "build_minutes": 60,
+        "commitment_id": null,
+        "component_id": "CMP-31227",
+        "customer_id": null,
+        "duplicate_of": null,
+        "environments_in_scope": 1,
+        "fix_version": null,
+        "fixed_modules": 1,
+        "gated_modules": 0,
+        "issue_key": "LKS-4512",
+        "kind": "cve_remediation",
+        "note": "Due 2026-05-06; may not slip more than 7 days past due under the Pellworth security addendum.",
+        "opened_at": "2026-04-29",
+        "regression_from": null,
+        "regression_to": null,
+        "requested_by": "ENG-ACHEBE",
+        "scope_note": "CVE remediation image deploy with attestation bake",
+        "severity": "S2",
+        "status": "open",
+        "title": "CVE-2026-3127 remediation for dns-edge",
+        "verification_class": "GATE-INFRA-1"
+      },
+      {
+        "bake_minutes": 60,
+        "basis": "fixed",
+        "build_minutes": 60,
+        "commitment_id": null,
+        "component_id": "CMP-31233",
+        "customer_id": null,
+        "duplicate_of": null,
+        "environments_in_scope": 1,
+        "fix_version": null,
+        "fixed_modules": 1,
+        "gated_modules": 0,
+        "issue_key": "LKS-4513",
+        "kind": "cve_remediation",
+        "note": "Due 2026-05-07; may not slip more than 7 days past due under the Pellworth security addendum.",
+        "opened_at": "2026-04-29",
+        "regression_from": null,
+        "regression_to": null,
+        "requested_by": "ENG-ACHEBE",
+        "scope_note": "CVE remediation image deploy with attestation bake",
+        "severity": "S2",
+        "status": "open",
+        "title": "CVE-2026-3137 remediation for vpn-concentrator",
+        "verification_class": "GATE-INFRA-1"
+      }
+    ],
+    "lanes": [
+      {
+        "cluster": "blue",
+        "isolation_capable": 1,
+        "lane_id": "LANE-1",
+        "name": "Release lane 1 (blue cluster)",
+        "status": "OUT_OF_SERVICE",
+        "status_note": "blue-cluster deploy controller failed attestation 2026-05-04; return to service 2026-05-15"
+      },
+      {
+        "cluster": "blue",
+        "isolation_capable": 1,
+        "lane_id": "LANE-2",
+        "name": "Release lane 2 (blue cluster)",
+        "status": "ACTIVE",
+        "status_note": null
+      },
+      {
+        "cluster": "green",
+        "isolation_capable": 1,
+        "lane_id": "LANE-3",
+        "name": "Release lane 3 (green cluster)",
+        "status": "ACTIVE",
+        "status_note": null
+      }
+    ],
+    "messages": [
+      {
+        "attachments_json": "[]",
+        "body": "The 06:00 attestation fenced lane 1's deploy controller this morning and it is out until 2026-05-15. That strands the edge-proxy, queue-broker, dns-edge, and vpn-concentrator CVE remediation deploys booked on it this week.\n\nSecurity is firm and Pellworth's security addendum makes it contractual: no remediation may slip more than 7 days past its due date, so the latest acceptable date for the earliest pair is 2026-05-12. Hanna has approved re-homing them onto lanes 2 and 3 (AP-RD-0106); the protected blocks are not to be touched.\n\nSiobhan",
+        "channel": "email",
+        "labels": "sre,SHIP-0006,SHIP-0006",
+        "message_id": "MSG-1006-01",
+        "recipients": "release-eng@larkspur.example",
+        "sender": "siobhan.farrell@larkspur.example",
+        "sent_at": "2026-05-04T07:15:00",
+        "subject": "SHIP-0006 CVE deploys stranded by lane 1",
+        "thread_id": "THR-1006"
+      },
+      {
+        "attachments_json": "[]",
+        "body": "On-call rota for the week of 2026-05-04 is posted. Lane capability flags are on the shared drive roster; no changes to protected blocks.",
+        "channel": "email",
+        "labels": "operations",
+        "message_id": "MSG-0006-00",
+        "recipients": "release-eng@larkspur.example",
+        "sender": "hanna.solberg@larkspur.example",
+        "sent_at": "2026-05-01T08:00:00",
+        "subject": "Weekly release note",
+        "thread_id": "THR-0006-OPS"
+      }
+    ],
+    "modules": [
+      {
+        "codeowner_id": "ENG-FARRELL",
+        "component_id": "CMP-31201",
+        "gate": null,
+        "gate_note": null,
+        "module_id": "MOD-INF-EDGE",
+        "owner_team": "Infrastructure SRE",
+        "path": "images/edge-proxy",
+        "repo_id": "REPO-INFRA",
+        "verification_class": "GATE-INFRA-1"
+      },
+      {
+        "codeowner_id": "ENG-FARRELL",
+        "component_id": "CMP-31214",
+        "gate": null,
+        "gate_note": null,
+        "module_id": "MOD-INF-QUEUE",
+        "owner_team": "Infrastructure SRE",
+        "path": "images/queue-broker",
+        "repo_id": "REPO-INFRA",
+        "verification_class": "GATE-INFRA-1"
+      },
+      {
+        "codeowner_id": "ENG-FARRELL",
+        "component_id": "CMP-31227",
+        "gate": null,
+        "gate_note": null,
+        "module_id": "MOD-INF-DNS",
+        "owner_team": "Infrastructure SRE",
+        "path": "images/dns-edge",
+        "repo_id": "REPO-INFRA",
+        "verification_class": "GATE-INFRA-1"
+      },
+      {
+        "codeowner_id": "ENG-FARRELL",
+        "component_id": "CMP-31233",
+        "gate": null,
+        "gate_note": null,
+        "module_id": "MOD-INF-VPN",
+        "owner_team": "Infrastructure SRE",
+        "path": "images/vpn-concentrator",
+        "repo_id": "REPO-INFRA",
+        "verification_class": "GATE-INFRA-1"
+      }
+    ],
+    "partner_confirmations": [
+      {
+        "confirmation_id": "CONF-CRV-88420",
+        "expedite_fee_usd": 175,
+        "expedited_ready_date": "2026-05-07",
+        "note": "June image-baseline attestation refresh. Standard bench 2026-05-13; expedited adds USD 175.",
+        "partner_id": "PRT-CORVANE",
+        "per_run_fee_usd": 40.0,
+        "reference": "CQ-88420",
+        "runs_available": 6,
+        "standard_ready_date": "2026-05-13",
+        "status": "OPEN",
+        "valid_until": "2026-05-06",
+        "verification_class": "GATE-INFRA-1"
+      }
+    ],
+    "partners": [
+      {
+        "account_number": "LS-2210",
+        "name": "Corvane Certification Labs",
+        "partner_id": "PRT-CORVANE"
+      },
+      {
+        "account_number": "LS-0874",
+        "name": "Brightwater Compliance Lab",
+        "partner_id": "PRT-BRIGHTWATER"
+      }
+    ],
+    "pipeline_runs": [
+      {
+        "exit_code": 3,
+        "finished_at": "2026-05-04T06:04:00",
+        "head_sha": null,
+        "pipeline_id": "PIPE-ATTEST",
+        "run_id": "PR-77850",
+        "started_at": "2026-05-04T06:00:00",
+        "status": "FAILED",
+        "summary": "LANE-1 deploy controller failed firmware attestation; lane fenced and removed from the roster"
+      },
+      {
+        "exit_code": 0,
+        "finished_at": "2026-05-04T06:14:00",
+        "head_sha": null,
+        "pipeline_id": "PIPE-ATTEST",
+        "run_id": "PR-77851",
+        "started_at": "2026-05-04T06:10:00",
+        "status": "SUCCEEDED",
+        "summary": "LANE-2 and LANE-3 attested clean"
+      }
+    ],
+    "pipelines": [
+      {
+        "base_minutes": 5,
+        "component_id": null,
+        "kind": "attestation",
+        "name": "deploy-controller-attestation",
+        "pipeline_id": "PIPE-ATTEST",
+        "repo_id": "REPO-INFRA",
+        "status": "enabled",
+        "trigger": "cron 06:00 daily"
+      },
+      {
+        "base_minutes": 240,
+        "component_id": null,
+        "kind": "release_load",
+        "name": "scheduled-release-load",
+        "pipeline_id": "PIPE-RELEASE-LOAD",
+        "repo_id": "REPO-PLATFORM",
+        "status": "enabled",
+        "trigger": "continuous"
+      }
+    ],
+    "pull_requests": [
+      {
+        "author_id": "ENG-ACHEBE",
+        "base_branch": "main",
+        "head_sha": "c0e0f0a0",
+        "issue_key": "LKS-4510",
+        "number": 400,
+        "opened_at": "2026-04-29T08:00:00",
+        "pr_id": "PR-INF-400",
+        "repo_id": "REPO-INFRA",
+        "status": "merged",
+        "superseded_by": null,
+        "title": "images: patched base for edge-proxy (LKS-4510)"
+      },
+      {
+        "author_id": "ENG-ACHEBE",
+        "base_branch": "main",
+        "head_sha": "c1e1f1a1",
+        "issue_key": "LKS-4511",
+        "number": 401,
+        "opened_at": "2026-04-29T09:00:00",
+        "pr_id": "PR-INF-401",
+        "repo_id": "REPO-INFRA",
+        "status": "merged",
+        "superseded_by": null,
+        "title": "images: patched base for queue-broker (LKS-4511)"
+      },
+      {
+        "author_id": "ENG-ACHEBE",
+        "base_branch": "main",
+        "head_sha": "c2e2f2a2",
+        "issue_key": "LKS-4512",
+        "number": 402,
+        "opened_at": "2026-04-29T010:00:00",
+        "pr_id": "PR-INF-402",
+        "repo_id": "REPO-INFRA",
+        "status": "merged",
+        "superseded_by": null,
+        "title": "images: patched base for dns-edge (LKS-4512)"
+      },
+      {
+        "author_id": "ENG-ACHEBE",
+        "base_branch": "main",
+        "head_sha": "c3e3f3a3",
+        "issue_key": "LKS-4513",
+        "number": 403,
+        "opened_at": "2026-04-29T011:00:00",
+        "pr_id": "PR-INF-403",
+        "repo_id": "REPO-INFRA",
+        "status": "merged",
+        "superseded_by": null,
+        "title": "images: patched base for vpn-concentrator (LKS-4513)"
+      }
+    ],
+    "release_windows": [
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-04",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260504-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-04",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260504-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-04",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260504-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-04",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260504-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-04",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260504-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-04",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260504-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-05",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260505-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-05",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260505-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-05",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260505-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-05",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260505-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-05",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260505-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "nightly compliance batch overflow (protected)",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-05",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "protected",
+        "window_id": "RW-3-20260505-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-06",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260506-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-06",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260506-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-06",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260506-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "26.1 GA freeze verification block (protected)",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-06",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "protected",
+        "window_id": "RW-2-20260506-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-06",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260506-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-06",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "free",
+        "window_id": "RW-3-20260506-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-07",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260507-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-07",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260507-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "26.1 GA freeze verification block (protected)",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-07",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "protected",
+        "window_id": "RW-2-20260507-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-07",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260507-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-07",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260507-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-07",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260507-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-08",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260508-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-08",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260508-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-08",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260508-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-08",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260508-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-08",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260508-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "storage fabric maintenance (blocked)",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-08",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-3-20260508-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-11",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260511-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-11",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260511-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-11",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "free",
+        "window_id": "RW-2-20260511-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-11",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260511-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-11",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260511-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-11",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260511-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-12",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260512-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-12",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260512-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-12",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260512-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-12",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260512-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-12",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260512-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-12",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260512-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-13",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260513-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-13",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260513-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-13",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260513-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-13",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260513-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-13",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260513-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-13",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260513-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-14",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260514-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-14",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260514-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-14",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260514-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-14",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260514-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-14",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260514-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-14",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260514-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260515-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "deploy controller fenced after failed attestation (blocked)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-15",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "blocked",
+        "window_id": "RW-1-20260515-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260515-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-15",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260515-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "free",
+        "window_id": "RW-3-20260515-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-15",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260515-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-18",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "free",
+        "window_id": "RW-1-20260518-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-18",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260518-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-18",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260518-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-18",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260518-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-18",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260518-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-18",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260518-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-19",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260519-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-19",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260519-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-19",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260519-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-19",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "free",
+        "window_id": "RW-2-20260519-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-19",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260519-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-19",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260519-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-20",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260520-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-20",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260520-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-20",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260520-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-20",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260520-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-20",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260520-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-20",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260520-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-21",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260521-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-21",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260521-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-21",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260521-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-21",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260521-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-21",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260521-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-21",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260521-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260522-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-22",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260522-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260522-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-22",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260522-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260522-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-22",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260522-PM"
+      }
+    ],
+    "repositories": [
+      {
+        "default_branch": "main",
+        "name": "larkspur/platform",
+        "repo_id": "REPO-PLATFORM",
+        "visibility": "internal"
+      },
+      {
+        "default_branch": "main",
+        "name": "larkspur/infra-images",
+        "repo_id": "REPO-INFRA",
+        "visibility": "internal"
+      }
+    ],
+    "result_sources": [
+      {
+        "name": "Release verification pipeline (release-eligible)",
+        "source_id": "CI-MAIN",
+        "type": "release_pipeline"
+      },
+      {
+        "name": "Nightly smoke pipeline (not release-eligible)",
+        "source_id": "CI-NIGHTLY",
+        "type": "nightly_pipeline"
+      },
+      {
+        "name": "Corvane Certification Labs (external)",
+        "source_id": "LAB-CORVANE",
+        "type": "external_lab"
+      },
+      {
+        "name": "Brightwater Compliance Lab (external)",
+        "source_id": "LAB-BRIGHTWATER",
+        "type": "external_lab"
+      }
+    ],
+    "reviewer_availability": [
+      {
+        "availability_id": "AV-1006-01",
+        "engineer_id": "ENG-ACHEBE",
+        "note": "security engineer on shift",
+        "service_date": "2026-05-06",
+        "session": "PM",
+        "status": "available"
+      },
+      {
+        "availability_id": "AV-1006-02",
+        "engineer_id": "ENG-FARRELL",
+        "note": null,
+        "service_date": "2026-05-11",
+        "session": "AM",
+        "status": "available"
+      }
+    ],
+    "reviews": [
+      {
+        "pr_id": "PR-INF-400",
+        "review_id": "RV-INF-400-1",
+        "reviewer_id": "ENG-FARRELL",
+        "state": "APPROVED",
+        "submitted_at": "2026-04-29T12:00:00"
+      }
+    ],
+    "runner_pools": [
+      {
+        "capacity": 3,
+        "name": "image-attestation pool",
+        "note": null,
+        "pool_id": "POOL-IMAGES",
+        "queue_minutes": 10,
+        "status": "ACTIVE"
+      }
+    ],
+    "users": [
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Release Engineering Coordinator (you)",
+        "role": "release_engineering_coordinator",
+        "user_id": "U-RELENG"
+      },
+      {
+        "approval_limit_usd": 20000,
+        "display_name": "Priya Raghunathan",
+        "role": "release_engineering_manager",
+        "user_id": "U-RAGHUNATHAN"
+      },
+      {
+        "approval_limit_usd": 120000,
+        "display_name": "Tobias Wendel",
+        "role": "director_of_engineering",
+        "user_id": "U-WENDEL"
+      },
+      {
+        "approval_limit_usd": 15000,
+        "display_name": "Hanna Solberg",
+        "role": "sre_lead",
+        "user_id": "U-SOLBERG"
+      },
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Marcus Adeyemi",
+        "role": "change_board_chair",
+        "user_id": "U-ADEYEMI"
+      }
+    ],
+    "verification_classes": [
+      {
+        "display": "infra image CVE gate, 1 attestation run per module",
+        "evidence_tier": "release-gate evidence",
+        "interchangeable_with": null,
+        "minimum_validity_days": 14,
+        "release_eligible": 1,
+        "required_checks_json": "[\"image-cve-attestation\"]",
+        "runs_per_module": 1,
+        "verification_class": "GATE-INFRA-1"
+      }
+    ],
+    "verification_results": [
+      {
+        "held_for_issue": null,
+        "result_id": "RES-INF-8810",
+        "result_label": "8810",
+        "run_count": 6,
+        "source_id": "CI-MAIN",
+        "status": "PASSED",
+        "status_reason": null,
+        "valid_until": "2026-12-31",
+        "verification_class": "GATE-INFRA-1"
+      },
+      {
+        "held_for_issue": null,
+        "result_id": "RES-INF-8795",
+        "result_label": "8795",
+        "run_count": 2,
+        "source_id": "CI-MAIN",
+        "status": "PASSED",
+        "status_reason": null,
+        "valid_until": "2026-05-14",
+        "verification_class": "GATE-INFRA-1"
+      }
+    ]
+  },
+  "starting_records": [
+    {
+      "resource_id": "CHG-70850",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "CHG-70851",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "CHG-70852",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "CHG-70853",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "ORD-3400",
+      "resource_type": "CertificationOrder",
+      "status": "RECEIVED",
+      "system": "partners"
+    }
+  ],
+  "task_id": "repodesk-006",
+  "title": "Re-home the CVE remediation deploys stranded by the LANE-1 outage",
+  "world": {
+    "id": "larkspur-release-engineering-v1",
+    "name": "Larkspur Systems — Release Engineering",
+    "organization_id": "ORG-LARKSPUR",
+    "primary_site": "REPO-PLATFORM",
+    "systems": [
+      "scm",
+      "tracker",
+      "ci",
+      "deploy",
+      "success",
+      "partners",
+      "oncall",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

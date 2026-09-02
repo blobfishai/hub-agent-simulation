@@ -1,6 +1,6 @@
 # hubbench-researchdesk-007 — Reserve the emissions-intensity assurance review
 
-HubBench 1.1.0 · family **ResearchDesk** (`researchdesk`, cluster `reasoning-knowledge-qa`) · decision mode `schedule` · role `research_analyst` · as of 2026-07-13.
+HubBench 1.2.0 · family **ResearchDesk** (`researchdesk`, cluster `reasoning-knowledge-qa`) · decision mode `schedule` · role `research_analyst` · as of 2026-07-13.
 
 Multi-source internal research across versioned knowledge, metric definitions, source provenance, ranked search, approvals, review capacity, published claims, and evidence packets.
 

@@ -5,8 +5,8 @@ One Blobfish-authored benchmark family per professional-domain cluster on
 open-source benchmark domain on the hub has an executable, oracle-proven
 Blobfish counterpart. The cluster map and family plan live in
 [`benchmark/reports/harbor-hub-coverage.json`](../reports/harbor-hub-coverage.json)
-(`hubbench` block): thirteen families, eight tasks minimum each. Seven families
-and 56 tasks are currently released and qualified.
+(`hubbench` block): thirteen families, eight tasks minimum each. Eleven families
+and 88 tasks are currently released and qualified.
 
 | Cluster | Family | Status |
 |---|---|---|
@@ -15,14 +15,14 @@ and 56 tasks are currently released and qualified.
 | data-engineering-analytics | **datadesk** | **released here — 8/8 reasoning-chain qualified** |
 | reasoning-knowledge-qa | **researchdesk** | **released here — 8/8 reasoning-chain qualified** |
 | computer-use-gui | deskops | planned |
-| web-product-design | webstudio | planned |
+| web-product-design | **webstudio** | **released here — 8/8 reasoning-chain qualified** |
 | policy-compliance-instruction-following | **policydesk** | **released here — 8/8 reasoning-chain qualified** |
-| it-operations-observability | itsmdesk | planned |
-| security | secops | planned |
+| it-operations-observability | **itsmdesk** | **released here — 8/8 reasoning-chain qualified** |
+| security | **secops** | **released here — 8/8 reasoning-chain qualified** |
 | customer-workplace-agents | **workplace** | **released here — 8/8 reasoning-chain qualified** |
 | scientific-research | **scilab** | **released here — 8/8 reasoning-chain qualified** |
-| manufacturing-engineering-design | designops | planned |
-| software-engineering | repodesk | planned |
+| manufacturing-engineering-design | **designops** | **released here — 8/8 reasoning-chain qualified** |
+| software-engineering | **repodesk** | **released here — 8/8 reasoning-chain qualified** |
 
 Every task is an employee decision worked over a dependent chain of evidence —
 never a lookup. The admission bar is
@@ -383,7 +383,10 @@ and — for one task per family — starts the world service locally, runs the
 packaged oracle through MCP/REST/CLI/submit, and grades it with the packaged
 verifier to reward 1.0 (the private channel refuses requests without the token).
 
-Publish order (from a frozen copy under a dedicated operator directory, never a rebuilding tree):
+`benchmark/hubbench/publish_release.sh <version> [--from-step N]` runs the whole sequence
+fail-closed (freeze → Docker gate → tasks → dataset → registry round-trip → Hugging Face →
+receipt → site data). Publish order by hand (from a frozen copy under a dedicated operator
+directory, never a rebuilding tree):
 `harbor run -p <tasks> -a oracle` gate → `harbor publish tasks/* --public -t v<version>`
 → `yes | harbor publish <dataset.toml dir> --public --no-tasks -t v<version>` (the
 dataset publish prompts for confirmation) → registry round-trip
@@ -393,6 +396,16 @@ dataset publish prompts for confirmation) → registry round-trip
 `python3 benchmark/hubbench/publication_receipt.py …` (writes `reports/publication.json`
 only if every gate trial and round-trip scored 1.0 and the Hugging Face payload verifies
 byte-for-byte) → `site_data.py` / `build_hubbench_site_data.py`.
+
+When a tag adds families whose Docker traces are not yet committed, use the bounded
+pre-publication path: run `publish_release.sh <version> --to-step 2`, import the clean gate
+with `site_data.py --import-gate <job>`, rebuild and commit the release, rerun step 1 alone
+to freeze those final bytes, then resume with `publish_release.sh <version> --from-step 3`.
+`publication_receipt.py` revalidates that the retained gate covers every frozen task, so a
+stale or partial pre-gate cannot authorize publication.
+Set `HUBBENCH_GATE_CONCURRENCY=1` on a disk- or memory-constrained Docker host; the
+default remains two workers. Concurrency never changes the one-trial-per-task receipt
+requirement.
 
 ## Adding a family (checklist)
 

@@ -1,0 +1,3555 @@
+{
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for batch_within_cap_then_dr_standard.",
+        "type": "string"
+      },
+      "batch_cap_nodes": {
+        "description": "Maximum nodes one rolling batch may include under the error-budget batch cap.",
+        "type": "integer"
+      },
+      "budget_remaining_minutes": {
+        "description": "Budget minutes remaining (budget minus charged) that decide whether the batch cap applies.",
+        "type": "integer"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for expedite_hardened_dr_image.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "dr_lane_nodes": {
+        "description": "Affected nodes on the DR lane that patch through LANE-DR sessions, not Saturday's edge session.",
+        "type": "integer"
+      },
+      "drain_minutes_per_node": {
+        "description": "Per-node drain, restart, and rejoin minutes from the current DRAIN-MIN metering.",
+        "type": "integer"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for unpin_canary_nodes_with_board_exception.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "edge-lane nodes pinned for the fraud-model canary",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Quillstone's confirmed standard and early-access dates for the hardened DR image.",
+        "type": "string"
+      },
+      "first_batch_window": {
+        "description": "Lane and session of the first batch, as LANE/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "lane_nodes_active": {
+        "description": "Active checkout-web nodes on the edge lane, the base of the batch cap.",
+        "type": "integer"
+      },
+      "nodes_on_fixed_version": {
+        "description": "Nodes already on the fixed runtime version (the canary pair) and outside the requirement.",
+        "type": "integer"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for the checkout-web rolling patch batches.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: NODE.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing batch_within_cap_then_dr_standard, expedite_hardened_dr_image, unpin_canary_nodes_with_board_exception.",
+        "enum": [
+          "batch_within_cap_then_dr_standard",
+          "expedite_hardened_dr_image",
+          "unpin_canary_nodes_with_board_exception"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "source_quantity": {
+        "description": "checkout-web nodes still on an affected runtime version that QSA-2026-121 must reach",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Quillstone's confirmed standard and early-access dates for the hardened DR image.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "affected checkout-web nodes on the edge lane that Saturday's batch may include",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      },
+      "window_capacity_nodes": {
+        "description": "Nodes one 4-hour session can drain at the current per-node timing.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "batch_cap_nodes",
+      "budget_remaining_minutes",
+      "business_need_date",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "dr_lane_nodes",
+      "drain_minutes_per_node",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_batch_window",
+      "lane_nodes_active",
+      "nodes_on_fixed_version",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "transaction_quantity",
+      "window_capacity_nodes"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-04-14",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "family": "itsmdesk",
+  "instruction": "The checkout-web rolling patch holds Saturday's night session on the edge lane and Rin needs the first batch task in the change today. Work out how many nodes genuinely still need the fix, how many of those the edge-lane batch may include once the canary-pinned pair and the DR pair are set aside, what the error-budget batch cap allows while the budget is depleted, and how many the session can drain at the current per-node timing. Create the batch task the evidence supports and draft the note for Rin explaining when the rest of the fleet completes, what the hardened DR image's early-access date would change, and which options would need Tunde, Bruno, or Inês.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-SO-0102"
+    },
+    "calendar": {
+      "calendar_window": {
+        "end_date": "2026-04-26",
+        "lane_id": "LANE-EDGE",
+        "start_date": "2026-04-14"
+      },
+      "lanes": [
+        "LANE-EDGE",
+        "LANE-DR"
+      ]
+    },
+    "case_reference": "SVCOPS-0002",
+    "chat": {
+      "thread_id": "CHAT-2002"
+    },
+    "drive": {
+      "case_folder_query": "SVCOPS-0002",
+      "policy_query": "policy"
+    },
+    "itsm": {
+      "change_id": "CHG-40320",
+      "service_code": "checkout-web",
+      "service_search": {
+        "arguments": {
+          "identifier": "checkout-web"
+        },
+        "tool": "itsm.cis.search"
+      }
+    },
+    "messages": {
+      "search_query": "SVCOPS-0002"
+    },
+    "oncall": {
+      "secondary_schedule": "SCHED-CHK-SEC"
+    },
+    "telemetry": {
+      "slo_id": "SLO-CHK-AVAIL"
+    },
+    "vendor": {
+      "advisory_id": "ADV-QS-2026-121H"
+    }
+  },
+  "role": "service_operations_coordinator",
+  "seed_tables": {
+    "alerts": [
+      {
+        "alert_id": "ALRT-002-01",
+        "fired_at": "2026-03-24T18:10:00",
+        "incident_id": "INC-70831",
+        "resolved_at": "2026-03-24T18:44:00",
+        "rule": "availability-burn-fast",
+        "service_id": "SVC-31144",
+        "severity": "sev1"
+      },
+      {
+        "alert_id": "ALRT-002-02",
+        "fired_at": "2026-03-30T07:05:00",
+        "incident_id": "INC-70849",
+        "resolved_at": "2026-03-30T07:26:00",
+        "rule": "synthetic-probe-failure",
+        "service_id": "SVC-31144",
+        "severity": "sev3"
+      },
+      {
+        "alert_id": "ALRT-002-03",
+        "fired_at": "2026-04-06T12:40:00",
+        "incident_id": "INC-70862",
+        "resolved_at": "2026-04-06T12:58:00",
+        "rule": "availability-burn-fast",
+        "service_id": "SVC-31144",
+        "severity": "sev2"
+      }
+    ],
+    "approvals": [
+      {
+        "approval_id": "AP-SO-0102",
+        "approver_id": "U-LINDGREN",
+        "approver_role": "change_manager",
+        "granted_on": "2026-04-10",
+        "scope_json": "{\"batch\": \"within the error-budget batch cap of policy 2.4\", \"expedite_fee_allowed_usd\": 0, \"lane\": \"LANE-EDGE\", \"max_spend_usd\": 0, \"not_covered\": [\"unpinning the fraud-model canary nodes (risk lead + change board chair)\", \"hardened DR image early-access fee (security lead)\", \"LANE-DR sessions outside the DR drill plan (SRE lead)\"], \"record\": \"CHG-40320\", \"windows\": \"weekend sessions on LANE-EDGE\"}",
+        "status": "APPROVED",
+        "subject": "Checkout web QSA-2026-121 rolling patch batches (SVCOPS-0002, CHG-40320)"
+      },
+      {
+        "approval_id": "AP-SO-0090",
+        "approver_id": "U-LINDGREN",
+        "approver_role": "change_manager",
+        "granted_on": "2026-02-09",
+        "scope_json": "{\"category\": \"LICENCES\", \"max_spend_usd\": 7000}",
+        "status": "APPROVED",
+        "subject": "Quarterly observability licence renewal standing order"
+      }
+    ],
+    "burn_samples": [
+      {
+        "burn_rate_1h": 0.6,
+        "burn_rate_6h": 0.4,
+        "raw_consumed_minutes": 25.6,
+        "sample_id": "BURN-002-1",
+        "sampled_at": "2026-04-12T08:00:00",
+        "slo_id": "SLO-CHK-AVAIL"
+      },
+      {
+        "burn_rate_1h": 0.6,
+        "burn_rate_6h": 0.4,
+        "raw_consumed_minutes": 25.8,
+        "sample_id": "BURN-002-2",
+        "sampled_at": "2026-04-13T08:00:00",
+        "slo_id": "SLO-CHK-AVAIL"
+      },
+      {
+        "burn_rate_1h": 0.6,
+        "burn_rate_6h": 0.4,
+        "raw_consumed_minutes": 26.0,
+        "sample_id": "BURN-002-3",
+        "sampled_at": "2026-04-14T08:00:00",
+        "slo_id": "SLO-CHK-AVAIL"
+      }
+    ],
+    "change_lanes": [
+      {
+        "lane_id": "LANE-EDGE",
+        "name": "Edge and storefront change lane",
+        "status": "ACTIVE",
+        "status_note": null,
+        "tier1_capable": 1,
+        "weekday_policy": "embargo"
+      },
+      {
+        "lane_id": "LANE-DR",
+        "name": "Disaster-recovery change lane",
+        "status": "ACTIVE",
+        "status_note": null,
+        "tier1_capable": 1,
+        "weekday_policy": "embargo"
+      }
+    ],
+    "change_requests": [
+      {
+        "advisory_id": "ADV-QS-2026-121",
+        "change_id": "CHG-40320",
+        "change_type": "standard",
+        "downtime_minutes": 0,
+        "lane_id": "LANE-EDGE",
+        "last_updated": "2026-04-13T17:30:00",
+        "opened_at": "2026-04-09T09:30:00",
+        "planned_end": "2026-04-18T05:00:00",
+        "planned_start": "2026-04-18T01:00:00",
+        "requested_by": "ENG-SATO",
+        "restarts": 1,
+        "revision": 1,
+        "risk": "moderate",
+        "service_id": "SVC-31144",
+        "state": "scheduled",
+        "summary": "QSA-2026-121 rolling patch — checkout-web (batch plan pending)",
+        "window_id": "MW-EDGE-20260418-NIGHT"
+      },
+      {
+        "advisory_id": "ADV-QS-2026-121",
+        "change_id": "CHG-40322",
+        "change_type": "standard",
+        "downtime_minutes": 0,
+        "lane_id": null,
+        "last_updated": "2026-04-13T17:30:00",
+        "opened_at": "2026-04-10T02:12:00",
+        "planned_end": null,
+        "planned_start": null,
+        "requested_by": "ENG-SATO",
+        "restarts": 1,
+        "revision": 1,
+        "risk": "low",
+        "service_id": "SVC-31144",
+        "state": "cancelled",
+        "summary": "QSA-2026-121 rolling patch — checkout-web (duplicate raised by the vendor-sync bot; cancelled 2026-04-10)",
+        "window_id": null
+      },
+      {
+        "advisory_id": "ADV-QS-2026-121",
+        "change_id": "CHG-40288",
+        "change_type": "standard",
+        "downtime_minutes": 0,
+        "lane_id": "LANE-EDGE",
+        "last_updated": "2026-04-13T17:30:00",
+        "opened_at": "2026-04-08T14:00:00",
+        "planned_end": "2026-04-11T03:00:00",
+        "planned_start": "2026-04-11T01:00:00",
+        "requested_by": "ENG-SATO",
+        "restarts": 1,
+        "revision": 1,
+        "risk": "low",
+        "service_id": "SVC-31160",
+        "state": "closed",
+        "summary": "QSA-2026-121 rolling patch — checkout-api (implemented 2026-04-11)",
+        "window_id": null
+      }
+    ],
+    "change_tasks": [
+      {
+        "change_id": "CHG-40288",
+        "created_at": "2026-04-09T11:00:00",
+        "kind": "rolling_batch",
+        "node_count": 6,
+        "planned_end": "2026-04-11T02:48:00",
+        "planned_start": "2026-04-11T01:00:00",
+        "requested_by": "service_operations_coordinator",
+        "revision": 1,
+        "status": "completed",
+        "task_id": "CTASK-8800",
+        "window_id": null
+      }
+    ],
+    "chat_threads": [
+      {
+        "channel": "#service-ops",
+        "messages_json": "[{\"author\": \"Bruno Ferreira\", \"ts\": \"2026-04-14T09:20:00\", \"text\": \"Nodes 15 and 16 stay pinned for the fraud-model canary until the 21st. Unpinning early is Tunde and me, and nobody has asked.\"}, {\"author\": \"Saoirse Lindgren\", \"ts\": \"2026-04-14T09:31:00\", \"text\": \"Budget is 43 with 24 charged, so the batch cap in policy 2.4 applies. INC-70849 is not charged \\u2014 PRB-4109 reclassified it. CHG-40322 is the bot duplicate; ignore it.\"}, {\"author\": \"Wren Haviland\", \"ts\": \"2026-04-14T09:44:00\", \"text\": \"The DR pair patches through LANE-DR's weekend sessions only. Drain timing is 20 minutes per node now, not the 12 from January.\"}]",
+        "thread_id": "CHAT-2002",
+        "title": "SVCOPS-0002 checkout-web batches"
+      },
+      {
+        "channel": "#service-ops",
+        "messages_json": "[{\"author\": \"Wren Haviland\", \"ts\": \"2026-04-12T16:40:00\", \"text\": \"Reminder: log every alert-routing change in the change tracker before the CAB agenda closes.\"}]",
+        "thread_id": "CHAT-0002-GEN",
+        "title": "General — alert routing and CAB agenda"
+      }
+    ],
+    "drive_files": [
+      {
+        "content": "# Change and Error-Budget Policy (v3, effective 2026-02-01)\n\nApplies to Brightmoor Commerce Service Operations: every production service in the CMDB, the change lanes on the change calendar, the SLOs published in telemetry, and the on-call schedules. This version supersedes the 2024 policy in full. Planning date for this room: 2026-04-14.\n\n## 1. Sizing a change\n\n1.1 Planned downtime = restarts required by the vendor advisory x the service's current restart-to-healthy metering (RESTART-MIN, most recent final metering in the CMDB) + the service runbook's post-change validation minutes. A vendor's own downtime estimate is never the figure of record. A stale metering is never used.\n1.2 The planned interval of a change (planned start to planned end) is the planned downtime plus the service runbook's rollback reserve, starting at the window start.\n1.3 Rolling node patches drain one node at a time and consume no error budget; each node takes the current DRAIN-MIN metering, so a window fits floor(window minutes / DRAIN-MIN) nodes.\n1.4 A planned-outage notice covers the planned downtime plus the rollback reserve; the notice length is the figure customer communications publish.\n1.5 A certificate rotation or model-runtime patch reserves the whole window: no other change shares it.\n1.6 Coverage for a tier-1 change is the change window plus a two-hour post-change watch by a secondary responder holding the service's runbook certification.\n\n## 2. Error budget\n\n2.1 Each service's availability SLO carries a whole-minute budget for its rolling window, as published in telemetry. The rolling window ends on the evaluation day and excludes incidents opened on or before the day exactly one window earlier.\n2.2 Budget consumed = the sum of charged impact minutes of incidents in the window. Only incidents the problem review left charged count; an incident the review reclassified as not customer-impacting is not charged. Raw SLI burn in telemetry is informational and never the governing figure.\n2.3 Spendable budget = budget - consumed - the SLO's reserve floor. Planned downtime (or a planned-outage notice) may be scheduled on a day only if it fits inside the spendable budget on that day; otherwise the change waits for the window to roll or needs a budget exception from the change board chair.\n2.4 While the remaining budget (budget - consumed) is below half the window budget, a rolling batch may not exceed half of the service's active nodes on the lane, rounded down.\n\n## 3. Change windows\n\n3.1 Sessions are NIGHT 01:00-05:00 and EVE 19:00-23:00 on every calendar day. A change must start and end inside one session of one lane.\n3.2 Lanes with the weekday embargo (tier-1 lanes) accept standard changes in weekend sessions only; weekday sessions are protected and an embargo exception needs the change board chair.\n3.3 Freeze windows on the freeze register (financial close, audit evidence, peak trading, vendor maintenance) protect every session they cover on the lanes they name; a freeze exception needs the authority the register names.\n3.4 A lane whose deployment runner is suspended accepts no change until its return date; re-laning a change onto another lane requires that lane to be certified for the service's tier.\n3.5 Nodes pinned for a named canary or drill are never patched before the pin ends; nodes on another lane are patched through that lane's own windows.\n3.6 A multi-pool model-runtime patch runs one pool per day with drift monitoring between pools; two pools in one night need the risk lead and the change board.\n3.7 A tier-1 change window is eligible only when a certified secondary responder is on the service's secondary schedule (rotation or override) for the whole coverage block of 1.6.\n\n## 4. Vendor packages\n\n4.1 A vendor package is production-eligible on the next business day after its release date, once the canary soak passes. Standard release dates and early-access (expedited) dates come from the vendor advisory; a superseded advisory revision must not be used.\n4.2 Early-access packages carry the premium-support fee printed on the advisory; the fee needs the security lead unless a signed approval names it.\n4.3 Remediation is due within the advisory's remediation SLA (days from publication). A deferral past the SLA needs the security lead.\n\n## 5. Authority\n\n5.1 Change manager: standard changes inside a signed approval's record, lane, windows, batch cap, and spend.\n5.2 Change board chair: embargo exceptions, freeze exceptions, budget exceptions, and any emergency change.\n5.3 SRE lead: on-call overrides and override premiums; suspended-lane returns.\n5.4 Security lead: early-access fees not named in an approval and SLA deferrals; risk lead with the change board for pool sequencing exceptions.\n5.5 An approval covers exactly the record, lane, windows, quantity, engineer, and fees it names. It never selects an option in advance and never extends to a broader record.\n\n---\nEvidence-room mount: itsmdesk-002 / SVCOPS-0002.\n",
+        "file_id": "DRV-002-01",
+        "folder": "Service Operations/Policies",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-and-error-budget-policy.md",
+        "sha256": "f62272947a2217b09566e9922d1254d3ce7d666c00ee4c7b5149d34c087c0ae6"
+      },
+      {
+        "content": "# Change and Error-Budget Policy (2024 edition) — SUPERSEDED\n\nThis edition was replaced by v3 on 2026-02-01 and is retained for audit only. Do not apply it.\n\n1. Planned downtime may be sized at the vendor's published estimate.\n2. Error budget consumed is the raw SLI burn shown in telemetry; there is no reserve floor.\n3. Tier-1 services may take weekday evening changes with the change manager's approval.\n4. A vendor package may be deployed on its release date without a canary soak.\n5. Any rostered secondary responder satisfies the coverage rule, certified or not.\n6. Freeze windows may be overridden by the on-call primary when a vendor SLA is at risk.\n\n---\nEvidence-room mount: itsmdesk-002 / SVCOPS-0002.\n",
+        "file_id": "DRV-002-02",
+        "folder": "Service Operations/Policies/Archive",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "superseded-change-policy-2024.md",
+        "sha256": "08b64827d4ba9523bc64c3b74f4d5afa5db9bd7600ac0054b1c50e0dab8d05b8"
+      },
+      {
+        "content": "{\n  \"export\": \"itsm.changes.get\",\n  \"record\": {\n    \"advisory\": \"ADV-QS-2026-121\",\n    \"change_id\": \"CHG-40322\",\n    \"downtime_minutes\": 0,\n    \"lane\": null,\n    \"meta\": {\n      \"lastUpdated\": \"2026-04-13T17:30:00\",\n      \"versionId\": \"1\"\n    },\n    \"opened_at\": \"2026-04-10T02:12:00\",\n    \"planned_end\": null,\n    \"planned_start\": null,\n    \"requested_by\": \"Engineer/ENG-SATO\",\n    \"restarts\": 1,\n    \"risk\": \"low\",\n    \"service\": \"Service/SVC-31144\",\n    \"state\": \"cancelled\",\n    \"summary\": \"QSA-2026-121 rolling patch \\u2014 checkout-web (duplicate raised by the vendor-sync bot; cancelled 2026-04-10)\",\n    \"type\": \"standard\",\n    \"window\": null\n  }\n}\n",
+        "file_id": "DRV-002-03",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-CHG-40322.json",
+        "sha256": "74c0e88d4babcd7c985d7af57b8560216f566db560a91bfff47a82ab639d1671"
+      },
+      {
+        "content": "{\n  \"export\": \"itsm.changes.get\",\n  \"record\": {\n    \"advisory\": \"ADV-QS-2026-121\",\n    \"change_id\": \"CHG-40320\",\n    \"downtime_minutes\": 0,\n    \"lane\": \"LANE-EDGE\",\n    \"meta\": {\n      \"lastUpdated\": \"2026-04-13T17:30:00\",\n      \"versionId\": \"1\"\n    },\n    \"opened_at\": \"2026-04-09T09:30:00\",\n    \"planned_end\": \"2026-04-18T05:00:00\",\n    \"planned_start\": \"2026-04-18T01:00:00\",\n    \"requested_by\": \"Engineer/ENG-SATO\",\n    \"restarts\": 1,\n    \"risk\": \"moderate\",\n    \"service\": \"Service/SVC-31144\",\n    \"state\": \"scheduled\",\n    \"summary\": \"QSA-2026-121 rolling patch \\u2014 checkout-web (batch plan pending)\",\n    \"type\": \"standard\",\n    \"window\": \"MW-EDGE-20260418-NIGHT\"\n  }\n}\n",
+        "file_id": "DRV-002-04",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-CHG-40320.json",
+        "sha256": "69fcc0521d45da68754370d37d96802c9ffe4350cdc9b9c538b532f74fbadcf4"
+      },
+      {
+        "content": "{\n  \"export\": \"itsm.cis.get + itsm.meterings.list\",\n  \"meterings\": [\n    {\n      \"measured_at\": \"2026-04-08\",\n      \"metering_id\": \"MTR-31144\",\n      \"metric\": \"DRAIN-MIN\",\n      \"service\": \"Service/SVC-31144\",\n      \"status\": \"final\",\n      \"unit\": \"MIN\",\n      \"value\": 20.0\n    },\n    {\n      \"measured_at\": \"2026-01-20\",\n      \"metering_id\": \"MTR-31144-2601\",\n      \"metric\": \"DRAIN-MIN\",\n      \"service\": \"Service/SVC-31144\",\n      \"status\": \"final\",\n      \"unit\": \"MIN\",\n      \"value\": 12.0\n    }\n  ],\n  \"service\": {\n    \"code\": \"checkout-web\",\n    \"lane\": \"LANE-EDGE\",\n    \"name\": \"Checkout Web\",\n    \"owner_team\": \"Checkout\",\n    \"primary_engineer\": \"Engineer/ENG-SATO\",\n    \"required_certification\": \"checkout-runbook\",\n    \"rollback_minutes\": 20,\n    \"runtime\": \"quillstone-runtime 7.4\",\n    \"service_id\": \"SVC-31144\",\n    \"tier\": \"tier-1\",\n    \"validation_minutes\": 4,\n    \"version\": \"7.4.2\"\n  }\n}\n",
+        "file_id": "DRV-002-05",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "service-checkout-web-summary.json",
+        "sha256": "9fd9a9417154839a5b6efc2317c8d476e1ad624b13657f6637122388df9748f3"
+      },
+      {
+        "content": "slo_id,service_id,name,objective_pct,window_days,budget_minutes,reserve_minutes,status\nSLO-CHK-AVAIL,SVC-31144,checkout-web availability (30-day),99.9,30,43,10,ACTIVE\n",
+        "file_id": "DRV-002-06",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "slo-catalog.csv",
+        "sha256": "d49b1c5b83d3beceafca8db7b571b7db4b46d36edd76b2fd8b6227aada0f816b"
+      },
+      {
+        "content": "incident_id,service_id,opened_at,severity,impact_minutes,slo_charged,problem_id\nINC-70831,SVC-31144,2026-03-24T18:10:00,sev1,15,yes,\nINC-70849,SVC-31144,2026-03-30T07:05:00,sev3,5,no,PRB-4109\nINC-70862,SVC-31144,2026-04-06T12:40:00,sev2,9,yes,\n",
+        "file_id": "DRV-002-07",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "error-budget-ledger.xlsx",
+        "sha256": "09fbfd01ba719fd741bbeef6536c78b2db4322d14749df10d6776537ab61e070"
+      },
+      {
+        "content": "incident_id,opened_at,resolved_at,severity,impact_minutes,slo_charged,problem_id,review_note,summary\nINC-70831,2026-03-24T18:10:00,2026-03-24T18:44:00,sev1,15,yes,,\"\",\"checkout page 5xx after the CDN configuration push\"\nINC-70849,2026-03-30T07:05:00,2026-03-30T07:26:00,sev3,5,no,PRB-4109,\"INC-70849 reclassified: probe asserted on a retired badge element; no customer impact; not charged.\",\"cart badge probe false positives; reclassified by PRB-4109\"\nINC-70862,2026-04-06T12:40:00,2026-04-06T12:58:00,sev2,9,yes,,\"\",\"session-cache eviction storm during the flash sale\"\n",
+        "file_id": "DRV-002-08",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "incident-register.csv",
+        "sha256": "26f2a5c1ad4c3f0df4970f79dd667db48f0c61bc63d96abe7ab89170d6997e00"
+      },
+      {
+        "content": "sample_id,slo_id,sampled_at,burn_rate_1h,burn_rate_6h,raw_consumed_minutes\nBURN-002-1,SLO-CHK-AVAIL,2026-04-12T08:00:00,0.6,0.4,25.6\nBURN-002-2,SLO-CHK-AVAIL,2026-04-13T08:00:00,0.6,0.4,25.8\nBURN-002-3,SLO-CHK-AVAIL,2026-04-14T08:00:00,0.6,0.4,26.0\n",
+        "file_id": "DRV-002-09",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "burn-rate-samples.csv",
+        "sha256": "e84693d6b9234966e08e4a46f27ff82c2691b8fc49fb979e29b1690647021610"
+      },
+      {
+        "content": "service_date,lane_id,session,start,end,status,hold_reason,change_id\n2026-04-14,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-14,LANE-DR,NIGHT,01:00:00,05:00:00,busy,elapsed before the planning time,\n2026-04-14,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-14,LANE-EDGE,NIGHT,01:00:00,05:00:00,busy,elapsed before the planning time,\n2026-04-15,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-15,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-15,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-15,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-16,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-16,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-16,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-16,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-17,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-17,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-17,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-17,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-18,LANE-DR,EVE,19:00:00,23:00:00,free,,\n2026-04-18,LANE-DR,NIGHT,01:00:00,05:00:00,free,,\n2026-04-18,LANE-EDGE,EVE,19:00:00,23:00:00,blocked,CDN vendor maintenance (blocked),\n2026-04-18,LANE-EDGE,NIGHT,01:00:00,05:00:00,busy,scheduled change,CHG-40320\n2026-04-19,LANE-DR,EVE,19:00:00,23:00:00,free,,\n2026-04-19,LANE-DR,NIGHT,01:00:00,05:00:00,free,,\n2026-04-19,LANE-EDGE,EVE,19:00:00,23:00:00,free,,\n2026-04-19,LANE-EDGE,NIGHT,01:00:00,05:00:00,free,,\n2026-04-20,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-20,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-20,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-20,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-21,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-21,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-21,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-21,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-22,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-22,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-22,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-22,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-23,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-23,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-23,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-23,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-24,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-24,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-24,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-24,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-25,LANE-DR,EVE,19:00:00,23:00:00,free,,\n2026-04-25,LANE-DR,NIGHT,01:00:00,05:00:00,free,,\n2026-04-25,LANE-EDGE,EVE,19:00:00,23:00:00,free,,\n2026-04-25,LANE-EDGE,NIGHT,01:00:00,05:00:00,free,,\n2026-04-26,LANE-DR,EVE,19:00:00,23:00:00,free,,\n2026-04-26,LANE-DR,NIGHT,01:00:00,05:00:00,free,,\n2026-04-26,LANE-EDGE,EVE,19:00:00,23:00:00,free,,\n2026-04-26,LANE-EDGE,NIGHT,01:00:00,05:00:00,free,,\n2026-04-27,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-27,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-27,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-27,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-28,LANE-DR,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-28,LANE-DR,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-28,LANE-EDGE,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-28,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-DR,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-DR,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-EDGE,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-DR,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-DR,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-EDGE,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-DR,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-DR,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-EDGE,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-05-02,LANE-DR,EVE,19:00:00,23:00:00,free,,\n2026-05-02,LANE-DR,NIGHT,01:00:00,05:00:00,free,,\n2026-05-02,LANE-EDGE,EVE,19:00:00,23:00:00,free,,\n2026-05-02,LANE-EDGE,NIGHT,01:00:00,05:00:00,free,,\n2026-05-03,LANE-DR,EVE,19:00:00,23:00:00,free,,\n2026-05-03,LANE-DR,NIGHT,01:00:00,05:00:00,free,,\n2026-05-03,LANE-EDGE,EVE,19:00:00,23:00:00,free,,\n2026-05-03,LANE-EDGE,NIGHT,01:00:00,05:00:00,free,,\n2026-05-04,LANE-DR,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-05-04,LANE-DR,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-05-04,LANE-EDGE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-05-04,LANE-EDGE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n",
+        "file_id": "DRV-002-10",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-calendar-2026-04-14.xlsx",
+        "sha256": "0f99b00775e827b518ee0281493765148d976d05dff976de412b50395e62b5bb"
+      },
+      {
+        "content": "freeze_id,name,kind,start_date,end_date,lanes,authority,status,hubbench_task_scope,hubbench_case_reference\nFRZ-2026-15,month-end financial close freeze,financial,2026-04-28,2026-05-01,ALL,change board chair,ACTIVE,itsmdesk-002,SVCOPS-0002\n",
+        "file_id": "DRV-002-11",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "freeze-register.csv",
+        "sha256": "2232299e93d72696016dffc212bf9817f162d6b9573b3aedd4c7614ffb58ecaa"
+      },
+      {
+        "content": "lane_id,name,weekday_policy,tier1_capable,status,note,hubbench_task_scope,hubbench_case_reference\nLANE-EDGE,Edge and storefront change lane,embargo,yes,ACTIVE,,itsmdesk-002,SVCOPS-0002\nLANE-DR,Disaster-recovery change lane,embargo,yes,ACTIVE,,itsmdesk-002,SVCOPS-0002\n",
+        "file_id": "DRV-002-12",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "lane-roster.csv",
+        "sha256": "a312d0f05f887725df35b4a0b131dd23aa0a220a411093dc562abd2687523e5b"
+      },
+      {
+        "content": "shift_id,schedule_id,engineer_id,start_time,end_time,source,certified,hubbench_task_scope,hubbench_case_reference\nSHIFT-CHK-SEC-20260414-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-14T00:00:00,2026-04-14T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260414-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-14T08:00:00,2026-04-14T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260414-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-14T16:00:00,2026-04-14T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260415-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-15T00:00:00,2026-04-15T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260415-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-15T08:00:00,2026-04-15T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260415-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-15T16:00:00,2026-04-15T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260416-1,SCHED-CHK-SEC,ENG-HOLM,2026-04-16T00:00:00,2026-04-16T08:00:00,swap,no,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260416-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-16T08:00:00,2026-04-16T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260416-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-16T16:00:00,2026-04-16T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260417-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-17T00:00:00,2026-04-17T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260417-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-17T08:00:00,2026-04-17T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260417-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-17T16:00:00,2026-04-17T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260418-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-18T00:00:00,2026-04-18T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260418-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-18T08:00:00,2026-04-18T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260418-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-18T16:00:00,2026-04-18T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260419-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-19T00:00:00,2026-04-19T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260419-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-19T08:00:00,2026-04-19T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260419-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-19T16:00:00,2026-04-19T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260420-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-20T00:00:00,2026-04-20T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260420-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-20T08:00:00,2026-04-20T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260420-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-20T16:00:00,2026-04-20T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260421-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-21T00:00:00,2026-04-21T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260421-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-21T08:00:00,2026-04-21T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260421-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-21T16:00:00,2026-04-21T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260422-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-22T00:00:00,2026-04-22T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260422-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-22T08:00:00,2026-04-22T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260422-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-22T16:00:00,2026-04-22T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260423-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-23T00:00:00,2026-04-23T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260423-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-23T08:00:00,2026-04-23T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260423-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-23T16:00:00,2026-04-23T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260424-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-24T00:00:00,2026-04-24T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260424-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-24T08:00:00,2026-04-24T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260424-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-24T16:00:00,2026-04-24T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260425-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-25T00:00:00,2026-04-25T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260425-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-25T08:00:00,2026-04-25T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260425-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-25T16:00:00,2026-04-25T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260426-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-26T00:00:00,2026-04-26T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260426-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-26T08:00:00,2026-04-26T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260426-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-26T16:00:00,2026-04-26T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260427-1,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-27T00:00:00,2026-04-27T08:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260427-2,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-27T08:00:00,2026-04-27T16:00:00,rotation,yes,itsmdesk-002,SVCOPS-0002\nSHIFT-CHK-SEC-20260427-3,SCHED-CHK-SEC,ENG-OKAFOR,2026-04-27T16:00:00,2026-04-27T23:59:59,rotation,yes,itsmdesk-002,SVCOPS-0002\n",
+        "file_id": "DRV-002-13",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "secondary-roster.csv",
+        "sha256": "87cdf6b349c69aaaf78f5a8f5d9442a3b1df654d7fafeb21dcb1b08d95ff212a"
+      },
+      {
+        "content": "Quillstone Runtime Systems\nSecurity advisory QSA-2026-121 hardened-image supplement (portal id ADV-QS-2026-121H) — status CURRENT\nCustomer: Brightmoor Commerce Service Operations, account BM-2207\nCase reference: SVCOPS-0002\nProduct: quillstone-runtime 7.4 (hardened DR image)\nSeverity: medium; published 2026-04-08; remediation SLA 21 days\nAffected versions: 7.4.0-7.4.2; fixed version: 7.4.3\nRestarts required: 1; vendor downtime estimate: 0 minutes (reference hardware)\nStandard release date: 2026-04-22\nEarly-access release date: 2026-04-16 (premium-support fee USD 600, flat)\nValid until: 2026-04-30\nNotes: The hardened DR image variant of 7.4.3 ships on 2026-04-22 (standard) or 2026-04-16 under premium support (USD 600). The standard x86 package (QSA-2026-121) shipped 2026-04-10 and is already on the canary nodes.\nPackages are production-eligible only after the customer's canary soak.\n",
+        "file_id": "DRV-002-14",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "advisory-QSA-2026-121.pdf",
+        "sha256": "0045476afd9a31e46f7a59c7e7dcd8b3511c819ed3731186e7c74bfaa3c5205a"
+      },
+      {
+        "content": "{\n  \"approval_id\": \"AP-SO-0102\",\n  \"approver_id\": \"U-LINDGREN\",\n  \"approver_role\": \"change_manager\",\n  \"case_reference\": \"SVCOPS-0002\",\n  \"granted_on\": \"2026-04-10\",\n  \"scope\": {\n    \"batch\": \"within the error-budget batch cap of policy 2.4\",\n    \"expedite_fee_allowed_usd\": 0,\n    \"lane\": \"LANE-EDGE\",\n    \"max_spend_usd\": 0,\n    \"not_covered\": [\n      \"unpinning the fraud-model canary nodes (risk lead + change board chair)\",\n      \"hardened DR image early-access fee (security lead)\",\n      \"LANE-DR sessions outside the DR drill plan (SRE lead)\"\n    ],\n    \"record\": \"CHG-40320\",\n    \"windows\": \"weekend sessions on LANE-EDGE\"\n  },\n  \"status\": \"APPROVED\",\n  \"subject\": \"Checkout web QSA-2026-121 rolling patch batches (SVCOPS-0002, CHG-40320)\"\n}\n",
+        "file_id": "DRV-002-15",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "approval-AP-SO-0102.json",
+        "sha256": "234088eda59686b009d742c915b6cdc78ebcb1b669b1370ab44e96b05985d1c2"
+      },
+      {
+        "content": "{\n  \"as_of\": \"2026-04-14\",\n  \"case_reference\": \"SVCOPS-0002\",\n  \"change_tasks\": [\n    {\n      \"status\": \"completed\",\n      \"task_id\": \"CTASK-8800\"\n    }\n  ],\n  \"changes\": [\n    {\n      \"change_id\": \"CHG-40320\",\n      \"lane_id\": \"LANE-EDGE\",\n      \"planned_end\": \"2026-04-18T05:00:00\",\n      \"planned_start\": \"2026-04-18T01:00:00\",\n      \"service_id\": \"SVC-31144\",\n      \"state\": \"scheduled\"\n    },\n    {\n      \"change_id\": \"CHG-40322\",\n      \"lane_id\": null,\n      \"planned_end\": null,\n      \"planned_start\": null,\n      \"service_id\": \"SVC-31144\",\n      \"state\": \"cancelled\"\n    },\n    {\n      \"change_id\": \"CHG-40288\",\n      \"lane_id\": \"LANE-EDGE\",\n      \"planned_end\": \"2026-04-11T03:00:00\",\n      \"planned_start\": \"2026-04-11T01:00:00\",\n      \"service_id\": \"SVC-31160\",\n      \"state\": \"closed\"\n    }\n  ],\n  \"note\": \"Snapshot before any action; row order does not indicate applicability.\",\n  \"oncall_overrides\": [],\n  \"planned_outages\": []\n}\n",
+        "file_id": "DRV-002-16",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "starting-state-itsmdesk-002.json",
+        "sha256": "af6da4b0e69564123a05ca51d743351d6ec58d0a6d0db9af279844e5cad6a5dd"
+      },
+      {
+        "content": "node_id,service,pinned_for,pin_ends,owner,hubbench_task_scope,hubbench_case_reference\nNODE-CHK-15,checkout-web,CHG-40290 fraud-model canary,2026-04-21,ENG-FERREIRA,itsmdesk-002,SVCOPS-0002\nNODE-CHK-16,checkout-web,CHG-40290 fraud-model canary,2026-04-21,ENG-FERREIRA,itsmdesk-002,SVCOPS-0002\n",
+        "file_id": "DRV-002-17",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "canary-pin-register.csv",
+        "sha256": "9ab2805cb94b8864e7e30ec44fd256b9228ca6e405862e35145091cb4d05d062"
+      },
+      {
+        "content": "# Quillstone hardened image programme — terms (extract)\n\nHardened image variants follow the standard package by up to ten business days. Premium-support customers may request early access for the fee printed on the supplement advisory (QSA-2026-121 supplement: USD 600). Every variant is production-eligible the next business day after release, once the customer's canary soak passes.\n",
+        "file_id": "DRV-002-18",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "quillstone-hardened-image-terms.md",
+        "sha256": "9e59d1aca840be0a1dc4ffb90641dd8f6fe62f1b37ce7ac87d3fdb7368f21c3b"
+      },
+      {
+        "content": "{\n  \"anchors\": [\n    {\n      \"evaluation_shape\": \"IT service-management ticket handling with deterministic end-state checks\",\n      \"harbor_dataset\": \"vibrantlabsai/itsm-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/vibrantlabsai/itsm-bench/latest\",\n      \"license\": \"per the Harbor Hub listing; nothing from it is redistributed here\",\n      \"name\": \"ITSM-Bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://hub.harborframework.com/datasets/vibrantlabsai/itsm-bench\"\n    },\n    {\n      \"evaluation_shape\": \"observability investigations over telemetry with graded conclusions\",\n      \"harbor_dataset\": \"grafana/o11y-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/grafana/o11y-bench/latest\",\n      \"license\": \"per the Harbor Hub listing; nothing from it is redistributed here\",\n      \"name\": \"o11y-bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://hub.harborframework.com/datasets/grafana/o11y-bench\"\n    },\n    {\n      \"evaluation_shape\": \"telemetry-pipeline tasks with executable verification\",\n      \"harbor_dataset\": \"quesma/otel-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/quesma/otel-bench/latest\",\n      \"license\": \"per the Harbor Hub listing; nothing from it is redistributed here\",\n      \"name\": \"otel-bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://hub.harborframework.com/datasets/quesma/otel-bench\"\n    }\n  ],\n  \"clean_room\": true,\n  \"family\": \"itsmdesk\",\n  \"schema_version\": \"hubbench.provenance.v1\",\n  \"task_id\": \"itsmdesk-002\",\n  \"upstream_scores_claimed\": false,\n  \"upstream_tasks_copied\": false\n}\n",
+        "file_id": "DRV-002-19",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "harbor-open-source-anchors.json",
+        "sha256": "6b49aeb954a364a4680019d6944e86ef2e3abb87d23ed083a8f630604ca0dadc"
+      },
+      {
+        "content": "task_id,case_reference,subject_id,source_system,record_role,effective_revision\nitsmdesk-002,SVCOPS-0002,CHG-40320,domain,authoritative_subject,v1\nitsmdesk-002,SVCOPS-0002,CHG-40320,approvals,execution_authority,v1\nitsmdesk-002,SVCOPS-0002,CHG-40320,drive,supporting_evidence,v1\n",
+        "file_id": "DRV-002-20",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "record-lineage.csv",
+        "sha256": "e1379c1cb854c374de7d62a51418029758789fa9bf4992af1b46e6d16bfe106e"
+      },
+      {
+        "content": "# Current execution authority — SVCOPS-0002\n\nEffective 2026-04-14. Applies only to CHG-40320 in ITSMDesk. The signed approval record and provider contract jointly bound any write. A source record, search result, or prior decision never grants authority.\n\nRelease revision: v1. Task scope: itsmdesk-002.\n",
+        "file_id": "DRV-002-21",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "current-authority.md",
+        "sha256": "334ec4296330fc30b4e8d192f38f3bcde9087ec9d76a056007a9f6f59b71a12d"
+      },
+      {
+        "content": "# Retired authority — SVCOPS-0002\n\nStatus: SUPERSEDED. This historical ITSMDesk delegation ended before 2026-04-14. It references CHG-40320 but cannot authorize a current action for itsmdesk-002.\n",
+        "file_id": "DRV-002-22",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "retired-authority.md",
+        "sha256": "c49b07d8df40138f2a53e4e4d19d16b2e9016265b3833fb5a3a109041997babb"
+      },
+      {
+        "content": "{\n  \"approval_record\": \"DEC-ITSMDESK-0002\",\n  \"authority_source\": \"signed family approval plus provider contract\",\n  \"case_reference\": \"SVCOPS-0002\",\n  \"effective_revision\": \"v1\",\n  \"prohibited_basis\": [\n    \"retired authority\",\n    \"search ranking\",\n    \"request urgency\"\n  ],\n  \"status\": \"REVIEW_REQUIRED\",\n  \"subject_id\": \"CHG-40320\"\n}\n",
+        "file_id": "DRV-002-23",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "decision-record.json",
+        "sha256": "1f1be76488825fd2a4e8bf0030b21f12b4a3ce9913d0b89e7c3a6aaa1fdfdfc7"
+      },
+      {
+        "content": "task_id,case_reference,review_lane,available_units,protected_units,effective_date\nitsmdesk-002,SVCOPS-0002,standard,10,2,2026-04-14\nitsmdesk-002,SVCOPS-0002,expedited,6,1,2026-04-14\n",
+        "file_id": "DRV-002-24",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "review-capacity.xlsx",
+        "sha256": "b039523d64dc8a3d23616997d01ce8d4d0b76c26a64d6eb812f3e079e341400a"
+      },
+      {
+        "content": "Source integrity control\nTask: itsmdesk-002\nCase: SVCOPS-0002\nSubject: CHG-40320\nEffective revision: v1\nRule: current provider state plus the signed approval govern. Search rank, filenames, request urgency, and archived authority do not.\n",
+        "file_id": "DRV-002-25",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "source-integrity.pdf",
+        "sha256": "97f2bb9b5fd790b973c878c1075ff12fe6b59be0aa49a5e6d4fc9284e4623aaa"
+      },
+      {
+        "content": "task_id: \"itsmdesk-002\"\ncase_reference: \"SVCOPS-0002\"\nas_of: \"2026-04-14\"\nchecks:\n  - name: \"identity_linked\"\n    status: \"PASS\"\n    record: \"CHG-40320\"\n  - name: \"revision_current\"\n    status: \"PASS\"\n    record: \"v1\"\n  - name: \"authority_requires_live_read\"\n    status: \"OPEN\"\n    record: \"DEC-ITSMDESK-0002\"\n  - name: \"outcome_precomputed\"\n    status: \"NO\"\n    record: \"itsmdesk-002\"\n",
+        "file_id": "DRV-002-26",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "evidence-status.yaml",
+        "sha256": "63beb0e70bd1f910feb174891ae137eae196138cff46921c092ebe4a59affa5d"
+      },
+      {
+        "content": "2026-04-14T08:55:00Z INFO scope_created task=itsmdesk-002 case=SVCOPS-0002\n2026-04-14T08:56:00Z INFO subject_linked family=itsmdesk subject=CHG-40320\n2026-04-14T08:57:00Z WARN retired_authority_present case=SVCOPS-0002 action=ignore_until_current_scope_verified\n2026-04-14T08:58:00Z INFO provider_state_ready task=itsmdesk-002 expected_mutations=2\n",
+        "file_id": "DRV-002-27",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "text/plain",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "system-audit.log",
+        "sha256": "fbba0c69e876b116eef1ade03c32589145dd8997d913a5f695c05744a75fa37d"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SVCOPS-0002\",\n  \"messages\": [\n    {\n      \"author\": \"operations\",\n      \"sent_at\": \"2026-04-14T08:35:00\",\n      \"text\": \"Use immutable subject CHG-40320; the similarly named archived record is not in scope.\"\n    },\n    {\n      \"author\": \"governance\",\n      \"sent_at\": \"2026-04-14T08:41:00\",\n      \"text\": \"Current revision is v1. Confirm the signed approval before any state change.\"\n    },\n    {\n      \"author\": \"requester\",\n      \"sent_at\": \"2026-04-14T08:47:00\",\n      \"text\": \"Please leave the stakeholder communication as a draft for human review.\"\n    }\n  ],\n  \"thread_id\": \"OPS-ITSMDESK-0002\"\n}\n",
+        "file_id": "DRV-002-28",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "operations-thread.json",
+        "sha256": "eac1876a74b5c49ecdaf3a89967413a9f7633f977c36f991d82165da91a1cec1"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SVCOPS-0002\",\n  \"network\": \"closed benchmark world\",\n  \"read_semantics\": \"provider-shaped records backed by the seeded task world\",\n  \"schema_version\": \"hubbench.provider-contract.v1\",\n  \"state_scope\": \"isolated SQLite episode\",\n  \"subject_id\": \"CHG-40320\",\n  \"task_id\": \"itsmdesk-002\",\n  \"unsupported_claims\": [\n    \"byte parity with upstream providers\",\n    \"conversion of upstream benchmark tasks\",\n    \"upstream score comparability\"\n  ],\n  \"verifier_visibility\": \"hidden from the agent\",\n  \"write_semantics\": \"task-scoped, schema-validated, transactionally persisted and audited\"\n}\n",
+        "file_id": "DRV-002-29",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "provider-contracts.json",
+        "sha256": "08f7f36126b7b3a1cca9cb9eb9c06dd64817f071d7a45a8f2f436dd92ebdf7f8"
+      },
+      {
+        "content": "{\n  \"captured_as_of\": \"2026-04-14\",\n  \"case_reference\": \"SVCOPS-0002\",\n  \"expected_mutation_count\": 2,\n  \"family\": \"itsmdesk\",\n  \"note\": \"Live provider state remains authoritative; this export is a correlation aid, not a write instruction.\",\n  \"organization\": \"Brightmoor Commerce \\u2014 Service Operations\",\n  \"schema_version\": \"hubbench.live-snapshot.v1\",\n  \"state\": \"PRE_ACTION\",\n  \"subject_id\": \"CHG-40320\",\n  \"task_id\": \"itsmdesk-002\"\n}\n",
+        "file_id": "DRV-002-30",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "live-snapshot.json",
+        "sha256": "3bef6aeb3c70f6416decb921f5bcdf62b22addb9fe6a39cb34c647790d703a22"
+      },
+      {
+        "content": "case_reference: \"SVCOPS-0002\"\nas_of: \"2026-04-14\"\nfiles:\n  - path: \"policy/change-and-error-budget-policy.md\"\n    kind: \"policy\"\n    media_type: \"text/markdown\"\n    sha256: \"f62272947a2217b09566e9922d1254d3ce7d666c00ee4c7b5149d34c087c0ae6\"\n  - path: \"policy/superseded-change-policy-2024.md\"\n    kind: \"policy_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"08b64827d4ba9523bc64c3b74f4d5afa5db9bd7600ac0054b1c50e0dab8d05b8\"\n  - path: \"itsm/change-CHG-40322.json\"\n    kind: \"decoy_change\"\n    media_type: \"application/json\"\n    sha256: \"74c0e88d4babcd7c985d7af57b8560216f566db560a91bfff47a82ab639d1671\"\n  - path: \"itsm/change-CHG-40320.json\"\n    kind: \"change_export\"\n    media_type: \"application/json\"\n    sha256: \"69fcc0521d45da68754370d37d96802c9ffe4350cdc9b9c538b532f74fbadcf4\"\n  - path: \"itsm/service-checkout-web-summary.json\"\n    kind: \"service_summary\"\n    media_type: \"application/json\"\n    sha256: \"9fd9a9417154839a5b6efc2317c8d476e1ad624b13657f6637122388df9748f3\"\n  - path: \"telemetry/slo-catalog.csv\"\n    kind: \"slo_catalog\"\n    media_type: \"text/csv\"\n    sha256: \"d49b1c5b83d3beceafca8db7b571b7db4b46d36edd76b2fd8b6227aada0f816b\"\n  - path: \"telemetry/error-budget-ledger.xlsx\"\n    kind: \"budget_ledger_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"09fbfd01ba719fd741bbeef6536c78b2db4322d14749df10d6776537ab61e070\"\n  - path: \"itsm/incident-register.csv\"\n    kind: \"incident_register\"\n    media_type: \"text/csv\"\n    sha256: \"26f2a5c1ad4c3f0df4970f79dd667db48f0c61bc63d96abe7ab89170d6997e00\"\n  - path: \"telemetry/burn-rate-samples.csv\"\n    kind: \"burn_samples\"\n    media_type: \"text/csv\"\n    sha256: \"e84693d6b9234966e08e4a46f27ff82c2691b8fc49fb979e29b1690647021610\"\n  - path: \"calendar/change-calendar-2026-04-14.xlsx\"\n    kind: \"change_calendar\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"0f99b00775e827b518ee0281493765148d976d05dff976de412b50395e62b5bb\"\n  - path: \"calendar/freeze-register.csv\"\n    kind: \"freeze_register\"\n    media_type: \"text/csv\"\n    sha256: \"2232299e93d72696016dffc212bf9817f162d6b9573b3aedd4c7614ffb58ecaa\"\n  - path: \"calendar/lane-roster.csv\"\n    kind: \"lane_roster\"\n    media_type: \"text/csv\"\n    sha256: \"a312d0f05f887725df35b4a0b131dd23aa0a220a411093dc562abd2687523e5b\"\n  - path: \"oncall/secondary-roster.csv\"\n    kind: \"oncall_roster\"\n    media_type: \"text/csv\"\n    sha256: \"87cdf6b349c69aaaf78f5a8f5d9442a3b1df654d7fafeb21dcb1b08d95ff212a\"\n  - path: \"vendor/advisory-QSA-2026-121.pdf\"\n    kind: \"vendor_advisory\"\n    media_type: \"application/pdf\"\n    sha256: \"0045476afd9a31e46f7a59c7e7dcd8b3511c819ed3731186e7c74bfaa3c5205a\"\n  - path: \"messages/THR-2002.eml\"\n    kind: \"email\"\n    media_type: \"message/rfc822\"\n    sha256: \"e758020700066068b79e11755896862ec93ce2f12e61ee95d44746ae232a7600\"\n  - path: \"chat/CHAT-2002.json\"\n    kind: \"chat_thread\"\n    media_type: \"application/json\"\n    sha256: \"b2d3e3684e0b2e4e27ac6540597a48c05dff22e62c34ae289d3288e157fee6f5\"\n  - path: \"approvals/approval-AP-SO-0102.json\"\n    kind: \"approval\"\n    media_type: \"application/json\"\n    sha256: \"234088eda59686b009d742c915b6cdc78ebcb1b669b1370ab44e96b05985d1c2\"\n  - path: \"exports/starting-state-itsmdesk-002.json\"\n    kind: \"starting_state\"\n    media_type: \"application/json\"\n    sha256: \"af6da4b0e69564123a05ca51d743351d6ec58d0a6d0db9af279844e5cad6a5dd\"\n  - path: \"itsm/canary-pin-register.csv\"\n    kind: \"pin_register\"\n    media_type: \"text/csv\"\n    sha256: \"9ab2805cb94b8864e7e30ec44fd256b9228ca6e405862e35145091cb4d05d062\"\n  - path: \"vendor/quillstone-hardened-image-terms.md\"\n    kind: \"vendor_terms\"\n    media_type: \"text/markdown\"\n    sha256: \"9e59d1aca840be0a1dc4ffb90641dd8f6fe62f1b37ce7ac87d3fdb7368f21c3b\"\n  - path: \"provenance/harbor-open-source-anchors.json\"\n    kind: \"open_source_provenance\"\n    media_type: \"application/json\"\n    sha256: \"6b49aeb954a364a4680019d6944e86ef2e3abb87d23ed083a8f630604ca0dadc\"\n  - path: \"lineage/record-lineage.csv\"\n    kind: \"record_lineage\"\n    media_type: \"text/csv\"\n    sha256: \"e1379c1cb854c374de7d62a51418029758789fa9bf4992af1b46e6d16bfe106e\"\n  - path: \"controls/current-authority.md\"\n    kind: \"authority_current\"\n    media_type: \"text/markdown\"\n    sha256: \"334ec4296330fc30b4e8d192f38f3bcde9087ec9d76a056007a9f6f59b71a12d\"\n  - path: \"controls/retired-authority.md\"\n    kind: \"authority_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"c49b07d8df40138f2a53e4e4d19d16b2e9016265b3833fb5a3a109041997babb\"\n  - path: \"approvals/decision-record.json\"\n    kind: \"approval_decision\"\n    media_type: \"application/json\"\n    sha256: \"1f1be76488825fd2a4e8bf0030b21f12b4a3ce9913d0b89e7c3a6aaa1fdfdfc7\"\n  - path: \"workbooks/review-capacity.xlsx\"\n    kind: \"review_capacity_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"b039523d64dc8a3d23616997d01ce8d4d0b76c26a64d6eb812f3e079e341400a\"\n  - path: \"controls/source-integrity.pdf\"\n    kind: \"source_integrity_control\"\n    media_type: \"application/pdf\"\n    sha256: \"97f2bb9b5fd790b973c878c1075ff12fe6b59be0aa49a5e6d4fc9284e4623aaa\"\n  - path: \"audit/evidence-status.yaml\"\n    kind: \"evidence_status\"\n    media_type: \"application/yaml\"\n    sha256: \"63beb0e70bd1f910feb174891ae137eae196138cff46921c092ebe4a59affa5d\"\n  - path: \"audit/system-audit.log\"\n    kind: \"system_audit\"\n    media_type: \"text/plain\"\n    sha256: \"fbba0c69e876b116eef1ade03c32589145dd8997d913a5f695c05744a75fa37d\"\n  - path: \"communications/source-request.eml\"\n    kind: \"source_request\"\n    media_type: \"message/rfc822\"\n    sha256: \"cb52e26b6db8288a3315d32c1b5eaa200d6506a709fdefb7411148faeb086ba3\"\n  - path: \"collaboration/operations-thread.json\"\n    kind: \"operations_thread\"\n    media_type: \"application/json\"\n    sha256: \"eac1876a74b5c49ecdaf3a89967413a9f7633f977c36f991d82165da91a1cec1\"\n  - path: \"contracts/provider-contracts.json\"\n    kind: \"provider_contract\"\n    media_type: \"application/json\"\n    sha256: \"08f7f36126b7b3a1cca9cb9eb9c06dd64817f071d7a45a8f2f436dd92ebdf7f8\"\n  - path: \"exports/live-snapshot.json\"\n    kind: \"live_snapshot\"\n    media_type: \"application/json\"\n    sha256: \"3bef6aeb3c70f6416decb921f5bcdf62b22addb9fe6a39cb34c647790d703a22\"\n",
+        "file_id": "DRV-002-31",
+        "folder": "Service Operations/Cases/SVCOPS-0002",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "evidence-index.yaml",
+        "sha256": "0cc4fec106e2124c1a171b931ea2c0c9c04e12b2a92ea4284403eab2fcb07078"
+      }
+    ],
+    "engineers": [
+      {
+        "certifications": "payments-runbook,change-implementer",
+        "engineer_id": "ENG-VARGA",
+        "name": "Lena Varga",
+        "role": "service_owner",
+        "team": "Payments Platform"
+      },
+      {
+        "certifications": "payments-runbook,identity-runbook,checkout-runbook,web-runbook,change-implementer",
+        "engineer_id": "ENG-OKAFOR",
+        "name": "Chidi Okafor",
+        "role": "sre_secondary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "identity-runbook,checkout-runbook,change-implementer",
+        "engineer_id": "ENG-DUBOIS",
+        "name": "Mathis Dubois",
+        "role": "sre_primary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "checkout-runbook,change-implementer",
+        "engineer_id": "ENG-SATO",
+        "name": "Rin Sato",
+        "role": "service_owner",
+        "team": "Checkout"
+      },
+      {
+        "certifications": "data-runbook,messaging-runbook,change-implementer",
+        "engineer_id": "ENG-NKEMELU",
+        "name": "Adaeze Nkemelu",
+        "role": "data_platform_lead",
+        "team": "Data Platform"
+      },
+      {
+        "certifications": "change-implementer",
+        "engineer_id": "ENG-HOLM",
+        "name": "Dario Holm",
+        "role": "sre_secondary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "search-runbook,payments-runbook,fraud-runbook,data-runbook,messaging-runbook,change-implementer",
+        "engineer_id": "ENG-RAMAN",
+        "name": "Priya Raman",
+        "role": "sre_secondary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "fraud-runbook,change-implementer",
+        "engineer_id": "ENG-FERREIRA",
+        "name": "Bruno Ferreira",
+        "role": "risk_engineer",
+        "team": "Risk Platform"
+      },
+      {
+        "certifications": "web-runbook,change-implementer",
+        "engineer_id": "ENG-KOWALSKI",
+        "name": "Zofia Kowalski",
+        "role": "web_owner",
+        "team": "Merchant Web"
+      },
+      {
+        "certifications": "search-runbook,change-implementer",
+        "engineer_id": "ENG-TANAKA",
+        "name": "Yuki Tanaka",
+        "role": "search_owner",
+        "team": "Search Platform"
+      }
+    ],
+    "escalation_policies": [
+      {
+        "levels_json": "[{\"level\": 1, \"target\": \"SCHED-CHK-PRI\", \"timeout_minutes\": 10}, {\"level\": 2, \"target\": \"SCHED-CHK-SEC\", \"timeout_minutes\": 10}, {\"level\": 3, \"target\": \"U-HAVILAND (SRE lead)\", \"timeout_minutes\": 15}]",
+        "name": "checkout-web escalation",
+        "policy_id": "ESC-31144",
+        "service_id": "SVC-31144"
+      }
+    ],
+    "evidence_files": [
+      {
+        "asset_id": "itsmdesk-002-01",
+        "kind": "policy",
+        "media_type": "text/markdown",
+        "path": "policy/change-and-error-budget-policy.md",
+        "sha256": "f62272947a2217b09566e9922d1254d3ce7d666c00ee4c7b5149d34c087c0ae6",
+        "source": "drive",
+        "task_id": "itsmdesk-002",
+        "title": "Change and error-budget policy v3 (effective)"
+      },
+      {
+        "asset_id": "itsmdesk-002-02",
+        "kind": "policy_superseded",
+        "media_type": "text/markdown",
+        "path": "policy/superseded-change-policy-2024.md",
+        "sha256": "08b64827d4ba9523bc64c3b74f4d5afa5db9bd7600ac0054b1c50e0dab8d05b8",
+        "source": "drive",
+        "task_id": "itsmdesk-002",
+        "title": "Change and error-budget policy 2024 (superseded)"
+      },
+      {
+        "asset_id": "itsmdesk-002-03",
+        "kind": "decoy_change",
+        "media_type": "application/json",
+        "path": "itsm/change-CHG-40322.json",
+        "sha256": "74c0e88d4babcd7c985d7af57b8560216f566db560a91bfff47a82ab639d1671",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-002",
+        "title": "Change CHG-40322 (cancelled bot duplicate)"
+      },
+      {
+        "asset_id": "itsmdesk-002-04",
+        "kind": "change_export",
+        "media_type": "application/json",
+        "path": "itsm/change-CHG-40320.json",
+        "sha256": "69fcc0521d45da68754370d37d96802c9ffe4350cdc9b9c538b532f74fbadcf4",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-002",
+        "title": "Change CHG-40320 (ITSM export)"
+      },
+      {
+        "asset_id": "itsmdesk-002-05",
+        "kind": "service_summary",
+        "media_type": "application/json",
+        "path": "itsm/service-checkout-web-summary.json",
+        "sha256": "9fd9a9417154839a5b6efc2317c8d476e1ad624b13657f6637122388df9748f3",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-002",
+        "title": "Service checkout-web summary with restart meterings (ITSM export)"
+      },
+      {
+        "asset_id": "itsmdesk-002-06",
+        "kind": "slo_catalog",
+        "media_type": "text/csv",
+        "path": "telemetry/slo-catalog.csv",
+        "sha256": "d49b1c5b83d3beceafca8db7b571b7db4b46d36edd76b2fd8b6227aada0f816b",
+        "source": "telemetry_export",
+        "task_id": "itsmdesk-002",
+        "title": "SLO catalog: objectives, windows, budgets, and reserve floors"
+      },
+      {
+        "asset_id": "itsmdesk-002-07",
+        "kind": "budget_ledger_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "telemetry/error-budget-ledger.xlsx",
+        "sha256": "09fbfd01ba719fd741bbeef6536c78b2db4322d14749df10d6776537ab61e070",
+        "source": "telemetry_workbook",
+        "task_id": "itsmdesk-002",
+        "title": "Error-budget ledger — checkout-web (gross incident minutes)"
+      },
+      {
+        "asset_id": "itsmdesk-002-08",
+        "kind": "incident_register",
+        "media_type": "text/csv",
+        "path": "itsm/incident-register.csv",
+        "sha256": "26f2a5c1ad4c3f0df4970f79dd667db48f0c61bc63d96abe7ab89170d6997e00",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-002",
+        "title": "Incident register with problem-review notes"
+      },
+      {
+        "asset_id": "itsmdesk-002-09",
+        "kind": "burn_samples",
+        "media_type": "text/csv",
+        "path": "telemetry/burn-rate-samples.csv",
+        "sha256": "e84693d6b9234966e08e4a46f27ff82c2691b8fc49fb979e29b1690647021610",
+        "source": "telemetry_export",
+        "task_id": "itsmdesk-002",
+        "title": "Burn-rate samples — SLO-CHK-AVAIL"
+      },
+      {
+        "asset_id": "itsmdesk-002-10",
+        "kind": "change_calendar",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "calendar/change-calendar-2026-04-14.xlsx",
+        "sha256": "0f99b00775e827b518ee0281493765148d976d05dff976de412b50395e62b5bb",
+        "source": "calendar_workbook",
+        "task_id": "itsmdesk-002",
+        "title": "Change calendar, three weeks from 2026-04-14"
+      },
+      {
+        "asset_id": "itsmdesk-002-11",
+        "kind": "freeze_register",
+        "media_type": "text/csv",
+        "path": "calendar/freeze-register.csv",
+        "sha256": "2232299e93d72696016dffc212bf9817f162d6b9573b3aedd4c7614ffb58ecaa",
+        "source": "calendar_export",
+        "task_id": "itsmdesk-002",
+        "title": "Freeze register (change calendar)"
+      },
+      {
+        "asset_id": "itsmdesk-002-12",
+        "kind": "lane_roster",
+        "media_type": "text/csv",
+        "path": "calendar/lane-roster.csv",
+        "sha256": "a312d0f05f887725df35b4a0b131dd23aa0a220a411093dc562abd2687523e5b",
+        "source": "calendar_export",
+        "task_id": "itsmdesk-002",
+        "title": "Change-lane roster and certification"
+      },
+      {
+        "asset_id": "itsmdesk-002-13",
+        "kind": "oncall_roster",
+        "media_type": "text/csv",
+        "path": "oncall/secondary-roster.csv",
+        "sha256": "87cdf6b349c69aaaf78f5a8f5d9442a3b1df654d7fafeb21dcb1b08d95ff212a",
+        "source": "oncall_export",
+        "task_id": "itsmdesk-002",
+        "title": "Secondary on-call roster — SCHED-CHK-SEC"
+      },
+      {
+        "asset_id": "itsmdesk-002-14",
+        "kind": "vendor_advisory",
+        "media_type": "application/pdf",
+        "path": "vendor/advisory-QSA-2026-121.pdf",
+        "sha256": "0045476afd9a31e46f7a59c7e7dcd8b3511c819ed3731186e7c74bfaa3c5205a",
+        "source": "email_attachment",
+        "task_id": "itsmdesk-002",
+        "title": "Vendor advisory QSA-2026-121 hardened-image supplement"
+      },
+      {
+        "asset_id": "itsmdesk-002-15",
+        "kind": "email",
+        "media_type": "message/rfc822",
+        "path": "messages/THR-2002.eml",
+        "sha256": "e758020700066068b79e11755896862ec93ce2f12e61ee95d44746ae232a7600",
+        "source": "messages",
+        "task_id": "itsmdesk-002",
+        "title": "SVCOPS-0002 checkout-web rolling patch — how many nodes on Saturday?"
+      },
+      {
+        "asset_id": "itsmdesk-002-16",
+        "kind": "chat_thread",
+        "media_type": "application/json",
+        "path": "chat/CHAT-2002.json",
+        "sha256": "b2d3e3684e0b2e4e27ac6540597a48c05dff22e62c34ae289d3288e157fee6f5",
+        "source": "chat",
+        "task_id": "itsmdesk-002",
+        "title": "SVCOPS-0002 checkout-web batches"
+      },
+      {
+        "asset_id": "itsmdesk-002-17",
+        "kind": "approval",
+        "media_type": "application/json",
+        "path": "approvals/approval-AP-SO-0102.json",
+        "sha256": "234088eda59686b009d742c915b6cdc78ebcb1b669b1370ab44e96b05985d1c2",
+        "source": "approvals_export",
+        "task_id": "itsmdesk-002",
+        "title": "Approval record AP-SO-0102"
+      },
+      {
+        "asset_id": "itsmdesk-002-18",
+        "kind": "starting_state",
+        "media_type": "application/json",
+        "path": "exports/starting-state-itsmdesk-002.json",
+        "sha256": "af6da4b0e69564123a05ca51d743351d6ec58d0a6d0db9af279844e5cad6a5dd",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-002",
+        "title": "Starting-state export (changes, tasks, outages, overrides)"
+      },
+      {
+        "asset_id": "itsmdesk-002-19",
+        "kind": "pin_register",
+        "media_type": "text/csv",
+        "path": "itsm/canary-pin-register.csv",
+        "sha256": "9ab2805cb94b8864e7e30ec44fd256b9228ca6e405862e35145091cb4d05d062",
+        "source": "drive",
+        "task_id": "itsmdesk-002",
+        "title": "Canary pin register (risk platform)"
+      },
+      {
+        "asset_id": "itsmdesk-002-20",
+        "kind": "vendor_terms",
+        "media_type": "text/markdown",
+        "path": "vendor/quillstone-hardened-image-terms.md",
+        "sha256": "9e59d1aca840be0a1dc4ffb90641dd8f6fe62f1b37ce7ac87d3fdb7368f21c3b",
+        "source": "drive",
+        "task_id": "itsmdesk-002",
+        "title": "Quillstone hardened image programme — terms (extract)"
+      },
+      {
+        "asset_id": "itsmdesk-002-21",
+        "kind": "open_source_provenance",
+        "media_type": "application/json",
+        "path": "provenance/harbor-open-source-anchors.json",
+        "sha256": "6b49aeb954a364a4680019d6944e86ef2e3abb87d23ed083a8f630604ca0dadc",
+        "source": "release_metadata",
+        "task_id": "itsmdesk-002",
+        "title": "Open-source benchmark provenance — ITSMDesk"
+      },
+      {
+        "asset_id": "itsmdesk-002-22",
+        "kind": "record_lineage",
+        "media_type": "text/csv",
+        "path": "lineage/record-lineage.csv",
+        "sha256": "e1379c1cb854c374de7d62a51418029758789fa9bf4992af1b46e6d16bfe106e",
+        "source": "lineage_export",
+        "task_id": "itsmdesk-002",
+        "title": "Cross-system record lineage — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-23",
+        "kind": "authority_current",
+        "media_type": "text/markdown",
+        "path": "controls/current-authority.md",
+        "sha256": "334ec4296330fc30b4e8d192f38f3bcde9087ec9d76a056007a9f6f59b71a12d",
+        "source": "governance",
+        "task_id": "itsmdesk-002",
+        "title": "Current authority — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-24",
+        "kind": "authority_superseded",
+        "media_type": "text/markdown",
+        "path": "controls/retired-authority.md",
+        "sha256": "c49b07d8df40138f2a53e4e4d19d16b2e9016265b3833fb5a3a109041997babb",
+        "source": "governance_archive",
+        "task_id": "itsmdesk-002",
+        "title": "Retired authority — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-25",
+        "kind": "approval_decision",
+        "media_type": "application/json",
+        "path": "approvals/decision-record.json",
+        "sha256": "1f1be76488825fd2a4e8bf0030b21f12b4a3ce9913d0b89e7c3a6aaa1fdfdfc7",
+        "source": "approvals_export",
+        "task_id": "itsmdesk-002",
+        "title": "Decision control record — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-26",
+        "kind": "review_capacity_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "workbooks/review-capacity.xlsx",
+        "sha256": "b039523d64dc8a3d23616997d01ce8d4d0b76c26a64d6eb812f3e079e341400a",
+        "source": "operations_workbook",
+        "task_id": "itsmdesk-002",
+        "title": "Review capacity — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-27",
+        "kind": "source_integrity_control",
+        "media_type": "application/pdf",
+        "path": "controls/source-integrity.pdf",
+        "sha256": "97f2bb9b5fd790b973c878c1075ff12fe6b59be0aa49a5e6d4fc9284e4623aaa",
+        "source": "governance",
+        "task_id": "itsmdesk-002",
+        "title": "Source integrity control — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-28",
+        "kind": "evidence_status",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-status.yaml",
+        "sha256": "63beb0e70bd1f910feb174891ae137eae196138cff46921c092ebe4a59affa5d",
+        "source": "audit_export",
+        "task_id": "itsmdesk-002",
+        "title": "Evidence readiness — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-29",
+        "kind": "system_audit",
+        "media_type": "text/plain",
+        "path": "audit/system-audit.log",
+        "sha256": "fbba0c69e876b116eef1ade03c32589145dd8997d913a5f695c05744a75fa37d",
+        "source": "audit_export",
+        "task_id": "itsmdesk-002",
+        "title": "System audit log — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-30",
+        "kind": "source_request",
+        "media_type": "message/rfc822",
+        "path": "communications/source-request.eml",
+        "sha256": "cb52e26b6db8288a3315d32c1b5eaa200d6506a709fdefb7411148faeb086ba3",
+        "source": "messages",
+        "task_id": "itsmdesk-002",
+        "title": "Source integrity request — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-31",
+        "kind": "operations_thread",
+        "media_type": "application/json",
+        "path": "collaboration/operations-thread.json",
+        "sha256": "eac1876a74b5c49ecdaf3a89967413a9f7633f977c36f991d82165da91a1cec1",
+        "source": "chat",
+        "task_id": "itsmdesk-002",
+        "title": "Operations thread — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-32",
+        "kind": "provider_contract",
+        "media_type": "application/json",
+        "path": "contracts/provider-contracts.json",
+        "sha256": "08f7f36126b7b3a1cca9cb9eb9c06dd64817f071d7a45a8f2f436dd92ebdf7f8",
+        "source": "release_metadata",
+        "task_id": "itsmdesk-002",
+        "title": "Provider contract — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-33",
+        "kind": "live_snapshot",
+        "media_type": "application/json",
+        "path": "exports/live-snapshot.json",
+        "sha256": "3bef6aeb3c70f6416decb921f5bcdf62b22addb9fe6a39cb34c647790d703a22",
+        "source": "provider_export",
+        "task_id": "itsmdesk-002",
+        "title": "Live pre-action snapshot — SVCOPS-0002"
+      },
+      {
+        "asset_id": "itsmdesk-002-34",
+        "kind": "evidence_index",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-index.yaml",
+        "sha256": "0cc4fec106e2124c1a171b931ea2c0c9c04e12b2a92ea4284403eab2fcb07078",
+        "source": "drive",
+        "task_id": "itsmdesk-002",
+        "title": "Evidence index"
+      }
+    ],
+    "freeze_windows": [
+      {
+        "authority": "change board chair",
+        "end_date": "2026-05-01",
+        "freeze_id": "FRZ-2026-15",
+        "kind": "financial",
+        "lanes": "ALL",
+        "name": "month-end financial close freeze",
+        "start_date": "2026-04-28",
+        "status": "ACTIVE"
+      }
+    ],
+    "incidents": [
+      {
+        "impact_minutes": 15,
+        "incident_id": "INC-70831",
+        "opened_at": "2026-03-24T18:10:00",
+        "problem_id": null,
+        "resolved_at": "2026-03-24T18:44:00",
+        "service_id": "SVC-31144",
+        "severity": "sev1",
+        "slo_charged": 1,
+        "summary": "checkout page 5xx after the CDN configuration push"
+      },
+      {
+        "impact_minutes": 5,
+        "incident_id": "INC-70849",
+        "opened_at": "2026-03-30T07:05:00",
+        "problem_id": "PRB-4109",
+        "resolved_at": "2026-03-30T07:26:00",
+        "service_id": "SVC-31144",
+        "severity": "sev3",
+        "slo_charged": 0,
+        "summary": "cart badge probe false positives; reclassified by PRB-4109"
+      },
+      {
+        "impact_minutes": 9,
+        "incident_id": "INC-70862",
+        "opened_at": "2026-04-06T12:40:00",
+        "problem_id": null,
+        "resolved_at": "2026-04-06T12:58:00",
+        "service_id": "SVC-31144",
+        "severity": "sev2",
+        "slo_charged": 1,
+        "summary": "session-cache eviction storm during the flash sale"
+      }
+    ],
+    "maintenance_windows": [
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-14",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260414-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "elapsed before the planning time",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-14",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_id": "MW-DR-20260414-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-14",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260414-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "elapsed before the planning time",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-14",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_id": "MW-EDGE-20260414-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-15",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260415-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-15",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260415-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-15",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260415-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-15",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260415-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-16",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260416-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-16",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260416-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-16",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260416-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-16",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260416-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-17",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260417-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-17",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260417-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-17",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260417-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-17",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260417-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-18",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260418-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-18",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260418-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "CDN vendor maintenance (blocked)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-18",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "blocked",
+        "window_id": "MW-EDGE-20260418-EVE"
+      },
+      {
+        "change_id": "CHG-40320",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled change",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-18",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_id": "MW-EDGE-20260418-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-19",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260419-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-19",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260419-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-19",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260419-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-19",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260419-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-20",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260420-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-20",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260420-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-20",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260420-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-20",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260420-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-21",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260421-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-21",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260421-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-21",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260421-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-21",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260421-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-22",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260422-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-22",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260422-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-22",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260422-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-22",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260422-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-23",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260423-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-23",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260423-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-23",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260423-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-23",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260423-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-24",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260424-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-24",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260424-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-24",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260424-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-24",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260424-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-25",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260425-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-25",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260425-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-25",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260425-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-25",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260425-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-26",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260426-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-26",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260426-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-26",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260426-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-26",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260426-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-27",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260427-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-27",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260427-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-27",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260427-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-27",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260427-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-28",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260428-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-28",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260428-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-28",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260428-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-28",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260428-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-29",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260429-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-29",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260429-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-29",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260429-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-29",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260429-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-30",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260430-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-04-30",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260430-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-30",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260430-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-04-30",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260430-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-05-01",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260501-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-05-01",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260501-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-05-01",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260501-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-05-01",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260501-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-05-02",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260502-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-05-02",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260502-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-05-02",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260502-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-05-02",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260502-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-05-03",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260503-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DR",
+        "service_date": "2026-05-03",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DR-20260503-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-05-03",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260503-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-05-03",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-EDGE-20260503-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-05-04",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260504-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-DR",
+        "service_date": "2026-05-04",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DR-20260504-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-05-04",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260504-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-EDGE",
+        "service_date": "2026-05-04",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-EDGE-20260504-NIGHT"
+      }
+    ],
+    "messages": [
+      {
+        "attachments_json": "[{\"name\": \"advisory-QSA-2026-121-hardened-supplement.pdf\", \"mime_type\": \"application/pdf\"}]",
+        "body": "The checkout-web rolling patch (CHG-40320) has Saturday's night session on the edge lane and I need the batch task in the change today so the implementers can prepare. Please size the first batch honestly: which nodes still need the fix, which ones cannot be touched because Bruno's fraud-model canary has them pinned, what the batch cap does while our error budget is where it is, and how many the session physically drains at the current drain timing.\n\nThe DR pair runs the hardened image and Quillstone has quoted an early-access date for that variant (supplement attached); Saoirse's approval AP-SO-0102 covers the batches but no fees.\n\nRin",
+        "channel": "email",
+        "labels": "checkout,SVCOPS-0002,SVCOPS-0002",
+        "message_id": "MSG-2002-01",
+        "recipients": "service-ops@brightmoor.example",
+        "sender": "rin.sato@brightmoor.example",
+        "sent_at": "2026-04-14T09:12:00",
+        "subject": "SVCOPS-0002 checkout-web rolling patch — how many nodes on Saturday?",
+        "thread_id": "THR-2002"
+      },
+      {
+        "attachments_json": "[]",
+        "body": "On-call rotations for the week of 2026-04-13 are posted. Lane certification flags are on the shared drive roster; the change board meets Thursday.",
+        "channel": "email",
+        "labels": "operations",
+        "message_id": "MSG-0002-00",
+        "recipients": "service-ops@brightmoor.example",
+        "sender": "wren.haviland@brightmoor.example",
+        "sent_at": "2026-04-13T08:00:00",
+        "subject": "Weekly service-operations note",
+        "thread_id": "THR-0002-OPS"
+      }
+    ],
+    "meterings": [
+      {
+        "measured_at": "2026-04-08",
+        "metering_id": "MTR-31144",
+        "metric": "DRAIN-MIN",
+        "service_id": "SVC-31144",
+        "status": "final",
+        "unit": "MIN",
+        "value": 20.0
+      },
+      {
+        "measured_at": "2026-01-20",
+        "metering_id": "MTR-31144-2601",
+        "metric": "DRAIN-MIN",
+        "service_id": "SVC-31144",
+        "status": "final",
+        "unit": "MIN",
+        "value": 12.0
+      },
+      {
+        "measured_at": "2026-04-08",
+        "metering_id": "MTR-31160",
+        "metric": "DRAIN-MIN",
+        "service_id": "SVC-31160",
+        "status": "final",
+        "unit": "MIN",
+        "value": 18.0
+      }
+    ],
+    "nodes": [
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-01",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.3"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-02",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.3"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-03",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-04",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-05",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-06",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-07",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-08",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-09",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-10",
+        "pinned_for": null,
+        "pool": "web-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-11",
+        "pinned_for": null,
+        "pool": "web-us",
+        "region": "us-east",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-12",
+        "pinned_for": null,
+        "pool": "web-us",
+        "region": "us-east",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-13",
+        "pinned_for": null,
+        "pool": "web-us",
+        "region": "us-east",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-14",
+        "pinned_for": null,
+        "pool": "web-us",
+        "region": "us-east",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-15",
+        "pinned_for": "CHG-40290 fraud-model canary (ends 2026-04-21)",
+        "pool": "web-us",
+        "region": "us-east",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-EDGE",
+        "node_id": "NODE-CHK-16",
+        "pinned_for": "CHG-40290 fraud-model canary (ends 2026-04-21)",
+        "pool": "web-us",
+        "region": "us-east",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-DR",
+        "node_id": "NODE-CHK-17",
+        "pinned_for": null,
+        "pool": "web-dr",
+        "region": "eu-central",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-DR",
+        "node_id": "NODE-CHK-18",
+        "pinned_for": null,
+        "pool": "web-dr",
+        "region": "eu-central",
+        "service_id": "SVC-31144",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      }
+    ],
+    "oncall_overrides": [],
+    "oncall_schedules": [
+      {
+        "name": "checkout primary",
+        "required_certification": null,
+        "role": "primary",
+        "schedule_id": "SCHED-CHK-PRI",
+        "service_id": "SVC-31144"
+      },
+      {
+        "name": "checkout secondary (certified)",
+        "required_certification": "checkout-runbook",
+        "role": "secondary",
+        "schedule_id": "SCHED-CHK-SEC",
+        "service_id": "SVC-31144"
+      }
+    ],
+    "oncall_shifts": [
+      {
+        "end_time": "2026-04-14T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260414-1",
+        "source": "rotation",
+        "start_time": "2026-04-14T00:00:00"
+      },
+      {
+        "end_time": "2026-04-14T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260414-2",
+        "source": "rotation",
+        "start_time": "2026-04-14T08:00:00"
+      },
+      {
+        "end_time": "2026-04-14T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260414-3",
+        "source": "rotation",
+        "start_time": "2026-04-14T16:00:00"
+      },
+      {
+        "end_time": "2026-04-15T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260415-1",
+        "source": "rotation",
+        "start_time": "2026-04-15T00:00:00"
+      },
+      {
+        "end_time": "2026-04-15T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260415-2",
+        "source": "rotation",
+        "start_time": "2026-04-15T08:00:00"
+      },
+      {
+        "end_time": "2026-04-15T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260415-3",
+        "source": "rotation",
+        "start_time": "2026-04-15T16:00:00"
+      },
+      {
+        "end_time": "2026-04-16T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260416-1",
+        "source": "rotation",
+        "start_time": "2026-04-16T00:00:00"
+      },
+      {
+        "end_time": "2026-04-16T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260416-2",
+        "source": "rotation",
+        "start_time": "2026-04-16T08:00:00"
+      },
+      {
+        "end_time": "2026-04-16T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260416-3",
+        "source": "rotation",
+        "start_time": "2026-04-16T16:00:00"
+      },
+      {
+        "end_time": "2026-04-17T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260417-1",
+        "source": "rotation",
+        "start_time": "2026-04-17T00:00:00"
+      },
+      {
+        "end_time": "2026-04-17T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260417-2",
+        "source": "rotation",
+        "start_time": "2026-04-17T08:00:00"
+      },
+      {
+        "end_time": "2026-04-17T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260417-3",
+        "source": "rotation",
+        "start_time": "2026-04-17T16:00:00"
+      },
+      {
+        "end_time": "2026-04-18T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260418-1",
+        "source": "rotation",
+        "start_time": "2026-04-18T00:00:00"
+      },
+      {
+        "end_time": "2026-04-18T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260418-2",
+        "source": "rotation",
+        "start_time": "2026-04-18T08:00:00"
+      },
+      {
+        "end_time": "2026-04-18T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260418-3",
+        "source": "rotation",
+        "start_time": "2026-04-18T16:00:00"
+      },
+      {
+        "end_time": "2026-04-19T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260419-1",
+        "source": "rotation",
+        "start_time": "2026-04-19T00:00:00"
+      },
+      {
+        "end_time": "2026-04-19T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260419-2",
+        "source": "rotation",
+        "start_time": "2026-04-19T08:00:00"
+      },
+      {
+        "end_time": "2026-04-19T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260419-3",
+        "source": "rotation",
+        "start_time": "2026-04-19T16:00:00"
+      },
+      {
+        "end_time": "2026-04-20T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260420-1",
+        "source": "rotation",
+        "start_time": "2026-04-20T00:00:00"
+      },
+      {
+        "end_time": "2026-04-20T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260420-2",
+        "source": "rotation",
+        "start_time": "2026-04-20T08:00:00"
+      },
+      {
+        "end_time": "2026-04-20T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260420-3",
+        "source": "rotation",
+        "start_time": "2026-04-20T16:00:00"
+      },
+      {
+        "end_time": "2026-04-21T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260421-1",
+        "source": "rotation",
+        "start_time": "2026-04-21T00:00:00"
+      },
+      {
+        "end_time": "2026-04-21T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260421-2",
+        "source": "rotation",
+        "start_time": "2026-04-21T08:00:00"
+      },
+      {
+        "end_time": "2026-04-21T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260421-3",
+        "source": "rotation",
+        "start_time": "2026-04-21T16:00:00"
+      },
+      {
+        "end_time": "2026-04-22T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260422-1",
+        "source": "rotation",
+        "start_time": "2026-04-22T00:00:00"
+      },
+      {
+        "end_time": "2026-04-22T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260422-2",
+        "source": "rotation",
+        "start_time": "2026-04-22T08:00:00"
+      },
+      {
+        "end_time": "2026-04-22T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260422-3",
+        "source": "rotation",
+        "start_time": "2026-04-22T16:00:00"
+      },
+      {
+        "end_time": "2026-04-23T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260423-1",
+        "source": "rotation",
+        "start_time": "2026-04-23T00:00:00"
+      },
+      {
+        "end_time": "2026-04-23T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260423-2",
+        "source": "rotation",
+        "start_time": "2026-04-23T08:00:00"
+      },
+      {
+        "end_time": "2026-04-23T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260423-3",
+        "source": "rotation",
+        "start_time": "2026-04-23T16:00:00"
+      },
+      {
+        "end_time": "2026-04-24T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260424-1",
+        "source": "rotation",
+        "start_time": "2026-04-24T00:00:00"
+      },
+      {
+        "end_time": "2026-04-24T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260424-2",
+        "source": "rotation",
+        "start_time": "2026-04-24T08:00:00"
+      },
+      {
+        "end_time": "2026-04-24T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260424-3",
+        "source": "rotation",
+        "start_time": "2026-04-24T16:00:00"
+      },
+      {
+        "end_time": "2026-04-25T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260425-1",
+        "source": "rotation",
+        "start_time": "2026-04-25T00:00:00"
+      },
+      {
+        "end_time": "2026-04-25T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260425-2",
+        "source": "rotation",
+        "start_time": "2026-04-25T08:00:00"
+      },
+      {
+        "end_time": "2026-04-25T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260425-3",
+        "source": "rotation",
+        "start_time": "2026-04-25T16:00:00"
+      },
+      {
+        "end_time": "2026-04-26T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260426-1",
+        "source": "rotation",
+        "start_time": "2026-04-26T00:00:00"
+      },
+      {
+        "end_time": "2026-04-26T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260426-2",
+        "source": "rotation",
+        "start_time": "2026-04-26T08:00:00"
+      },
+      {
+        "end_time": "2026-04-26T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260426-3",
+        "source": "rotation",
+        "start_time": "2026-04-26T16:00:00"
+      },
+      {
+        "end_time": "2026-04-27T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260427-1",
+        "source": "rotation",
+        "start_time": "2026-04-27T00:00:00"
+      },
+      {
+        "end_time": "2026-04-27T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260427-2",
+        "source": "rotation",
+        "start_time": "2026-04-27T08:00:00"
+      },
+      {
+        "end_time": "2026-04-27T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260427-3",
+        "source": "rotation",
+        "start_time": "2026-04-27T16:00:00"
+      },
+      {
+        "end_time": "2026-04-28T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260428-1",
+        "source": "rotation",
+        "start_time": "2026-04-28T00:00:00"
+      },
+      {
+        "end_time": "2026-04-28T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260428-2",
+        "source": "rotation",
+        "start_time": "2026-04-28T08:00:00"
+      },
+      {
+        "end_time": "2026-04-28T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260428-3",
+        "source": "rotation",
+        "start_time": "2026-04-28T16:00:00"
+      },
+      {
+        "end_time": "2026-04-29T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260429-1",
+        "source": "rotation",
+        "start_time": "2026-04-29T00:00:00"
+      },
+      {
+        "end_time": "2026-04-29T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260429-2",
+        "source": "rotation",
+        "start_time": "2026-04-29T08:00:00"
+      },
+      {
+        "end_time": "2026-04-29T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260429-3",
+        "source": "rotation",
+        "start_time": "2026-04-29T16:00:00"
+      },
+      {
+        "end_time": "2026-04-30T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260430-1",
+        "source": "rotation",
+        "start_time": "2026-04-30T00:00:00"
+      },
+      {
+        "end_time": "2026-04-30T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260430-2",
+        "source": "rotation",
+        "start_time": "2026-04-30T08:00:00"
+      },
+      {
+        "end_time": "2026-04-30T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260430-3",
+        "source": "rotation",
+        "start_time": "2026-04-30T16:00:00"
+      },
+      {
+        "end_time": "2026-05-01T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260501-1",
+        "source": "rotation",
+        "start_time": "2026-05-01T00:00:00"
+      },
+      {
+        "end_time": "2026-05-01T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260501-2",
+        "source": "rotation",
+        "start_time": "2026-05-01T08:00:00"
+      },
+      {
+        "end_time": "2026-05-01T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260501-3",
+        "source": "rotation",
+        "start_time": "2026-05-01T16:00:00"
+      },
+      {
+        "end_time": "2026-05-02T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260502-1",
+        "source": "rotation",
+        "start_time": "2026-05-02T00:00:00"
+      },
+      {
+        "end_time": "2026-05-02T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260502-2",
+        "source": "rotation",
+        "start_time": "2026-05-02T08:00:00"
+      },
+      {
+        "end_time": "2026-05-02T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260502-3",
+        "source": "rotation",
+        "start_time": "2026-05-02T16:00:00"
+      },
+      {
+        "end_time": "2026-05-03T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260503-1",
+        "source": "rotation",
+        "start_time": "2026-05-03T00:00:00"
+      },
+      {
+        "end_time": "2026-05-03T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260503-2",
+        "source": "rotation",
+        "start_time": "2026-05-03T08:00:00"
+      },
+      {
+        "end_time": "2026-05-03T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260503-3",
+        "source": "rotation",
+        "start_time": "2026-05-03T16:00:00"
+      },
+      {
+        "end_time": "2026-05-04T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260504-1",
+        "source": "rotation",
+        "start_time": "2026-05-04T00:00:00"
+      },
+      {
+        "end_time": "2026-05-04T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260504-2",
+        "source": "rotation",
+        "start_time": "2026-05-04T08:00:00"
+      },
+      {
+        "end_time": "2026-05-04T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-CHK-PRI",
+        "shift_id": "SHIFT-CHK-PRI-20260504-3",
+        "source": "rotation",
+        "start_time": "2026-05-04T16:00:00"
+      },
+      {
+        "end_time": "2026-04-14T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260414-1",
+        "source": "rotation",
+        "start_time": "2026-04-14T00:00:00"
+      },
+      {
+        "end_time": "2026-04-14T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260414-2",
+        "source": "rotation",
+        "start_time": "2026-04-14T08:00:00"
+      },
+      {
+        "end_time": "2026-04-14T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260414-3",
+        "source": "rotation",
+        "start_time": "2026-04-14T16:00:00"
+      },
+      {
+        "end_time": "2026-04-15T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260415-1",
+        "source": "rotation",
+        "start_time": "2026-04-15T00:00:00"
+      },
+      {
+        "end_time": "2026-04-15T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260415-2",
+        "source": "rotation",
+        "start_time": "2026-04-15T08:00:00"
+      },
+      {
+        "end_time": "2026-04-15T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260415-3",
+        "source": "rotation",
+        "start_time": "2026-04-15T16:00:00"
+      },
+      {
+        "end_time": "2026-04-16T08:00:00",
+        "engineer_id": "ENG-HOLM",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260416-1",
+        "source": "swap",
+        "start_time": "2026-04-16T00:00:00"
+      },
+      {
+        "end_time": "2026-04-16T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260416-2",
+        "source": "rotation",
+        "start_time": "2026-04-16T08:00:00"
+      },
+      {
+        "end_time": "2026-04-16T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260416-3",
+        "source": "rotation",
+        "start_time": "2026-04-16T16:00:00"
+      },
+      {
+        "end_time": "2026-04-17T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260417-1",
+        "source": "rotation",
+        "start_time": "2026-04-17T00:00:00"
+      },
+      {
+        "end_time": "2026-04-17T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260417-2",
+        "source": "rotation",
+        "start_time": "2026-04-17T08:00:00"
+      },
+      {
+        "end_time": "2026-04-17T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260417-3",
+        "source": "rotation",
+        "start_time": "2026-04-17T16:00:00"
+      },
+      {
+        "end_time": "2026-04-18T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260418-1",
+        "source": "rotation",
+        "start_time": "2026-04-18T00:00:00"
+      },
+      {
+        "end_time": "2026-04-18T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260418-2",
+        "source": "rotation",
+        "start_time": "2026-04-18T08:00:00"
+      },
+      {
+        "end_time": "2026-04-18T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260418-3",
+        "source": "rotation",
+        "start_time": "2026-04-18T16:00:00"
+      },
+      {
+        "end_time": "2026-04-19T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260419-1",
+        "source": "rotation",
+        "start_time": "2026-04-19T00:00:00"
+      },
+      {
+        "end_time": "2026-04-19T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260419-2",
+        "source": "rotation",
+        "start_time": "2026-04-19T08:00:00"
+      },
+      {
+        "end_time": "2026-04-19T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260419-3",
+        "source": "rotation",
+        "start_time": "2026-04-19T16:00:00"
+      },
+      {
+        "end_time": "2026-04-20T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260420-1",
+        "source": "rotation",
+        "start_time": "2026-04-20T00:00:00"
+      },
+      {
+        "end_time": "2026-04-20T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260420-2",
+        "source": "rotation",
+        "start_time": "2026-04-20T08:00:00"
+      },
+      {
+        "end_time": "2026-04-20T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260420-3",
+        "source": "rotation",
+        "start_time": "2026-04-20T16:00:00"
+      },
+      {
+        "end_time": "2026-04-21T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260421-1",
+        "source": "rotation",
+        "start_time": "2026-04-21T00:00:00"
+      },
+      {
+        "end_time": "2026-04-21T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260421-2",
+        "source": "rotation",
+        "start_time": "2026-04-21T08:00:00"
+      },
+      {
+        "end_time": "2026-04-21T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260421-3",
+        "source": "rotation",
+        "start_time": "2026-04-21T16:00:00"
+      },
+      {
+        "end_time": "2026-04-22T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260422-1",
+        "source": "rotation",
+        "start_time": "2026-04-22T00:00:00"
+      },
+      {
+        "end_time": "2026-04-22T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260422-2",
+        "source": "rotation",
+        "start_time": "2026-04-22T08:00:00"
+      },
+      {
+        "end_time": "2026-04-22T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260422-3",
+        "source": "rotation",
+        "start_time": "2026-04-22T16:00:00"
+      },
+      {
+        "end_time": "2026-04-23T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260423-1",
+        "source": "rotation",
+        "start_time": "2026-04-23T00:00:00"
+      },
+      {
+        "end_time": "2026-04-23T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260423-2",
+        "source": "rotation",
+        "start_time": "2026-04-23T08:00:00"
+      },
+      {
+        "end_time": "2026-04-23T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260423-3",
+        "source": "rotation",
+        "start_time": "2026-04-23T16:00:00"
+      },
+      {
+        "end_time": "2026-04-24T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260424-1",
+        "source": "rotation",
+        "start_time": "2026-04-24T00:00:00"
+      },
+      {
+        "end_time": "2026-04-24T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260424-2",
+        "source": "rotation",
+        "start_time": "2026-04-24T08:00:00"
+      },
+      {
+        "end_time": "2026-04-24T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260424-3",
+        "source": "rotation",
+        "start_time": "2026-04-24T16:00:00"
+      },
+      {
+        "end_time": "2026-04-25T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260425-1",
+        "source": "rotation",
+        "start_time": "2026-04-25T00:00:00"
+      },
+      {
+        "end_time": "2026-04-25T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260425-2",
+        "source": "rotation",
+        "start_time": "2026-04-25T08:00:00"
+      },
+      {
+        "end_time": "2026-04-25T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260425-3",
+        "source": "rotation",
+        "start_time": "2026-04-25T16:00:00"
+      },
+      {
+        "end_time": "2026-04-26T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260426-1",
+        "source": "rotation",
+        "start_time": "2026-04-26T00:00:00"
+      },
+      {
+        "end_time": "2026-04-26T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260426-2",
+        "source": "rotation",
+        "start_time": "2026-04-26T08:00:00"
+      },
+      {
+        "end_time": "2026-04-26T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260426-3",
+        "source": "rotation",
+        "start_time": "2026-04-26T16:00:00"
+      },
+      {
+        "end_time": "2026-04-27T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260427-1",
+        "source": "rotation",
+        "start_time": "2026-04-27T00:00:00"
+      },
+      {
+        "end_time": "2026-04-27T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260427-2",
+        "source": "rotation",
+        "start_time": "2026-04-27T08:00:00"
+      },
+      {
+        "end_time": "2026-04-27T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260427-3",
+        "source": "rotation",
+        "start_time": "2026-04-27T16:00:00"
+      },
+      {
+        "end_time": "2026-04-28T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260428-1",
+        "source": "rotation",
+        "start_time": "2026-04-28T00:00:00"
+      },
+      {
+        "end_time": "2026-04-28T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260428-2",
+        "source": "rotation",
+        "start_time": "2026-04-28T08:00:00"
+      },
+      {
+        "end_time": "2026-04-28T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260428-3",
+        "source": "rotation",
+        "start_time": "2026-04-28T16:00:00"
+      },
+      {
+        "end_time": "2026-04-29T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260429-1",
+        "source": "rotation",
+        "start_time": "2026-04-29T00:00:00"
+      },
+      {
+        "end_time": "2026-04-29T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260429-2",
+        "source": "rotation",
+        "start_time": "2026-04-29T08:00:00"
+      },
+      {
+        "end_time": "2026-04-29T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260429-3",
+        "source": "rotation",
+        "start_time": "2026-04-29T16:00:00"
+      },
+      {
+        "end_time": "2026-04-30T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260430-1",
+        "source": "rotation",
+        "start_time": "2026-04-30T00:00:00"
+      },
+      {
+        "end_time": "2026-04-30T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260430-2",
+        "source": "rotation",
+        "start_time": "2026-04-30T08:00:00"
+      },
+      {
+        "end_time": "2026-04-30T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260430-3",
+        "source": "rotation",
+        "start_time": "2026-04-30T16:00:00"
+      },
+      {
+        "end_time": "2026-05-01T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260501-1",
+        "source": "rotation",
+        "start_time": "2026-05-01T00:00:00"
+      },
+      {
+        "end_time": "2026-05-01T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260501-2",
+        "source": "rotation",
+        "start_time": "2026-05-01T08:00:00"
+      },
+      {
+        "end_time": "2026-05-01T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260501-3",
+        "source": "rotation",
+        "start_time": "2026-05-01T16:00:00"
+      },
+      {
+        "end_time": "2026-05-02T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260502-1",
+        "source": "rotation",
+        "start_time": "2026-05-02T00:00:00"
+      },
+      {
+        "end_time": "2026-05-02T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260502-2",
+        "source": "rotation",
+        "start_time": "2026-05-02T08:00:00"
+      },
+      {
+        "end_time": "2026-05-02T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260502-3",
+        "source": "rotation",
+        "start_time": "2026-05-02T16:00:00"
+      },
+      {
+        "end_time": "2026-05-03T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260503-1",
+        "source": "rotation",
+        "start_time": "2026-05-03T00:00:00"
+      },
+      {
+        "end_time": "2026-05-03T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260503-2",
+        "source": "rotation",
+        "start_time": "2026-05-03T08:00:00"
+      },
+      {
+        "end_time": "2026-05-03T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260503-3",
+        "source": "rotation",
+        "start_time": "2026-05-03T16:00:00"
+      },
+      {
+        "end_time": "2026-05-04T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260504-1",
+        "source": "rotation",
+        "start_time": "2026-05-04T00:00:00"
+      },
+      {
+        "end_time": "2026-05-04T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260504-2",
+        "source": "rotation",
+        "start_time": "2026-05-04T08:00:00"
+      },
+      {
+        "end_time": "2026-05-04T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-CHK-SEC",
+        "shift_id": "SHIFT-CHK-SEC-20260504-3",
+        "source": "rotation",
+        "start_time": "2026-05-04T16:00:00"
+      }
+    ],
+    "planned_outages": [],
+    "problems": [
+      {
+        "problem_id": "PRB-4109",
+        "review_note": "INC-70849 reclassified: probe asserted on a retired badge element; no customer impact; not charged.",
+        "service_id": "SVC-31144",
+        "status": "closed",
+        "title": "Cart badge probe false positives"
+      }
+    ],
+    "services": [
+      {
+        "code": "checkout-web",
+        "lane_id": "LANE-EDGE",
+        "name": "Checkout Web",
+        "owner_team": "Checkout",
+        "primary_engineer_id": "ENG-SATO",
+        "required_certification": "checkout-runbook",
+        "rollback_minutes": 20,
+        "runtime": "quillstone-runtime 7.4",
+        "service_id": "SVC-31144",
+        "tier": "tier-1",
+        "validation_minutes": 4,
+        "version": "7.4.2"
+      },
+      {
+        "code": "checkout-api",
+        "lane_id": "LANE-EDGE",
+        "name": "Checkout API",
+        "owner_team": "Checkout",
+        "primary_engineer_id": "ENG-SATO",
+        "required_certification": "checkout-runbook",
+        "rollback_minutes": 20,
+        "runtime": "quillstone-runtime 7.4",
+        "service_id": "SVC-31160",
+        "tier": "tier-1",
+        "validation_minutes": 4,
+        "version": "7.4.3"
+      }
+    ],
+    "slos": [
+      {
+        "budget_minutes": 43,
+        "name": "checkout-web availability (30-day)",
+        "objective_pct": 99.9,
+        "reserve_minutes": 10,
+        "service_id": "SVC-31144",
+        "sli": "successful checkout page loads / attempted loads",
+        "slo_id": "SLO-CHK-AVAIL",
+        "status": "ACTIVE",
+        "window_days": 30
+      }
+    ],
+    "users": [
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Service Operations Coordinator (you)",
+        "role": "service_operations_coordinator",
+        "user_id": "U-OPS"
+      },
+      {
+        "approval_limit_usd": 5000,
+        "display_name": "Saoirse Lindgren",
+        "role": "change_manager",
+        "user_id": "U-LINDGREN"
+      },
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Tunde Abara",
+        "role": "change_board_chair",
+        "user_id": "U-ABARA"
+      },
+      {
+        "approval_limit_usd": 8000,
+        "display_name": "Wren Haviland",
+        "role": "sre_lead",
+        "user_id": "U-HAVILAND"
+      },
+      {
+        "approval_limit_usd": 12000,
+        "display_name": "Inês Moraes",
+        "role": "security_lead",
+        "user_id": "U-MORAES"
+      }
+    ],
+    "vendor_advisories": [
+      {
+        "advisory_id": "ADV-QS-2026-121H",
+        "affected_versions": "7.4.0-7.4.2",
+        "expedite_fee_usd": 600,
+        "expedited_release_date": "2026-04-16",
+        "fixed_version": "7.4.3",
+        "note": "The hardened DR image variant of 7.4.3 ships on 2026-04-22 (standard) or 2026-04-16 under premium support (USD 600). The standard x86 package (QSA-2026-121) shipped 2026-04-10 and is already on the canary nodes.",
+        "product": "quillstone-runtime 7.4 (hardened DR image)",
+        "published_on": "2026-04-08",
+        "reference": "QSA-2026-121 hardened-image supplement",
+        "remediation_sla_days": 21,
+        "restarts_required": 1,
+        "severity": "medium",
+        "standard_release_date": "2026-04-22",
+        "status": "CURRENT",
+        "valid_until": "2026-04-30",
+        "vendor_estimate_minutes": 0,
+        "vendor_id": "VND-QUILLSTONE"
+      },
+      {
+        "advisory_id": "ADV-QS-2026-121",
+        "affected_versions": "7.4.0-7.4.2",
+        "expedite_fee_usd": 0,
+        "expedited_release_date": "2026-04-08",
+        "fixed_version": "7.4.3",
+        "note": "TLS session-cache fix. Rolling node restart supported; no planned downtime. GA package applied to checkout-web canary nodes 01-02 on 2026-04-12.",
+        "product": "quillstone-runtime 7.4",
+        "published_on": "2026-04-08",
+        "reference": "QSA-2026-121",
+        "remediation_sla_days": 21,
+        "restarts_required": 1,
+        "severity": "medium",
+        "standard_release_date": "2026-04-10",
+        "status": "CURRENT",
+        "valid_until": "2026-04-30",
+        "vendor_estimate_minutes": 0,
+        "vendor_id": "VND-QUILLSTONE"
+      }
+    ],
+    "vendors": [
+      {
+        "account_number": "BM-2207",
+        "name": "Quillstone Runtime Systems",
+        "vendor_id": "VND-QUILLSTONE"
+      },
+      {
+        "account_number": "BM-0931",
+        "name": "Orrinwave Data Systems",
+        "vendor_id": "VND-ORRINWAVE"
+      },
+      {
+        "account_number": "BM-1148",
+        "name": "Sablegate Edge Security",
+        "vendor_id": "VND-SABLEGATE"
+      }
+    ]
+  },
+  "starting_records": [
+    {
+      "resource_id": "CHG-40320",
+      "resource_type": "ChangeRequest",
+      "status": "scheduled",
+      "system": "itsm"
+    },
+    {
+      "resource_id": "CHG-40322",
+      "resource_type": "ChangeRequest",
+      "status": "cancelled",
+      "system": "itsm"
+    },
+    {
+      "resource_id": "CHG-40288",
+      "resource_type": "ChangeRequest",
+      "status": "closed",
+      "system": "itsm"
+    },
+    {
+      "resource_id": "CTASK-8800",
+      "resource_type": "ChangeTask",
+      "status": "completed",
+      "system": "itsm"
+    }
+  ],
+  "task_id": "itsmdesk-002",
+  "title": "Size Saturday's checkout-web rolling patch batch",
+  "world": {
+    "id": "brightmoor-serviceops-v1",
+    "name": "Brightmoor Commerce — Service Operations",
+    "organization_id": "ORG-BRIGHTMOOR",
+    "primary_site": "DC-HALDEN",
+    "systems": [
+      "itsm",
+      "telemetry",
+      "calendar",
+      "oncall",
+      "vendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

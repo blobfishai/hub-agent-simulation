@@ -1,0 +1,3428 @@
+{
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_arm_package.",
+        "type": "string"
+      },
+      "arm_downtime_minutes": {
+        "description": "Planned downtime of the arm pool restart: 1 restart x 6 minutes + 5 validation minutes, tested against the budget.",
+        "type": "integer"
+      },
+      "arm_nodes_superseded_build": {
+        "description": "Affected arm nodes whose staged build was cut from the withdrawn revision and cannot deploy.",
+        "type": "integer"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for standard_arm_package_first_window.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "earliest_qualified_base_window": {
+        "description": "First free LANE-DATA session on or after standard package readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for business_hours_change_with_board_exception.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_completion_days_saved": {
+        "description": "Days the early-access package saves once the calendar is reapplied.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered NODE that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "nodes whose staged build was cut from the withdrawn revision",
+        "type": "integer"
+      },
+      "nodes_on_fixed_version": {
+        "description": "Nodes already on 12.6.4 from the canary and outside the requirement.",
+        "type": "integer"
+      },
+      "nodes_total": {
+        "description": "Active ledger-sync nodes in the CMDB across both pools.",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for affected nodes holding a staged 12.6.4 build before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: NODE.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing standard_arm_package_first_window, expedite_arm_package, business_hours_change_with_board_exception.",
+        "enum": [
+          "standard_arm_package_first_window",
+          "expedite_arm_package",
+          "business_hours_change_with_board_exception"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_quantity": {
+        "description": "ledger-sync nodes still on an affected orrinwave-db version that OWA-2026-052 must reach",
+        "type": "integer"
+      },
+      "selected_lane_window": {
+        "description": "Lane and session used by the selected option, as LANE/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered NODE after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "type": "string"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing nodes whose staged build was cut from the withdrawn revision.",
+        "type": "integer"
+      },
+      "x86_nodes_validated": {
+        "description": "Affected x86 nodes covered by the validated 12.6.4 build.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "arm_downtime_minutes",
+      "arm_nodes_superseded_build",
+      "baseline_completion",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "earliest_qualified_base_window",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_completion_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "nodes_on_fixed_version",
+      "nodes_total",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_quantity",
+      "selected_lane_window",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "usable_coverage_quantity",
+      "x86_nodes_validated"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-04-14",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "family": "itsmdesk",
+  "instruction": "Orrinwave's high-severity database advisory is due next Tuesday and the ledger-sync fleet is only partly covered: the x86 pool has a validated build, but the arm pool's staged build came from the revision the vendor withdrew. I need to know how many nodes still need the fix, how many of those the staged builds genuinely cover, how many depend on the vendor's arm64 package, and whether the standard or early-access release lets us patch inside the SLA given the reconciliation block and the reindex hold on the data lane. Schedule the arm change on the date that holds up and draft Adaeze's update, flagging anything that would need Tunde or Inês.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-SO-0104"
+    },
+    "calendar": {
+      "calendar_window": {
+        "end_date": "2026-04-27",
+        "lane_id": "LANE-DATA",
+        "start_date": "2026-04-15"
+      },
+      "lanes": [
+        "LANE-DATA",
+        "LANE-CORE"
+      ]
+    },
+    "case_reference": "SVCOPS-0004",
+    "chat": {
+      "thread_id": "CHAT-2004"
+    },
+    "drive": {
+      "case_folder_query": "SVCOPS-0004",
+      "policy_query": "policy"
+    },
+    "itsm": {
+      "change_id": "CHG-40340",
+      "service_code": "ledger-sync",
+      "service_search": {
+        "arguments": {
+          "identifier": "ledger-sync"
+        },
+        "tool": "itsm.cis.search"
+      }
+    },
+    "messages": {
+      "search_query": "SVCOPS-0004"
+    },
+    "oncall": {
+      "secondary_schedule": "SCHED-LDG-SEC"
+    },
+    "telemetry": {
+      "slo_id": "SLO-LDG-AVAIL"
+    },
+    "vendor": {
+      "advisory_id": "ADV-OW-2026-052"
+    }
+  },
+  "role": "service_operations_coordinator",
+  "seed_tables": {
+    "alerts": [
+      {
+        "alert_id": "ALRT-004-01",
+        "fired_at": "2026-03-20T02:10:00",
+        "incident_id": "INC-70815",
+        "resolved_at": "2026-03-20T02:48:00",
+        "rule": "availability-burn-fast",
+        "service_id": "SVC-31302",
+        "severity": "sev2"
+      },
+      {
+        "alert_id": "ALRT-004-02",
+        "fired_at": "2026-03-31T23:05:00",
+        "incident_id": "INC-70850",
+        "resolved_at": "2026-03-31T23:29:00",
+        "rule": "availability-burn-fast",
+        "service_id": "SVC-31302",
+        "severity": "sev2"
+      }
+    ],
+    "approvals": [
+      {
+        "approval_id": "AP-SO-0104",
+        "approver_id": "U-LINDGREN",
+        "approver_role": "change_manager",
+        "granted_on": "2026-04-11",
+        "scope_json": "{\"advisory\": \"ADV-OW-2026-052\", \"expedite_fee_allowed_usd\": 800, \"lane\": \"LANE-DATA\", \"max_spend_usd\": 800, \"not_covered\": [\"changes outside the NIGHT/EVE sessions (change board chair, emergency change)\", \"deploying builds staged from the withdrawn revision (never)\", \"an SLA deferral past 2026-04-21 (security lead)\"], \"record\": \"CHG-40340\", \"windows\": \"LANE-DATA sessions\"}",
+        "status": "APPROVED",
+        "subject": "Ledger sync OWA-2026-052 arm64 remediation (SVCOPS-0004, CHG-40340)"
+      },
+      {
+        "approval_id": "AP-SO-0090",
+        "approver_id": "U-LINDGREN",
+        "approver_role": "change_manager",
+        "granted_on": "2026-02-09",
+        "scope_json": "{\"category\": \"LICENCES\", \"max_spend_usd\": 7000}",
+        "status": "APPROVED",
+        "subject": "Quarterly observability licence renewal standing order"
+      }
+    ],
+    "burn_samples": [
+      {
+        "burn_rate_1h": 0.8,
+        "burn_rate_6h": 0.5,
+        "raw_consumed_minutes": 22.2,
+        "sample_id": "BURN-004-1",
+        "sampled_at": "2026-04-12T08:00:00",
+        "slo_id": "SLO-LDG-AVAIL"
+      },
+      {
+        "burn_rate_1h": 0.8,
+        "burn_rate_6h": 0.5,
+        "raw_consumed_minutes": 22.4,
+        "sample_id": "BURN-004-2",
+        "sampled_at": "2026-04-13T08:00:00",
+        "slo_id": "SLO-LDG-AVAIL"
+      },
+      {
+        "burn_rate_1h": 0.8,
+        "burn_rate_6h": 0.5,
+        "raw_consumed_minutes": 22.6,
+        "sample_id": "BURN-004-3",
+        "sampled_at": "2026-04-14T08:00:00",
+        "slo_id": "SLO-LDG-AVAIL"
+      }
+    ],
+    "change_lanes": [
+      {
+        "lane_id": "LANE-DATA",
+        "name": "Data and messaging change lane",
+        "status": "ACTIVE",
+        "status_note": null,
+        "tier1_capable": 0,
+        "weekday_policy": "open"
+      },
+      {
+        "lane_id": "LANE-CORE",
+        "name": "Core platform change lane",
+        "status": "ACTIVE",
+        "status_note": null,
+        "tier1_capable": 1,
+        "weekday_policy": "embargo"
+      }
+    ],
+    "change_requests": [
+      {
+        "advisory_id": "ADV-OW-2026-052",
+        "change_id": "CHG-40340",
+        "change_type": "normal",
+        "downtime_minutes": 11,
+        "lane_id": "LANE-DATA",
+        "last_updated": "2026-04-13T17:30:00",
+        "opened_at": "2026-04-10T15:10:00",
+        "planned_end": null,
+        "planned_start": null,
+        "requested_by": "ENG-NKEMELU",
+        "restarts": 1,
+        "revision": 1,
+        "risk": "low",
+        "service_id": "SVC-31302",
+        "state": "authorize",
+        "summary": "OWA-2026-052 arm64 pool patch — ledger-sync",
+        "window_id": null
+      },
+      {
+        "advisory_id": null,
+        "change_id": "CHG-40339",
+        "change_type": "standard",
+        "downtime_minutes": 0,
+        "lane_id": "LANE-DATA",
+        "last_updated": "2026-04-13T17:30:00",
+        "opened_at": "2026-04-10T15:00:00",
+        "planned_end": "2026-04-15T23:00:00",
+        "planned_start": "2026-04-15T19:00:00",
+        "requested_by": "ENG-NKEMELU",
+        "restarts": 1,
+        "revision": 1,
+        "risk": "low",
+        "service_id": "SVC-31302",
+        "state": "scheduled",
+        "summary": "12.6.4 x86 rolling patch — ledger-sync (6 nodes)",
+        "window_id": "MW-DATA-20260415-EVE"
+      },
+      {
+        "advisory_id": null,
+        "change_id": "CHG-40336",
+        "change_type": "standard",
+        "downtime_minutes": 0,
+        "lane_id": "LANE-DATA",
+        "last_updated": "2026-04-13T17:30:00",
+        "opened_at": "2026-04-06T10:00:00",
+        "planned_end": "2026-04-18T05:00:00",
+        "planned_start": "2026-04-18T01:00:00",
+        "requested_by": "ENG-NKEMELU",
+        "restarts": 0,
+        "revision": 1,
+        "risk": "low",
+        "service_id": "SVC-31311",
+        "state": "scheduled",
+        "summary": "quarterly ledger reindex — ledger-reporting",
+        "window_id": "MW-DATA-20260418-NIGHT"
+      }
+    ],
+    "change_tasks": [],
+    "chat_threads": [
+      {
+        "channel": "#service-ops",
+        "messages_json": "[{\"author\": \"Adaeze Nkemelu\", \"ts\": \"2026-04-14T10:15:00\", \"text\": \"B-12.6.3-arm-r1 was cut from the withdrawn rev 1 \\u2014 it is superseded and nothing deploys from it. Nodes 10 and 11 are already 12.6.4 from the canary.\"}, {\"author\": \"Wren Haviland\", \"ts\": \"2026-04-14T10:28:00\", \"text\": \"Friday's sessions on the data lane are the reconciliation block, and the reindex holds the weekend. Monday night is the first open session.\"}, {\"author\": \"In\\u00eas Moraes\", \"ts\": \"2026-04-14T10:40:00\", \"text\": \"A deferral past the 21st would be mine to sign, and nobody has asked. The early-access fee is inside Saoirse's approval this time.\"}]",
+        "thread_id": "CHAT-2004",
+        "title": "SVCOPS-0004 ledger-sync arm64"
+      },
+      {
+        "channel": "#service-ops",
+        "messages_json": "[{\"author\": \"Wren Haviland\", \"ts\": \"2026-04-12T16:40:00\", \"text\": \"Reminder: log every alert-routing change in the change tracker before the CAB agenda closes.\"}]",
+        "thread_id": "CHAT-0004-GEN",
+        "title": "General — alert routing and CAB agenda"
+      }
+    ],
+    "drive_files": [
+      {
+        "content": "# Change and Error-Budget Policy (v3, effective 2026-02-01)\n\nApplies to Brightmoor Commerce Service Operations: every production service in the CMDB, the change lanes on the change calendar, the SLOs published in telemetry, and the on-call schedules. This version supersedes the 2024 policy in full. Planning date for this room: 2026-04-14.\n\n## 1. Sizing a change\n\n1.1 Planned downtime = restarts required by the vendor advisory x the service's current restart-to-healthy metering (RESTART-MIN, most recent final metering in the CMDB) + the service runbook's post-change validation minutes. A vendor's own downtime estimate is never the figure of record. A stale metering is never used.\n1.2 The planned interval of a change (planned start to planned end) is the planned downtime plus the service runbook's rollback reserve, starting at the window start.\n1.3 Rolling node patches drain one node at a time and consume no error budget; each node takes the current DRAIN-MIN metering, so a window fits floor(window minutes / DRAIN-MIN) nodes.\n1.4 A planned-outage notice covers the planned downtime plus the rollback reserve; the notice length is the figure customer communications publish.\n1.5 A certificate rotation or model-runtime patch reserves the whole window: no other change shares it.\n1.6 Coverage for a tier-1 change is the change window plus a two-hour post-change watch by a secondary responder holding the service's runbook certification.\n\n## 2. Error budget\n\n2.1 Each service's availability SLO carries a whole-minute budget for its rolling window, as published in telemetry. The rolling window ends on the evaluation day and excludes incidents opened on or before the day exactly one window earlier.\n2.2 Budget consumed = the sum of charged impact minutes of incidents in the window. Only incidents the problem review left charged count; an incident the review reclassified as not customer-impacting is not charged. Raw SLI burn in telemetry is informational and never the governing figure.\n2.3 Spendable budget = budget - consumed - the SLO's reserve floor. Planned downtime (or a planned-outage notice) may be scheduled on a day only if it fits inside the spendable budget on that day; otherwise the change waits for the window to roll or needs a budget exception from the change board chair.\n2.4 While the remaining budget (budget - consumed) is below half the window budget, a rolling batch may not exceed half of the service's active nodes on the lane, rounded down.\n\n## 3. Change windows\n\n3.1 Sessions are NIGHT 01:00-05:00 and EVE 19:00-23:00 on every calendar day. A change must start and end inside one session of one lane.\n3.2 Lanes with the weekday embargo (tier-1 lanes) accept standard changes in weekend sessions only; weekday sessions are protected and an embargo exception needs the change board chair.\n3.3 Freeze windows on the freeze register (financial close, audit evidence, peak trading, vendor maintenance) protect every session they cover on the lanes they name; a freeze exception needs the authority the register names.\n3.4 A lane whose deployment runner is suspended accepts no change until its return date; re-laning a change onto another lane requires that lane to be certified for the service's tier.\n3.5 Nodes pinned for a named canary or drill are never patched before the pin ends; nodes on another lane are patched through that lane's own windows.\n3.6 A multi-pool model-runtime patch runs one pool per day with drift monitoring between pools; two pools in one night need the risk lead and the change board.\n3.7 A tier-1 change window is eligible only when a certified secondary responder is on the service's secondary schedule (rotation or override) for the whole coverage block of 1.6.\n\n## 4. Vendor packages\n\n4.1 A vendor package is production-eligible on the next business day after its release date, once the canary soak passes. Standard release dates and early-access (expedited) dates come from the vendor advisory; a superseded advisory revision must not be used.\n4.2 Early-access packages carry the premium-support fee printed on the advisory; the fee needs the security lead unless a signed approval names it.\n4.3 Remediation is due within the advisory's remediation SLA (days from publication). A deferral past the SLA needs the security lead.\n\n## 5. Authority\n\n5.1 Change manager: standard changes inside a signed approval's record, lane, windows, batch cap, and spend.\n5.2 Change board chair: embargo exceptions, freeze exceptions, budget exceptions, and any emergency change.\n5.3 SRE lead: on-call overrides and override premiums; suspended-lane returns.\n5.4 Security lead: early-access fees not named in an approval and SLA deferrals; risk lead with the change board for pool sequencing exceptions.\n5.5 An approval covers exactly the record, lane, windows, quantity, engineer, and fees it names. It never selects an option in advance and never extends to a broader record.\n\n---\nEvidence-room mount: itsmdesk-004 / SVCOPS-0004.\n",
+        "file_id": "DRV-004-01",
+        "folder": "Service Operations/Policies",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-and-error-budget-policy.md",
+        "sha256": "4cbe234e12828a30b7608e1e6af0001ac06567ceb3880e687a5c6d238e241aea"
+      },
+      {
+        "content": "# Change and Error-Budget Policy (2024 edition) — SUPERSEDED\n\nThis edition was replaced by v3 on 2026-02-01 and is retained for audit only. Do not apply it.\n\n1. Planned downtime may be sized at the vendor's published estimate.\n2. Error budget consumed is the raw SLI burn shown in telemetry; there is no reserve floor.\n3. Tier-1 services may take weekday evening changes with the change manager's approval.\n4. A vendor package may be deployed on its release date without a canary soak.\n5. Any rostered secondary responder satisfies the coverage rule, certified or not.\n6. Freeze windows may be overridden by the on-call primary when a vendor SLA is at risk.\n\n---\nEvidence-room mount: itsmdesk-004 / SVCOPS-0004.\n",
+        "file_id": "DRV-004-02",
+        "folder": "Service Operations/Policies/Archive",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "superseded-change-policy-2024.md",
+        "sha256": "03cdef3719e3810f066abfe867c482435ab32bd80ccee239735411342259e3d3"
+      },
+      {
+        "content": "{\n  \"advisory_id\": \"ADV-OW-2026-052-R1\",\n  \"reference\": \"OWA-2026-052 (rev 1, withdrawn)\",\n  \"status\": \"SUPERSEDED\",\n  \"fixed_version\": \"12.6.3\",\n  \"standard_release_date\": \"2026-04-09\",\n  \"expedited_release_date\": \"2026-04-08\",\n  \"note\": \"Withdrawn 2026-04-09; superseded by ADV-OW-2026-052. Do not schedule from this revision.\"\n}\n",
+        "file_id": "DRV-004-03",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "advisory-OWA-2026-052-rev1.json",
+        "sha256": "0f3df912b2e41a5dd201b14eda71e8ae7453609dcff3317fa65cc23543617f5b"
+      },
+      {
+        "content": "{\n  \"export\": \"itsm.changes.get\",\n  \"record\": {\n    \"advisory\": \"ADV-OW-2026-052\",\n    \"change_id\": \"CHG-40340\",\n    \"downtime_minutes\": 11,\n    \"lane\": \"LANE-DATA\",\n    \"meta\": {\n      \"lastUpdated\": \"2026-04-13T17:30:00\",\n      \"versionId\": \"1\"\n    },\n    \"opened_at\": \"2026-04-10T15:10:00\",\n    \"planned_end\": null,\n    \"planned_start\": null,\n    \"requested_by\": \"Engineer/ENG-NKEMELU\",\n    \"restarts\": 1,\n    \"risk\": \"low\",\n    \"service\": \"Service/SVC-31302\",\n    \"state\": \"authorize\",\n    \"summary\": \"OWA-2026-052 arm64 pool patch \\u2014 ledger-sync\",\n    \"type\": \"normal\",\n    \"window\": null\n  }\n}\n",
+        "file_id": "DRV-004-04",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-CHG-40340.json",
+        "sha256": "0d7969f51a1bc05834048c98529489821fb8aa5395bc32919bac4a017e4f1597"
+      },
+      {
+        "content": "{\n  \"export\": \"itsm.cis.get + itsm.meterings.list\",\n  \"meterings\": [\n    {\n      \"measured_at\": \"2026-04-08\",\n      \"metering_id\": \"MTR-31302\",\n      \"metric\": \"RESTART-MIN\",\n      \"service\": \"Service/SVC-31302\",\n      \"status\": \"final\",\n      \"unit\": \"MIN\",\n      \"value\": 6.0\n    },\n    {\n      \"measured_at\": \"2026-01-20\",\n      \"metering_id\": \"MTR-31302-2601\",\n      \"metric\": \"RESTART-MIN\",\n      \"service\": \"Service/SVC-31302\",\n      \"status\": \"final\",\n      \"unit\": \"MIN\",\n      \"value\": 3.0\n    }\n  ],\n  \"service\": {\n    \"code\": \"ledger-sync\",\n    \"lane\": \"LANE-DATA\",\n    \"name\": \"Ledger Sync\",\n    \"owner_team\": \"Data Platform\",\n    \"primary_engineer\": \"Engineer/ENG-NKEMELU\",\n    \"required_certification\": \"data-runbook\",\n    \"rollback_minutes\": 25,\n    \"runtime\": \"orrinwave-db 12\",\n    \"service_id\": \"SVC-31302\",\n    \"tier\": \"tier-2\",\n    \"validation_minutes\": 5,\n    \"version\": \"12.6.1\"\n  }\n}\n",
+        "file_id": "DRV-004-05",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "service-ledger-sync-summary.json",
+        "sha256": "bacf87605ecd4362107e24922798868365d5e51aa5330bcc7a0291b1ca687b86"
+      },
+      {
+        "content": "slo_id,service_id,name,objective_pct,window_days,budget_minutes,reserve_minutes,status\nSLO-LDG-AVAIL,SVC-31302,ledger-sync availability (30-day),99.85,30,64,8,ACTIVE\n",
+        "file_id": "DRV-004-06",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "slo-catalog.csv",
+        "sha256": "39eb75e7e68dda1da794bfc9b32b9a063711013330b8fce56ce87352aa833c1c"
+      },
+      {
+        "content": "incident_id,service_id,opened_at,severity,impact_minutes,slo_charged,problem_id\nINC-70815,SVC-31302,2026-03-20T02:10:00,sev2,12,yes,\nINC-70850,SVC-31302,2026-03-31T23:05:00,sev2,8,yes,\n",
+        "file_id": "DRV-004-07",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "error-budget-ledger.xlsx",
+        "sha256": "fd73b9ae05c73b9867d2ea0ef431c770c1d476b02db43b44316e5462af52a75d"
+      },
+      {
+        "content": "incident_id,opened_at,resolved_at,severity,impact_minutes,slo_charged,problem_id,review_note,summary\nINC-70815,2026-03-20T02:10:00,2026-03-20T02:48:00,sev2,12,yes,,\"\",\"WAL replay stall after the storage failover\"\nINC-70850,2026-03-31T23:05:00,2026-03-31T23:29:00,sev2,8,yes,,\"\",\"sync lag breach during the quarter-end batch\"\n",
+        "file_id": "DRV-004-08",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "incident-register.csv",
+        "sha256": "4d4c48649a98e8bc1301970d0e820cbb194726f0fce09da96064f0479a1f73cc"
+      },
+      {
+        "content": "sample_id,slo_id,sampled_at,burn_rate_1h,burn_rate_6h,raw_consumed_minutes\nBURN-004-1,SLO-LDG-AVAIL,2026-04-12T08:00:00,0.8,0.5,22.2\nBURN-004-2,SLO-LDG-AVAIL,2026-04-13T08:00:00,0.8,0.5,22.4\nBURN-004-3,SLO-LDG-AVAIL,2026-04-14T08:00:00,0.8,0.5,22.6\n",
+        "file_id": "DRV-004-09",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "burn-rate-samples.csv",
+        "sha256": "46d593ecad73503f50094daf960fc2f10ead714f9c2bca636edd0ef3b7391d26"
+      },
+      {
+        "content": "service_date,lane_id,session,start,end,status,hold_reason,change_id\n2026-04-14,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-14,LANE-CORE,NIGHT,01:00:00,05:00:00,busy,elapsed before the planning time,\n2026-04-14,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-14,LANE-DATA,NIGHT,01:00:00,05:00:00,busy,elapsed before the planning time,\n2026-04-15,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-15,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-15,LANE-DATA,EVE,19:00:00,23:00:00,busy,scheduled change,CHG-40339\n2026-04-15,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-16,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-16,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-16,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-16,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-17,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-17,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-17,LANE-DATA,EVE,19:00:00,23:00:00,blocked,weekly reconciliation batch (blocked),\n2026-04-17,LANE-DATA,NIGHT,01:00:00,05:00:00,blocked,weekly reconciliation batch (blocked),\n2026-04-18,LANE-CORE,EVE,19:00:00,23:00:00,free,,\n2026-04-18,LANE-CORE,NIGHT,01:00:00,05:00:00,free,,\n2026-04-18,LANE-DATA,EVE,19:00:00,23:00:00,busy,ledger reindex hold (CHG-40336),\n2026-04-18,LANE-DATA,NIGHT,01:00:00,05:00:00,busy,scheduled change,CHG-40336\n2026-04-19,LANE-CORE,EVE,19:00:00,23:00:00,free,,\n2026-04-19,LANE-CORE,NIGHT,01:00:00,05:00:00,free,,\n2026-04-19,LANE-DATA,EVE,19:00:00,23:00:00,busy,ledger reindex hold (CHG-40336),\n2026-04-19,LANE-DATA,NIGHT,01:00:00,05:00:00,busy,ledger reindex hold (CHG-40336),\n2026-04-20,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-20,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-20,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-20,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-21,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-21,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-21,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-21,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-22,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-22,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-22,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-22,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-23,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-23,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-23,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-23,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-24,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-24,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-24,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-24,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-25,LANE-CORE,EVE,19:00:00,23:00:00,free,,\n2026-04-25,LANE-CORE,NIGHT,01:00:00,05:00:00,free,,\n2026-04-25,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-25,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-26,LANE-CORE,EVE,19:00:00,23:00:00,free,,\n2026-04-26,LANE-CORE,NIGHT,01:00:00,05:00:00,free,,\n2026-04-26,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-26,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-27,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-27,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-27,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-27,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-28,LANE-CORE,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-28,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-28,LANE-DATA,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-28,LANE-DATA,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-CORE,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-DATA,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-DATA,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-CORE,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-DATA,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-DATA,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-CORE,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-DATA,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-DATA,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-05-02,LANE-CORE,EVE,19:00:00,23:00:00,free,,\n2026-05-02,LANE-CORE,NIGHT,01:00:00,05:00:00,free,,\n2026-05-02,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-05-02,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-05-03,LANE-CORE,EVE,19:00:00,23:00:00,free,,\n2026-05-03,LANE-CORE,NIGHT,01:00:00,05:00:00,free,,\n2026-05-03,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-05-03,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-05-04,LANE-CORE,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-05-04,LANE-CORE,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-05-04,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-05-04,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n",
+        "file_id": "DRV-004-10",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-calendar-2026-04-14.xlsx",
+        "sha256": "0a038a6f1ece68a70f89c10d6fe574ee99125316ee91a6fb251fc98f6ca6257e"
+      },
+      {
+        "content": "freeze_id,name,kind,start_date,end_date,lanes,authority,status,hubbench_task_scope,hubbench_case_reference\nFRZ-2026-15,month-end financial close freeze,financial,2026-04-28,2026-05-01,ALL,change board chair,ACTIVE,itsmdesk-004,SVCOPS-0004\n",
+        "file_id": "DRV-004-11",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "freeze-register.csv",
+        "sha256": "0e0424724d414e53a8bc5a9828264f9467759e8228db21cca8db33cc53d894f4"
+      },
+      {
+        "content": "lane_id,name,weekday_policy,tier1_capable,status,note,hubbench_task_scope,hubbench_case_reference\nLANE-DATA,Data and messaging change lane,open,no,ACTIVE,,itsmdesk-004,SVCOPS-0004\nLANE-CORE,Core platform change lane,embargo,yes,ACTIVE,,itsmdesk-004,SVCOPS-0004\n",
+        "file_id": "DRV-004-12",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "lane-roster.csv",
+        "sha256": "a351dfc95492ae9de0a95ec10b9cfe7d749d311535f6ff288259c32abdd2cc16"
+      },
+      {
+        "content": "shift_id,schedule_id,engineer_id,start_time,end_time,source,certified,hubbench_task_scope,hubbench_case_reference\nSHIFT-LDG-SEC-20260414-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-14T00:00:00,2026-04-14T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260414-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-14T08:00:00,2026-04-14T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260414-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-14T16:00:00,2026-04-14T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260415-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-15T00:00:00,2026-04-15T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260415-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-15T08:00:00,2026-04-15T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260415-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-15T16:00:00,2026-04-15T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260416-1,SCHED-LDG-SEC,ENG-HOLM,2026-04-16T00:00:00,2026-04-16T08:00:00,swap,no,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260416-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-16T08:00:00,2026-04-16T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260416-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-16T16:00:00,2026-04-16T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260417-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-17T00:00:00,2026-04-17T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260417-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-17T08:00:00,2026-04-17T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260417-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-17T16:00:00,2026-04-17T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260418-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-18T00:00:00,2026-04-18T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260418-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-18T08:00:00,2026-04-18T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260418-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-18T16:00:00,2026-04-18T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260419-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-19T00:00:00,2026-04-19T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260419-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-19T08:00:00,2026-04-19T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260419-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-19T16:00:00,2026-04-19T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260420-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-20T00:00:00,2026-04-20T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260420-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-20T08:00:00,2026-04-20T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260420-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-20T16:00:00,2026-04-20T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260421-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-21T00:00:00,2026-04-21T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260421-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-21T08:00:00,2026-04-21T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260421-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-21T16:00:00,2026-04-21T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260422-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-22T00:00:00,2026-04-22T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260422-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-22T08:00:00,2026-04-22T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260422-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-22T16:00:00,2026-04-22T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260423-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-23T00:00:00,2026-04-23T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260423-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-23T08:00:00,2026-04-23T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260423-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-23T16:00:00,2026-04-23T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260424-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-24T00:00:00,2026-04-24T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260424-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-24T08:00:00,2026-04-24T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260424-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-24T16:00:00,2026-04-24T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260425-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-25T00:00:00,2026-04-25T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260425-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-25T08:00:00,2026-04-25T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260425-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-25T16:00:00,2026-04-25T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260426-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-26T00:00:00,2026-04-26T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260426-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-26T08:00:00,2026-04-26T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260426-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-26T16:00:00,2026-04-26T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260427-1,SCHED-LDG-SEC,ENG-RAMAN,2026-04-27T00:00:00,2026-04-27T08:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260427-2,SCHED-LDG-SEC,ENG-RAMAN,2026-04-27T08:00:00,2026-04-27T16:00:00,rotation,yes,itsmdesk-004,SVCOPS-0004\nSHIFT-LDG-SEC-20260427-3,SCHED-LDG-SEC,ENG-RAMAN,2026-04-27T16:00:00,2026-04-27T23:59:59,rotation,yes,itsmdesk-004,SVCOPS-0004\n",
+        "file_id": "DRV-004-13",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "secondary-roster.csv",
+        "sha256": "1d7abe90900999b35d14d5ca6bb835f30774f291d75d6f174b400f12946940bc"
+      },
+      {
+        "content": "Orrinwave Data Systems\nSecurity advisory OWA-2026-052 (portal id ADV-OW-2026-052) — status CURRENT\nCustomer: Brightmoor Commerce Service Operations, account BM-0931\nCase reference: SVCOPS-0004\nProduct: orrinwave-db 12 (arm64 package)\nSeverity: high; published 2026-04-07; remediation SLA 14 days\nAffected versions: 12.6.0-12.6.3; fixed version: 12.6.4\nRestarts required: 1; vendor downtime estimate: 4 minutes (reference hardware)\nStandard release date: 2026-04-22\nEarly-access release date: 2026-04-16 (premium-support fee USD 750, flat)\nValid until: 2026-04-30\nNotes: arm64 build of 12.6.4: standard release 2026-04-22; early-access 2026-04-16 under premium support (USD 750). The x86 build shipped 2026-04-10. One restart per node; the arm pool restarts as a unit.\nPackages are production-eligible only after the customer's canary soak.\n",
+        "file_id": "DRV-004-14",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "advisory-OWA-2026-052.pdf",
+        "sha256": "2366e0c1873f0e6f71f0ac026ada4f10e75f8b417daaf819b476ea93f02ab208"
+      },
+      {
+        "content": "{\n  \"approval_id\": \"AP-SO-0104\",\n  \"approver_id\": \"U-LINDGREN\",\n  \"approver_role\": \"change_manager\",\n  \"case_reference\": \"SVCOPS-0004\",\n  \"granted_on\": \"2026-04-11\",\n  \"scope\": {\n    \"advisory\": \"ADV-OW-2026-052\",\n    \"expedite_fee_allowed_usd\": 800,\n    \"lane\": \"LANE-DATA\",\n    \"max_spend_usd\": 800,\n    \"not_covered\": [\n      \"changes outside the NIGHT/EVE sessions (change board chair, emergency change)\",\n      \"deploying builds staged from the withdrawn revision (never)\",\n      \"an SLA deferral past 2026-04-21 (security lead)\"\n    ],\n    \"record\": \"CHG-40340\",\n    \"windows\": \"LANE-DATA sessions\"\n  },\n  \"status\": \"APPROVED\",\n  \"subject\": \"Ledger sync OWA-2026-052 arm64 remediation (SVCOPS-0004, CHG-40340)\"\n}\n",
+        "file_id": "DRV-004-15",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "approval-AP-SO-0104.json",
+        "sha256": "8d000bf6a2e40b427d724010dc328898ce0a3a9ff1be295722396497ead4cddc"
+      },
+      {
+        "content": "{\n  \"as_of\": \"2026-04-14\",\n  \"case_reference\": \"SVCOPS-0004\",\n  \"change_tasks\": [],\n  \"changes\": [\n    {\n      \"change_id\": \"CHG-40340\",\n      \"lane_id\": \"LANE-DATA\",\n      \"planned_end\": null,\n      \"planned_start\": null,\n      \"service_id\": \"SVC-31302\",\n      \"state\": \"authorize\"\n    },\n    {\n      \"change_id\": \"CHG-40339\",\n      \"lane_id\": \"LANE-DATA\",\n      \"planned_end\": \"2026-04-15T23:00:00\",\n      \"planned_start\": \"2026-04-15T19:00:00\",\n      \"service_id\": \"SVC-31302\",\n      \"state\": \"scheduled\"\n    },\n    {\n      \"change_id\": \"CHG-40336\",\n      \"lane_id\": \"LANE-DATA\",\n      \"planned_end\": \"2026-04-18T05:00:00\",\n      \"planned_start\": \"2026-04-18T01:00:00\",\n      \"service_id\": \"SVC-31311\",\n      \"state\": \"scheduled\"\n    }\n  ],\n  \"note\": \"Snapshot before any action; row order does not indicate applicability.\",\n  \"oncall_overrides\": [],\n  \"planned_outages\": []\n}\n",
+        "file_id": "DRV-004-16",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "starting-state-itsmdesk-004.json",
+        "sha256": "e9189eea1439e70dffe808c82aacede00fdf11fff0329b212b20c31968e55e6b"
+      },
+      {
+        "content": "build_id,advisory_revision,pool,nodes_covered,status,validated_on,note,hubbench_task_scope,hubbench_case_reference\nB-12.6.4-x86-r2,ADV-OW-2026-052,sync-x86,6,VALIDATED,2026-04-12,canary soak passed on NODE-LDG-10 and NODE-LDG-11,itsmdesk-004,SVCOPS-0004\nB-12.6.3-arm-r1,ADV-OW-2026-052-R1,sync-arm,3,SUPERSEDED,,cut from the withdrawn revision; must not be deployed,itsmdesk-004,SVCOPS-0004\n",
+        "file_id": "DRV-004-17",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "staged-build-register.csv",
+        "sha256": "80466bd0880cdb7ada51067d48aa6d3b00cc6ba6b5d692d72e28b9788ef60332"
+      },
+      {
+        "content": "# Orrinwave Data Systems — support terms (extract)\n\nArchitecture-specific packages (arm64) may trail the x86 package by up to twelve business days. Premium-support customers may request early access for the fee printed on the advisory (OWA-2026-052: USD 750). Every package is production-eligible the next business day after release, once the customer's canary soak passes. Builds staged from a withdrawn revision are not supported.\n",
+        "file_id": "DRV-004-18",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "orrinwave-support-terms.md",
+        "sha256": "551dcb4fa093b0b4f3b5b12d43ad1adb47e027efdda09de025fe5f3437435a3c"
+      },
+      {
+        "content": "{\n  \"anchors\": [\n    {\n      \"evaluation_shape\": \"IT service-management ticket handling with deterministic end-state checks\",\n      \"harbor_dataset\": \"vibrantlabsai/itsm-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/vibrantlabsai/itsm-bench/latest\",\n      \"license\": \"per the Harbor Hub listing; nothing from it is redistributed here\",\n      \"name\": \"ITSM-Bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://hub.harborframework.com/datasets/vibrantlabsai/itsm-bench\"\n    },\n    {\n      \"evaluation_shape\": \"observability investigations over telemetry with graded conclusions\",\n      \"harbor_dataset\": \"grafana/o11y-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/grafana/o11y-bench/latest\",\n      \"license\": \"per the Harbor Hub listing; nothing from it is redistributed here\",\n      \"name\": \"o11y-bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://hub.harborframework.com/datasets/grafana/o11y-bench\"\n    },\n    {\n      \"evaluation_shape\": \"telemetry-pipeline tasks with executable verification\",\n      \"harbor_dataset\": \"quesma/otel-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/quesma/otel-bench/latest\",\n      \"license\": \"per the Harbor Hub listing; nothing from it is redistributed here\",\n      \"name\": \"otel-bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://hub.harborframework.com/datasets/quesma/otel-bench\"\n    }\n  ],\n  \"clean_room\": true,\n  \"family\": \"itsmdesk\",\n  \"schema_version\": \"hubbench.provenance.v1\",\n  \"task_id\": \"itsmdesk-004\",\n  \"upstream_scores_claimed\": false,\n  \"upstream_tasks_copied\": false\n}\n",
+        "file_id": "DRV-004-19",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "harbor-open-source-anchors.json",
+        "sha256": "a8347c80bd2e0ab0940a70b3a011224172676259580a39d1ac2e5b1b4f457824"
+      },
+      {
+        "content": "task_id,case_reference,subject_id,source_system,record_role,effective_revision\nitsmdesk-004,SVCOPS-0004,ADV-OW-2026-052,domain,authoritative_subject,v1\nitsmdesk-004,SVCOPS-0004,ADV-OW-2026-052,approvals,execution_authority,v1\nitsmdesk-004,SVCOPS-0004,ADV-OW-2026-052,drive,supporting_evidence,v1\n",
+        "file_id": "DRV-004-20",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "record-lineage.csv",
+        "sha256": "35f691b87d77d2c7e35fa15254ddeaa53d5daa2eb9ac5cd1156d272579ec6635"
+      },
+      {
+        "content": "# Current execution authority — SVCOPS-0004\n\nEffective 2026-04-14. Applies only to ADV-OW-2026-052 in ITSMDesk. The signed approval record and provider contract jointly bound any write. A source record, search result, or prior decision never grants authority.\n\nRelease revision: v1. Task scope: itsmdesk-004.\n",
+        "file_id": "DRV-004-21",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "current-authority.md",
+        "sha256": "bf2e4ff0143a8378ddb02dfd9d31e3c4092371a7e8e425ed7af005ae87274ea9"
+      },
+      {
+        "content": "# Retired authority — SVCOPS-0004\n\nStatus: SUPERSEDED. This historical ITSMDesk delegation ended before 2026-04-14. It references ADV-OW-2026-052 but cannot authorize a current action for itsmdesk-004.\n",
+        "file_id": "DRV-004-22",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "retired-authority.md",
+        "sha256": "d4880138ac099a943aed2925169789adba110ebcb14bb3380abf56d6f7de1ee1"
+      },
+      {
+        "content": "{\n  \"approval_record\": \"DEC-ITSMDESK-0004\",\n  \"authority_source\": \"signed family approval plus provider contract\",\n  \"case_reference\": \"SVCOPS-0004\",\n  \"effective_revision\": \"v1\",\n  \"prohibited_basis\": [\n    \"retired authority\",\n    \"search ranking\",\n    \"request urgency\"\n  ],\n  \"status\": \"REVIEW_REQUIRED\",\n  \"subject_id\": \"ADV-OW-2026-052\"\n}\n",
+        "file_id": "DRV-004-23",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "decision-record.json",
+        "sha256": "4555a495b7d00540ed8f13f0124a88c97f54c40d039dfbc565c7caae07b61a69"
+      },
+      {
+        "content": "task_id,case_reference,review_lane,available_units,protected_units,effective_date\nitsmdesk-004,SVCOPS-0004,standard,12,2,2026-04-14\nitsmdesk-004,SVCOPS-0004,expedited,8,1,2026-04-14\n",
+        "file_id": "DRV-004-24",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "review-capacity.xlsx",
+        "sha256": "641ec215f5769e05d1aee18a574bd6c27bff2277bfdf96c95d144576a9ef8a44"
+      },
+      {
+        "content": "Source integrity control\nTask: itsmdesk-004\nCase: SVCOPS-0004\nSubject: ADV-OW-2026-052\nEffective revision: v1\nRule: current provider state plus the signed approval govern. Search rank, filenames, request urgency, and archived authority do not.\n",
+        "file_id": "DRV-004-25",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "source-integrity.pdf",
+        "sha256": "5d2fe804526efed73a5876281de3f1ad2a4f4a1cc0f3b037d241dc667e68ce75"
+      },
+      {
+        "content": "task_id: \"itsmdesk-004\"\ncase_reference: \"SVCOPS-0004\"\nas_of: \"2026-04-14\"\nchecks:\n  - name: \"identity_linked\"\n    status: \"PASS\"\n    record: \"ADV-OW-2026-052\"\n  - name: \"revision_current\"\n    status: \"PASS\"\n    record: \"v1\"\n  - name: \"authority_requires_live_read\"\n    status: \"OPEN\"\n    record: \"DEC-ITSMDESK-0004\"\n  - name: \"outcome_precomputed\"\n    status: \"NO\"\n    record: \"itsmdesk-004\"\n",
+        "file_id": "DRV-004-26",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "evidence-status.yaml",
+        "sha256": "83a2b89f54f7fb9f7c9aa691dbc8aae3b227bbf91f74d70fb7416008b8ab14a4"
+      },
+      {
+        "content": "2026-04-14T08:55:00Z INFO scope_created task=itsmdesk-004 case=SVCOPS-0004\n2026-04-14T08:56:00Z INFO subject_linked family=itsmdesk subject=ADV-OW-2026-052\n2026-04-14T08:57:00Z WARN retired_authority_present case=SVCOPS-0004 action=ignore_until_current_scope_verified\n2026-04-14T08:58:00Z INFO provider_state_ready task=itsmdesk-004 expected_mutations=2\n",
+        "file_id": "DRV-004-27",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "text/plain",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "system-audit.log",
+        "sha256": "cd17d5a5fc0afa8a02f0a743e48f2b2d25c95627ebb194d85f4c769edc052981"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SVCOPS-0004\",\n  \"messages\": [\n    {\n      \"author\": \"operations\",\n      \"sent_at\": \"2026-04-14T08:35:00\",\n      \"text\": \"Use immutable subject ADV-OW-2026-052; the similarly named archived record is not in scope.\"\n    },\n    {\n      \"author\": \"governance\",\n      \"sent_at\": \"2026-04-14T08:41:00\",\n      \"text\": \"Current revision is v1. Confirm the signed approval before any state change.\"\n    },\n    {\n      \"author\": \"requester\",\n      \"sent_at\": \"2026-04-14T08:47:00\",\n      \"text\": \"Please leave the stakeholder communication as a draft for human review.\"\n    }\n  ],\n  \"thread_id\": \"OPS-ITSMDESK-0004\"\n}\n",
+        "file_id": "DRV-004-28",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "operations-thread.json",
+        "sha256": "0bcaa095aea39258a584131315801c63ae29836bbf09aa2c83b51acd5c36ca18"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SVCOPS-0004\",\n  \"network\": \"closed benchmark world\",\n  \"read_semantics\": \"provider-shaped records backed by the seeded task world\",\n  \"schema_version\": \"hubbench.provider-contract.v1\",\n  \"state_scope\": \"isolated SQLite episode\",\n  \"subject_id\": \"ADV-OW-2026-052\",\n  \"task_id\": \"itsmdesk-004\",\n  \"unsupported_claims\": [\n    \"byte parity with upstream providers\",\n    \"conversion of upstream benchmark tasks\",\n    \"upstream score comparability\"\n  ],\n  \"verifier_visibility\": \"hidden from the agent\",\n  \"write_semantics\": \"task-scoped, schema-validated, transactionally persisted and audited\"\n}\n",
+        "file_id": "DRV-004-29",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "provider-contracts.json",
+        "sha256": "0c430402d2b1af66a3214721b257c3e84059018eb1897f69a3af3dc4d81ba3d0"
+      },
+      {
+        "content": "{\n  \"captured_as_of\": \"2026-04-14\",\n  \"case_reference\": \"SVCOPS-0004\",\n  \"expected_mutation_count\": 2,\n  \"family\": \"itsmdesk\",\n  \"note\": \"Live provider state remains authoritative; this export is a correlation aid, not a write instruction.\",\n  \"organization\": \"Brightmoor Commerce \\u2014 Service Operations\",\n  \"schema_version\": \"hubbench.live-snapshot.v1\",\n  \"state\": \"PRE_ACTION\",\n  \"subject_id\": \"ADV-OW-2026-052\",\n  \"task_id\": \"itsmdesk-004\"\n}\n",
+        "file_id": "DRV-004-30",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "live-snapshot.json",
+        "sha256": "adbfe36c06b5dd2a6ce698f5c2a1a6e58ab0142a4354592f0a5f65f14514b8c3"
+      },
+      {
+        "content": "case_reference: \"SVCOPS-0004\"\nas_of: \"2026-04-14\"\nfiles:\n  - path: \"policy/change-and-error-budget-policy.md\"\n    kind: \"policy\"\n    media_type: \"text/markdown\"\n    sha256: \"4cbe234e12828a30b7608e1e6af0001ac06567ceb3880e687a5c6d238e241aea\"\n  - path: \"policy/superseded-change-policy-2024.md\"\n    kind: \"policy_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"03cdef3719e3810f066abfe867c482435ab32bd80ccee239735411342259e3d3\"\n  - path: \"vendor/advisory-OWA-2026-052-rev1.json\"\n    kind: \"superseded_advisory\"\n    media_type: \"application/json\"\n    sha256: \"0f3df912b2e41a5dd201b14eda71e8ae7453609dcff3317fa65cc23543617f5b\"\n  - path: \"itsm/change-CHG-40340.json\"\n    kind: \"change_export\"\n    media_type: \"application/json\"\n    sha256: \"0d7969f51a1bc05834048c98529489821fb8aa5395bc32919bac4a017e4f1597\"\n  - path: \"itsm/service-ledger-sync-summary.json\"\n    kind: \"service_summary\"\n    media_type: \"application/json\"\n    sha256: \"bacf87605ecd4362107e24922798868365d5e51aa5330bcc7a0291b1ca687b86\"\n  - path: \"telemetry/slo-catalog.csv\"\n    kind: \"slo_catalog\"\n    media_type: \"text/csv\"\n    sha256: \"39eb75e7e68dda1da794bfc9b32b9a063711013330b8fce56ce87352aa833c1c\"\n  - path: \"telemetry/error-budget-ledger.xlsx\"\n    kind: \"budget_ledger_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"fd73b9ae05c73b9867d2ea0ef431c770c1d476b02db43b44316e5462af52a75d\"\n  - path: \"itsm/incident-register.csv\"\n    kind: \"incident_register\"\n    media_type: \"text/csv\"\n    sha256: \"4d4c48649a98e8bc1301970d0e820cbb194726f0fce09da96064f0479a1f73cc\"\n  - path: \"telemetry/burn-rate-samples.csv\"\n    kind: \"burn_samples\"\n    media_type: \"text/csv\"\n    sha256: \"46d593ecad73503f50094daf960fc2f10ead714f9c2bca636edd0ef3b7391d26\"\n  - path: \"calendar/change-calendar-2026-04-14.xlsx\"\n    kind: \"change_calendar\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"0a038a6f1ece68a70f89c10d6fe574ee99125316ee91a6fb251fc98f6ca6257e\"\n  - path: \"calendar/freeze-register.csv\"\n    kind: \"freeze_register\"\n    media_type: \"text/csv\"\n    sha256: \"0e0424724d414e53a8bc5a9828264f9467759e8228db21cca8db33cc53d894f4\"\n  - path: \"calendar/lane-roster.csv\"\n    kind: \"lane_roster\"\n    media_type: \"text/csv\"\n    sha256: \"a351dfc95492ae9de0a95ec10b9cfe7d749d311535f6ff288259c32abdd2cc16\"\n  - path: \"oncall/secondary-roster.csv\"\n    kind: \"oncall_roster\"\n    media_type: \"text/csv\"\n    sha256: \"1d7abe90900999b35d14d5ca6bb835f30774f291d75d6f174b400f12946940bc\"\n  - path: \"vendor/advisory-OWA-2026-052.pdf\"\n    kind: \"vendor_advisory\"\n    media_type: \"application/pdf\"\n    sha256: \"2366e0c1873f0e6f71f0ac026ada4f10e75f8b417daaf819b476ea93f02ab208\"\n  - path: \"messages/THR-2004.eml\"\n    kind: \"email\"\n    media_type: \"message/rfc822\"\n    sha256: \"8be85f28691d6eddb5b0b6d7199713efcc448dc9b0a88a21eaf7fe96fad319b6\"\n  - path: \"chat/CHAT-2004.json\"\n    kind: \"chat_thread\"\n    media_type: \"application/json\"\n    sha256: \"3d6ad62d7d9b94b4479346e2510de5a7223676cf70148118fa57a350d607e100\"\n  - path: \"approvals/approval-AP-SO-0104.json\"\n    kind: \"approval\"\n    media_type: \"application/json\"\n    sha256: \"8d000bf6a2e40b427d724010dc328898ce0a3a9ff1be295722396497ead4cddc\"\n  - path: \"exports/starting-state-itsmdesk-004.json\"\n    kind: \"starting_state\"\n    media_type: \"application/json\"\n    sha256: \"e9189eea1439e70dffe808c82aacede00fdf11fff0329b212b20c31968e55e6b\"\n  - path: \"itsm/staged-build-register.csv\"\n    kind: \"build_register\"\n    media_type: \"text/csv\"\n    sha256: \"80466bd0880cdb7ada51067d48aa6d3b00cc6ba6b5d692d72e28b9788ef60332\"\n  - path: \"vendor/orrinwave-support-terms.md\"\n    kind: \"vendor_terms\"\n    media_type: \"text/markdown\"\n    sha256: \"551dcb4fa093b0b4f3b5b12d43ad1adb47e027efdda09de025fe5f3437435a3c\"\n  - path: \"provenance/harbor-open-source-anchors.json\"\n    kind: \"open_source_provenance\"\n    media_type: \"application/json\"\n    sha256: \"a8347c80bd2e0ab0940a70b3a011224172676259580a39d1ac2e5b1b4f457824\"\n  - path: \"lineage/record-lineage.csv\"\n    kind: \"record_lineage\"\n    media_type: \"text/csv\"\n    sha256: \"35f691b87d77d2c7e35fa15254ddeaa53d5daa2eb9ac5cd1156d272579ec6635\"\n  - path: \"controls/current-authority.md\"\n    kind: \"authority_current\"\n    media_type: \"text/markdown\"\n    sha256: \"bf2e4ff0143a8378ddb02dfd9d31e3c4092371a7e8e425ed7af005ae87274ea9\"\n  - path: \"controls/retired-authority.md\"\n    kind: \"authority_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"d4880138ac099a943aed2925169789adba110ebcb14bb3380abf56d6f7de1ee1\"\n  - path: \"approvals/decision-record.json\"\n    kind: \"approval_decision\"\n    media_type: \"application/json\"\n    sha256: \"4555a495b7d00540ed8f13f0124a88c97f54c40d039dfbc565c7caae07b61a69\"\n  - path: \"workbooks/review-capacity.xlsx\"\n    kind: \"review_capacity_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"641ec215f5769e05d1aee18a574bd6c27bff2277bfdf96c95d144576a9ef8a44\"\n  - path: \"controls/source-integrity.pdf\"\n    kind: \"source_integrity_control\"\n    media_type: \"application/pdf\"\n    sha256: \"5d2fe804526efed73a5876281de3f1ad2a4f4a1cc0f3b037d241dc667e68ce75\"\n  - path: \"audit/evidence-status.yaml\"\n    kind: \"evidence_status\"\n    media_type: \"application/yaml\"\n    sha256: \"83a2b89f54f7fb9f7c9aa691dbc8aae3b227bbf91f74d70fb7416008b8ab14a4\"\n  - path: \"audit/system-audit.log\"\n    kind: \"system_audit\"\n    media_type: \"text/plain\"\n    sha256: \"cd17d5a5fc0afa8a02f0a743e48f2b2d25c95627ebb194d85f4c769edc052981\"\n  - path: \"communications/source-request.eml\"\n    kind: \"source_request\"\n    media_type: \"message/rfc822\"\n    sha256: \"e84776e21c654e3b5f199660beb53701c536ee3e6d397082edf18254a6fd579c\"\n  - path: \"collaboration/operations-thread.json\"\n    kind: \"operations_thread\"\n    media_type: \"application/json\"\n    sha256: \"0bcaa095aea39258a584131315801c63ae29836bbf09aa2c83b51acd5c36ca18\"\n  - path: \"contracts/provider-contracts.json\"\n    kind: \"provider_contract\"\n    media_type: \"application/json\"\n    sha256: \"0c430402d2b1af66a3214721b257c3e84059018eb1897f69a3af3dc4d81ba3d0\"\n  - path: \"exports/live-snapshot.json\"\n    kind: \"live_snapshot\"\n    media_type: \"application/json\"\n    sha256: \"adbfe36c06b5dd2a6ce698f5c2a1a6e58ab0142a4354592f0a5f65f14514b8c3\"\n",
+        "file_id": "DRV-004-31",
+        "folder": "Service Operations/Cases/SVCOPS-0004",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "evidence-index.yaml",
+        "sha256": "f13edeed568efb4e7618753d2e5692267a63b607924b2974b561f0d96278b8b2"
+      }
+    ],
+    "engineers": [
+      {
+        "certifications": "payments-runbook,change-implementer",
+        "engineer_id": "ENG-VARGA",
+        "name": "Lena Varga",
+        "role": "service_owner",
+        "team": "Payments Platform"
+      },
+      {
+        "certifications": "payments-runbook,identity-runbook,checkout-runbook,web-runbook,change-implementer",
+        "engineer_id": "ENG-OKAFOR",
+        "name": "Chidi Okafor",
+        "role": "sre_secondary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "identity-runbook,checkout-runbook,change-implementer",
+        "engineer_id": "ENG-DUBOIS",
+        "name": "Mathis Dubois",
+        "role": "sre_primary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "checkout-runbook,change-implementer",
+        "engineer_id": "ENG-SATO",
+        "name": "Rin Sato",
+        "role": "service_owner",
+        "team": "Checkout"
+      },
+      {
+        "certifications": "data-runbook,messaging-runbook,change-implementer",
+        "engineer_id": "ENG-NKEMELU",
+        "name": "Adaeze Nkemelu",
+        "role": "data_platform_lead",
+        "team": "Data Platform"
+      },
+      {
+        "certifications": "change-implementer",
+        "engineer_id": "ENG-HOLM",
+        "name": "Dario Holm",
+        "role": "sre_secondary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "search-runbook,payments-runbook,fraud-runbook,data-runbook,messaging-runbook,change-implementer",
+        "engineer_id": "ENG-RAMAN",
+        "name": "Priya Raman",
+        "role": "sre_secondary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "fraud-runbook,change-implementer",
+        "engineer_id": "ENG-FERREIRA",
+        "name": "Bruno Ferreira",
+        "role": "risk_engineer",
+        "team": "Risk Platform"
+      },
+      {
+        "certifications": "web-runbook,change-implementer",
+        "engineer_id": "ENG-KOWALSKI",
+        "name": "Zofia Kowalski",
+        "role": "web_owner",
+        "team": "Merchant Web"
+      },
+      {
+        "certifications": "search-runbook,change-implementer",
+        "engineer_id": "ENG-TANAKA",
+        "name": "Yuki Tanaka",
+        "role": "search_owner",
+        "team": "Search Platform"
+      }
+    ],
+    "escalation_policies": [
+      {
+        "levels_json": "[{\"level\": 1, \"target\": \"SCHED-LDG-PRI\", \"timeout_minutes\": 10}, {\"level\": 2, \"target\": \"SCHED-LDG-SEC\", \"timeout_minutes\": 10}, {\"level\": 3, \"target\": \"U-HAVILAND (SRE lead)\", \"timeout_minutes\": 15}]",
+        "name": "ledger-sync escalation",
+        "policy_id": "ESC-31302",
+        "service_id": "SVC-31302"
+      }
+    ],
+    "evidence_files": [
+      {
+        "asset_id": "itsmdesk-004-01",
+        "kind": "policy",
+        "media_type": "text/markdown",
+        "path": "policy/change-and-error-budget-policy.md",
+        "sha256": "4cbe234e12828a30b7608e1e6af0001ac06567ceb3880e687a5c6d238e241aea",
+        "source": "drive",
+        "task_id": "itsmdesk-004",
+        "title": "Change and error-budget policy v3 (effective)"
+      },
+      {
+        "asset_id": "itsmdesk-004-02",
+        "kind": "policy_superseded",
+        "media_type": "text/markdown",
+        "path": "policy/superseded-change-policy-2024.md",
+        "sha256": "03cdef3719e3810f066abfe867c482435ab32bd80ccee239735411342259e3d3",
+        "source": "drive",
+        "task_id": "itsmdesk-004",
+        "title": "Change and error-budget policy 2024 (superseded)"
+      },
+      {
+        "asset_id": "itsmdesk-004-03",
+        "kind": "superseded_advisory",
+        "media_type": "application/json",
+        "path": "vendor/advisory-OWA-2026-052-rev1.json",
+        "sha256": "0f3df912b2e41a5dd201b14eda71e8ae7453609dcff3317fa65cc23543617f5b",
+        "source": "drive",
+        "task_id": "itsmdesk-004",
+        "title": "Advisory OWA-2026-052 rev 1 (withdrawn, superseded)"
+      },
+      {
+        "asset_id": "itsmdesk-004-04",
+        "kind": "change_export",
+        "media_type": "application/json",
+        "path": "itsm/change-CHG-40340.json",
+        "sha256": "0d7969f51a1bc05834048c98529489821fb8aa5395bc32919bac4a017e4f1597",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-004",
+        "title": "Change CHG-40340 (ITSM export)"
+      },
+      {
+        "asset_id": "itsmdesk-004-05",
+        "kind": "service_summary",
+        "media_type": "application/json",
+        "path": "itsm/service-ledger-sync-summary.json",
+        "sha256": "bacf87605ecd4362107e24922798868365d5e51aa5330bcc7a0291b1ca687b86",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-004",
+        "title": "Service ledger-sync summary with restart meterings (ITSM export)"
+      },
+      {
+        "asset_id": "itsmdesk-004-06",
+        "kind": "slo_catalog",
+        "media_type": "text/csv",
+        "path": "telemetry/slo-catalog.csv",
+        "sha256": "39eb75e7e68dda1da794bfc9b32b9a063711013330b8fce56ce87352aa833c1c",
+        "source": "telemetry_export",
+        "task_id": "itsmdesk-004",
+        "title": "SLO catalog: objectives, windows, budgets, and reserve floors"
+      },
+      {
+        "asset_id": "itsmdesk-004-07",
+        "kind": "budget_ledger_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "telemetry/error-budget-ledger.xlsx",
+        "sha256": "fd73b9ae05c73b9867d2ea0ef431c770c1d476b02db43b44316e5462af52a75d",
+        "source": "telemetry_workbook",
+        "task_id": "itsmdesk-004",
+        "title": "Error-budget ledger — ledger-sync (gross incident minutes)"
+      },
+      {
+        "asset_id": "itsmdesk-004-08",
+        "kind": "incident_register",
+        "media_type": "text/csv",
+        "path": "itsm/incident-register.csv",
+        "sha256": "4d4c48649a98e8bc1301970d0e820cbb194726f0fce09da96064f0479a1f73cc",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-004",
+        "title": "Incident register with problem-review notes"
+      },
+      {
+        "asset_id": "itsmdesk-004-09",
+        "kind": "burn_samples",
+        "media_type": "text/csv",
+        "path": "telemetry/burn-rate-samples.csv",
+        "sha256": "46d593ecad73503f50094daf960fc2f10ead714f9c2bca636edd0ef3b7391d26",
+        "source": "telemetry_export",
+        "task_id": "itsmdesk-004",
+        "title": "Burn-rate samples — SLO-LDG-AVAIL"
+      },
+      {
+        "asset_id": "itsmdesk-004-10",
+        "kind": "change_calendar",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "calendar/change-calendar-2026-04-14.xlsx",
+        "sha256": "0a038a6f1ece68a70f89c10d6fe574ee99125316ee91a6fb251fc98f6ca6257e",
+        "source": "calendar_workbook",
+        "task_id": "itsmdesk-004",
+        "title": "Change calendar, three weeks from 2026-04-14"
+      },
+      {
+        "asset_id": "itsmdesk-004-11",
+        "kind": "freeze_register",
+        "media_type": "text/csv",
+        "path": "calendar/freeze-register.csv",
+        "sha256": "0e0424724d414e53a8bc5a9828264f9467759e8228db21cca8db33cc53d894f4",
+        "source": "calendar_export",
+        "task_id": "itsmdesk-004",
+        "title": "Freeze register (change calendar)"
+      },
+      {
+        "asset_id": "itsmdesk-004-12",
+        "kind": "lane_roster",
+        "media_type": "text/csv",
+        "path": "calendar/lane-roster.csv",
+        "sha256": "a351dfc95492ae9de0a95ec10b9cfe7d749d311535f6ff288259c32abdd2cc16",
+        "source": "calendar_export",
+        "task_id": "itsmdesk-004",
+        "title": "Change-lane roster and certification"
+      },
+      {
+        "asset_id": "itsmdesk-004-13",
+        "kind": "oncall_roster",
+        "media_type": "text/csv",
+        "path": "oncall/secondary-roster.csv",
+        "sha256": "1d7abe90900999b35d14d5ca6bb835f30774f291d75d6f174b400f12946940bc",
+        "source": "oncall_export",
+        "task_id": "itsmdesk-004",
+        "title": "Secondary on-call roster — SCHED-LDG-SEC"
+      },
+      {
+        "asset_id": "itsmdesk-004-14",
+        "kind": "vendor_advisory",
+        "media_type": "application/pdf",
+        "path": "vendor/advisory-OWA-2026-052.pdf",
+        "sha256": "2366e0c1873f0e6f71f0ac026ada4f10e75f8b417daaf819b476ea93f02ab208",
+        "source": "email_attachment",
+        "task_id": "itsmdesk-004",
+        "title": "Vendor advisory OWA-2026-052"
+      },
+      {
+        "asset_id": "itsmdesk-004-15",
+        "kind": "email",
+        "media_type": "message/rfc822",
+        "path": "messages/THR-2004.eml",
+        "sha256": "8be85f28691d6eddb5b0b6d7199713efcc448dc9b0a88a21eaf7fe96fad319b6",
+        "source": "messages",
+        "task_id": "itsmdesk-004",
+        "title": "SVCOPS-0004 ledger-sync arm pool — can we make the SLA?"
+      },
+      {
+        "asset_id": "itsmdesk-004-16",
+        "kind": "chat_thread",
+        "media_type": "application/json",
+        "path": "chat/CHAT-2004.json",
+        "sha256": "3d6ad62d7d9b94b4479346e2510de5a7223676cf70148118fa57a350d607e100",
+        "source": "chat",
+        "task_id": "itsmdesk-004",
+        "title": "SVCOPS-0004 ledger-sync arm64"
+      },
+      {
+        "asset_id": "itsmdesk-004-17",
+        "kind": "approval",
+        "media_type": "application/json",
+        "path": "approvals/approval-AP-SO-0104.json",
+        "sha256": "8d000bf6a2e40b427d724010dc328898ce0a3a9ff1be295722396497ead4cddc",
+        "source": "approvals_export",
+        "task_id": "itsmdesk-004",
+        "title": "Approval record AP-SO-0104"
+      },
+      {
+        "asset_id": "itsmdesk-004-18",
+        "kind": "starting_state",
+        "media_type": "application/json",
+        "path": "exports/starting-state-itsmdesk-004.json",
+        "sha256": "e9189eea1439e70dffe808c82aacede00fdf11fff0329b212b20c31968e55e6b",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-004",
+        "title": "Starting-state export (changes, tasks, outages, overrides)"
+      },
+      {
+        "asset_id": "itsmdesk-004-19",
+        "kind": "build_register",
+        "media_type": "text/csv",
+        "path": "itsm/staged-build-register.csv",
+        "sha256": "80466bd0880cdb7ada51067d48aa6d3b00cc6ba6b5d692d72e28b9788ef60332",
+        "source": "drive",
+        "task_id": "itsmdesk-004",
+        "title": "Staged build register — ledger-sync"
+      },
+      {
+        "asset_id": "itsmdesk-004-20",
+        "kind": "vendor_terms",
+        "media_type": "text/markdown",
+        "path": "vendor/orrinwave-support-terms.md",
+        "sha256": "551dcb4fa093b0b4f3b5b12d43ad1adb47e027efdda09de025fe5f3437435a3c",
+        "source": "drive",
+        "task_id": "itsmdesk-004",
+        "title": "Orrinwave Data Systems — support terms (extract)"
+      },
+      {
+        "asset_id": "itsmdesk-004-21",
+        "kind": "open_source_provenance",
+        "media_type": "application/json",
+        "path": "provenance/harbor-open-source-anchors.json",
+        "sha256": "a8347c80bd2e0ab0940a70b3a011224172676259580a39d1ac2e5b1b4f457824",
+        "source": "release_metadata",
+        "task_id": "itsmdesk-004",
+        "title": "Open-source benchmark provenance — ITSMDesk"
+      },
+      {
+        "asset_id": "itsmdesk-004-22",
+        "kind": "record_lineage",
+        "media_type": "text/csv",
+        "path": "lineage/record-lineage.csv",
+        "sha256": "35f691b87d77d2c7e35fa15254ddeaa53d5daa2eb9ac5cd1156d272579ec6635",
+        "source": "lineage_export",
+        "task_id": "itsmdesk-004",
+        "title": "Cross-system record lineage — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-23",
+        "kind": "authority_current",
+        "media_type": "text/markdown",
+        "path": "controls/current-authority.md",
+        "sha256": "bf2e4ff0143a8378ddb02dfd9d31e3c4092371a7e8e425ed7af005ae87274ea9",
+        "source": "governance",
+        "task_id": "itsmdesk-004",
+        "title": "Current authority — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-24",
+        "kind": "authority_superseded",
+        "media_type": "text/markdown",
+        "path": "controls/retired-authority.md",
+        "sha256": "d4880138ac099a943aed2925169789adba110ebcb14bb3380abf56d6f7de1ee1",
+        "source": "governance_archive",
+        "task_id": "itsmdesk-004",
+        "title": "Retired authority — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-25",
+        "kind": "approval_decision",
+        "media_type": "application/json",
+        "path": "approvals/decision-record.json",
+        "sha256": "4555a495b7d00540ed8f13f0124a88c97f54c40d039dfbc565c7caae07b61a69",
+        "source": "approvals_export",
+        "task_id": "itsmdesk-004",
+        "title": "Decision control record — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-26",
+        "kind": "review_capacity_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "workbooks/review-capacity.xlsx",
+        "sha256": "641ec215f5769e05d1aee18a574bd6c27bff2277bfdf96c95d144576a9ef8a44",
+        "source": "operations_workbook",
+        "task_id": "itsmdesk-004",
+        "title": "Review capacity — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-27",
+        "kind": "source_integrity_control",
+        "media_type": "application/pdf",
+        "path": "controls/source-integrity.pdf",
+        "sha256": "5d2fe804526efed73a5876281de3f1ad2a4f4a1cc0f3b037d241dc667e68ce75",
+        "source": "governance",
+        "task_id": "itsmdesk-004",
+        "title": "Source integrity control — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-28",
+        "kind": "evidence_status",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-status.yaml",
+        "sha256": "83a2b89f54f7fb9f7c9aa691dbc8aae3b227bbf91f74d70fb7416008b8ab14a4",
+        "source": "audit_export",
+        "task_id": "itsmdesk-004",
+        "title": "Evidence readiness — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-29",
+        "kind": "system_audit",
+        "media_type": "text/plain",
+        "path": "audit/system-audit.log",
+        "sha256": "cd17d5a5fc0afa8a02f0a743e48f2b2d25c95627ebb194d85f4c769edc052981",
+        "source": "audit_export",
+        "task_id": "itsmdesk-004",
+        "title": "System audit log — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-30",
+        "kind": "source_request",
+        "media_type": "message/rfc822",
+        "path": "communications/source-request.eml",
+        "sha256": "e84776e21c654e3b5f199660beb53701c536ee3e6d397082edf18254a6fd579c",
+        "source": "messages",
+        "task_id": "itsmdesk-004",
+        "title": "Source integrity request — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-31",
+        "kind": "operations_thread",
+        "media_type": "application/json",
+        "path": "collaboration/operations-thread.json",
+        "sha256": "0bcaa095aea39258a584131315801c63ae29836bbf09aa2c83b51acd5c36ca18",
+        "source": "chat",
+        "task_id": "itsmdesk-004",
+        "title": "Operations thread — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-32",
+        "kind": "provider_contract",
+        "media_type": "application/json",
+        "path": "contracts/provider-contracts.json",
+        "sha256": "0c430402d2b1af66a3214721b257c3e84059018eb1897f69a3af3dc4d81ba3d0",
+        "source": "release_metadata",
+        "task_id": "itsmdesk-004",
+        "title": "Provider contract — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-33",
+        "kind": "live_snapshot",
+        "media_type": "application/json",
+        "path": "exports/live-snapshot.json",
+        "sha256": "adbfe36c06b5dd2a6ce698f5c2a1a6e58ab0142a4354592f0a5f65f14514b8c3",
+        "source": "provider_export",
+        "task_id": "itsmdesk-004",
+        "title": "Live pre-action snapshot — SVCOPS-0004"
+      },
+      {
+        "asset_id": "itsmdesk-004-34",
+        "kind": "evidence_index",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-index.yaml",
+        "sha256": "f13edeed568efb4e7618753d2e5692267a63b607924b2974b561f0d96278b8b2",
+        "source": "drive",
+        "task_id": "itsmdesk-004",
+        "title": "Evidence index"
+      }
+    ],
+    "freeze_windows": [
+      {
+        "authority": "change board chair",
+        "end_date": "2026-05-01",
+        "freeze_id": "FRZ-2026-15",
+        "kind": "financial",
+        "lanes": "ALL",
+        "name": "month-end financial close freeze",
+        "start_date": "2026-04-28",
+        "status": "ACTIVE"
+      }
+    ],
+    "incidents": [
+      {
+        "impact_minutes": 12,
+        "incident_id": "INC-70815",
+        "opened_at": "2026-03-20T02:10:00",
+        "problem_id": null,
+        "resolved_at": "2026-03-20T02:48:00",
+        "service_id": "SVC-31302",
+        "severity": "sev2",
+        "slo_charged": 1,
+        "summary": "WAL replay stall after the storage failover"
+      },
+      {
+        "impact_minutes": 8,
+        "incident_id": "INC-70850",
+        "opened_at": "2026-03-31T23:05:00",
+        "problem_id": null,
+        "resolved_at": "2026-03-31T23:29:00",
+        "service_id": "SVC-31302",
+        "severity": "sev2",
+        "slo_charged": 1,
+        "summary": "sync lag breach during the quarter-end batch"
+      }
+    ],
+    "maintenance_windows": [
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-14",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260414-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "elapsed before the planning time",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-14",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_id": "MW-CORE-20260414-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-14",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260414-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "elapsed before the planning time",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-14",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_id": "MW-DATA-20260414-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-15",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260415-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-15",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260415-NIGHT"
+      },
+      {
+        "change_id": "CHG-40339",
+        "end_time": "23:00:00",
+        "hold_reason": "scheduled change",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-15",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "busy",
+        "window_id": "MW-DATA-20260415-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-15",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260415-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-16",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260416-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-16",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260416-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-16",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260416-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-16",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260416-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-17",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260417-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-17",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260417-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "weekly reconciliation batch (blocked)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-17",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "blocked",
+        "window_id": "MW-DATA-20260417-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "weekly reconciliation batch (blocked)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-17",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "blocked",
+        "window_id": "MW-DATA-20260417-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-18",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260418-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-18",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260418-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "ledger reindex hold (CHG-40336)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-18",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "busy",
+        "window_id": "MW-DATA-20260418-EVE"
+      },
+      {
+        "change_id": "CHG-40336",
+        "end_time": "05:00:00",
+        "hold_reason": "scheduled change",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-18",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_id": "MW-DATA-20260418-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-19",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260419-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-19",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260419-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "ledger reindex hold (CHG-40336)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-19",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "busy",
+        "window_id": "MW-DATA-20260419-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "ledger reindex hold (CHG-40336)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-19",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_id": "MW-DATA-20260419-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-20",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260420-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-20",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260420-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-20",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260420-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-20",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260420-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-21",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260421-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-21",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260421-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-21",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260421-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-21",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260421-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-22",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260422-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-22",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260422-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-22",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260422-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-22",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260422-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-23",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260423-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-23",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260423-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-23",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260423-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-23",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260423-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-24",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260424-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-24",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260424-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-24",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260424-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-24",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260424-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-25",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260425-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-25",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260425-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-25",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260425-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-25",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260425-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-26",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260426-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-26",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260426-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-26",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260426-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-26",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260426-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-27",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260427-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-27",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260427-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-27",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260427-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-27",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260427-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-28",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260428-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-28",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260428-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-28",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260428-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-28",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260428-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-29",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260429-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-29",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260429-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-29",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260429-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-29",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260429-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-30",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260430-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-04-30",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260430-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-30",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260430-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-30",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260430-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-05-01",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260501-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-05-01",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260501-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-01",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260501-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-01",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260501-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-05-02",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260502-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-05-02",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260502-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-02",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260502-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-02",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260502-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-05-03",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260503-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-05-03",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-CORE-20260503-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-03",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260503-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-03",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260503-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-05-04",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260504-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-CORE",
+        "service_date": "2026-05-04",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-CORE-20260504-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-04",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260504-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-04",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260504-NIGHT"
+      }
+    ],
+    "messages": [
+      {
+        "attachments_json": "[{\"name\": \"advisory-OWA-2026-052.pdf\", \"mime_type\": \"application/pdf\"}]",
+        "body": "Orrinwave's OWA-2026-052 is high severity and due by 2026-04-21. The x86 pool rolls tomorrow evening on the validated build, but the arm pool's staged build came from the withdrawn revision and the vendor's standard arm64 release is after the SLA. Saoirse has signed AP-SO-0104 with an early-access allowance; the advisory is attached.\n\nTell me which nodes are genuinely covered, how many need the vendor's package, when the pool can honestly be patched with and without the early-access fee, and what a Friday daytime run would involve. Schedule the arm change where it fits and draft my update.\n\nAdaeze",
+        "channel": "email",
+        "labels": "data-platform,SVCOPS-0004,SVCOPS-0004",
+        "message_id": "MSG-2004-01",
+        "recipients": "service-ops@brightmoor.example",
+        "sender": "adaeze.nkemelu@brightmoor.example",
+        "sent_at": "2026-04-14T10:02:00",
+        "subject": "SVCOPS-0004 ledger-sync arm pool — can we make the SLA?",
+        "thread_id": "THR-2004"
+      },
+      {
+        "attachments_json": "[]",
+        "body": "On-call rotations for the week of 2026-04-13 are posted. Lane certification flags are on the shared drive roster; the change board meets Thursday.",
+        "channel": "email",
+        "labels": "operations",
+        "message_id": "MSG-0004-00",
+        "recipients": "service-ops@brightmoor.example",
+        "sender": "wren.haviland@brightmoor.example",
+        "sent_at": "2026-04-13T08:00:00",
+        "subject": "Weekly service-operations note",
+        "thread_id": "THR-0004-OPS"
+      }
+    ],
+    "meterings": [
+      {
+        "measured_at": "2026-04-08",
+        "metering_id": "MTR-31302",
+        "metric": "RESTART-MIN",
+        "service_id": "SVC-31302",
+        "status": "final",
+        "unit": "MIN",
+        "value": 6.0
+      },
+      {
+        "measured_at": "2026-01-20",
+        "metering_id": "MTR-31302-2601",
+        "metric": "RESTART-MIN",
+        "service_id": "SVC-31302",
+        "status": "final",
+        "unit": "MIN",
+        "value": 3.0
+      },
+      {
+        "measured_at": "2026-04-03",
+        "metering_id": "MTR-31311",
+        "metric": "RESTART-MIN",
+        "service_id": "SVC-31311",
+        "status": "final",
+        "unit": "MIN",
+        "value": 4.0
+      }
+    ],
+    "nodes": [
+      {
+        "build_status": "VALIDATED",
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-01",
+        "pinned_for": null,
+        "pool": "sync-x86",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": "B-12.6.4-x86-r2",
+        "status": "active",
+        "version": "12.6.1"
+      },
+      {
+        "build_status": "VALIDATED",
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-02",
+        "pinned_for": null,
+        "pool": "sync-x86",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": "B-12.6.4-x86-r2",
+        "status": "active",
+        "version": "12.6.1"
+      },
+      {
+        "build_status": "VALIDATED",
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-03",
+        "pinned_for": null,
+        "pool": "sync-x86",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": "B-12.6.4-x86-r2",
+        "status": "active",
+        "version": "12.6.1"
+      },
+      {
+        "build_status": "VALIDATED",
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-04",
+        "pinned_for": null,
+        "pool": "sync-x86",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": "B-12.6.4-x86-r2",
+        "status": "active",
+        "version": "12.6.1"
+      },
+      {
+        "build_status": "VALIDATED",
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-05",
+        "pinned_for": null,
+        "pool": "sync-x86",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": "B-12.6.4-x86-r2",
+        "status": "active",
+        "version": "12.6.1"
+      },
+      {
+        "build_status": "VALIDATED",
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-06",
+        "pinned_for": null,
+        "pool": "sync-x86",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": "B-12.6.4-x86-r2",
+        "status": "active",
+        "version": "12.6.1"
+      },
+      {
+        "build_status": "SUPERSEDED",
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-07",
+        "pinned_for": null,
+        "pool": "sync-arm",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": "B-12.6.3-arm-r1",
+        "status": "active",
+        "version": "12.6.1"
+      },
+      {
+        "build_status": "SUPERSEDED",
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-08",
+        "pinned_for": null,
+        "pool": "sync-arm",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": "B-12.6.3-arm-r1",
+        "status": "active",
+        "version": "12.6.1"
+      },
+      {
+        "build_status": "SUPERSEDED",
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-09",
+        "pinned_for": null,
+        "pool": "sync-arm",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": "B-12.6.3-arm-r1",
+        "status": "active",
+        "version": "12.6.1"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-10",
+        "pinned_for": null,
+        "pool": "sync-x86",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": null,
+        "status": "active",
+        "version": "12.6.4"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-DATA",
+        "node_id": "NODE-LDG-11",
+        "pinned_for": null,
+        "pool": "sync-x86",
+        "region": "eu-west",
+        "service_id": "SVC-31302",
+        "staged_build": null,
+        "status": "active",
+        "version": "12.6.4"
+      }
+    ],
+    "oncall_overrides": [],
+    "oncall_schedules": [
+      {
+        "name": "data platform primary",
+        "required_certification": null,
+        "role": "primary",
+        "schedule_id": "SCHED-LDG-PRI",
+        "service_id": "SVC-31302"
+      },
+      {
+        "name": "data platform secondary (certified)",
+        "required_certification": "data-runbook",
+        "role": "secondary",
+        "schedule_id": "SCHED-LDG-SEC",
+        "service_id": "SVC-31302"
+      }
+    ],
+    "oncall_shifts": [
+      {
+        "end_time": "2026-04-14T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260414-1",
+        "source": "rotation",
+        "start_time": "2026-04-14T00:00:00"
+      },
+      {
+        "end_time": "2026-04-14T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260414-2",
+        "source": "rotation",
+        "start_time": "2026-04-14T08:00:00"
+      },
+      {
+        "end_time": "2026-04-14T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260414-3",
+        "source": "rotation",
+        "start_time": "2026-04-14T16:00:00"
+      },
+      {
+        "end_time": "2026-04-15T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260415-1",
+        "source": "rotation",
+        "start_time": "2026-04-15T00:00:00"
+      },
+      {
+        "end_time": "2026-04-15T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260415-2",
+        "source": "rotation",
+        "start_time": "2026-04-15T08:00:00"
+      },
+      {
+        "end_time": "2026-04-15T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260415-3",
+        "source": "rotation",
+        "start_time": "2026-04-15T16:00:00"
+      },
+      {
+        "end_time": "2026-04-16T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260416-1",
+        "source": "rotation",
+        "start_time": "2026-04-16T00:00:00"
+      },
+      {
+        "end_time": "2026-04-16T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260416-2",
+        "source": "rotation",
+        "start_time": "2026-04-16T08:00:00"
+      },
+      {
+        "end_time": "2026-04-16T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260416-3",
+        "source": "rotation",
+        "start_time": "2026-04-16T16:00:00"
+      },
+      {
+        "end_time": "2026-04-17T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260417-1",
+        "source": "rotation",
+        "start_time": "2026-04-17T00:00:00"
+      },
+      {
+        "end_time": "2026-04-17T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260417-2",
+        "source": "rotation",
+        "start_time": "2026-04-17T08:00:00"
+      },
+      {
+        "end_time": "2026-04-17T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260417-3",
+        "source": "rotation",
+        "start_time": "2026-04-17T16:00:00"
+      },
+      {
+        "end_time": "2026-04-18T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260418-1",
+        "source": "rotation",
+        "start_time": "2026-04-18T00:00:00"
+      },
+      {
+        "end_time": "2026-04-18T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260418-2",
+        "source": "rotation",
+        "start_time": "2026-04-18T08:00:00"
+      },
+      {
+        "end_time": "2026-04-18T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260418-3",
+        "source": "rotation",
+        "start_time": "2026-04-18T16:00:00"
+      },
+      {
+        "end_time": "2026-04-19T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260419-1",
+        "source": "rotation",
+        "start_time": "2026-04-19T00:00:00"
+      },
+      {
+        "end_time": "2026-04-19T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260419-2",
+        "source": "rotation",
+        "start_time": "2026-04-19T08:00:00"
+      },
+      {
+        "end_time": "2026-04-19T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260419-3",
+        "source": "rotation",
+        "start_time": "2026-04-19T16:00:00"
+      },
+      {
+        "end_time": "2026-04-20T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260420-1",
+        "source": "rotation",
+        "start_time": "2026-04-20T00:00:00"
+      },
+      {
+        "end_time": "2026-04-20T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260420-2",
+        "source": "rotation",
+        "start_time": "2026-04-20T08:00:00"
+      },
+      {
+        "end_time": "2026-04-20T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260420-3",
+        "source": "rotation",
+        "start_time": "2026-04-20T16:00:00"
+      },
+      {
+        "end_time": "2026-04-21T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260421-1",
+        "source": "rotation",
+        "start_time": "2026-04-21T00:00:00"
+      },
+      {
+        "end_time": "2026-04-21T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260421-2",
+        "source": "rotation",
+        "start_time": "2026-04-21T08:00:00"
+      },
+      {
+        "end_time": "2026-04-21T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260421-3",
+        "source": "rotation",
+        "start_time": "2026-04-21T16:00:00"
+      },
+      {
+        "end_time": "2026-04-22T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260422-1",
+        "source": "rotation",
+        "start_time": "2026-04-22T00:00:00"
+      },
+      {
+        "end_time": "2026-04-22T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260422-2",
+        "source": "rotation",
+        "start_time": "2026-04-22T08:00:00"
+      },
+      {
+        "end_time": "2026-04-22T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260422-3",
+        "source": "rotation",
+        "start_time": "2026-04-22T16:00:00"
+      },
+      {
+        "end_time": "2026-04-23T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260423-1",
+        "source": "rotation",
+        "start_time": "2026-04-23T00:00:00"
+      },
+      {
+        "end_time": "2026-04-23T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260423-2",
+        "source": "rotation",
+        "start_time": "2026-04-23T08:00:00"
+      },
+      {
+        "end_time": "2026-04-23T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260423-3",
+        "source": "rotation",
+        "start_time": "2026-04-23T16:00:00"
+      },
+      {
+        "end_time": "2026-04-24T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260424-1",
+        "source": "rotation",
+        "start_time": "2026-04-24T00:00:00"
+      },
+      {
+        "end_time": "2026-04-24T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260424-2",
+        "source": "rotation",
+        "start_time": "2026-04-24T08:00:00"
+      },
+      {
+        "end_time": "2026-04-24T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260424-3",
+        "source": "rotation",
+        "start_time": "2026-04-24T16:00:00"
+      },
+      {
+        "end_time": "2026-04-25T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260425-1",
+        "source": "rotation",
+        "start_time": "2026-04-25T00:00:00"
+      },
+      {
+        "end_time": "2026-04-25T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260425-2",
+        "source": "rotation",
+        "start_time": "2026-04-25T08:00:00"
+      },
+      {
+        "end_time": "2026-04-25T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260425-3",
+        "source": "rotation",
+        "start_time": "2026-04-25T16:00:00"
+      },
+      {
+        "end_time": "2026-04-26T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260426-1",
+        "source": "rotation",
+        "start_time": "2026-04-26T00:00:00"
+      },
+      {
+        "end_time": "2026-04-26T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260426-2",
+        "source": "rotation",
+        "start_time": "2026-04-26T08:00:00"
+      },
+      {
+        "end_time": "2026-04-26T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260426-3",
+        "source": "rotation",
+        "start_time": "2026-04-26T16:00:00"
+      },
+      {
+        "end_time": "2026-04-27T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260427-1",
+        "source": "rotation",
+        "start_time": "2026-04-27T00:00:00"
+      },
+      {
+        "end_time": "2026-04-27T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260427-2",
+        "source": "rotation",
+        "start_time": "2026-04-27T08:00:00"
+      },
+      {
+        "end_time": "2026-04-27T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260427-3",
+        "source": "rotation",
+        "start_time": "2026-04-27T16:00:00"
+      },
+      {
+        "end_time": "2026-04-28T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260428-1",
+        "source": "rotation",
+        "start_time": "2026-04-28T00:00:00"
+      },
+      {
+        "end_time": "2026-04-28T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260428-2",
+        "source": "rotation",
+        "start_time": "2026-04-28T08:00:00"
+      },
+      {
+        "end_time": "2026-04-28T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260428-3",
+        "source": "rotation",
+        "start_time": "2026-04-28T16:00:00"
+      },
+      {
+        "end_time": "2026-04-29T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260429-1",
+        "source": "rotation",
+        "start_time": "2026-04-29T00:00:00"
+      },
+      {
+        "end_time": "2026-04-29T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260429-2",
+        "source": "rotation",
+        "start_time": "2026-04-29T08:00:00"
+      },
+      {
+        "end_time": "2026-04-29T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260429-3",
+        "source": "rotation",
+        "start_time": "2026-04-29T16:00:00"
+      },
+      {
+        "end_time": "2026-04-30T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260430-1",
+        "source": "rotation",
+        "start_time": "2026-04-30T00:00:00"
+      },
+      {
+        "end_time": "2026-04-30T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260430-2",
+        "source": "rotation",
+        "start_time": "2026-04-30T08:00:00"
+      },
+      {
+        "end_time": "2026-04-30T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260430-3",
+        "source": "rotation",
+        "start_time": "2026-04-30T16:00:00"
+      },
+      {
+        "end_time": "2026-05-01T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260501-1",
+        "source": "rotation",
+        "start_time": "2026-05-01T00:00:00"
+      },
+      {
+        "end_time": "2026-05-01T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260501-2",
+        "source": "rotation",
+        "start_time": "2026-05-01T08:00:00"
+      },
+      {
+        "end_time": "2026-05-01T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260501-3",
+        "source": "rotation",
+        "start_time": "2026-05-01T16:00:00"
+      },
+      {
+        "end_time": "2026-05-02T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260502-1",
+        "source": "rotation",
+        "start_time": "2026-05-02T00:00:00"
+      },
+      {
+        "end_time": "2026-05-02T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260502-2",
+        "source": "rotation",
+        "start_time": "2026-05-02T08:00:00"
+      },
+      {
+        "end_time": "2026-05-02T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260502-3",
+        "source": "rotation",
+        "start_time": "2026-05-02T16:00:00"
+      },
+      {
+        "end_time": "2026-05-03T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260503-1",
+        "source": "rotation",
+        "start_time": "2026-05-03T00:00:00"
+      },
+      {
+        "end_time": "2026-05-03T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260503-2",
+        "source": "rotation",
+        "start_time": "2026-05-03T08:00:00"
+      },
+      {
+        "end_time": "2026-05-03T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260503-3",
+        "source": "rotation",
+        "start_time": "2026-05-03T16:00:00"
+      },
+      {
+        "end_time": "2026-05-04T08:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260504-1",
+        "source": "rotation",
+        "start_time": "2026-05-04T00:00:00"
+      },
+      {
+        "end_time": "2026-05-04T16:00:00",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260504-2",
+        "source": "rotation",
+        "start_time": "2026-05-04T08:00:00"
+      },
+      {
+        "end_time": "2026-05-04T23:59:59",
+        "engineer_id": "ENG-NKEMELU",
+        "schedule_id": "SCHED-LDG-PRI",
+        "shift_id": "SHIFT-LDG-PRI-20260504-3",
+        "source": "rotation",
+        "start_time": "2026-05-04T16:00:00"
+      },
+      {
+        "end_time": "2026-04-14T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260414-1",
+        "source": "rotation",
+        "start_time": "2026-04-14T00:00:00"
+      },
+      {
+        "end_time": "2026-04-14T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260414-2",
+        "source": "rotation",
+        "start_time": "2026-04-14T08:00:00"
+      },
+      {
+        "end_time": "2026-04-14T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260414-3",
+        "source": "rotation",
+        "start_time": "2026-04-14T16:00:00"
+      },
+      {
+        "end_time": "2026-04-15T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260415-1",
+        "source": "rotation",
+        "start_time": "2026-04-15T00:00:00"
+      },
+      {
+        "end_time": "2026-04-15T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260415-2",
+        "source": "rotation",
+        "start_time": "2026-04-15T08:00:00"
+      },
+      {
+        "end_time": "2026-04-15T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260415-3",
+        "source": "rotation",
+        "start_time": "2026-04-15T16:00:00"
+      },
+      {
+        "end_time": "2026-04-16T08:00:00",
+        "engineer_id": "ENG-HOLM",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260416-1",
+        "source": "swap",
+        "start_time": "2026-04-16T00:00:00"
+      },
+      {
+        "end_time": "2026-04-16T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260416-2",
+        "source": "rotation",
+        "start_time": "2026-04-16T08:00:00"
+      },
+      {
+        "end_time": "2026-04-16T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260416-3",
+        "source": "rotation",
+        "start_time": "2026-04-16T16:00:00"
+      },
+      {
+        "end_time": "2026-04-17T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260417-1",
+        "source": "rotation",
+        "start_time": "2026-04-17T00:00:00"
+      },
+      {
+        "end_time": "2026-04-17T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260417-2",
+        "source": "rotation",
+        "start_time": "2026-04-17T08:00:00"
+      },
+      {
+        "end_time": "2026-04-17T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260417-3",
+        "source": "rotation",
+        "start_time": "2026-04-17T16:00:00"
+      },
+      {
+        "end_time": "2026-04-18T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260418-1",
+        "source": "rotation",
+        "start_time": "2026-04-18T00:00:00"
+      },
+      {
+        "end_time": "2026-04-18T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260418-2",
+        "source": "rotation",
+        "start_time": "2026-04-18T08:00:00"
+      },
+      {
+        "end_time": "2026-04-18T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260418-3",
+        "source": "rotation",
+        "start_time": "2026-04-18T16:00:00"
+      },
+      {
+        "end_time": "2026-04-19T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260419-1",
+        "source": "rotation",
+        "start_time": "2026-04-19T00:00:00"
+      },
+      {
+        "end_time": "2026-04-19T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260419-2",
+        "source": "rotation",
+        "start_time": "2026-04-19T08:00:00"
+      },
+      {
+        "end_time": "2026-04-19T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260419-3",
+        "source": "rotation",
+        "start_time": "2026-04-19T16:00:00"
+      },
+      {
+        "end_time": "2026-04-20T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260420-1",
+        "source": "rotation",
+        "start_time": "2026-04-20T00:00:00"
+      },
+      {
+        "end_time": "2026-04-20T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260420-2",
+        "source": "rotation",
+        "start_time": "2026-04-20T08:00:00"
+      },
+      {
+        "end_time": "2026-04-20T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260420-3",
+        "source": "rotation",
+        "start_time": "2026-04-20T16:00:00"
+      },
+      {
+        "end_time": "2026-04-21T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260421-1",
+        "source": "rotation",
+        "start_time": "2026-04-21T00:00:00"
+      },
+      {
+        "end_time": "2026-04-21T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260421-2",
+        "source": "rotation",
+        "start_time": "2026-04-21T08:00:00"
+      },
+      {
+        "end_time": "2026-04-21T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260421-3",
+        "source": "rotation",
+        "start_time": "2026-04-21T16:00:00"
+      },
+      {
+        "end_time": "2026-04-22T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260422-1",
+        "source": "rotation",
+        "start_time": "2026-04-22T00:00:00"
+      },
+      {
+        "end_time": "2026-04-22T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260422-2",
+        "source": "rotation",
+        "start_time": "2026-04-22T08:00:00"
+      },
+      {
+        "end_time": "2026-04-22T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260422-3",
+        "source": "rotation",
+        "start_time": "2026-04-22T16:00:00"
+      },
+      {
+        "end_time": "2026-04-23T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260423-1",
+        "source": "rotation",
+        "start_time": "2026-04-23T00:00:00"
+      },
+      {
+        "end_time": "2026-04-23T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260423-2",
+        "source": "rotation",
+        "start_time": "2026-04-23T08:00:00"
+      },
+      {
+        "end_time": "2026-04-23T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260423-3",
+        "source": "rotation",
+        "start_time": "2026-04-23T16:00:00"
+      },
+      {
+        "end_time": "2026-04-24T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260424-1",
+        "source": "rotation",
+        "start_time": "2026-04-24T00:00:00"
+      },
+      {
+        "end_time": "2026-04-24T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260424-2",
+        "source": "rotation",
+        "start_time": "2026-04-24T08:00:00"
+      },
+      {
+        "end_time": "2026-04-24T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260424-3",
+        "source": "rotation",
+        "start_time": "2026-04-24T16:00:00"
+      },
+      {
+        "end_time": "2026-04-25T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260425-1",
+        "source": "rotation",
+        "start_time": "2026-04-25T00:00:00"
+      },
+      {
+        "end_time": "2026-04-25T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260425-2",
+        "source": "rotation",
+        "start_time": "2026-04-25T08:00:00"
+      },
+      {
+        "end_time": "2026-04-25T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260425-3",
+        "source": "rotation",
+        "start_time": "2026-04-25T16:00:00"
+      },
+      {
+        "end_time": "2026-04-26T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260426-1",
+        "source": "rotation",
+        "start_time": "2026-04-26T00:00:00"
+      },
+      {
+        "end_time": "2026-04-26T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260426-2",
+        "source": "rotation",
+        "start_time": "2026-04-26T08:00:00"
+      },
+      {
+        "end_time": "2026-04-26T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260426-3",
+        "source": "rotation",
+        "start_time": "2026-04-26T16:00:00"
+      },
+      {
+        "end_time": "2026-04-27T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260427-1",
+        "source": "rotation",
+        "start_time": "2026-04-27T00:00:00"
+      },
+      {
+        "end_time": "2026-04-27T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260427-2",
+        "source": "rotation",
+        "start_time": "2026-04-27T08:00:00"
+      },
+      {
+        "end_time": "2026-04-27T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260427-3",
+        "source": "rotation",
+        "start_time": "2026-04-27T16:00:00"
+      },
+      {
+        "end_time": "2026-04-28T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260428-1",
+        "source": "rotation",
+        "start_time": "2026-04-28T00:00:00"
+      },
+      {
+        "end_time": "2026-04-28T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260428-2",
+        "source": "rotation",
+        "start_time": "2026-04-28T08:00:00"
+      },
+      {
+        "end_time": "2026-04-28T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260428-3",
+        "source": "rotation",
+        "start_time": "2026-04-28T16:00:00"
+      },
+      {
+        "end_time": "2026-04-29T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260429-1",
+        "source": "rotation",
+        "start_time": "2026-04-29T00:00:00"
+      },
+      {
+        "end_time": "2026-04-29T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260429-2",
+        "source": "rotation",
+        "start_time": "2026-04-29T08:00:00"
+      },
+      {
+        "end_time": "2026-04-29T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260429-3",
+        "source": "rotation",
+        "start_time": "2026-04-29T16:00:00"
+      },
+      {
+        "end_time": "2026-04-30T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260430-1",
+        "source": "rotation",
+        "start_time": "2026-04-30T00:00:00"
+      },
+      {
+        "end_time": "2026-04-30T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260430-2",
+        "source": "rotation",
+        "start_time": "2026-04-30T08:00:00"
+      },
+      {
+        "end_time": "2026-04-30T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260430-3",
+        "source": "rotation",
+        "start_time": "2026-04-30T16:00:00"
+      },
+      {
+        "end_time": "2026-05-01T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260501-1",
+        "source": "rotation",
+        "start_time": "2026-05-01T00:00:00"
+      },
+      {
+        "end_time": "2026-05-01T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260501-2",
+        "source": "rotation",
+        "start_time": "2026-05-01T08:00:00"
+      },
+      {
+        "end_time": "2026-05-01T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260501-3",
+        "source": "rotation",
+        "start_time": "2026-05-01T16:00:00"
+      },
+      {
+        "end_time": "2026-05-02T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260502-1",
+        "source": "rotation",
+        "start_time": "2026-05-02T00:00:00"
+      },
+      {
+        "end_time": "2026-05-02T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260502-2",
+        "source": "rotation",
+        "start_time": "2026-05-02T08:00:00"
+      },
+      {
+        "end_time": "2026-05-02T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260502-3",
+        "source": "rotation",
+        "start_time": "2026-05-02T16:00:00"
+      },
+      {
+        "end_time": "2026-05-03T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260503-1",
+        "source": "rotation",
+        "start_time": "2026-05-03T00:00:00"
+      },
+      {
+        "end_time": "2026-05-03T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260503-2",
+        "source": "rotation",
+        "start_time": "2026-05-03T08:00:00"
+      },
+      {
+        "end_time": "2026-05-03T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260503-3",
+        "source": "rotation",
+        "start_time": "2026-05-03T16:00:00"
+      },
+      {
+        "end_time": "2026-05-04T08:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260504-1",
+        "source": "rotation",
+        "start_time": "2026-05-04T00:00:00"
+      },
+      {
+        "end_time": "2026-05-04T16:00:00",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260504-2",
+        "source": "rotation",
+        "start_time": "2026-05-04T08:00:00"
+      },
+      {
+        "end_time": "2026-05-04T23:59:59",
+        "engineer_id": "ENG-RAMAN",
+        "schedule_id": "SCHED-LDG-SEC",
+        "shift_id": "SHIFT-LDG-SEC-20260504-3",
+        "source": "rotation",
+        "start_time": "2026-05-04T16:00:00"
+      }
+    ],
+    "planned_outages": [],
+    "problems": [],
+    "services": [
+      {
+        "code": "ledger-sync",
+        "lane_id": "LANE-DATA",
+        "name": "Ledger Sync",
+        "owner_team": "Data Platform",
+        "primary_engineer_id": "ENG-NKEMELU",
+        "required_certification": "data-runbook",
+        "rollback_minutes": 25,
+        "runtime": "orrinwave-db 12",
+        "service_id": "SVC-31302",
+        "tier": "tier-2",
+        "validation_minutes": 5,
+        "version": "12.6.1"
+      },
+      {
+        "code": "ledger-reporting",
+        "lane_id": "LANE-DATA",
+        "name": "Ledger Reporting",
+        "owner_team": "Data Platform",
+        "primary_engineer_id": "ENG-NKEMELU",
+        "required_certification": "data-runbook",
+        "rollback_minutes": 15,
+        "runtime": "orrinwave-db 12",
+        "service_id": "SVC-31311",
+        "tier": "tier-3",
+        "validation_minutes": 5,
+        "version": "12.6.4"
+      }
+    ],
+    "slos": [
+      {
+        "budget_minutes": 64,
+        "name": "ledger-sync availability (30-day)",
+        "objective_pct": 99.85,
+        "reserve_minutes": 8,
+        "service_id": "SVC-31302",
+        "sli": "successful ledger syncs / scheduled syncs",
+        "slo_id": "SLO-LDG-AVAIL",
+        "status": "ACTIVE",
+        "window_days": 30
+      }
+    ],
+    "users": [
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Service Operations Coordinator (you)",
+        "role": "service_operations_coordinator",
+        "user_id": "U-OPS"
+      },
+      {
+        "approval_limit_usd": 5000,
+        "display_name": "Saoirse Lindgren",
+        "role": "change_manager",
+        "user_id": "U-LINDGREN"
+      },
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Tunde Abara",
+        "role": "change_board_chair",
+        "user_id": "U-ABARA"
+      },
+      {
+        "approval_limit_usd": 8000,
+        "display_name": "Wren Haviland",
+        "role": "sre_lead",
+        "user_id": "U-HAVILAND"
+      },
+      {
+        "approval_limit_usd": 12000,
+        "display_name": "Inês Moraes",
+        "role": "security_lead",
+        "user_id": "U-MORAES"
+      }
+    ],
+    "vendor_advisories": [
+      {
+        "advisory_id": "ADV-OW-2026-052",
+        "affected_versions": "12.6.0-12.6.3",
+        "expedite_fee_usd": 750,
+        "expedited_release_date": "2026-04-16",
+        "fixed_version": "12.6.4",
+        "note": "arm64 build of 12.6.4: standard release 2026-04-22; early-access 2026-04-16 under premium support (USD 750). The x86 build shipped 2026-04-10. One restart per node; the arm pool restarts as a unit.",
+        "product": "orrinwave-db 12 (arm64 package)",
+        "published_on": "2026-04-07",
+        "reference": "OWA-2026-052",
+        "remediation_sla_days": 14,
+        "restarts_required": 1,
+        "severity": "high",
+        "standard_release_date": "2026-04-22",
+        "status": "CURRENT",
+        "valid_until": "2026-04-30",
+        "vendor_estimate_minutes": 4,
+        "vendor_id": "VND-ORRINWAVE"
+      },
+      {
+        "advisory_id": "ADV-OW-2026-052-R1",
+        "affected_versions": "12.6.0-12.6.2",
+        "expedite_fee_usd": 750,
+        "expedited_release_date": "2026-04-08",
+        "fixed_version": "12.6.3",
+        "note": "Withdrawn 2026-04-09: the 12.6.3 arm build regressed WAL replay. Builds staged from it (B-12.6.3-arm-r1) are superseded and must not be deployed.",
+        "product": "orrinwave-db 12 (arm64 package)",
+        "published_on": "2026-04-07",
+        "reference": "OWA-2026-052 (rev 1, withdrawn)",
+        "remediation_sla_days": 14,
+        "restarts_required": 1,
+        "severity": "high",
+        "standard_release_date": "2026-04-09",
+        "status": "SUPERSEDED",
+        "valid_until": "2026-04-09",
+        "vendor_estimate_minutes": 4,
+        "vendor_id": "VND-ORRINWAVE"
+      }
+    ],
+    "vendors": [
+      {
+        "account_number": "BM-2207",
+        "name": "Quillstone Runtime Systems",
+        "vendor_id": "VND-QUILLSTONE"
+      },
+      {
+        "account_number": "BM-0931",
+        "name": "Orrinwave Data Systems",
+        "vendor_id": "VND-ORRINWAVE"
+      },
+      {
+        "account_number": "BM-1148",
+        "name": "Sablegate Edge Security",
+        "vendor_id": "VND-SABLEGATE"
+      }
+    ]
+  },
+  "starting_records": [
+    {
+      "resource_id": "CHG-40340",
+      "resource_type": "ChangeRequest",
+      "status": "authorize",
+      "system": "itsm"
+    },
+    {
+      "resource_id": "CHG-40339",
+      "resource_type": "ChangeRequest",
+      "status": "scheduled",
+      "system": "itsm"
+    },
+    {
+      "resource_id": "CHG-40336",
+      "resource_type": "ChangeRequest",
+      "status": "scheduled",
+      "system": "itsm"
+    }
+  ],
+  "task_id": "itsmdesk-004",
+  "title": "Patch the ledger-sync arm pool before the advisory SLA",
+  "world": {
+    "id": "brightmoor-serviceops-v1",
+    "name": "Brightmoor Commerce — Service Operations",
+    "organization_id": "ORG-BRIGHTMOOR",
+    "primary_site": "DC-HALDEN",
+    "systems": [
+      "itsm",
+      "telemetry",
+      "calendar",
+      "oncall",
+      "vendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

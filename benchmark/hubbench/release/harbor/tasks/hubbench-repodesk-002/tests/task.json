@@ -1,0 +1,3189 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "certification_orders",
+    "mutations",
+    "note_drafts"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for order_standard_to_margin.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "contracted_penalty_usd": {
+        "description": "Contracted slip penalty on the customer commitment tied to the first change (USD).",
+        "type": "integer"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for reuse_expiring_results.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for expedite_certification_with_exception.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "set 7698 runs whose validity ends 2026-05-10, before any scheduled change",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Corvane's confirmed standard and expedited certification dates on CQ-66120.",
+        "type": "string"
+      },
+      "first_change_window": {
+        "description": "Lane window of the first in-scope change, as LANE/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "gated_modules": {
+        "description": "Touched modules that drop out because their change is behind a disabled flag.",
+        "type": "integer"
+      },
+      "impact_touched_modules": {
+        "description": "Touched-module count of the one impact-basis issue from the current final impact analysis.",
+        "type": "integer"
+      },
+      "margin_runs": {
+        "description": "Re-run margin the policy adds on top of the uncovered requirement.",
+        "type": "integer"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for next week's payments changes.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: CHECK_RUN.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing order_standard_to_margin, reuse_expiring_results, expedite_certification_with_exception.",
+        "enum": [
+          "order_standard_to_margin",
+          "reuse_expiring_results",
+          "expedite_certification_with_exception"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_checks_per_module": {
+        "description": "Required gate runs per module from the GATE-PAY-2 class and the protected-branch rule.",
+        "type": "integer"
+      },
+      "scheduled_changes": {
+        "description": "Count of changes booked inside the in-scope week after removing cancelled and out-of-window records.",
+        "type": "integer"
+      },
+      "source_quantity": {
+        "description": "GATE-PAY-2 runs required by the four changes booked 2026-05-12 to 2026-05-14 (three fixed single-module fixes and pay-gateway on the impact basis)",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Corvane's confirmed standard and expedited certification dates on CQ-66120.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "GATE-PAY-2 runs usable for next week's dates on the release pipeline",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "contracted_penalty_usd",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_change_window",
+      "gated_modules",
+      "impact_touched_modules",
+      "margin_runs",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_checks_per_module",
+      "scheduled_changes",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "transaction_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-05-04",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "the re-run margin policy and the signed approval scope; set 7698 runs whose validity ends 2026-05-10, before any scheduled change = 3 CHECK_RUN; uncovered scope = 4 CHECK_RUN",
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-12 as the documented control date for next week's payments changes; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 8 CHECK_RUN for GATE-PAY-2 runs required by the four changes booked 2026-05-12 to 2026-05-14 (three fixed single-module fixes and pay-gateway on the impact basis).",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 7 observed CHECK_RUN.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 3 CHECK_RUN for set 7698 runs whose validity ends 2026-05-10, before any scheduled change.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 7 observed − 3 excluded = 4 supported CHECK_RUN.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 6 CHECK_RUN, the measure required by the chosen disposition under the re-run margin policy and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in CHECK_RUN.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-05-11 for order_standard_to_margin.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-12 for reuse_expiring_results.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-07 for expedite_certification_with_exception and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-11 as the independently confirmed standard readiness date for Corvane's confirmed standard and expedited certification dates on CQ-66120.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-07 as the independently confirmed expedited readiness date for Corvane's confirmed standard and expedited certification dates on CQ-66120.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 4 booked changes between 2026-05-11 and 2026-05-15; excluded the cancelled CHG-70860 and pay-recon's 2026-05-19 change.",
+        "field": "scheduled_changes",
+        "id": "count_scheduled_changes",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Used pay-gateway's 2026-05-01 impact analysis of 2 touched modules, not the 4 from first triage.",
+        "field": "impact_touched_modules",
+        "id": "read_current_impact_analysis",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Excluded the auth adapter, which sits behind the pay.auth.v2 kill switch, so pay-gateway needs 1 module × 2 runs.",
+        "field": "gated_modules",
+        "id": "remove_gated_modules",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied GATE-PAY-2's two required runs per module (functional + PCI certification); each fixed single-module fix also needs 2 runs.",
+        "field": "required_checks_per_module",
+        "id": "apply_gate_class_checks",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied the margin policy's 2-run re-run margin for GATE-PAY-2 on top of the 4 uncovered runs.",
+        "field": "margin_runs",
+        "id": "apply_rerun_margin",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified LANE-1/2026-05-12/AM (CHG-70870) as the first change the order must beat.",
+        "field": "first_change_window",
+        "id": "identify_first_change_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read USD 12,000 per day of slip from commitment COM-PEL-0512 on the first change.",
+        "field": "contracted_penalty_usd",
+        "id": "read_contracted_penalty",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for order_standard_to_margin; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that expedite_certification_with_exception remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of order_standard_to_margin, reuse_expiring_results, expedite_certification_with_exception; selected order_standard_to_margin because it alone gives the best currently authorized result under the re-run margin policy and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-11 as the supported outcome date for order_standard_to_margin.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-11 with the independent control date 2026-05-12 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located GATE-PAY-2 using immutable identifiers and preserved effective revision v1: the in-scope issues are LKS-4480, LKS-4481, LKS-4482, and LKS-4483; LKS-4484 (pay-recon, 2026-05-19), the cancelled CHG-70860, and the superseded PR-8827 are out of scope.",
+        "sources": [
+          "tracker",
+          "scm",
+          "messages"
+        ],
+        "statement": "SHIP-0002: the in-scope issues are LKS-4480, LKS-4481, LKS-4482, and LKS-4483; LKS-4484 (pay-recon, 2026-05-19), the cancelled CHG-70860, and the superseded PR-8827 are out of scope; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective issue, impact analysis, and playbook to establish 8 CHECK_RUN for GATE-PAY-2 runs required by the four changes booked 2026-05-12 to 2026-05-14 (three fixed single-module fixes and pay-gateway on the impact basis), with control date 2026-05-12.",
+        "sources": [
+          "tracker",
+          "scm",
+          "success",
+          "drive"
+        ],
+        "statement": "The effective issue, impact analysis, and playbook establish GATE-PAY-2 runs required by the four changes booked 2026-05-12 to 2026-05-14 (three fixed single-module fixes and pay-gateway on the impact basis) = 8 CHECK_RUN: three fixed single-module fixes need 2 runs each and pay-gateway's impact basis (2 touched, auth adapter gated) needs 2 runs, so 8 runs are required for the week. The control date is 2026-05-12 (first booked change of the week (CHG-70870), Pellworth's contracted settlement-fix date)."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 7 observed less 3 excluded to 4 supported CHECK_RUN for GATE-PAY-2 runs usable for next week's dates on the release pipeline.",
+        "sources": [
+          "ci",
+          "scm",
+          "deploy",
+          "drive"
+        ],
+        "statement": "the evidence workbook shows 7 GATE-PAY-2 runs in gross; set 7698 (3 runs) leaves validity 2026-05-10, before every scheduled date, so 4 runs are usable; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-05-07 expedited readiness input for reuse_expiring_results, then separately derived its 2026-05-12 operating outcome under the re-run margin policy and the signed approval scope instead of treating a partner promise as authorization or a completion date.",
+        "sources": [
+          "partners",
+          "messages"
+        ],
+        "statement": "Corvane's confirmed standard and expedited certification dates on CQ-66120: Corvane CQ-66120 confirms standard certification 2026-05-08 (Friday batch) and expedited 2026-05-06 (+USD 320); results import the next business day; an external partner confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied the booked change records that fix the deploy dates to derive the three option outcomes without using protected or blocked windows.",
+        "sources": [
+          "deploy",
+          "ci",
+          "drive"
+        ],
+        "statement": "the booked change records that fix the deploy dates: the booked change records fix the deploy dates: the first is LANE-1 AM on 2026-05-12, the last is 2026-05-14; protected and blocked windows cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-RD-0102 only to order_standard_to_margin and GATE-PAY-2; kept expedite_certification_with_exception outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-RD-0102 covers one standard Corvane order up to 6 runs / USD 300; expedited certification and reuse of expiring sets need the director of engineering. The approval does not select an option in advance and does not authorize expedite_certification_with_exception."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected order_standard_to_margin: it is the best currently authorized response that satisfies the re-run margin policy and the signed approval scope.",
+        "sources": [
+          "success",
+          "messages",
+          "chat"
+        ],
+        "statement": "the payments changes must run from 2026-05-12 with two runs of margin left in the register, protecting Pellworth's USD 12,000 per day commitment; a faster or broader action has value only if it remains inside the re-run margin policy and the signed approval scope."
+      }
+    ],
+    "mode": "quantity",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-05-11",
+        "consequence": "order standard to margin places 6 runs (4 uncovered + 2 margin) on Corvane's Friday certification batch, imported 2026-05-11, one business day before the first change, at no incremental cost.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "order_standard_to_margin",
+        "incremental_cost": 0,
+        "label": "order_standard_to_margin: outcome 2026-05-11, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "NOT_SUPPORTED_BY_CURRENT_EVIDENCE",
+        "completion": "2026-05-12",
+        "consequence": "reuse expiring results would cover the 2026-05-12 change from set 7698, but that set's validity ends 2026-05-10 and it cannot count for any of next week's changes.",
+        "control_status": "FAILS_CURRENT_CONTROL",
+        "id": "reuse_expiring_results",
+        "incremental_cost": 0,
+        "label": "reuse_expiring_results: outcome 2026-05-12, incremental cost USD 0, FAILS_CURRENT_CONTROL",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-05-07",
+        "consequence": "expedite certification with exception would import certified runs 4 days earlier than order standard to margin and adds USD 320, but expedited certification outside a signed approval needs the director of engineering, which AP-RD-0102 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "expedite_certification_with_exception",
+        "incremental_cost": 320,
+        "label": "expedite_certification_with_exception: outcome 2026-05-07, incremental cost USD 320, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "order_standard_to_margin is the best currently authorized response that satisfies the re-run margin policy and the signed approval scope and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-05-11",
+    "selected_cost": 0,
+    "selected_option": "order_standard_to_margin"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "baseline_resolution_date": "2026-05-11",
+      "business_need_date": "2026-05-12",
+      "contracted_penalty_usd": 12000,
+      "controlled_item_or_record": "GATE-PAY-2",
+      "controlled_resolution_date": "2026-05-12",
+      "decision_timing_status": "ON_TIME",
+      "escalated_resolution_date": "2026-05-07",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 3,
+      "expedited_external_readiness": "2026-05-07",
+      "first_change_window": "LANE-1/2026-05-12/AM",
+      "gated_modules": 1,
+      "impact_touched_modules": 2,
+      "margin_runs": 2,
+      "observed_quantity": 7,
+      "outcome_vs_control_days": -1,
+      "quantity_unit": "CHECK_RUN",
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "order_standard_to_margin",
+      "recommended_outcome_date": "2026-05-11",
+      "required_checks_per_module": 2,
+      "scheduled_changes": 4,
+      "source_quantity": 8,
+      "standard_external_readiness": "2026-05-11",
+      "supported_quantity": 4,
+      "transaction_quantity": 6
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'order_standard_to_margin', tied to GATE-PAY-2, revision v1, and the selected order_standard_to_margin outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-05-11', tied to GATE-PAY-2, revision v1, and the selected order_standard_to_margin outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'GATE-PAY-2', tied to GATE-PAY-2, revision v1, and the selected order_standard_to_margin outcome.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 6, tied to GATE-PAY-2, revision v1, and the selected order_standard_to_margin outcome.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to GATE-PAY-2, revision v1, and the selected order_standard_to_margin outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required GATE-PAY-2 to reach business outcome 'Certification order submitted' through partners.orders.create with exact provider-critical values partner_id='PRT-CORVANE', confirmation_id='CONF-CRV-66120', verification_class='GATE-PAY-2', run_count=6, service_option='standard'. The audited change binds selected option order_standard_to_margin, approval AP-RD-0102, and constraint the re-run margin policy and the signed approval scope; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "partner_id",
+          "confirmation_id",
+          "verification_class",
+          "run_count",
+          "service_option"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "confirmation_id": "CONF-CRV-66120",
+            "partner_id": "PRT-CORVANE",
+            "run_count": 6,
+            "service_option": "standard",
+            "verification_class": "GATE-PAY-2"
+          },
+          "tool": "partners.orders.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "ORD-3401",
+          "status": "SUBMITTED",
+          "table_name": "certification_orders",
+          "tool": "partners.orders.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "repodesk-002-mutation-01",
+          "task_id": "repodesk-002"
+        }
+      },
+      {
+        "description": "Persisted ORD-3401 in certification_orders with the supported values (partner_id='PRT-CORVANE', confirmation_id='CONF-CRV-66120', verification_class='GATE-PAY-2', run_count=6, service_option='standard', expected_ready_date='2026-05-08', status='SUBMITTED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "certification_orders",
+        "values": {
+          "confirmation_id": "CONF-CRV-66120",
+          "expected_ready_date": "2026-05-08",
+          "partner_id": "PRT-CORVANE",
+          "run_count": 6,
+          "service_option": "standard",
+          "status": "SUBMITTED",
+          "verification_class": "GATE-PAY-2"
+        },
+        "weight": 2.0,
+        "where": {
+          "order_id": "ORD-3401"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying order_standard_to_margin, the 2026-05-11 outcome, the binding constraint, and the SHIP-0002 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "rohan.deshpande@larkspur.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "SHIP-0002",
+            "pay-gateway",
+            "LKS-4480"
+          ]
+        ],
+        "payload_text_contains": [
+          "order_standard_to_margin",
+          "2026-05-11"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "repodesk-002-mutation-02",
+          "task_id": "repodesk-002"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for SHIP-0002: the primary change and the stakeholder draft; no additional order, backport, flag change, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "repodesk-002"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-12 as the documented control date for next week's payments changes; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 8 CHECK_RUN for GATE-PAY-2 runs required by the four changes booked 2026-05-12 to 2026-05-14 (three fixed single-module fixes and pay-gateway on the impact basis).",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 7 observed CHECK_RUN.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 3 CHECK_RUN for set 7698 runs whose validity ends 2026-05-10, before any scheduled change.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 7 observed − 3 excluded = 4 supported CHECK_RUN.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 6 CHECK_RUN, the measure required by the chosen disposition under the re-run margin policy and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in CHECK_RUN.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-05-11 for order_standard_to_margin.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-12 for reuse_expiring_results.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-07 for expedite_certification_with_exception and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-11 as the independently confirmed standard readiness date for Corvane's confirmed standard and expedited certification dates on CQ-66120.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-07 as the independently confirmed expedited readiness date for Corvane's confirmed standard and expedited certification dates on CQ-66120.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 4 booked changes between 2026-05-11 and 2026-05-15; excluded the cancelled CHG-70860 and pay-recon's 2026-05-19 change.",
+        "field": "scheduled_changes",
+        "id": "count_scheduled_changes",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Used pay-gateway's 2026-05-01 impact analysis of 2 touched modules, not the 4 from first triage.",
+        "field": "impact_touched_modules",
+        "id": "read_current_impact_analysis",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Excluded the auth adapter, which sits behind the pay.auth.v2 kill switch, so pay-gateway needs 1 module × 2 runs.",
+        "field": "gated_modules",
+        "id": "remove_gated_modules",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied GATE-PAY-2's two required runs per module (functional + PCI certification); each fixed single-module fix also needs 2 runs.",
+        "field": "required_checks_per_module",
+        "id": "apply_gate_class_checks",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied the margin policy's 2-run re-run margin for GATE-PAY-2 on top of the 4 uncovered runs.",
+        "field": "margin_runs",
+        "id": "apply_rerun_margin",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified LANE-1/2026-05-12/AM (CHG-70870) as the first change the order must beat.",
+        "field": "first_change_window",
+        "id": "identify_first_change_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read USD 12,000 per day of slip from commitment COM-PEL-0512 on the first change.",
+        "field": "contracted_penalty_usd",
+        "id": "read_contracted_penalty",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for order_standard_to_margin; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that expedite_certification_with_exception remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of order_standard_to_margin, reuse_expiring_results, expedite_certification_with_exception; selected order_standard_to_margin because it alone gives the best currently authorized result under the re-run margin policy and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-11 as the supported outcome date for order_standard_to_margin.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-11 with the independent control date 2026-05-12 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "SHIP-0002"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated SHIP-0002 scope, immutable handles, mounted systems, and evidence index before investigating GATE-PAY-2.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SHIP-0002"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1002-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for SHIP-0002 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "key": "LKS-4480"
+            },
+            "expected_result_contains": {
+              "issues": [
+                {
+                  "issue_key": "LKS-4480"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "tracker.issues.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved issue key LKS-4480 to the immutable issue record through a key search rather than a title match against a duplicate or superseded issue.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SHIP-0002"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-002-18"
+                },
+                {
+                  "id": "DRV-002-03"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the SHIP-0002 case folder on the shared drive and identified the approval record and the issue export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "playbook"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-002-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the playbook folder and distinguished the effective v5 playbook from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "issue_key": "LKS-4480"
+            },
+            "expected_result_contains": {
+              "issue_key": "LKS-4480",
+              "status": "open"
+            },
+            "match": "result_contains",
+            "tool": "tracker.issues.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active issue LKS-4480: scope basis, gate class, gated modules, environments in scope, and durations.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "component_id": "CMP-30732",
+              "metric": "TOUCHED-MODULES"
+            },
+            "expected_result_contains": {
+              "impact_reports": [
+                {
+                  "report_id": "IMP-30732"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scm.impact.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current final impact analysis for CMP-30732 (TOUCHED-MODULES) and ignored the stale earlier analysis.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v5 playbook for the fix-requirement, usable-evidence, lane-window, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "verification_class": "GATE-PAY-2"
+            },
+            "expected_result_contains": {
+              "verification_class": "GATE-PAY-2"
+            },
+            "match": "result_contains",
+            "tool": "ci.classes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the gate class record for GATE-PAY-2: runs per module, required checks, and minimum remaining validity.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "status": "open",
+              "verification_class": "GATE-PAY-2"
+            },
+            "expected_result_contains": {
+              "issues": [
+                {
+                  "issue_key": "LKS-4480"
+                },
+                {
+                  "issue_key": "LKS-4481"
+                },
+                {
+                  "issue_key": "LKS-4482"
+                },
+                {
+                  "issue_key": "LKS-4483"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "tracker.issues.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the issues that define the requirement (LKS-4480, LKS-4481, LKS-4482, LKS-4483) and excluded duplicate, superseded, or out-of-scope issues.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-04",
+              "pipeline_id": "PIPE-EXPIRY",
+              "start_date": "2026-04-27"
+            },
+            "expected_result_contains": {
+              "runs": [
+                {
+                  "run_id": "PR-77510"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ci.runs.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the run history for PIPE-EXPIRY to ground what actually ran, what failed, and what the pipeline does next.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "verification_class": "GATE-PAY-2"
+            },
+            "expected_result_contains": {
+              "results": [
+                {
+                  "result_id": "RES-PAY-7710"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ci.results.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every GATE-PAY-2 result set with run count, validity, status, and holds before netting the coverage.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-15",
+              "start_date": "2026-05-11"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "RW-1-20260512-AM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "deploy.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the lane window calendar for 2026-05-11 onward to find the first free window that displaces no protected or blocked block.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-CRV-66120"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-CRV-66120",
+              "standard_ready_date": "2026-05-08"
+            },
+            "match": "result_contains",
+            "tool": "partners.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the external certification partner's confirmation CONF-CRV-66120 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-RD-0102"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-RD-0102"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-RD-0102 for its exact scope: record, quantity, partner, fee allowance, and what it does not cover.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-18"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-18"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1002-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1002-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1002-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1002"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1002"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1002 for evidence, lane, and authority remarks that qualify the system records.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-15",
+              "start_date": "2026-05-11",
+              "status": "booked"
+            },
+            "expected_result_contains": {
+              "changes": [
+                {
+                  "id": "CHG-70870"
+                },
+                {
+                  "id": "CHG-70871"
+                },
+                {
+                  "id": "CHG-70872"
+                },
+                {
+                  "id": "CHG-70873"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "deploy.changes.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the change records that fix the deploy scope by immutable id.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "commitment_id": "COM-PEL-0512"
+            },
+            "expected_result_contains": {
+              "commitment_id": "COM-PEL-0512",
+              "cutover_date": "2026-05-12"
+            },
+            "match": "result_contains",
+            "tool": "success.commitments.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the customer commitment COM-PEL-0512 for the contracted control date and the slip penalty in the contract's words.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "branch": "release/26.1",
+              "repo_id": "REPO-PLATFORM"
+            },
+            "expected_result_contains": {
+              "rule_id": "BR-REL-26-1"
+            },
+            "match": "result_contains",
+            "tool": "scm.branch_rules.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the protected-branch rule for REPO-PLATFORM:release/26.1 to confirm the required checks and codeowner review behind the gate class.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "branch": "release/26.1",
+              "repo_id": "REPO-PLATFORM",
+              "since": "2026-04-28",
+              "until": "2026-04-30"
+            },
+            "expected_result_contains": {
+              "commits": [
+                {
+                  "sha": "41c9d7e"
+                },
+                {
+                  "sha": "7be31a0"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scm.commits.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the commits on release/26.1 around the fix range by immutable sha to the modules they touched and their revert, embargo, and backport state.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "issue_key": "LKS-4480"
+            },
+            "expected_result_contains": {
+              "pull_requests": [
+                {
+                  "pr_id": "PR-8830"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "scm.pulls.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the fix pull request for LKS-4480 by immutable number and set the superseded attempt aside.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "flaky_tests": [
+                {
+                  "flaky_id": "FLK-120"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ci.flaky.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the flaky-test registry to size the quarantined-check retry exposure and to keep quarantined output out of the usable coverage.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "pool_id": "POOL-RELEASE"
+            },
+            "expected_result_contains": {
+              "pools": [
+                {
+                  "pool_id": "POOL-RELEASE"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "ci.pools.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read runner pool POOL-RELEASE for its capacity and queue minutes before estimating the verification pipeline duration.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-22",
+              "engineer_id": "ENG-DESHPANDE",
+              "start_date": "2026-05-04"
+            },
+            "expected_result_contains": {
+              "availability": [
+                {
+                  "availability_id": "AV-1002-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "oncall.availability.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the reviewer availability calendar for codeowner ENG-DESHPANDE around the candidate windows; did not assume an expedited-review exception.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-32"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-32"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for SHIP-0002 and confirmed that GATE-PAY-2 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for SHIP-0002 and joined GATE-PAY-2 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for SHIP-0002; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for SHIP-0002 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_30",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-33"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-33"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for GATE-PAY-2 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_31",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for SHIP-0002 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_32",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-27"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-27"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for SHIP-0002, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_33",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for SHIP-0002: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_34",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "partners.orders.create",
+        "any_of": [
+          {
+            "arguments": {
+              "order_id": "ORD-3401"
+            },
+            "expected_result_contains": {
+              "expected_ready_date": "2026-05-08",
+              "order_id": "ORD-3401",
+              "run_count": 6,
+              "service_option": "standard",
+              "status": "SUBMITTED"
+            },
+            "match": "result_contains",
+            "tool": "partners.orders.get"
+          }
+        ],
+        "description": "Read ORD-3401 back through partners.orders.get after the change and confirmed the persisted provider values (order_id='ORD-3401', run_count=6, service_option='standard', expected_ready_date='2026-05-08', status='SUBMITTED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "expected_ready_date": "2026-05-08",
+          "order_id": "ORD-3401",
+          "run_count": 6,
+          "service_option": "standard",
+          "status": "SUBMITTED"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "order_id": "ORD-3401"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "repodesk",
+  "instruction": "Next week's payments changes are on the lane calendar and Priya wants the PCI certification order placed today rather than Thursday. Work out how many gate runs the booked changes actually need, which part of the evidence register can legitimately count for those dates, and how many runs we should be ordering from Corvane under the approval she already signed. Place the order if it fits, and draft the note for Rohan so his team knows what arrives and when. If something would need Tobias or an expedited bench, say so instead of doing it.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "confirmation_id": "CONF-CRV-66120",
+        "partner_id": "PRT-CORVANE",
+        "run_count": 10,
+        "service_option": "expedited",
+        "verification_class": "GATE-PAY-2"
+      },
+      "tool": "partners.orders.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-002-02"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "partners.orders.create",
+      "any_of": [
+        {
+          "arguments": {
+            "order_id": "ORD-3401"
+          },
+          "expected_result_contains": {
+            "expected_ready_date": "2026-05-08",
+            "order_id": "ORD-3401",
+            "run_count": 6,
+            "service_option": "standard",
+            "status": "SUBMITTED"
+          },
+          "match": "result_contains",
+          "tool": "partners.orders.get"
+        }
+      ],
+      "description": "Read ORD-3401 back through partners.orders.get after the change and confirmed the persisted provider values (order_id='ORD-3401', run_count=6, service_option='standard', expected_ready_date='2026-05-08', status='SUBMITTED') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "expected_ready_date": "2026-05-08",
+        "order_id": "ORD-3401",
+        "run_count": 6,
+        "service_option": "standard",
+        "status": "SUBMITTED"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "order_id": "ORD-3401"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-RD-0102"
+    },
+    "case_reference": "SHIP-0002",
+    "chat": {
+      "thread_id": "CHAT-1002"
+    },
+    "ci": {
+      "pipeline_id": "PIPE-EXPIRY",
+      "pool_id": "POOL-RELEASE",
+      "sources": [
+        "CI-MAIN"
+      ],
+      "verification_class": "GATE-PAY-2"
+    },
+    "deploy": {
+      "calendar_window": {
+        "end_date": "2026-05-15",
+        "start_date": "2026-05-11"
+      },
+      "lanes": [
+        "LANE-1",
+        "LANE-2",
+        "LANE-3"
+      ]
+    },
+    "drive": {
+      "case_folder_query": "SHIP-0002",
+      "playbook_query": "playbook"
+    },
+    "messages": {
+      "search_query": "SHIP-0002"
+    },
+    "partners": {
+      "confirmation_id": "CONF-CRV-66120"
+    },
+    "scm": {
+      "branch": "release/26.1",
+      "component_code": "pay-gateway",
+      "fix_pull_request": "PR-8830",
+      "repo_id": "REPO-PLATFORM"
+    },
+    "success": {
+      "commitment_id": "COM-PEL-0512",
+      "customer_id": "CUST-PELLWORTH"
+    },
+    "tracker": {
+      "issue_key": "LKS-4480",
+      "issue_search": {
+        "arguments": {
+          "key": "LKS-4480"
+        },
+        "tool": "tracker.issues.search"
+      }
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "SHIP-0002"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated SHIP-0002 scope, immutable handles, mounted systems, and evidence index before investigating GATE-PAY-2.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "SHIP-0002"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1002-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for SHIP-0002 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "key": "LKS-4480"
+          },
+          "expected_result_contains": {
+            "issues": [
+              {
+                "issue_key": "LKS-4480"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "tracker.issues.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved issue key LKS-4480 to the immutable issue record through a key search rather than a title match against a duplicate or superseded issue.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "SHIP-0002"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-002-18"
+              },
+              {
+                "id": "DRV-002-03"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the SHIP-0002 case folder on the shared drive and identified the approval record and the issue export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "playbook"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-002-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the playbook folder and distinguished the effective v5 playbook from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "issue_key": "LKS-4480"
+          },
+          "expected_result_contains": {
+            "issue_key": "LKS-4480",
+            "status": "open"
+          },
+          "match": "result_contains",
+          "tool": "tracker.issues.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active issue LKS-4480: scope basis, gate class, gated modules, environments in scope, and durations.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "component_id": "CMP-30732",
+            "metric": "TOUCHED-MODULES"
+          },
+          "expected_result_contains": {
+            "impact_reports": [
+              {
+                "report_id": "IMP-30732"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scm.impact.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current final impact analysis for CMP-30732 (TOUCHED-MODULES) and ignored the stale earlier analysis.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v5 playbook for the fix-requirement, usable-evidence, lane-window, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "verification_class": "GATE-PAY-2"
+          },
+          "expected_result_contains": {
+            "verification_class": "GATE-PAY-2"
+          },
+          "match": "result_contains",
+          "tool": "ci.classes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the gate class record for GATE-PAY-2: runs per module, required checks, and minimum remaining validity.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "status": "open",
+            "verification_class": "GATE-PAY-2"
+          },
+          "expected_result_contains": {
+            "issues": [
+              {
+                "issue_key": "LKS-4480"
+              },
+              {
+                "issue_key": "LKS-4481"
+              },
+              {
+                "issue_key": "LKS-4482"
+              },
+              {
+                "issue_key": "LKS-4483"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "tracker.issues.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the issues that define the requirement (LKS-4480, LKS-4481, LKS-4482, LKS-4483) and excluded duplicate, superseded, or out-of-scope issues.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-04",
+            "pipeline_id": "PIPE-EXPIRY",
+            "start_date": "2026-04-27"
+          },
+          "expected_result_contains": {
+            "runs": [
+              {
+                "run_id": "PR-77510"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ci.runs.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the run history for PIPE-EXPIRY to ground what actually ran, what failed, and what the pipeline does next.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "verification_class": "GATE-PAY-2"
+          },
+          "expected_result_contains": {
+            "results": [
+              {
+                "result_id": "RES-PAY-7710"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ci.results.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every GATE-PAY-2 result set with run count, validity, status, and holds before netting the coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-15",
+            "start_date": "2026-05-11"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "RW-1-20260512-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "deploy.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the lane window calendar for 2026-05-11 onward to find the first free window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-CRV-66120"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-CRV-66120",
+            "standard_ready_date": "2026-05-08"
+          },
+          "match": "result_contains",
+          "tool": "partners.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the external certification partner's confirmation CONF-CRV-66120 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-RD-0102"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-RD-0102"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-RD-0102 for its exact scope: record, quantity, partner, fee allowance, and what it does not cover.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-18"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-18"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1002-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1002-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1002-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1002"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1002"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1002 for evidence, lane, and authority remarks that qualify the system records.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-15",
+            "start_date": "2026-05-11",
+            "status": "booked"
+          },
+          "expected_result_contains": {
+            "changes": [
+              {
+                "id": "CHG-70870"
+              },
+              {
+                "id": "CHG-70871"
+              },
+              {
+                "id": "CHG-70872"
+              },
+              {
+                "id": "CHG-70873"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "deploy.changes.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the change records that fix the deploy scope by immutable id.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "commitment_id": "COM-PEL-0512"
+          },
+          "expected_result_contains": {
+            "commitment_id": "COM-PEL-0512",
+            "cutover_date": "2026-05-12"
+          },
+          "match": "result_contains",
+          "tool": "success.commitments.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the customer commitment COM-PEL-0512 for the contracted control date and the slip penalty in the contract's words.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "branch": "release/26.1",
+            "repo_id": "REPO-PLATFORM"
+          },
+          "expected_result_contains": {
+            "rule_id": "BR-REL-26-1"
+          },
+          "match": "result_contains",
+          "tool": "scm.branch_rules.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the protected-branch rule for REPO-PLATFORM:release/26.1 to confirm the required checks and codeowner review behind the gate class.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "branch": "release/26.1",
+            "repo_id": "REPO-PLATFORM",
+            "since": "2026-04-28",
+            "until": "2026-04-30"
+          },
+          "expected_result_contains": {
+            "commits": [
+              {
+                "sha": "41c9d7e"
+              },
+              {
+                "sha": "7be31a0"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scm.commits.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the commits on release/26.1 around the fix range by immutable sha to the modules they touched and their revert, embargo, and backport state.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "issue_key": "LKS-4480"
+          },
+          "expected_result_contains": {
+            "pull_requests": [
+              {
+                "pr_id": "PR-8830"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "scm.pulls.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the fix pull request for LKS-4480 by immutable number and set the superseded attempt aside.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "flaky_tests": [
+              {
+                "flaky_id": "FLK-120"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ci.flaky.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the flaky-test registry to size the quarantined-check retry exposure and to keep quarantined output out of the usable coverage.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "pool_id": "POOL-RELEASE"
+          },
+          "expected_result_contains": {
+            "pools": [
+              {
+                "pool_id": "POOL-RELEASE"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "ci.pools.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read runner pool POOL-RELEASE for its capacity and queue minutes before estimating the verification pipeline duration.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-22",
+            "engineer_id": "ENG-DESHPANDE",
+            "start_date": "2026-05-04"
+          },
+          "expected_result_contains": {
+            "availability": [
+              {
+                "availability_id": "AV-1002-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "oncall.availability.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the reviewer availability calendar for codeowner ENG-DESHPANDE around the candidate windows; did not assume an expedited-review exception.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-32"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-32"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for SHIP-0002 and confirmed that GATE-PAY-2 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for SHIP-0002 and joined GATE-PAY-2 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for SHIP-0002; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for SHIP-0002 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_30",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-33"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-33"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for GATE-PAY-2 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_31",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for SHIP-0002 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_32",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-27"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-27"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for SHIP-0002, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_33",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-002-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-002-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for SHIP-0002: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_34",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "SHIP-0002"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "SHIP-0002"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1002-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "key": "LKS-4480"
+      },
+      "expected_result_contains": {
+        "issues": [
+          {
+            "issue_key": "LKS-4480"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "tracker.issues.search"
+    },
+    {
+      "arguments": {
+        "q": "SHIP-0002"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-002-18"
+          },
+          {
+            "id": "DRV-002-03"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "playbook"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-002-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "issue_key": "LKS-4480"
+      },
+      "expected_result_contains": {
+        "issue_key": "LKS-4480",
+        "status": "open"
+      },
+      "match": "result_contains",
+      "tool": "tracker.issues.get"
+    },
+    {
+      "arguments": {
+        "component_id": "CMP-30732",
+        "metric": "TOUCHED-MODULES"
+      },
+      "expected_result_contains": {
+        "impact_reports": [
+          {
+            "report_id": "IMP-30732"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scm.impact.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "verification_class": "GATE-PAY-2"
+      },
+      "expected_result_contains": {
+        "verification_class": "GATE-PAY-2"
+      },
+      "match": "result_contains",
+      "tool": "ci.classes.get"
+    },
+    {
+      "arguments": {
+        "status": "open",
+        "verification_class": "GATE-PAY-2"
+      },
+      "expected_result_contains": {
+        "issues": [
+          {
+            "issue_key": "LKS-4480"
+          },
+          {
+            "issue_key": "LKS-4481"
+          },
+          {
+            "issue_key": "LKS-4482"
+          },
+          {
+            "issue_key": "LKS-4483"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "tracker.issues.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-04",
+        "pipeline_id": "PIPE-EXPIRY",
+        "start_date": "2026-04-27"
+      },
+      "expected_result_contains": {
+        "runs": [
+          {
+            "run_id": "PR-77510"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ci.runs.list"
+    },
+    {
+      "arguments": {
+        "verification_class": "GATE-PAY-2"
+      },
+      "expected_result_contains": {
+        "results": [
+          {
+            "result_id": "RES-PAY-7710"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ci.results.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-15",
+        "start_date": "2026-05-11"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "RW-1-20260512-AM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "deploy.windows.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-CRV-66120"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-CRV-66120",
+        "standard_ready_date": "2026-05-08"
+      },
+      "match": "result_contains",
+      "tool": "partners.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-RD-0102"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-RD-0102"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-18"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-18"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1002-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1002-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1002"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1002"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-15",
+        "start_date": "2026-05-11",
+        "status": "booked"
+      },
+      "expected_result_contains": {
+        "changes": [
+          {
+            "id": "CHG-70870"
+          },
+          {
+            "id": "CHG-70871"
+          },
+          {
+            "id": "CHG-70872"
+          },
+          {
+            "id": "CHG-70873"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "deploy.changes.list"
+    },
+    {
+      "arguments": {
+        "commitment_id": "COM-PEL-0512"
+      },
+      "expected_result_contains": {
+        "commitment_id": "COM-PEL-0512",
+        "cutover_date": "2026-05-12"
+      },
+      "match": "result_contains",
+      "tool": "success.commitments.get"
+    },
+    {
+      "arguments": {
+        "branch": "release/26.1",
+        "repo_id": "REPO-PLATFORM"
+      },
+      "expected_result_contains": {
+        "rule_id": "BR-REL-26-1"
+      },
+      "match": "result_contains",
+      "tool": "scm.branch_rules.get"
+    },
+    {
+      "arguments": {
+        "branch": "release/26.1",
+        "repo_id": "REPO-PLATFORM",
+        "since": "2026-04-28",
+        "until": "2026-04-30"
+      },
+      "expected_result_contains": {
+        "commits": [
+          {
+            "sha": "41c9d7e"
+          },
+          {
+            "sha": "7be31a0"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scm.commits.list"
+    },
+    {
+      "arguments": {
+        "issue_key": "LKS-4480"
+      },
+      "expected_result_contains": {
+        "pull_requests": [
+          {
+            "pr_id": "PR-8830"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "scm.pulls.list"
+    },
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "flaky_tests": [
+          {
+            "flaky_id": "FLK-120"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ci.flaky.list"
+    },
+    {
+      "arguments": {
+        "pool_id": "POOL-RELEASE"
+      },
+      "expected_result_contains": {
+        "pools": [
+          {
+            "pool_id": "POOL-RELEASE"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "ci.pools.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-22",
+        "engineer_id": "ENG-DESHPANDE",
+        "start_date": "2026-05-04"
+      },
+      "expected_result_contains": {
+        "availability": [
+          {
+            "availability_id": "AV-1002-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "oncall.availability.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-32"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-32"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-28"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-28"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-33"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-33"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-27"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-27"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-002-29"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-002-29"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "tracker.issues.search",
+    "tracker.issues.get",
+    "success.commitments.get",
+    "tracker.issues.list",
+    "scm.impact.list",
+    "scm.commits.list",
+    "scm.pulls.list",
+    "scm.branch_rules.get",
+    "ci.runs.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "ci.classes.get",
+    "ci.results.list",
+    "ci.flaky.list",
+    "ci.pools.list",
+    "deploy.changes.list",
+    "deploy.windows.list",
+    "oncall.availability.list",
+    "partners.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "release_engineering_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_27",
+        "investigation_28"
+      ],
+      "description": "Establish the isolated SHIP-0002 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 9.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_20",
+        "investigation_21",
+        "investigation_29"
+      ],
+      "description": "Determine the operative v1 requirement for GATE-PAY-2 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 9.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_24",
+        "investigation_25",
+        "investigation_26",
+        "investigation_30",
+        "investigation_31",
+        "investigation_33"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 7 observed less 3 excluded to 4 supported CHECK_RUN for GATE-PAY-2 runs usable for next week's dates on the release pipeline. Applied the booked change records that fix the deploy dates to derive the three option outcomes without using protected or blocked windows. Used the independently confirmed 2026-05-07 expedited readiness input for reuse_expiring_results, then separately derived its 2026-05-12 operating outcome under the re-run margin policy and the signed approval scope instead of treating a partner promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_15",
+        "investigation_16",
+        "investigation_32"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-RD-0102 only to order_standard_to_margin and GATE-PAY-2; kept expedite_certification_with_exception outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_17",
+        "investigation_18",
+        "investigation_19",
+        "investigation_22",
+        "investigation_23",
+        "investigation_34"
+      ],
+      "description": "Correlate GATE-PAY-2 by immutable identifiers across the systems of record (scm, tracker, ci, deploy, success, partners, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 22.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "establish_source_quantity",
+        "reconcile_observed_quantity",
+        "identify_excluded_quantity",
+        "calculate_supported_quantity",
+        "bound_transaction_quantity",
+        "preserve_transaction_unit",
+        "compare_quantity_option_one",
+        "compare_quantity_option_two",
+        "compare_quantity_option_three",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "count_scheduled_changes",
+        "read_current_impact_analysis",
+        "remove_gated_modules",
+        "apply_gate_class_checks",
+        "apply_rerun_margin",
+        "identify_first_change_window",
+        "read_contracted_penalty"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for next week's payments changes.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for order_standard_to_margin under the actual operating window and report whether the 2026-05-11 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select order_standard_to_margin only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported 'Certification order submitted' change for GATE-PAY-2 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read GATE-PAY-2 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_controlled_item_or_record",
+        "answer_transaction_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for next week's payments changes.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside SHIP-0002's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "ad5eda785d6156898058330c3375363ea628603e3903170da45631ad9dfea7db",
+  "starting_records": [
+    {
+      "resource_id": "CHG-70870",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "CHG-70871",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "CHG-70872",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "CHG-70873",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "CHG-70874",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "CHG-70860",
+      "resource_type": "ChangeRecord",
+      "status": "cancelled",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "ORD-3400",
+      "resource_type": "CertificationOrder",
+      "status": "RECEIVED",
+      "system": "partners"
+    }
+  ],
+  "task_id": "repodesk-002",
+  "title": "Size the payments certification order for the week of 11 May",
+  "workflow": {
+    "answer_fields": 26,
+    "readbacks": 1,
+    "reads": 35,
+    "writes": 2
+  },
+  "world": {
+    "id": "larkspur-release-engineering-v1",
+    "name": "Larkspur Systems — Release Engineering",
+    "organization_id": "ORG-LARKSPUR",
+    "primary_site": "REPO-PLATFORM",
+    "systems": [
+      "scm",
+      "tracker",
+      "ci",
+      "deploy",
+      "success",
+      "partners",
+      "oncall",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

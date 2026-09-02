@@ -1,0 +1,3008 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "bridges",
+    "mutations",
+    "note_drafts",
+    "oncall_windows"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_vendor_invalidation.",
+        "type": "string"
+      },
+      "anomalous_sessions": {
+        "description": "Sessions of the identity flagged high risk by source, geo, and device context.",
+        "type": "integer"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for standard_invalidation_plan.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "earliest_qualified_window": {
+        "description": "First non-displacing responder window on or after standard invalidation readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for tenant_wide_signout_out_of_hours.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_days_saved": {
+        "description": "Days the expedited invalidation job saves after the window calendar is reapplied.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Halyard's confirmed standard and expedited invalidation-job dates on IR-88214.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered CREDENTIAL_OBJECT that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "owner-held and rotated GRANT-SSO-APP objects",
+        "type": "integer"
+      },
+      "metered_live_objects": {
+        "description": "Live credential objects per principal taken from the current final inventory snapshot, not a stale one.",
+        "type": "integer"
+      },
+      "object_unit": {
+        "description": "Unit of every containment quantity (CREDENTIAL_OBJECT).",
+        "type": "string"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for tenant-revocable GRANT-SSO-APP objects in the IAM register before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "principals_in_scope": {
+        "description": "Principals the linked-principal rule requires contained before the owner review is booked.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: CREDENTIAL_OBJECT.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing standard_invalidation_plan, expedite_vendor_invalidation, tenant_wide_signout_out_of_hours.",
+        "enum": [
+          "standard_invalidation_plan",
+          "expedite_vendor_invalidation",
+          "tenant_wide_signout_out_of_hours"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_quantity": {
+        "description": "credential objects required to contain the identity and its linked payments principal at the current 7-grant inventory snapshot",
+        "type": "integer"
+      },
+      "selected_responder_window": {
+        "description": "Responder and window used by the selected option, as RESPONDER/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered CREDENTIAL_OBJECT after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Halyard's confirmed standard and expedited invalidation-job dates on IR-88214.",
+        "type": "string"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing owner-held and rotated GRANT-SSO-APP objects.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "anomalous_sessions",
+      "baseline_completion",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "earliest_qualified_window",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "metered_live_objects",
+      "object_unit",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "principals_in_scope",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_quantity",
+      "selected_responder_window",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "usable_coverage_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-06-08",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "containment readiness versus the non-displacing responder window calendar; owner-held and rotated GRANT-SSO-APP objects = 5 CREDENTIAL_OBJECT; uncovered scope = 3 CREDENTIAL_OBJECT",
+    "calculations": [
+      {
+        "description": "Preserved 2026-06-18 as the documented control date for the treasury identity containment and its linked payments principal; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 14 CREDENTIAL_OBJECT for credential objects required to contain the identity and its linked payments principal at the current 7-grant inventory snapshot at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 16 CREDENTIAL_OBJECT of gross observed tenant-revocable GRANT-SSO-APP objects in the IAM register.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 5 CREDENTIAL_OBJECT for owner-held and rotated GRANT-SSO-APP objects.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 16 observed − 5 ineligible = 11 usable CREDENTIAL_OBJECT.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 14 required − 11 usable = 3 CREDENTIAL_OBJECT uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in CREDENTIAL_OBJECT.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_invalidation_plan outcome as 2026-06-17 under regular responder windows that do not displace protected major-incident or regulator blocks.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_vendor_invalidation outcome as 2026-06-17 using Halyard's confirmed standard and expedited invalidation-job dates on IR-88214.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated tenant_wide_signout_out_of_hours outcome as 2026-06-16 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-17 as the independently confirmed standard readiness date for Halyard's confirmed standard and expedited invalidation-job dates on IR-88214.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-15 as the independently confirmed expedited readiness date for Halyard's confirmed standard and expedited invalidation-job dates on IR-88214.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 3 CREDENTIAL_OBJECT uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Used the 2026-06-05 inventory snapshot of 7 live grants per principal; did not use the stale March snapshot of 5.",
+        "field": "metered_live_objects",
+        "id": "calculate_metered_live_objects",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept every containment quantity in CREDENTIAL_OBJECT.",
+        "field": "object_unit",
+        "id": "preserve_object_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied the linked-principal rule: both m.arendse and the treasury payments service principal must be contained, so 2 principals are in scope.",
+        "field": "principals_in_scope",
+        "id": "apply_linked_principal_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Separated the single high-risk unmanaged-browser session from the owner's managed Aberdeen session.",
+        "field": "anomalous_sessions",
+        "id": "count_anomalous_sessions",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-06-17 (RESP-2 PM) as the first free window on or after the 2026-06-17 standard readiness that displaces no protected block.",
+        "field": "earliest_qualified_window",
+        "id": "identify_first_nondisplacing_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the owner review to RESP-2/2026-06-17/PM, the exact window that was free.",
+        "field": "selected_responder_window",
+        "id": "bind_selected_responder_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the 2026-06-15 expedited readiness with the window calendar and proved the first free window is still 2026-06-17, so expediting saves 0 days.",
+        "field": "expedite_days_saved",
+        "id": "test_expedite_against_window_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental cost for standard_invalidation_plan; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that tenant_wide_signout_out_of_hours remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_invalidation_plan, expedite_vendor_invalidation, tenant_wide_signout_out_of_hours; selected standard_invalidation_plan because it alone gives the best currently authorized result under containment readiness versus the non-displacing responder window calendar.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-06-17 as the supported outcome date for standard_invalidation_plan.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-06-17 with the independent control date 2026-06-18 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located GRANT-SSO-APP using immutable identifiers and preserved effective revision v1: username m.arendse resolves to ID-40211 and open ticket SR-61203 under alert AL-88811 (rule RUL-IMPTRAV-4 v4, enabled); the similarly named m.arendse-ext (SR-61188, closed) is a different identity and AL-88802 is a suppressed duplicate from the retired v3 rule.",
+        "sources": [
+          "iam",
+          "siem",
+          "messages"
+        ],
+        "statement": "SEC-0001: username m.arendse resolves to ID-40211 and open ticket SR-61203 under alert AL-88811 (rule RUL-IMPTRAV-4 v4, enabled); the similarly named m.arendse-ext (SR-61188, closed) is a different identity and AL-88802 is a suppressed duplicate from the retired v3 rule; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective ticket and playbook to establish 14 CREDENTIAL_OBJECT for credential objects required to contain the identity and its linked payments principal at the current 7-grant inventory snapshot, with control date 2026-06-18.",
+        "sources": [
+          "servicedesk",
+          "playbooks",
+          "drive"
+        ],
+        "statement": "The effective ticket and playbook establish credential objects required to contain the identity and its linked payments principal at the current 7-grant inventory snapshot = 14 CREDENTIAL_OBJECT: the ticket is metered at the 2026-06-05 snapshot of 7 live grants per principal and the linked-principal rule keeps both principals in scope, so 14 objects are required. The control date is 2026-06-18 (the regulator evidence session is 09:00 on 2026-06-18; containment must be complete and reviewed before it)."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 16 observed less 5 excluded to 11 supported CREDENTIAL_OBJECT for tenant-revocable GRANT-SSO-APP objects in the IAM register.",
+        "sources": [
+          "iam",
+          "oncall",
+          "drive"
+        ],
+        "statement": "the register workbook shows 16 GRANT-SSO-APP objects in gross; 9077 (2 objects) was rotated and 9084 (3 objects) is owner-held for the payments cut-over, so 11 objects are tenant-revocable; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-06-15 expedited readiness input for expedite_vendor_invalidation, then separately derived its 2026-06-17 operating outcome under containment readiness versus the non-displacing responder window calendar instead of treating a vendor promise as authorization or a completion date.",
+        "sources": [
+          "idpvendor",
+          "messages"
+        ],
+        "statement": "Halyard's confirmed standard and expedited invalidation-job dates on IR-88214: Halyard IR-88214 confirms the standard invalidation job 2026-06-16 and expedited 2026-06-12 (+USD 240); the register reflects it the next business day after verification; a vendor confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied regular responder windows that do not displace protected major-incident or regulator blocks to derive the three option outcomes without using protected or blocked windows.",
+        "sources": [
+          "oncall",
+          "drive"
+        ],
+        "statement": "regular responder windows that do not displace protected major-incident or regulator blocks: the window calendar's first free window on or after 2026-06-17 is RESP-2 PM on 2026-06-17; RESP-1 AM on 2026-06-15 is the protected major-incident bridge and cannot be displaced; protected and blocked windows cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-SO-0101 only to standard_invalidation_plan and GRANT-SSO-APP; kept tenant_wide_signout_out_of_hours outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-SO-0101 covers one Halyard invalidation up to 6 objects with an expedite fee up to USD 250; out-of-hours responder blocks need the on-call lead and a tenant-wide sign-out needs the CISO. The approval does not select an option in advance and does not authorize tenant_wide_signout_out_of_hours."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected standard_invalidation_plan: it is the best currently authorized response that satisfies containment readiness versus the non-displacing responder window calendar.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "GRC needs one defensible containment date before the 2026-06-18 regulator session; a faster or broader action has value only if it remains inside containment readiness versus the non-displacing responder window calendar."
+      }
+    ],
+    "mode": "plan",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-06-17",
+        "consequence": "standard invalidation plan revokes only tenant-revocable grants plus the standard Halyard invalidation job, lands the owner review on the first non-displacing responder window on 2026-06-17, one day before the regulator session, at no incremental cost.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "standard_invalidation_plan",
+        "incremental_cost": 0,
+        "label": "standard_invalidation_plan: outcome 2026-06-17, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-06-17",
+        "consequence": "expedite vendor invalidation would have the federated tokens invalidated by 2026-06-15 and adds USD 240, but the first non-displacing responder window is still 2026-06-17, so it saves 0 days.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "expedite_vendor_invalidation",
+        "incremental_cost": 240,
+        "label": "expedite_vendor_invalidation: outcome 2026-06-17, incremental cost USD 240, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-06-16",
+        "consequence": "tenant-wide sign-out out of hours would close the case 1 day earlier than standard invalidation plan and adds USD 620 of overtime staffing, but a tenant-wide sign-out needs the CISO and out-of-hours responder blocks need the on-call lead, neither of which AP-SO-0101 carries.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "tenant_wide_signout_out_of_hours",
+        "incremental_cost": 620,
+        "label": "tenant_wide_signout_out_of_hours: outcome 2026-06-16, incremental cost USD 620, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "standard_invalidation_plan is the best currently authorized response that satisfies containment readiness versus the non-displacing responder window calendar and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-06-17",
+    "selected_cost": 0,
+    "selected_option": "standard_invalidation_plan"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "accelerated_completion": "2026-06-17",
+      "anomalous_sessions": 1,
+      "baseline_completion": "2026-06-17",
+      "business_need_date": "2026-06-18",
+      "coverage_item_or_resource": "GRANT-SSO-APP",
+      "decision_timing_status": "ON_TIME",
+      "earliest_qualified_window": "2026-06-17",
+      "escalated_completion": "2026-06-16",
+      "escalation_approval_required": 1,
+      "expedite_days_saved": 0,
+      "expedited_external_readiness": "2026-06-15",
+      "external_recovery_quantity": 3,
+      "ineligible_coverage_quantity": 5,
+      "metered_live_objects": 7,
+      "object_unit": "CREDENTIAL_OBJECT",
+      "observed_coverage_quantity": 16,
+      "outcome_vs_control_days": -1,
+      "principals_in_scope": 2,
+      "quantity_unit": "CREDENTIAL_OBJECT",
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "standard_invalidation_plan",
+      "recommended_outcome_date": "2026-06-17",
+      "required_quantity": 14,
+      "selected_responder_window": "RESP-2/2026-06-17/PM",
+      "shortage_quantity": 3,
+      "standard_external_readiness": "2026-06-17",
+      "usable_coverage_quantity": 11
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'standard_invalidation_plan', tied to GRANT-SSO-APP, revision v1, and the selected standard_invalidation_plan outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-06-17', tied to GRANT-SSO-APP, revision v1, and the selected standard_invalidation_plan outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported coverage item or resource as 'GRANT-SSO-APP', tied to GRANT-SSO-APP, revision v1, and the selected standard_invalidation_plan outcome.",
+        "field": "coverage_item_or_resource",
+        "id": "answer_coverage_item_or_resource",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported shortage quantity as 3, tied to GRANT-SSO-APP, revision v1, and the selected standard_invalidation_plan outcome.",
+        "field": "shortage_quantity",
+        "id": "answer_shortage_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to GRANT-SSO-APP, revision v1, and the selected standard_invalidation_plan outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required GRANT-SSO-APP to reach business outcome 'Owner review bridge booked' through oncall.bridges.create with exact provider-critical values ticket_id='SR-61203', responder_id='RESP-2', start_time='2026-06-17T12:30:00', end_time='2026-06-17T15:30:00', description='treasury identity owner review (SEC-0001)'. The audited change binds selected option standard_invalidation_plan, approval AP-SO-0101, and constraint containment readiness versus the non-displacing responder window calendar; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "ticket_id",
+          "responder_id",
+          "start_time",
+          "end_time",
+          "description"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "description": "treasury identity owner review (SEC-0001)",
+            "end_time": "2026-06-17T15:30:00",
+            "responder_id": "RESP-2",
+            "start_time": "2026-06-17T12:30:00",
+            "ticket_id": "SR-61203"
+          },
+          "tool": "oncall.bridges.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "BRG-70901",
+          "status": "booked",
+          "table_name": "bridges",
+          "tool": "oncall.bridges.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "secops-001-mutation-01",
+          "task_id": "secops-001"
+        }
+      },
+      {
+        "description": "Persisted BRG-70901 in bridges with the supported values (identity_id='ID-40211', ticket_id='SR-61203', responder_id='RESP-2', start_time='2026-06-17T12:30:00', end_time='2026-06-17T15:30:00', status='booked') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "bridges",
+        "values": {
+          "end_time": "2026-06-17T15:30:00",
+          "identity_id": "ID-40211",
+          "responder_id": "RESP-2",
+          "start_time": "2026-06-17T12:30:00",
+          "status": "booked",
+          "ticket_id": "SR-61203"
+        },
+        "weight": 2.0,
+        "where": {
+          "bridge_id": "BRG-70901"
+        }
+      },
+      {
+        "description": "Held RESP-2's 2026-06-17 PM window for BRG-70901 and left every protected window untouched.",
+        "id": "state_02",
+        "milestone_id": "state.primary",
+        "table": "oncall_windows",
+        "values": {
+          "bridge_id": "BRG-70901",
+          "status": "busy"
+        },
+        "weight": 1.0,
+        "where": {
+          "window_id": "OCW-2-20260617-PM"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying standard_invalidation_plan, the 2026-06-17 outcome, the binding constraint, and the SEC-0001 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "solene.delacroix@kestrelgrid.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "SEC-0001",
+            "m.arendse",
+            "SR-61203"
+          ]
+        ],
+        "payload_text_contains": [
+          "standard_invalidation_plan",
+          "2026-06-17"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "secops-001-mutation-02",
+          "task_id": "secops-001"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for SEC-0001: the primary change and the stakeholder draft; no additional invalidation order, revocation, or bridge.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "secops-001"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-06-18 as the documented control date for the treasury identity containment and its linked payments principal; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 14 CREDENTIAL_OBJECT for credential objects required to contain the identity and its linked payments principal at the current 7-grant inventory snapshot at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 16 CREDENTIAL_OBJECT of gross observed tenant-revocable GRANT-SSO-APP objects in the IAM register.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 5 CREDENTIAL_OBJECT for owner-held and rotated GRANT-SSO-APP objects.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 16 observed − 5 ineligible = 11 usable CREDENTIAL_OBJECT.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 14 required − 11 usable = 3 CREDENTIAL_OBJECT uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in CREDENTIAL_OBJECT.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_invalidation_plan outcome as 2026-06-17 under regular responder windows that do not displace protected major-incident or regulator blocks.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_vendor_invalidation outcome as 2026-06-17 using Halyard's confirmed standard and expedited invalidation-job dates on IR-88214.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated tenant_wide_signout_out_of_hours outcome as 2026-06-16 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-17 as the independently confirmed standard readiness date for Halyard's confirmed standard and expedited invalidation-job dates on IR-88214.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-15 as the independently confirmed expedited readiness date for Halyard's confirmed standard and expedited invalidation-job dates on IR-88214.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 3 CREDENTIAL_OBJECT uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Used the 2026-06-05 inventory snapshot of 7 live grants per principal; did not use the stale March snapshot of 5.",
+        "field": "metered_live_objects",
+        "id": "calculate_metered_live_objects",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept every containment quantity in CREDENTIAL_OBJECT.",
+        "field": "object_unit",
+        "id": "preserve_object_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied the linked-principal rule: both m.arendse and the treasury payments service principal must be contained, so 2 principals are in scope.",
+        "field": "principals_in_scope",
+        "id": "apply_linked_principal_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Separated the single high-risk unmanaged-browser session from the owner's managed Aberdeen session.",
+        "field": "anomalous_sessions",
+        "id": "count_anomalous_sessions",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-06-17 (RESP-2 PM) as the first free window on or after the 2026-06-17 standard readiness that displaces no protected block.",
+        "field": "earliest_qualified_window",
+        "id": "identify_first_nondisplacing_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the owner review to RESP-2/2026-06-17/PM, the exact window that was free.",
+        "field": "selected_responder_window",
+        "id": "bind_selected_responder_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the 2026-06-15 expedited readiness with the window calendar and proved the first free window is still 2026-06-17, so expediting saves 0 days.",
+        "field": "expedite_days_saved",
+        "id": "test_expedite_against_window_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental cost for standard_invalidation_plan; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that tenant_wide_signout_out_of_hours remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_invalidation_plan, expedite_vendor_invalidation, tenant_wide_signout_out_of_hours; selected standard_invalidation_plan because it alone gives the best currently authorized result under containment readiness versus the non-displacing responder window calendar.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-06-17 as the supported outcome date for standard_invalidation_plan.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-06-17 with the independent control date 2026-06-18 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "SEC-0001"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated SEC-0001 scope, immutable handles, mounted systems, and evidence index before investigating GRANT-SSO-APP.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SEC-0001"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1001-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for SEC-0001 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "m.arendse"
+            },
+            "expected_result_contains": {
+              "identities": [
+                {
+                  "identity_id": "ID-40211"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.identities.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved username m.arendse to the immutable identity record through an identifier search rather than a name match against a similarly named identity.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SEC-0001"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-001-15"
+                },
+                {
+                  "id": "DRV-001-03"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the SEC-0001 case folder on the shared drive and identified the approval record and the ticket export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "playbook"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-001-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the playbook folder and distinguished the effective v5 containment playbook from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "ticket_id": "SR-61203"
+            },
+            "expected_result_contains": {
+              "status": "open",
+              "ticket_id": "SR-61203"
+            },
+            "match": "result_contains",
+            "tool": "servicedesk.tickets.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active ticket SR-61203: object basis, principals in scope, tier, and review durations.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-40211",
+              "metric": "LIVE-GRANTS"
+            },
+            "expected_result_contains": {
+              "inventory": [
+                {
+                  "inventory_id": "INV-40211"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.inventory.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current final credential-inventory snapshot for ID-40211 (LIVE-GRANTS) and ignored the stale historical snapshot.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v5 playbook for the sizing, revocable-object, vendor-invalidation, window, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "tier_code": "T2-CONFIRMED"
+            },
+            "expected_result_contains": {
+              "tier_code": "T2-CONFIRMED"
+            },
+            "match": "result_contains",
+            "tool": "playbooks.tiers.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the containment tier record T2-CONFIRMED: immediate-revocation rule, owner-confirmation rule, authority level, and SLA.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-40211"
+            },
+            "expected_result_contains": {
+              "tickets": [
+                {
+                  "ticket_id": "SR-61203"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "servicedesk.tickets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the tickets that define the requirement (SR-61203) and excluded superseded or out-of-scope tickets.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "alert_id": "AL-88811"
+            },
+            "expected_result_contains": {
+              "events": [
+                {
+                  "event_id": "EV-88811-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "siem.events.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the correlated events behind AL-88811 to ground what actually happened, from which source, and in which window.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "credential_class": "GRANT-SSO-APP"
+            },
+            "expected_result_contains": {
+              "grants": [
+                {
+                  "grant_id": "GS-SSO-9101"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.grants.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every GRANT-SSO-APP grant with object count, expiry, status, and owner deferrals before netting the revocable coverage.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-06-25",
+              "start_date": "2026-06-15"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "OCW-2-20260617-PM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "oncall.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the responder window calendar for 2026-06-15 onward to find the first free window that displaces no protected or blocked block.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-HAL-88214"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-HAL-88214",
+              "standard_ready_date": "2026-06-16"
+            },
+            "match": "result_contains",
+            "tool": "idpvendor.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the vendor invalidation confirmation CONF-HAL-88214 for the independently confirmed standard and expedited job dates and the expedite fee.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-SO-0101"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-SO-0101"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-SO-0101 for its exact scope: record, object count, vendor, fee allowance, and what it does not cover.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-15"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-15"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1001-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1001-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1001-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1001"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1001"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the SOC chat thread CHAT-1001 for grant, window, and authority remarks that qualify the system records.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-40211"
+            },
+            "expected_result_contains": {
+              "total": 0
+            },
+            "match": "result_contains",
+            "tool": "oncall.bridges.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the incident bridges that fix the review scope by immutable id.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "alert_id": "AL-88811"
+            },
+            "expected_result_contains": {
+              "alert_id": "AL-88811",
+              "status": "open"
+            },
+            "match": "result_contains",
+            "tool": "siem.alerts.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read alert AL-88811 with its detection rule version and status, and distinguished it from the duplicate or retired-rule alert on the same identity.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "rule_id": "RUL-IMPTRAV-4"
+            },
+            "expected_result_contains": {
+              "rule_id": "RUL-IMPTRAV-4"
+            },
+            "match": "result_contains",
+            "tool": "siem.rules.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read detection rule RUL-IMPTRAV-4 and confirmed its version was enabled at the alert time, the corroboration the tier rule requires.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-40211"
+            },
+            "expected_result_contains": {
+              "sessions": [
+                {
+                  "session_id": "SES-001-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.sessions.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the sessions of ID-40211 with source, geo, device, and risk to separate the anomalous session from the owner's own.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-40211"
+            },
+            "expected_result_contains": {
+              "factors": [
+                {
+                  "factor_id": "FAC-001-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.factors.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the MFA factors enrolled for ID-40211 to establish which factor was used or bypassed.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-40211"
+            },
+            "expected_result_contains": {
+              "hosts": [
+                {
+                  "host_id": "H-001-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "edr.hosts.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the EDR hosts used by ID-40211 with their isolation state and detections.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "credential_class": "GRANT-SSO-APP"
+            },
+            "expected_result_contains": {
+              "credential_class": "GRANT-SSO-APP"
+            },
+            "match": "result_contains",
+            "tool": "iam.classes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the credential class record for GRANT-SSO-APP: object kind, revocation channel, and privilege.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for SEC-0001 and confirmed that GRANT-SSO-APP is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for SEC-0001 and joined GRANT-SSO-APP to the current authority and evidence records by immutable identity.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for SEC-0001; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for SEC-0001 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for GRANT-SSO-APP and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_30",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for SEC-0001 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_31",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for SEC-0001, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_32",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for SEC-0001: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_33",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "oncall.bridges.create",
+        "any_of": [
+          {
+            "arguments": {
+              "bridge_id": "BRG-70901"
+            },
+            "expected_result_contains": {
+              "end": "2026-06-17T15:30:00",
+              "id": "BRG-70901",
+              "responder": "RESP-2",
+              "start": "2026-06-17T12:30:00",
+              "status": "booked"
+            },
+            "match": "result_contains",
+            "tool": "oncall.bridges.get"
+          }
+        ],
+        "description": "Read BRG-70901 back through oncall.bridges.get after the change and confirmed the persisted provider values (id='BRG-70901', status='booked', responder='RESP-2', start='2026-06-17T12:30:00', end='2026-06-17T15:30:00') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "end": "2026-06-17T15:30:00",
+          "id": "BRG-70901",
+          "responder": "RESP-2",
+          "start": "2026-06-17T12:30:00",
+          "status": "booked"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "bridge_id": "BRG-70901"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "secops",
+  "instruction": "The overnight alert on Marijke Arendse looks like a genuine credential compromise and GRC has a regulator evidence session on Thursday morning. Before Solène briefs them I need the honest picture: how many credential objects the identity and its linked payments principal actually need contained at the current inventory snapshot, how many of what the register shows we can genuinely revoke ourselves once the rotated and owner-held grants are set aside, whether Halyard's invalidation job changes the date, and what a tenant-wide sign-out would really involve. Book the owner review window that works and leave Solène a draft she can take into the session. Anything that needs Beatriz or Nienke should be flagged, not assumed.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "description": "treasury identity owner review (SEC-0001)",
+        "end_time": "2026-06-15T11:00:00",
+        "responder_id": "RESP-1",
+        "start_time": "2026-06-15T08:00:00",
+        "ticket_id": "SR-61203"
+      },
+      "tool": "oncall.bridges.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-001-02"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "oncall.bridges.create",
+      "any_of": [
+        {
+          "arguments": {
+            "bridge_id": "BRG-70901"
+          },
+          "expected_result_contains": {
+            "end": "2026-06-17T15:30:00",
+            "id": "BRG-70901",
+            "responder": "RESP-2",
+            "start": "2026-06-17T12:30:00",
+            "status": "booked"
+          },
+          "match": "result_contains",
+          "tool": "oncall.bridges.get"
+        }
+      ],
+      "description": "Read BRG-70901 back through oncall.bridges.get after the change and confirmed the persisted provider values (id='BRG-70901', status='booked', responder='RESP-2', start='2026-06-17T12:30:00', end='2026-06-17T15:30:00') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "end": "2026-06-17T15:30:00",
+        "id": "BRG-70901",
+        "responder": "RESP-2",
+        "start": "2026-06-17T12:30:00",
+        "status": "booked"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "bridge_id": "BRG-70901"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-SO-0101"
+    },
+    "case_reference": "SEC-0001",
+    "chat": {
+      "thread_id": "CHAT-1001"
+    },
+    "drive": {
+      "case_folder_query": "SEC-0001",
+      "playbook_query": "playbook"
+    },
+    "iam": {
+      "credential_class": "GRANT-SSO-APP",
+      "identity_search": {
+        "arguments": {
+          "identifier": "m.arendse"
+        },
+        "tool": "iam.identities.search"
+      },
+      "systems": [
+        "iam"
+      ],
+      "username": "m.arendse"
+    },
+    "idpvendor": {
+      "confirmation_id": "CONF-HAL-88214"
+    },
+    "messages": {
+      "search_query": "SEC-0001"
+    },
+    "oncall": {
+      "calendar_window": {
+        "end_date": "2026-06-25",
+        "start_date": "2026-06-15"
+      },
+      "pool": "soc-tier2"
+    },
+    "siem": {
+      "alert_id": "AL-88811",
+      "rule_id": "RUL-IMPTRAV-4"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "SEC-0001"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated SEC-0001 scope, immutable handles, mounted systems, and evidence index before investigating GRANT-SSO-APP.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "SEC-0001"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1001-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for SEC-0001 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "m.arendse"
+          },
+          "expected_result_contains": {
+            "identities": [
+              {
+                "identity_id": "ID-40211"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.identities.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved username m.arendse to the immutable identity record through an identifier search rather than a name match against a similarly named identity.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "SEC-0001"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-001-15"
+              },
+              {
+                "id": "DRV-001-03"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the SEC-0001 case folder on the shared drive and identified the approval record and the ticket export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "playbook"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-001-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the playbook folder and distinguished the effective v5 containment playbook from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "ticket_id": "SR-61203"
+          },
+          "expected_result_contains": {
+            "status": "open",
+            "ticket_id": "SR-61203"
+          },
+          "match": "result_contains",
+          "tool": "servicedesk.tickets.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active ticket SR-61203: object basis, principals in scope, tier, and review durations.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-40211",
+            "metric": "LIVE-GRANTS"
+          },
+          "expected_result_contains": {
+            "inventory": [
+              {
+                "inventory_id": "INV-40211"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.inventory.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current final credential-inventory snapshot for ID-40211 (LIVE-GRANTS) and ignored the stale historical snapshot.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v5 playbook for the sizing, revocable-object, vendor-invalidation, window, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "tier_code": "T2-CONFIRMED"
+          },
+          "expected_result_contains": {
+            "tier_code": "T2-CONFIRMED"
+          },
+          "match": "result_contains",
+          "tool": "playbooks.tiers.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the containment tier record T2-CONFIRMED: immediate-revocation rule, owner-confirmation rule, authority level, and SLA.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-40211"
+          },
+          "expected_result_contains": {
+            "tickets": [
+              {
+                "ticket_id": "SR-61203"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "servicedesk.tickets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the tickets that define the requirement (SR-61203) and excluded superseded or out-of-scope tickets.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "alert_id": "AL-88811"
+          },
+          "expected_result_contains": {
+            "events": [
+              {
+                "event_id": "EV-88811-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "siem.events.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the correlated events behind AL-88811 to ground what actually happened, from which source, and in which window.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "credential_class": "GRANT-SSO-APP"
+          },
+          "expected_result_contains": {
+            "grants": [
+              {
+                "grant_id": "GS-SSO-9101"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.grants.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every GRANT-SSO-APP grant with object count, expiry, status, and owner deferrals before netting the revocable coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-06-25",
+            "start_date": "2026-06-15"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "OCW-2-20260617-PM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "oncall.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the responder window calendar for 2026-06-15 onward to find the first free window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-HAL-88214"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-HAL-88214",
+            "standard_ready_date": "2026-06-16"
+          },
+          "match": "result_contains",
+          "tool": "idpvendor.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the vendor invalidation confirmation CONF-HAL-88214 for the independently confirmed standard and expedited job dates and the expedite fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-SO-0101"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-SO-0101"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-SO-0101 for its exact scope: record, object count, vendor, fee allowance, and what it does not cover.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-15"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-15"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1001-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1001-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1001-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1001"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1001"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the SOC chat thread CHAT-1001 for grant, window, and authority remarks that qualify the system records.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-40211"
+          },
+          "expected_result_contains": {
+            "total": 0
+          },
+          "match": "result_contains",
+          "tool": "oncall.bridges.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the incident bridges that fix the review scope by immutable id.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "alert_id": "AL-88811"
+          },
+          "expected_result_contains": {
+            "alert_id": "AL-88811",
+            "status": "open"
+          },
+          "match": "result_contains",
+          "tool": "siem.alerts.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read alert AL-88811 with its detection rule version and status, and distinguished it from the duplicate or retired-rule alert on the same identity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "rule_id": "RUL-IMPTRAV-4"
+          },
+          "expected_result_contains": {
+            "rule_id": "RUL-IMPTRAV-4"
+          },
+          "match": "result_contains",
+          "tool": "siem.rules.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read detection rule RUL-IMPTRAV-4 and confirmed its version was enabled at the alert time, the corroboration the tier rule requires.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-40211"
+          },
+          "expected_result_contains": {
+            "sessions": [
+              {
+                "session_id": "SES-001-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.sessions.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the sessions of ID-40211 with source, geo, device, and risk to separate the anomalous session from the owner's own.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-40211"
+          },
+          "expected_result_contains": {
+            "factors": [
+              {
+                "factor_id": "FAC-001-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.factors.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the MFA factors enrolled for ID-40211 to establish which factor was used or bypassed.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-40211"
+          },
+          "expected_result_contains": {
+            "hosts": [
+              {
+                "host_id": "H-001-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "edr.hosts.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the EDR hosts used by ID-40211 with their isolation state and detections.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "credential_class": "GRANT-SSO-APP"
+          },
+          "expected_result_contains": {
+            "credential_class": "GRANT-SSO-APP"
+          },
+          "match": "result_contains",
+          "tool": "iam.classes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the credential class record for GRANT-SSO-APP: object kind, revocation channel, and privilege.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for SEC-0001 and confirmed that GRANT-SSO-APP is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for SEC-0001 and joined GRANT-SSO-APP to the current authority and evidence records by immutable identity.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for SEC-0001; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for SEC-0001 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for GRANT-SSO-APP and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_30",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for SEC-0001 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_31",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for SEC-0001, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_32",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for SEC-0001: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_33",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "SEC-0001"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "SEC-0001"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1001-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "m.arendse"
+      },
+      "expected_result_contains": {
+        "identities": [
+          {
+            "identity_id": "ID-40211"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.identities.search"
+    },
+    {
+      "arguments": {
+        "q": "SEC-0001"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-001-15"
+          },
+          {
+            "id": "DRV-001-03"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "playbook"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-001-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "ticket_id": "SR-61203"
+      },
+      "expected_result_contains": {
+        "status": "open",
+        "ticket_id": "SR-61203"
+      },
+      "match": "result_contains",
+      "tool": "servicedesk.tickets.get"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-40211",
+        "metric": "LIVE-GRANTS"
+      },
+      "expected_result_contains": {
+        "inventory": [
+          {
+            "inventory_id": "INV-40211"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.inventory.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "tier_code": "T2-CONFIRMED"
+      },
+      "expected_result_contains": {
+        "tier_code": "T2-CONFIRMED"
+      },
+      "match": "result_contains",
+      "tool": "playbooks.tiers.get"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-40211"
+      },
+      "expected_result_contains": {
+        "tickets": [
+          {
+            "ticket_id": "SR-61203"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "servicedesk.tickets.list"
+    },
+    {
+      "arguments": {
+        "alert_id": "AL-88811"
+      },
+      "expected_result_contains": {
+        "events": [
+          {
+            "event_id": "EV-88811-1"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "siem.events.list"
+    },
+    {
+      "arguments": {
+        "credential_class": "GRANT-SSO-APP"
+      },
+      "expected_result_contains": {
+        "grants": [
+          {
+            "grant_id": "GS-SSO-9101"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.grants.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-06-25",
+        "start_date": "2026-06-15"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "OCW-2-20260617-PM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "oncall.windows.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-HAL-88214"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-HAL-88214",
+        "standard_ready_date": "2026-06-16"
+      },
+      "match": "result_contains",
+      "tool": "idpvendor.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-SO-0101"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-SO-0101"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-15"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-15"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1001-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1001-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1001"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1001"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-40211"
+      },
+      "expected_result_contains": {
+        "total": 0
+      },
+      "match": "result_contains",
+      "tool": "oncall.bridges.list"
+    },
+    {
+      "arguments": {
+        "alert_id": "AL-88811"
+      },
+      "expected_result_contains": {
+        "alert_id": "AL-88811",
+        "status": "open"
+      },
+      "match": "result_contains",
+      "tool": "siem.alerts.get"
+    },
+    {
+      "arguments": {
+        "rule_id": "RUL-IMPTRAV-4"
+      },
+      "expected_result_contains": {
+        "rule_id": "RUL-IMPTRAV-4"
+      },
+      "match": "result_contains",
+      "tool": "siem.rules.get"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-40211"
+      },
+      "expected_result_contains": {
+        "sessions": [
+          {
+            "session_id": "SES-001-1"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.sessions.list"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-40211"
+      },
+      "expected_result_contains": {
+        "factors": [
+          {
+            "factor_id": "FAC-001-1"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.factors.list"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-40211"
+      },
+      "expected_result_contains": {
+        "hosts": [
+          {
+            "host_id": "H-001-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "edr.hosts.list"
+    },
+    {
+      "arguments": {
+        "credential_class": "GRANT-SSO-APP"
+      },
+      "expected_result_contains": {
+        "credential_class": "GRANT-SSO-APP"
+      },
+      "match": "result_contains",
+      "tool": "iam.classes.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-28"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-28"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-29"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-29"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "iam.identities.search",
+    "siem.alerts.get",
+    "siem.rules.get",
+    "siem.events.list",
+    "servicedesk.tickets.list",
+    "servicedesk.tickets.get",
+    "iam.inventory.list",
+    "iam.classes.get",
+    "iam.sessions.list",
+    "iam.factors.list",
+    "edr.hosts.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "playbooks.tiers.get",
+    "iam.grants.list",
+    "oncall.bridges.list",
+    "oncall.windows.list",
+    "idpvendor.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "security_operations_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_26",
+        "investigation_27"
+      ],
+      "description": "Establish the isolated SEC-0001 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 10.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_20",
+        "investigation_21",
+        "investigation_25",
+        "investigation_28"
+      ],
+      "description": "Determine the operative v1 requirement for GRANT-SSO-APP from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 8.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_22",
+        "investigation_23",
+        "investigation_29",
+        "investigation_30",
+        "investigation_32"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 16 observed less 5 excluded to 11 supported CREDENTIAL_OBJECT for tenant-revocable GRANT-SSO-APP objects in the IAM register. Applied regular responder windows that do not displace protected major-incident or regulator blocks to derive the three option outcomes without using protected or blocked windows. Used the independently confirmed 2026-06-15 expedited readiness input for expedite_vendor_invalidation, then separately derived its 2026-06-17 operating outcome under containment readiness versus the non-displacing responder window calendar instead of treating a vendor promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_15",
+        "investigation_16",
+        "investigation_31"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-SO-0101 only to standard_invalidation_plan and GRANT-SSO-APP; kept tenant_wide_signout_out_of_hours outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_17",
+        "investigation_18",
+        "investigation_19",
+        "investigation_24",
+        "investigation_33"
+      ],
+      "description": "Correlate GRANT-SSO-APP by immutable identifiers across the systems of record (siem, edr, iam, servicedesk, oncall, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 23.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "derive_plan_requirement",
+        "read_gross_coverage",
+        "remove_ineligible_coverage",
+        "calculate_usable_coverage",
+        "calculate_plan_gap",
+        "preserve_plan_unit",
+        "compare_baseline_plan",
+        "compare_accelerated_plan",
+        "compare_escalated_plan",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "bound_external_recovery_quantity",
+        "calculate_metered_live_objects",
+        "preserve_object_unit",
+        "apply_linked_principal_rule",
+        "count_anomalous_sessions",
+        "identify_first_nondisplacing_window",
+        "bind_selected_responder_window",
+        "test_expedite_against_window_calendar"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for the treasury identity containment and its linked payments principal.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for standard_invalidation_plan under the actual operating window and report whether the 2026-06-17 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select standard_invalidation_plan only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01",
+        "state_02"
+      ],
+      "description": "Persist exactly the supported 'Owner review bridge booked' change for GRANT-SSO-APP through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read GRANT-SSO-APP back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_coverage_item_or_resource",
+        "answer_shortage_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for the treasury identity containment and its linked payments principal.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside SEC-0001's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "69fc07969d739e6578d2e14b56c71ba44505f2c601f93b00788a7f3c643ca9b0",
+  "starting_records": [
+    {
+      "resource_id": "BRG-70900",
+      "resource_type": "Bridge",
+      "status": "booked",
+      "system": "oncall"
+    },
+    {
+      "resource_id": "IVO-3400",
+      "resource_type": "InvalidationOrder",
+      "status": "RECEIVED",
+      "system": "idpvendor"
+    },
+    {
+      "resource_id": "RVK-3400",
+      "resource_type": "Revocation",
+      "status": "COMPLETED",
+      "system": "iam"
+    }
+  ],
+  "task_id": "secops-001",
+  "title": "Contain the treasury identity after the impossible-travel consent alert",
+  "workflow": {
+    "answer_fields": 27,
+    "readbacks": 1,
+    "reads": 34,
+    "writes": 2
+  },
+  "world": {
+    "id": "kestrel-secops-v1",
+    "name": "Kestrel Grid Utilities — Security Operations Center",
+    "organization_id": "ORG-KESTREL",
+    "primary_site": "TENANT-PRIMARY",
+    "systems": [
+      "siem",
+      "edr",
+      "iam",
+      "cloudiam",
+      "servicedesk",
+      "playbooks",
+      "oncall",
+      "idpvendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

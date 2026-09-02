@@ -1,0 +1,2775 @@
+{
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for backport_supported_commits.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "contracted_penalty_usd": {
+        "description": "Contracted slip penalty on the customer commitment tied to the first deploy (USD).",
+        "type": "integer"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for backport_full_range.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for external_recertification_with_expedite.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "reverted, embargoed, and docs-only commits in the fix range",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Corvane's confirmed standard and expedited re-certification dates on CQ-88355.",
+        "type": "string"
+      },
+      "first_change_window": {
+        "description": "Lane window of the first hotfix deploy, as LANE/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "fix_pull_requests": {
+        "description": "Merged fix pull requests whose commits the deploys need.",
+        "type": "integer"
+      },
+      "merge_queue_date": {
+        "description": "Scheduled merge-queue run date whose next business day verifies the target branch (ISO date).",
+        "type": "string"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for this week's two ingest hotfix deploys.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: COMMIT.",
+        "type": "string"
+      },
+      "receiving_branch_present": {
+        "description": "Fix commits already on hotfix/26.1.3 that reduce the backport.",
+        "type": "integer"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing backport_supported_commits, backport_full_range, external_recertification_with_expedite.",
+        "enum": [
+          "backport_supported_commits",
+          "backport_full_range",
+          "external_recertification_with_expedite"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "scheduled_changes": {
+        "description": "Count of hotfix deploys booked on the primary lanes this week.",
+        "type": "integer"
+      },
+      "source_quantity": {
+        "description": "commits the two hotfix deploys booked 2026-05-07 and 2026-05-08 need on hotfix/26.1.3",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Corvane's confirmed standard and expedited re-certification dates on CQ-88355.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "eligible commits in the fix range on release/26.1 that hotfix/26.1.3 is missing",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "contracted_penalty_usd",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_change_window",
+      "fix_pull_requests",
+      "merge_queue_date",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "receiving_branch_present",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "scheduled_changes",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "transaction_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-05-04",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "family": "repodesk",
+  "instruction": "Two ingest hotfix deploys run on the lanes this week and the hotfix branch is behind the release branch. The release branch has commits in the fix range, but some are spoken for and one was reverted after it landed. Tell me exactly how many commits the two deploys need on the hotfix branch, how many are already there, how many can legitimately ride the merge queue from the release branch, and whether Corvane's certified re-verification is the better call. Schedule the backport the evidence supports and draft the message to Siobhan so the merge-queue pickup is not a surprise.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-RD-0105"
+    },
+    "case_reference": "SHIP-0005",
+    "chat": {
+      "thread_id": "CHAT-1005"
+    },
+    "ci": {
+      "pipeline_id": "PIPE-MQ",
+      "pool_id": "POOL-RELEASE",
+      "sources": [
+        "CI-MAIN"
+      ],
+      "verification_class": "GATE-INGEST-2"
+    },
+    "deploy": {
+      "calendar_window": {
+        "end_date": "2026-05-08",
+        "start_date": "2026-05-04"
+      },
+      "lanes": [
+        "LANE-1",
+        "LANE-2",
+        "LANE-3"
+      ]
+    },
+    "drive": {
+      "case_folder_query": "SHIP-0005",
+      "playbook_query": "playbook"
+    },
+    "messages": {
+      "search_query": "SHIP-0005"
+    },
+    "partners": {
+      "confirmation_id": "CONF-CRV-88355"
+    },
+    "scm": {
+      "branch": "release/26.1",
+      "component_code": "ingest-fleet-a",
+      "fix_pull_request": "PR-8851",
+      "repo_id": "REPO-PLATFORM"
+    },
+    "success": {
+      "commitment_id": "COM-ORV-0507",
+      "customer_id": "CUST-ORVILLE"
+    },
+    "tracker": {
+      "issue_key": "LKS-4500",
+      "issue_search": {
+        "arguments": {
+          "key": "LKS-4500"
+        },
+        "tool": "tracker.issues.search"
+      }
+    }
+  },
+  "role": "release_engineering_coordinator",
+  "seed_tables": {
+    "approvals": [
+      {
+        "approval_id": "AP-RD-0105",
+        "approver_id": "U-RAGHUNATHAN",
+        "approver_role": "release_engineering_manager",
+        "granted_on": "2026-05-01",
+        "scope_json": "{\"commits\": \"eligible commits only\", \"from_ref\": \"release/26.1\", \"max_commits\": 3, \"not_covered\": [\"external re-certification with an expedited bench (director of engineering)\", \"backporting reverted, embargoed, or docs-only commits (never)\"], \"repo_id\": \"REPO-PLATFORM\", \"to_ref\": \"hotfix/26.1.3\"}",
+        "status": "APPROVED",
+        "subject": "Ingest hotfix backport for SHIP-0005 (LKS-4500, LKS-4501)"
+      },
+      {
+        "approval_id": "AP-RD-0090",
+        "approver_id": "U-RAGHUNATHAN",
+        "approver_role": "release_engineering_manager",
+        "granted_on": "2026-02-09",
+        "scope_json": "{\"category\": \"RUNNER_CAPACITY\", \"max_spend_usd\": 9000}",
+        "status": "APPROVED",
+        "subject": "Quarterly CI runner capacity standing order"
+      }
+    ],
+    "backport_requests": [
+      {
+        "backport_id": "BPR-2200",
+        "commit_count": 2,
+        "created_at": "2026-04-13T10:12:00",
+        "from_ref": "release/26.0",
+        "repo_id": "REPO-PLATFORM",
+        "requested_by": "release_engineering_coordinator",
+        "revision": 1,
+        "scheduled_date": "2026-04-14",
+        "status": "COMPLETED",
+        "to_ref": "hotfix/26.0.4",
+        "unit": "COMMIT"
+      }
+    ],
+    "branch_rules": [
+      {
+        "branch": "hotfix/26.1.3",
+        "codeowner_review_required": 1,
+        "repo_id": "REPO-PLATFORM",
+        "required_approvals": 2,
+        "required_checks_json": "[\"ingest-unit\", \"ingest-replay\"]",
+        "rule_id": "BR-HOTFIX-26-1-3",
+        "status": "ACTIVE"
+      }
+    ],
+    "certification_orders": [
+      {
+        "confirmation_id": null,
+        "created_at": "2026-04-17T09:30:00",
+        "expected_ready_date": "2026-04-22",
+        "order_id": "ORD-3400",
+        "partner_id": "PRT-BRIGHTWATER",
+        "requested_by": "release_engineering_coordinator",
+        "revision": 1,
+        "run_count": 2,
+        "service_option": "standard",
+        "status": "RECEIVED",
+        "unit": "CHECK_RUN",
+        "verification_class": "GATE-INGEST-2"
+      }
+    ],
+    "change_records": [
+      {
+        "change_id": "CHG-70890",
+        "component_id": "CMP-31170",
+        "description": "fleet A hotfix deploy",
+        "end_time": "2026-05-07T11:00:00",
+        "issue_key": "LKS-4500",
+        "lane_id": "LANE-3",
+        "last_updated": "2026-05-01T12:00:00",
+        "revision": 1,
+        "start_time": "2026-05-07T08:00:00",
+        "status": "booked"
+      },
+      {
+        "change_id": "CHG-70891",
+        "component_id": "CMP-31181",
+        "description": "fleet B hotfix deploy",
+        "end_time": "2026-05-08T16:00:00",
+        "issue_key": "LKS-4501",
+        "lane_id": "LANE-1",
+        "last_updated": "2026-05-01T12:00:00",
+        "revision": 1,
+        "start_time": "2026-05-08T13:00:00",
+        "status": "booked"
+      }
+    ],
+    "chat_threads": [
+      {
+        "channel": "#release-eng",
+        "messages_json": "[{\"author\": \"Siobhan Farrell\", \"ts\": \"2026-05-04T12:10:00\", \"text\": \"6f7a8b9 is embargoed for the partner-rig change on Wednesday \\u2014 hands off. 5e6f7a8 was reverted on the 2nd. The docs commit never rides a hotfix.\"}, {\"author\": \"Priya Raghunathan\", \"ts\": \"2026-05-04T12:14:00\", \"text\": \"Merge-queue pickup is the 21:00 run; whatever is scheduled for the 5th is verified on the hotfix branch on the 6th. 1a2b3c4 is already there.\"}, {\"author\": \"Tobias Wendel\", \"ts\": \"2026-05-04T12:30:00\", \"text\": \"No expedited re-certification without my sign-off.\"}]",
+        "thread_id": "CHAT-1005",
+        "title": "SHIP-0005 ingest backport — hotfix/26.1.3"
+      },
+      {
+        "channel": "#release-eng",
+        "messages_json": "[{\"author\": \"Hanna Solberg\", \"ts\": \"2026-04-30T16:40:00\", \"text\": \"Reminder: log every feature-flag change in the change tracker.\"}]",
+        "thread_id": "CHAT-0005-GEN",
+        "title": "General — flag hygiene and lane access"
+      }
+    ],
+    "commit_modules": [
+      {
+        "module_id": "MOD-ING-A",
+        "sha": "1a2b3c4"
+      },
+      {
+        "module_id": "MOD-ING-A",
+        "sha": "2b3c4d5"
+      },
+      {
+        "module_id": "MOD-ING-A",
+        "sha": "3c4d5e6"
+      },
+      {
+        "module_id": "MOD-ING-B",
+        "sha": "3c4d5e6"
+      },
+      {
+        "module_id": "MOD-ING-B",
+        "sha": "4d5e6f7"
+      },
+      {
+        "module_id": "MOD-ING-A",
+        "sha": "5e6f7a8"
+      },
+      {
+        "module_id": "MOD-ING-RIG",
+        "sha": "6f7a8b9"
+      },
+      {
+        "module_id": "MOD-ING-DOCS",
+        "sha": "7a8b9c0"
+      }
+    ],
+    "commitments": [
+      {
+        "commitment_id": "COM-ORV-0507",
+        "contract_ref": "MSA-ORV-2025 §5.4",
+        "customer_id": "CUST-ORVILLE",
+        "cutover_date": "2026-05-07",
+        "issue_key": "LKS-4500",
+        "kind": "cutover",
+        "note": "fleet A checkpoint fix contracted for the 2026-05-07 deploy; USD 7,500 per day of slip",
+        "penalty_usd": 7500,
+        "status": "ACTIVE"
+      }
+    ],
+    "commits": [
+      {
+        "author_id": "ENG-LINDGREN",
+        "authored_at": "2026-04-29T10:00:00",
+        "backported_to": "hotfix/26.1.3",
+        "branch": "release/26.1",
+        "fix_for": "LKS-4500",
+        "message": "ingest: checkpoint fence before replay (LKS-4500)",
+        "pr_number": 8851,
+        "repo_id": "REPO-PLATFORM",
+        "sha": "1a2b3c4",
+        "status": "merged"
+      },
+      {
+        "author_id": "ENG-LINDGREN",
+        "authored_at": "2026-04-30T09:30:00",
+        "backported_to": null,
+        "branch": "release/26.1",
+        "fix_for": "LKS-4500",
+        "message": "ingest: persist checkpoint after fence (LKS-4500)",
+        "pr_number": 8851,
+        "repo_id": "REPO-PLATFORM",
+        "sha": "2b3c4d5",
+        "status": "merged"
+      },
+      {
+        "author_id": "ENG-LINDGREN",
+        "authored_at": "2026-04-30T15:10:00",
+        "backported_to": null,
+        "branch": "release/26.1",
+        "fix_for": "LKS-4500",
+        "message": "ingest: shared replay cursor for both fleets (LKS-4500)",
+        "pr_number": 8851,
+        "repo_id": "REPO-PLATFORM",
+        "sha": "3c4d5e6",
+        "status": "merged"
+      },
+      {
+        "author_id": "ENG-LINDGREN",
+        "authored_at": "2026-05-01T11:00:00",
+        "backported_to": null,
+        "branch": "release/26.1",
+        "fix_for": "LKS-4501",
+        "message": "ingest: fleet B checkpoint fence (LKS-4501)",
+        "pr_number": 8853,
+        "repo_id": "REPO-PLATFORM",
+        "sha": "4d5e6f7",
+        "status": "merged"
+      },
+      {
+        "author_id": "ENG-FARRELL",
+        "authored_at": "2026-05-01T16:40:00",
+        "backported_to": null,
+        "branch": "release/26.1",
+        "fix_for": null,
+        "message": "ingest: partner-rig spacing tweak",
+        "pr_number": 8849,
+        "repo_id": "REPO-PLATFORM",
+        "sha": "5e6f7a8",
+        "status": "reverted"
+      },
+      {
+        "author_id": "ENG-FARRELL",
+        "authored_at": "2026-05-02T09:20:00",
+        "backported_to": null,
+        "branch": "release/26.1",
+        "fix_for": null,
+        "message": "ingest: partner-rig throttle (embargoed for LKS-4504)",
+        "pr_number": 8855,
+        "repo_id": "REPO-PLATFORM",
+        "sha": "6f7a8b9",
+        "status": "embargoed"
+      },
+      {
+        "author_id": "ENG-LINDGREN",
+        "authored_at": "2026-05-02T13:05:00",
+        "backported_to": null,
+        "branch": "release/26.1",
+        "fix_for": null,
+        "message": "docs: ingest runbook update",
+        "pr_number": 8856,
+        "repo_id": "REPO-PLATFORM",
+        "sha": "7a8b9c0",
+        "status": "docs_only"
+      }
+    ],
+    "components": [
+      {
+        "code": "ingest-fleet-a",
+        "component_id": "CMP-31170",
+        "name": "Ingest — Fleet A",
+        "owner_team": "Data Platform",
+        "primary_engineer_id": "ENG-LINDGREN",
+        "repo_id": "REPO-PLATFORM",
+        "tier": "tier-2"
+      },
+      {
+        "code": "ingest-fleet-b",
+        "component_id": "CMP-31181",
+        "name": "Ingest — Fleet B",
+        "owner_team": "Data Platform",
+        "primary_engineer_id": "ENG-LINDGREN",
+        "repo_id": "REPO-PLATFORM",
+        "tier": "tier-2"
+      },
+      {
+        "code": "ingest-partner-rig",
+        "component_id": "CMP-31190",
+        "name": "Ingest — partner-hosted staging rig",
+        "owner_team": "Data Platform",
+        "primary_engineer_id": "ENG-FARRELL",
+        "repo_id": "REPO-PLATFORM",
+        "tier": "tier-3"
+      }
+    ],
+    "coverage_reports": [
+      {
+        "build_sha": "3c4d5e6",
+        "generated_at": "2026-04-30T15:40:00",
+        "line_coverage": 89.0,
+        "module_id": "MOD-ING-A",
+        "report_id": "CR-4500-01",
+        "status": "CURRENT",
+        "threshold": 85.0
+      }
+    ],
+    "customers": [
+      {
+        "account_owner": "Beatrix Halloran",
+        "customer_id": "CUST-ORVILLE",
+        "environment_id": "ENV-PROD-SHARED",
+        "name": "Orville Provisioning",
+        "tier": "mid-market"
+      }
+    ],
+    "drive_files": [
+      {
+        "content": "# Release Engineering Playbook (v5, effective 2026-03-02)\n\nApplies to Larkspur Systems Release Engineering: the platform monorepo (REPO-PLATFORM), the infra image repository (REPO-INFRA), the release verification pipeline (CI-MAIN), the external certification partners, and the three release lanes. This version supersedes the 2024 playbook in full.\n\n## 1. Fix requirement\n\n1.1 The affected-module count of a regression is the most recent final impact analysis for the component in the SCM impact register. A stale impact analysis is never used.\n1.2 Modules whose offending commit has already been reverted on the release branch, or whose change is behind a disabled feature flag, are gated and drop out of the requirement; every other touched module needs its release gate.\n1.3 The gate class of the touched modules fixes the required check runs per module; the protected-branch rule names the checks. Runs are counted per module per environment in scope.\n1.4 Dedicated-tenant cutovers inside 7 days: the gate runs on both the shared pipeline and the dedicated-tenant pipeline before the change is booked. An open partner certification is not a substitute for imported results.\n1.5 A booked change may be advanced by up to 7 days with the change owner's written note.\n\n## 2. Usable evidence\n\n2.1 A verification-result set counts toward coverage only when its status is PASSED, it is not held for a named issue, it comes from a release-eligible source, and it stays valid for at least the class minimum (14 days from the planning date). On a planning date of 2026-05-04, result sets whose validity ends on or before 2026-05-18 are inside the expiry horizon and do not count.\n2.2 Failed, quarantined, and incident-flagged result sets are never reused for a release gate. Reuse requires the director of engineering, and the change advisory board where a release exception is involved.\n2.3 Partner-certified runs are imported and re-verified into the release evidence on the next business day after the partner's ready date.\n2.4 Order sizing: order the uncovered requirement plus the class re-run margin from the margin table. Backports carry only eligible commits (merged, not reverted, not embargoed, not docs-only) and only the commits the target branch is missing.\n\n## 3. Release lanes\n\n3.1 Lane windows are AM 08:00-12:00 and PM 13:00-17:00, Monday to Friday, with release engineering on shift. A change of up to 4 hours including the canary bake occupies one window; a longer change requires both windows of one lane on one day.\n3.2 Protected windows (release-freeze verification, compliance batches, customer blackouts) and blocked windows (cluster or deploy-controller maintenance) are never displaced without the change advisory board.\n3.3 Two short changes of the same class (2 hours or less each, including the bake) may be sequenced in one window.\n3.4 Dedicated-tenant cutover rehearsals are one continuous run on a tenant-isolation-capable lane per the roster; they may not be split across windows on different days.\n3.5 Out-of-hours, weekend, and overtime windows require the SRE lead's separate approval.\n\n## 4. Authority\n\n4.1 Release engineering manager: certification orders, backports, and lane bookings within the signed approval's run count, partner, and spend, including any expedite fee the approval names.\n4.2 Director of engineering: expedited certification not named in an approval, expedited-review exceptions, validity extensions for expiring result sets, and reuse of failed or incident-flagged result sets.\n4.3 SRE lead: lane re-home plans, overtime, and out-of-hours windows.\n4.4 Change advisory board: displacing protected windows, release exceptions, and rescheduling a customer cutover.\n4.5 Bypassing a required check is never supported, whatever the approval. An approval covers exactly the issue, quantity, partner, and options it names. It never selects an option in advance and never extends to a broader record.\n\n---\nEvidence-room mount: repodesk-005 / SHIP-0005.\n",
+        "file_id": "DRV-005-01",
+        "folder": "Release Engineering/Playbooks",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "release-engineering-playbook.md",
+        "sha256": "85ed113e288198ab94c1d64b777ae03e14c774de6b60c0b20bdbebc8b85bb971"
+      },
+      {
+        "content": "# Release Engineering Playbook (2024 edition) — SUPERSEDED\n\nThis edition was replaced by v5 on 2026-03-02 and is retained for audit only. Do not apply it.\n\n1. Affected modules may be counted from the impact analysis recorded at first triage.\n2. Minimum remaining validity for a result set at release: 7 days.\n3. An open partner certification counts toward the release gate; the change may be booked once the partner confirms.\n4. Expedite fees up to USD 500 may be approved by the release engineering manager at discretion.\n5. Lanes run a single 08:00-17:00 block; long rehearsals may be split across two days with the owner's agreement.\n6. Protected windows may be displaced by the on-call engineer when a cutover is at risk, and a required check may be waived by the component owner.\n\n---\nEvidence-room mount: repodesk-005 / SHIP-0005.\n",
+        "file_id": "DRV-005-02",
+        "folder": "Release Engineering/Playbooks/Archive",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "superseded-release-playbook-2024.md",
+        "sha256": "c44929aa2d200b4b403d6b5234ac5b9d2ee54ddf47731ad9cb5a60af1e0a0e68"
+      },
+      {
+        "content": "sha,branch,status,backported_to,count_date\n1a2b3c4,release/26.1,merged,,2026-04-29\n2b3c4d5,release/26.1,merged,,2026-04-30\n5e6f7a8,release/26.1,merged,,2026-05-01\n",
+        "file_id": "DRV-005-03",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "fix-range-commit-count-2026-04.xlsx",
+        "sha256": "fcea42d623bc5d15314fa26163201964fea490c8d6379e59f0f1bfbfe158bd57"
+      },
+      {
+        "content": "{\n  \"export\": \"tracker.issues.get\",\n  \"record\": {\n    \"bake_minutes\": 30,\n    \"basis\": \"fixed\",\n    \"build_minutes\": 150,\n    \"commitment\": \"Commitment/COM-ORV-0507\",\n    \"component\": \"Component/CMP-31170\",\n    \"customer\": \"Customer/CUST-ORVILLE\",\n    \"duplicate_of\": null,\n    \"environments_in_scope\": 1,\n    \"fix_version\": null,\n    \"fixed_modules\": 1,\n    \"gated_modules\": 0,\n    \"issue_key\": \"LKS-4500\",\n    \"kind\": \"regression\",\n    \"note\": \"The deploy builds from hotfix/26.1.3; the fix commits must be backported before the merge queue run that precedes the change.\",\n    \"opened_at\": \"2026-04-29\",\n    \"regression_range\": {\n      \"from\": null,\n      \"to\": null\n    },\n    \"requested_by\": \"Engineer/ENG-LINDGREN\",\n    \"scope_note\": \"fleet A hotfix deploy from hotfix/26.1.3\",\n    \"severity\": \"S2\",\n    \"status\": \"open\",\n    \"title\": \"Ingest checkpoint loss on fleet A after the 26.1 replay change\",\n    \"verification_class\": {\n      \"code\": \"GATE-INGEST-2\",\n      \"display\": \"ingest hotfix gate, 2 required runs per module (unit + replay)\",\n      \"runs_per_module\": 2\n    }\n  }\n}\n",
+        "file_id": "DRV-005-04",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "issue-LKS-4500.json",
+        "sha256": "25b60a440119d4263f13bc05d3ef2dd9443a69019ce6db73e6ce87b64c939598"
+      },
+      {
+        "content": "{\n  \"component\": {\n    \"code\": \"ingest-fleet-a\",\n    \"component_id\": \"CMP-31170\",\n    \"name\": \"Ingest \\u2014 Fleet A\",\n    \"owner_team\": \"Data Platform\",\n    \"primary_engineer\": \"Engineer/ENG-LINDGREN\",\n    \"repository\": \"Repository/REPO-PLATFORM\",\n    \"tier\": \"tier-2\"\n  },\n  \"export\": \"scm.components.get + scm.impact.list\",\n  \"impact_reports\": [\n    {\n      \"component\": \"Component/CMP-31170\",\n      \"generated_at\": \"2026-05-01\",\n      \"metric\": \"TOUCHED-MODULES\",\n      \"report_id\": \"IMP-31170\",\n      \"status\": \"final\",\n      \"unit\": \"MODULE\",\n      \"value\": 1\n    }\n  ]\n}\n",
+        "file_id": "DRV-005-05",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "component-ingest-fleet-a-impact.json",
+        "sha256": "3ded2a40e201d8dab5b986e8e00f12a429582dd9e9ef1183c54b4e09cf6f9af9"
+      },
+      {
+        "content": "sha,branch,authored_at,author,message,pull_request,status,backported_to,fix_for,touched_modules\n1a2b3c4,release/26.1,2026-04-29T10:00:00,Maja Lindgren,\"ingest: checkpoint fence before replay (LKS-4500)\",8851,merged,hotfix/26.1.3,LKS-4500,MOD-ING-A\n2b3c4d5,release/26.1,2026-04-30T09:30:00,Maja Lindgren,\"ingest: persist checkpoint after fence (LKS-4500)\",8851,merged,,LKS-4500,MOD-ING-A\n3c4d5e6,release/26.1,2026-04-30T15:10:00,Maja Lindgren,\"ingest: shared replay cursor for both fleets (LKS-4500)\",8851,merged,,LKS-4500,MOD-ING-A|MOD-ING-B\n4d5e6f7,release/26.1,2026-05-01T11:00:00,Maja Lindgren,\"ingest: fleet B checkpoint fence (LKS-4501)\",8853,merged,,LKS-4501,MOD-ING-B\n5e6f7a8,release/26.1,2026-05-01T16:40:00,Siobhan Farrell,\"ingest: partner-rig spacing tweak\",8849,reverted,,,MOD-ING-A\n6f7a8b9,release/26.1,2026-05-02T09:20:00,Siobhan Farrell,\"ingest: partner-rig throttle (embargoed for LKS-4504)\",8855,embargoed,,,MOD-ING-RIG\n7a8b9c0,release/26.1,2026-05-02T13:05:00,Maja Lindgren,\"docs: ingest runbook update\",8856,docs_only,,,MOD-ING-DOCS\n",
+        "file_id": "DRV-005-06",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "commits-release-26.1-fix-range.csv",
+        "sha256": "3d6d1b4b342ab34525f576350a3b2ea8eb03955ebfdcfff3ddd0778587ded901"
+      },
+      {
+        "content": "{\n  \"branch_rule\": {\n    \"branch\": \"hotfix/26.1.3\",\n    \"required_approvals\": 2,\n    \"required_checks\": [\n      \"ingest-unit\",\n      \"ingest-replay\"\n    ],\n    \"rule_id\": \"BR-HOTFIX-26-1-3\"\n  },\n  \"case_reference\": \"SHIP-0005\",\n  \"pull_requests\": [\n    {\n      \"base_branch\": \"release/26.1\",\n      \"head_sha\": \"3c4d5e6\",\n      \"issue_key\": \"LKS-4500\",\n      \"number\": 8851,\n      \"opened_at\": \"2026-04-29T09:40:00\",\n      \"pr_id\": \"PR-8851\",\n      \"status\": \"merged\",\n      \"superseded_by\": null,\n      \"title\": \"ingest: fix fleet A checkpoint loss (LKS-4500)\"\n    },\n    {\n      \"base_branch\": \"release/26.1\",\n      \"head_sha\": \"4d5e6f7\",\n      \"issue_key\": \"LKS-4501\",\n      \"number\": 8853,\n      \"opened_at\": \"2026-05-01T10:30:00\",\n      \"pr_id\": \"PR-8853\",\n      \"status\": \"merged\",\n      \"superseded_by\": null,\n      \"title\": \"ingest: fleet B checkpoint fence (LKS-4501)\"\n    },\n    {\n      \"base_branch\": \"release/26.1\",\n      \"head_sha\": \"6f7a8b9\",\n      \"issue_key\": \"LKS-4504\",\n      \"number\": 8855,\n      \"opened_at\": \"2026-05-02T09:00:00\",\n      \"pr_id\": \"PR-8855\",\n      \"status\": \"merged\",\n      \"superseded_by\": null,\n      \"title\": \"ingest: partner-rig throttle (LKS-4504, embargoed)\"\n    },\n    {\n      \"base_branch\": \"release/26.1\",\n      \"head_sha\": \"5e6f7a8\",\n      \"issue_key\": null,\n      \"number\": 8849,\n      \"opened_at\": \"2026-05-01T16:00:00\",\n      \"pr_id\": \"PR-8849\",\n      \"status\": \"merged\",\n      \"superseded_by\": null,\n      \"title\": \"ingest: partner-rig spacing tweak (reverted)\"\n    }\n  ],\n  \"reviews\": [\n    {\n      \"pr_id\": \"PR-8851\",\n      \"review_id\": \"RV-8851-1\",\n      \"reviewer\": \"Siobhan Farrell\",\n      \"state\": \"APPROVED\",\n      \"submitted_at\": \"2026-04-30T16:00:00\"\n    },\n    {\n      \"pr_id\": \"PR-8853\",\n      \"review_id\": \"RV-8853-1\",\n      \"reviewer\": \"Chidi Achebe\",\n      \"state\": \"APPROVED\",\n      \"submitted_at\": \"2026-05-01T11:30:00\"\n    }\n  ]\n}\n",
+        "file_id": "DRV-005-07",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "pull-requests-and-reviews.json",
+        "sha256": "bfed7709e7f289ad2bc23101f0f5cada66c888e3534468d993f05ef9e9daaea4"
+      },
+      {
+        "content": "module_id,path,component_id,owner_team,codeowner,verification_class,gate,gate_note\nMOD-ING-A,services/ingest/fleet-a,CMP-31170,Data Platform,Maja Lindgren,GATE-INGEST-2,,\nMOD-ING-B,services/ingest/fleet-b,CMP-31181,Data Platform,Maja Lindgren,GATE-INGEST-2,,\nMOD-ING-RIG,services/ingest/partner-rig,CMP-31190,Data Platform,Siobhan Farrell,GATE-INGEST-2,,\nMOD-ING-DOCS,services/ingest/docs,CMP-31170,Data Platform,Maja Lindgren,GATE-INGEST-2,,\n",
+        "file_id": "DRV-005-08",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "module-registry.csv",
+        "sha256": "1d709c1faa65eae7abc30baaf5e48545e908dddfce7a7cff0da76d7a63aea4c0"
+      },
+      {
+        "content": "verification_class,display,runs_per_module,required_checks,evidence_tier,minimum_validity_days,release_eligible,interchangeable_with\nGATE-INGEST-2,ingest hotfix gate, 2 required runs per module (unit + replay),2,ingest-unit|ingest-replay,release-gate evidence,14,yes,\n",
+        "file_id": "DRV-005-09",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "gate-class-catalog.csv",
+        "sha256": "1d738872545dfa39fc8817ceb270fd8d9c3728e7474263b2da05387c2d67a741"
+      },
+      {
+        "content": "result_label,verification_class,source_id,run_count,valid_until\n6610,GATE-INGEST-2,CI-MAIN,2,2026-10-31\n",
+        "file_id": "DRV-005-10",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "verification-results-by-set.xlsx",
+        "sha256": "6a358f77db20e181cd0fa9dd64e1af7c1ce6b94352c5fc3a47c73b4d9cd2f532"
+      },
+      {
+        "content": "result_label,verification_class,source_id,status,status_reason,held_for_issue,register_note\n6610,GATE-INGEST-2,CI-MAIN,PASSED,,,hotfix/26.1.3 head before the backport\n",
+        "file_id": "DRV-005-11",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "result-status-register.csv",
+        "sha256": "6792bbb96ca0cd586f8aad670bfb78539a06c9238c62d1bd8985ed6799f7f2a2"
+      },
+      {
+        "content": "run_id,pipeline_id,pipeline_name,kind,trigger,head_sha,started_at,finished_at,status,exit_code,summary\nPR-77820,PIPE-MQ,merge-queue-backport,merge_queue,cron 21:00 daily,,2026-05-03T21:00:00,2026-05-03T21:34:00,SUCCEEDED,0,\"evening merge-queue run completed; next pickup 2026-05-05 21:00, verified on the target branch the next business day\"\nPR-77809,PIPE-EXPIRY,evidence-validity-sweep,evidence,cron 03:00 Fri,,2026-05-01T03:00:00,2026-05-01T03:07:00,SUCCEEDED,0,\"no lapsed result sets this week\"\n",
+        "file_id": "DRV-005-12",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "pipeline-runs.csv",
+        "sha256": "44228e71ca7f679cd1d09dee54265d5683464ace2301d7decb6023aa92eaafdf"
+      },
+      {
+        "content": "flaky_id,check_name,module_id,quarantined_since,retry_minutes,status,note,hubbench_task_scope,hubbench_case_reference\nFLK-150,ingest-replay/cursor-race,MOD-ING-A,2026-04-20,14,CLEARED,cleared 2026-04-30,repodesk-005,SHIP-0005\n",
+        "file_id": "DRV-005-13",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "flaky-test-registry.csv",
+        "sha256": "96c86f2df435e05397910e1013e43056d2f0913c8d46e748c61e894bbf130e00"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SHIP-0005\",\n  \"pipelines\": [\n    {\n      \"base_minutes\": 30,\n      \"kind\": \"merge_queue\",\n      \"name\": \"merge-queue-backport\",\n      \"pipeline_id\": \"PIPE-MQ\"\n    },\n    {\n      \"base_minutes\": 10,\n      \"kind\": \"evidence\",\n      \"name\": \"evidence-validity-sweep\",\n      \"pipeline_id\": \"PIPE-EXPIRY\"\n    }\n  ],\n  \"pool\": {\n    \"capacity\": 6,\n    \"name\": \"release-verify pool\",\n    \"note\": \"\",\n    \"pool_id\": \"POOL-RELEASE\",\n    \"queue_minutes\": 15,\n    \"status\": \"ACTIVE\"\n  }\n}\n",
+        "file_id": "DRV-005-14",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "runner-pool-capacity.json",
+        "sha256": "0195951171dedaa710b960ac898caa3b7f83c954a0eb6dd303284b28fda04cad"
+      },
+      {
+        "content": "service_date,lane_id,session,start,end,status,hold_reason\n2026-05-04,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-04,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-04,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-04,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-04,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-04,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-05,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-05,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-05,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-05,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-05,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-05,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-06,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-06,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-06,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-06,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-06,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-06,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-07,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-07,LANE-1,PM,13:00:00,17:00:00,protected,26.1 GA freeze verification block (protected)\n2026-05-07,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-07,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-07,LANE-3,AM,08:00:00,12:00:00,busy,change booked\n2026-05-07,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-08,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-08,LANE-1,PM,13:00:00,17:00:00,busy,change booked\n2026-05-08,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-08,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-08,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-08,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-11,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-11,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-11,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-11,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-11,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-11,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-12,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-12,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-12,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-12,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-12,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-12,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-13,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-13,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-13,LANE-2,AM,08:00:00,12:00:00,free,\n2026-05-13,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-13,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-13,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-14,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-14,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-14,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-14,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-14,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-14,LANE-3,PM,13:00:00,17:00:00,free,\n2026-05-15,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-15,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-15,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-15,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-15,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-15,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-18,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-18,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-18,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-18,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-18,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-18,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-19,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-19,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-19,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-19,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-19,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-19,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-20,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-20,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-20,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-20,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-20,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-20,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-21,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-21,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-21,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-21,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-21,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-21,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-22,LANE-1,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-22,LANE-1,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-22,LANE-2,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-22,LANE-2,PM,13:00:00,17:00:00,busy,scheduled release load\n2026-05-22,LANE-3,AM,08:00:00,12:00:00,busy,scheduled release load\n2026-05-22,LANE-3,PM,13:00:00,17:00:00,busy,scheduled release load\n",
+        "file_id": "DRV-005-15",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "lane-calendar-2026-05-04.xlsx",
+        "sha256": "aff6a5b501eeb6114725e3ea38de1422e3b6d25510ecf0d5bb3f62ca31cad9d1"
+      },
+      {
+        "content": "lane_id,name,cluster,status,isolation_capable,note,hubbench_task_scope,hubbench_case_reference\nLANE-1,Release lane 1 (blue cluster),blue,ACTIVE,yes,,repodesk-005,SHIP-0005\nLANE-2,Release lane 2 (blue cluster),blue,ACTIVE,yes,,repodesk-005,SHIP-0005\nLANE-3,Release lane 3 (green cluster),green,ACTIVE,yes,,repodesk-005,SHIP-0005\n",
+        "file_id": "DRV-005-16",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "lane-roster-and-capabilities.csv",
+        "sha256": "da7fe508a778c74cfda652ab635c6ea545d02ba725ec00038508d4599e271c0d"
+      },
+      {
+        "content": "Corvane Certification Labs\nCertification confirmation CQ-88355 (system reference CONF-CRV-88355)\nCustomer: Larkspur Systems Release Engineering, account LS-2210\nCase reference: SHIP-0005\nGate class: GATE-INGEST-2 — ingest hotfix gate, 2 required runs per module (unit + replay)\nCertified runs available for this confirmation: 6\nPer-run certification fee: USD 58.00\nStandard ready date: 2026-05-11\nExpedited ready date: 2026-05-06 (expedite fee USD 260, flat)\nValid until: 2026-05-05\nNotes: Certified re-verification of the hotfix branch. Standard bench 2026-05-11; expedited bench 2026-05-06 adds USD 260. Results import the next business day.\nCertified results are delivered to the customer's evidence import endpoint; release use is subject to the customer's re-verification.\n",
+        "file_id": "DRV-005-17",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "certification-confirmation-CQ-88355.pdf",
+        "sha256": "0a7139e40e9f01387208dcc519a99985cb3d8dd4355b0fa1b14346a04018f421"
+      },
+      {
+        "content": "{\n  \"commitment\": {\n    \"commitment_id\": \"COM-ORV-0507\",\n    \"contract_ref\": \"MSA-ORV-2025 \\u00a75.4\",\n    \"customer_id\": \"CUST-ORVILLE\",\n    \"customer_name\": \"Orville Provisioning\",\n    \"cutover_date\": \"2026-05-07\",\n    \"issue_key\": \"LKS-4500\",\n    \"kind\": \"cutover\",\n    \"note\": \"fleet A checkpoint fix contracted for the 2026-05-07 deploy; USD 7,500 per day of slip\",\n    \"penalty_usd\": 7500,\n    \"status\": \"ACTIVE\"\n  },\n  \"export\": \"success.commitments.get\"\n}\n",
+        "file_id": "DRV-005-18",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "commitment-COM-ORV-0507.json",
+        "sha256": "6eedb54232290408dfee1b76afc23f82759929f850dda784ce7db6e34ae374d6"
+      },
+      {
+        "content": "{\n  \"approval_id\": \"AP-RD-0105\",\n  \"approver_id\": \"U-RAGHUNATHAN\",\n  \"approver_role\": \"release_engineering_manager\",\n  \"case_reference\": \"SHIP-0005\",\n  \"granted_on\": \"2026-05-01\",\n  \"scope\": {\n    \"commits\": \"eligible commits only\",\n    \"from_ref\": \"release/26.1\",\n    \"max_commits\": 3,\n    \"not_covered\": [\n      \"external re-certification with an expedited bench (director of engineering)\",\n      \"backporting reverted, embargoed, or docs-only commits (never)\"\n    ],\n    \"repo_id\": \"REPO-PLATFORM\",\n    \"to_ref\": \"hotfix/26.1.3\"\n  },\n  \"status\": \"APPROVED\",\n  \"subject\": \"Ingest hotfix backport for SHIP-0005 (LKS-4500, LKS-4501)\"\n}\n",
+        "file_id": "DRV-005-19",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "approval-AP-RD-0105.json",
+        "sha256": "10c61b6e554cd7fe4a2440819a2e6126d8d1a0cd97328123aa96c34542e24a67"
+      },
+      {
+        "content": "{\n  \"as_of\": \"2026-05-04\",\n  \"backport_requests\": [\n    {\n      \"backport_id\": \"BPR-2200\",\n      \"commit_count\": 2,\n      \"created_at\": \"2026-04-13T10:12:00\",\n      \"from_ref\": \"release/26.0\",\n      \"repo_id\": \"REPO-PLATFORM\",\n      \"requested_by\": \"release_engineering_coordinator\",\n      \"revision\": 1,\n      \"scheduled_date\": \"2026-04-14\",\n      \"status\": \"COMPLETED\",\n      \"to_ref\": \"hotfix/26.0.4\",\n      \"unit\": \"COMMIT\"\n    }\n  ],\n  \"case_reference\": \"SHIP-0005\",\n  \"certification_orders\": [\n    {\n      \"order_id\": \"ORD-3400\",\n      \"status\": \"RECEIVED\"\n    }\n  ],\n  \"changes\": [\n    {\n      \"change_id\": \"CHG-70890\",\n      \"component_id\": \"CMP-31170\",\n      \"end\": \"2026-05-07T11:00:00\",\n      \"issue_key\": \"LKS-4500\",\n      \"lane_id\": \"LANE-3\",\n      \"start\": \"2026-05-07T08:00:00\",\n      \"status\": \"booked\"\n    },\n    {\n      \"change_id\": \"CHG-70891\",\n      \"component_id\": \"CMP-31181\",\n      \"end\": \"2026-05-08T16:00:00\",\n      \"issue_key\": \"LKS-4501\",\n      \"lane_id\": \"LANE-1\",\n      \"start\": \"2026-05-08T13:00:00\",\n      \"status\": \"booked\"\n    }\n  ],\n  \"note\": \"Snapshot before any action; row order does not indicate applicability.\"\n}\n",
+        "file_id": "DRV-005-20",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "starting-state-repodesk-005.json",
+        "sha256": "74c495006c7b1cfcd0380a97b859fd490d8418da8f90cd499de5acc594d3eff6"
+      },
+      {
+        "content": "availability_id,engineer,service_date,session,status,note,hubbench_task_scope,hubbench_case_reference\nAV-1005-01,Maja Lindgren,2026-05-07,AM,available,codeowner on shift,repodesk-005,SHIP-0005\nAV-1005-02,Siobhan Farrell,2026-05-06,PM,oncall,partner-rig change,repodesk-005,SHIP-0005\n",
+        "file_id": "DRV-005-21",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "reviewer-availability.csv",
+        "sha256": "ea1705487dd897f31eb87b4f35edd0a897ffac5096f6f5f9edeb2f23943bfc30"
+      },
+      {
+        "content": "# Hotfix backport procedure (extract)\n\n1. Only eligible commits ride a backport: status merged, not reverted, not embargoed for a named change, not docs-only.\n2. Backports ride the 21:00 merge-queue run; the target branch is rebuilt and verified on the next business day after the scheduled date.\n3. Commits the target branch already carries are never re-applied; backport only the commits it is missing.\n4. Reverted or embargoed commits are never backported, whatever the requesting team's need.\n",
+        "file_id": "DRV-005-22",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "backport-procedure.md",
+        "sha256": "c70fe179656c96bf7dcc2f0d84c5079fab23728126e0cd144eedf67ccfa2d3b7"
+      },
+      {
+        "content": "{\n  \"anchors\": [\n    {\n      \"distribution_note\": \"no upstream tasks, repositories, patches, or scores redistributed; this family covers the release-engineering decision around a fix that patch grading does not\",\n      \"evaluation_shape\": \"issue-to-patch tasks in real repositories graded by executable tests\",\n      \"harbor_dataset\": \"swe-bench/swe-bench-verified\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/swe-bench/swe-bench-verified/latest\",\n      \"license\": \"MIT\",\n      \"name\": \"SWE-bench Verified\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/SWE-bench/SWE-bench\"\n    },\n    {\n      \"distribution_note\": \"no upstream tasks or scores redistributed\",\n      \"evaluation_shape\": \"long-horizon repository tasks with hidden executable tests\",\n      \"harbor_dataset\": \"scale-ai/swe-bench-pro\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/scale-ai/swe-bench-pro/latest\",\n      \"name\": \"SWE-bench Pro\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/scaleapi/SWE-bench_Pro-os\"\n    },\n    {\n      \"distribution_note\": \"no upstream exercises or scores redistributed\",\n      \"evaluation_shape\": \"multi-language coding exercises graded by unit tests\",\n      \"harbor_dataset\": \"aider/aider-polyglot\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/aider/aider-polyglot/latest\",\n      \"name\": \"Aider Polyglot\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/Aider-AI/polyglot-benchmark\"\n    }\n  ],\n  \"clean_room\": true,\n  \"family\": \"repodesk\",\n  \"schema_version\": \"hubbench.provenance.v1\",\n  \"task_id\": \"repodesk-005\",\n  \"upstream_scores_claimed\": false,\n  \"upstream_tasks_copied\": false\n}\n",
+        "file_id": "DRV-005-23",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "harbor-open-source-anchors.json",
+        "sha256": "24d8e0c341eff767aeebd1575b9ba091d9ec5aabfc6319beb4fb393e038e6aaa"
+      },
+      {
+        "content": "task_id,case_reference,subject_id,source_system,record_role,effective_revision\nrepodesk-005,SHIP-0005,hotfix/26.1.3,domain,authoritative_subject,v1\nrepodesk-005,SHIP-0005,hotfix/26.1.3,approvals,execution_authority,v1\nrepodesk-005,SHIP-0005,hotfix/26.1.3,drive,supporting_evidence,v1\n",
+        "file_id": "DRV-005-24",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "record-lineage.csv",
+        "sha256": "a0b44b5018cea5b837b6f8314d5fbd695e3dbf10155ff0fd093dbad0a0d516d3"
+      },
+      {
+        "content": "# Current execution authority — SHIP-0005\n\nEffective 2026-05-04. Applies only to hotfix/26.1.3 in RepoDesk. The signed approval record and provider contract jointly bound any write. A source record, search result, or prior decision never grants authority.\n\nRelease revision: v1. Task scope: repodesk-005.\n",
+        "file_id": "DRV-005-25",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "current-authority.md",
+        "sha256": "0e9c1a5b1122e725c1421aaf7f7cec870783c21cdd44f3a7bc7312a42f1d26d4"
+      },
+      {
+        "content": "# Retired authority — SHIP-0005\n\nStatus: SUPERSEDED. This historical RepoDesk delegation ended before 2026-05-04. It references hotfix/26.1.3 but cannot authorize a current action for repodesk-005.\n",
+        "file_id": "DRV-005-26",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "retired-authority.md",
+        "sha256": "7b76d2e7c744229489e5288c9884774751fd75517782dc69c5a05e4de399df44"
+      },
+      {
+        "content": "{\n  \"approval_record\": \"DEC-REPODESK-0005\",\n  \"authority_source\": \"signed family approval plus provider contract\",\n  \"case_reference\": \"SHIP-0005\",\n  \"effective_revision\": \"v1\",\n  \"prohibited_basis\": [\n    \"retired authority\",\n    \"search ranking\",\n    \"request urgency\"\n  ],\n  \"status\": \"REVIEW_REQUIRED\",\n  \"subject_id\": \"hotfix/26.1.3\"\n}\n",
+        "file_id": "DRV-005-27",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "decision-record.json",
+        "sha256": "a6c01bfb370b36c1aaada1ea78d82272f83a2274df37f9408e586084eb9d4037"
+      },
+      {
+        "content": "task_id,case_reference,review_lane,available_units,protected_units,effective_date\nrepodesk-005,SHIP-0005,standard,13,2,2026-05-04\nrepodesk-005,SHIP-0005,expedited,9,1,2026-05-04\n",
+        "file_id": "DRV-005-28",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "review-capacity.xlsx",
+        "sha256": "5d15cee9f1d724d8d62edd10919360b3dcdecaed9cad60e9dd06e3bc5762385d"
+      },
+      {
+        "content": "Source integrity control\nTask: repodesk-005\nCase: SHIP-0005\nSubject: hotfix/26.1.3\nEffective revision: v1\nRule: current provider state plus the signed approval govern. Search rank, filenames, request urgency, and archived authority do not.\n",
+        "file_id": "DRV-005-29",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "source-integrity.pdf",
+        "sha256": "531482d0b05961f3b5c6319d4d1e43eaf38532f6219484ee0d7d7e0e9ef70609"
+      },
+      {
+        "content": "task_id: \"repodesk-005\"\ncase_reference: \"SHIP-0005\"\nas_of: \"2026-05-04\"\nchecks:\n  - name: \"identity_linked\"\n    status: \"PASS\"\n    record: \"hotfix/26.1.3\"\n  - name: \"revision_current\"\n    status: \"PASS\"\n    record: \"v1\"\n  - name: \"authority_requires_live_read\"\n    status: \"OPEN\"\n    record: \"DEC-REPODESK-0005\"\n  - name: \"outcome_precomputed\"\n    status: \"NO\"\n    record: \"repodesk-005\"\n",
+        "file_id": "DRV-005-30",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "evidence-status.yaml",
+        "sha256": "c550de6f29e978b0a7158895a385a792d84e94ca3ff75dc19760191e8ab7e812"
+      },
+      {
+        "content": "2026-05-04T08:55:00Z INFO scope_created task=repodesk-005 case=SHIP-0005\n2026-05-04T08:56:00Z INFO subject_linked family=repodesk subject=hotfix/26.1.3\n2026-05-04T08:57:00Z WARN retired_authority_present case=SHIP-0005 action=ignore_until_current_scope_verified\n2026-05-04T08:58:00Z INFO provider_state_ready task=repodesk-005 expected_mutations=2\n",
+        "file_id": "DRV-005-31",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "text/plain",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "system-audit.log",
+        "sha256": "f9dc1845dd38f635737547edea2d22835eed51b0325a955c87096e7d168b8b6e"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SHIP-0005\",\n  \"messages\": [\n    {\n      \"author\": \"operations\",\n      \"sent_at\": \"2026-05-04T08:35:00\",\n      \"text\": \"Use immutable subject hotfix/26.1.3; the similarly named archived record is not in scope.\"\n    },\n    {\n      \"author\": \"governance\",\n      \"sent_at\": \"2026-05-04T08:41:00\",\n      \"text\": \"Current revision is v1. Confirm the signed approval before any state change.\"\n    },\n    {\n      \"author\": \"requester\",\n      \"sent_at\": \"2026-05-04T08:47:00\",\n      \"text\": \"Please leave the stakeholder communication as a draft for human review.\"\n    }\n  ],\n  \"thread_id\": \"OPS-REPODESK-0005\"\n}\n",
+        "file_id": "DRV-005-32",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "operations-thread.json",
+        "sha256": "ee9939531302b9dcbaa4a54ec14dd2194d45f0bbba885fff19f6c86fa4b804f8"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SHIP-0005\",\n  \"network\": \"closed benchmark world\",\n  \"read_semantics\": \"provider-shaped records backed by the seeded task world\",\n  \"schema_version\": \"hubbench.provider-contract.v1\",\n  \"state_scope\": \"isolated SQLite episode\",\n  \"subject_id\": \"hotfix/26.1.3\",\n  \"task_id\": \"repodesk-005\",\n  \"unsupported_claims\": [\n    \"byte parity with upstream providers\",\n    \"conversion of upstream benchmark tasks\",\n    \"upstream score comparability\"\n  ],\n  \"verifier_visibility\": \"hidden from the agent\",\n  \"write_semantics\": \"task-scoped, schema-validated, transactionally persisted and audited\"\n}\n",
+        "file_id": "DRV-005-33",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "provider-contracts.json",
+        "sha256": "5a9eb88314c1865713ee11d9eaaa79654cd305d13f594f1dc95ba43b8bfa7c84"
+      },
+      {
+        "content": "{\n  \"captured_as_of\": \"2026-05-04\",\n  \"case_reference\": \"SHIP-0005\",\n  \"expected_mutation_count\": 2,\n  \"family\": \"repodesk\",\n  \"note\": \"Live provider state remains authoritative; this export is a correlation aid, not a write instruction.\",\n  \"organization\": \"Larkspur Systems \\u2014 Release Engineering\",\n  \"schema_version\": \"hubbench.live-snapshot.v1\",\n  \"state\": \"PRE_ACTION\",\n  \"subject_id\": \"hotfix/26.1.3\",\n  \"task_id\": \"repodesk-005\"\n}\n",
+        "file_id": "DRV-005-34",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "live-snapshot.json",
+        "sha256": "2e7cadda7ce5011d42b1d6fc83beb978808cb35140064c3cefb6ff21edf4ff6a"
+      },
+      {
+        "content": "case_reference: \"SHIP-0005\"\nas_of: \"2026-05-04\"\nfiles:\n  - path: \"playbook/release-engineering-playbook.md\"\n    kind: \"policy\"\n    media_type: \"text/markdown\"\n    sha256: \"85ed113e288198ab94c1d64b777ae03e14c774de6b60c0b20bdbebc8b85bb971\"\n  - path: \"playbook/superseded-release-playbook-2024.md\"\n    kind: \"policy_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"c44929aa2d200b4b403d6b5234ac5b9d2ee54ddf47731ad9cb5a60af1e0a0e68\"\n  - path: \"scm/fix-range-commit-count-2026-04.xlsx\"\n    kind: \"stale_commit_count\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"fcea42d623bc5d15314fa26163201964fea490c8d6379e59f0f1bfbfe158bd57\"\n  - path: \"tracker/issue-LKS-4500.json\"\n    kind: \"issue_export\"\n    media_type: \"application/json\"\n    sha256: \"25b60a440119d4263f13bc05d3ef2dd9443a69019ce6db73e6ce87b64c939598\"\n  - path: \"scm/component-ingest-fleet-a-impact.json\"\n    kind: \"component_summary\"\n    media_type: \"application/json\"\n    sha256: \"3ded2a40e201d8dab5b986e8e00f12a429582dd9e9ef1183c54b4e09cf6f9af9\"\n  - path: \"scm/commits-release-26.1-fix-range.csv\"\n    kind: \"commit_range\"\n    media_type: \"text/csv\"\n    sha256: \"3d6d1b4b342ab34525f576350a3b2ea8eb03955ebfdcfff3ddd0778587ded901\"\n  - path: \"scm/pull-requests-and-reviews.json\"\n    kind: \"pull_requests\"\n    media_type: \"application/json\"\n    sha256: \"bfed7709e7f289ad2bc23101f0f5cada66c888e3534468d993f05ef9e9daaea4\"\n  - path: \"scm/module-registry.csv\"\n    kind: \"module_registry\"\n    media_type: \"text/csv\"\n    sha256: \"1d709c1faa65eae7abc30baaf5e48545e908dddfce7a7cff0da76d7a63aea4c0\"\n  - path: \"ci/gate-class-catalog.csv\"\n    kind: \"class_catalog\"\n    media_type: \"text/csv\"\n    sha256: \"1d738872545dfa39fc8817ceb270fd8d9c3728e7474263b2da05387c2d67a741\"\n  - path: \"ci/verification-results-by-set.xlsx\"\n    kind: \"evidence_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"6a358f77db20e181cd0fa9dd64e1af7c1ce6b94352c5fc3a47c73b4d9cd2f532\"\n  - path: \"ci/result-status-register.csv\"\n    kind: \"verification_register\"\n    media_type: \"text/csv\"\n    sha256: \"6792bbb96ca0cd586f8aad670bfb78539a06c9238c62d1bd8985ed6799f7f2a2\"\n  - path: \"ci/pipeline-runs.csv\"\n    kind: \"pipeline_runs\"\n    media_type: \"text/csv\"\n    sha256: \"44228e71ca7f679cd1d09dee54265d5683464ace2301d7decb6023aa92eaafdf\"\n  - path: \"ci/flaky-test-registry.csv\"\n    kind: \"flaky_registry\"\n    media_type: \"text/csv\"\n    sha256: \"96c86f2df435e05397910e1013e43056d2f0913c8d46e748c61e894bbf130e00\"\n  - path: \"ci/runner-pool-capacity.json\"\n    kind: \"pool_capacity\"\n    media_type: \"application/json\"\n    sha256: \"0195951171dedaa710b960ac898caa3b7f83c954a0eb6dd303284b28fda04cad\"\n  - path: \"deploy/lane-calendar-2026-05-04.xlsx\"\n    kind: \"lane_calendar\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"aff6a5b501eeb6114725e3ea38de1422e3b6d25510ecf0d5bb3f62ca31cad9d1\"\n  - path: \"deploy/lane-roster-and-capabilities.csv\"\n    kind: \"lane_roster\"\n    media_type: \"text/csv\"\n    sha256: \"da7fe508a778c74cfda652ab635c6ea545d02ba725ec00038508d4599e271c0d\"\n  - path: \"partners/certification-confirmation-CQ-88355.pdf\"\n    kind: \"partner_confirmation\"\n    media_type: \"application/pdf\"\n    sha256: \"0a7139e40e9f01387208dcc519a99985cb3d8dd4355b0fa1b14346a04018f421\"\n  - path: \"success/commitment-COM-ORV-0507.json\"\n    kind: \"customer_commitment\"\n    media_type: \"application/json\"\n    sha256: \"6eedb54232290408dfee1b76afc23f82759929f850dda784ce7db6e34ae374d6\"\n  - path: \"messages/THR-1005.eml\"\n    kind: \"email\"\n    media_type: \"message/rfc822\"\n    sha256: \"b9bc31535bb0b84915edb90c04c3f66274b31e0c2ca3f4fa58a45b7dbecf1d31\"\n  - path: \"chat/CHAT-1005.json\"\n    kind: \"chat_thread\"\n    media_type: \"application/json\"\n    sha256: \"64d93205a0a6d5a4f4ebbbea40aad5f5c135f12f6e98d8f0a9e18de47508e2b5\"\n  - path: \"approvals/approval-AP-RD-0105.json\"\n    kind: \"approval\"\n    media_type: \"application/json\"\n    sha256: \"10c61b6e554cd7fe4a2440819a2e6126d8d1a0cd97328123aa96c34542e24a67\"\n  - path: \"exports/starting-state-repodesk-005.json\"\n    kind: \"starting_state\"\n    media_type: \"application/json\"\n    sha256: \"74c495006c7b1cfcd0380a97b859fd490d8418da8f90cd499de5acc594d3eff6\"\n  - path: \"oncall/reviewer-availability.csv\"\n    kind: \"reviewer_availability\"\n    media_type: \"text/csv\"\n    sha256: \"ea1705487dd897f31eb87b4f35edd0a897ffac5096f6f5f9edeb2f23943bfc30\"\n  - path: \"scm/backport-procedure.md\"\n    kind: \"backport_procedure\"\n    media_type: \"text/markdown\"\n    sha256: \"c70fe179656c96bf7dcc2f0d84c5079fab23728126e0cd144eedf67ccfa2d3b7\"\n  - path: \"provenance/harbor-open-source-anchors.json\"\n    kind: \"open_source_provenance\"\n    media_type: \"application/json\"\n    sha256: \"24d8e0c341eff767aeebd1575b9ba091d9ec5aabfc6319beb4fb393e038e6aaa\"\n  - path: \"lineage/record-lineage.csv\"\n    kind: \"record_lineage\"\n    media_type: \"text/csv\"\n    sha256: \"a0b44b5018cea5b837b6f8314d5fbd695e3dbf10155ff0fd093dbad0a0d516d3\"\n  - path: \"controls/current-authority.md\"\n    kind: \"authority_current\"\n    media_type: \"text/markdown\"\n    sha256: \"0e9c1a5b1122e725c1421aaf7f7cec870783c21cdd44f3a7bc7312a42f1d26d4\"\n  - path: \"controls/retired-authority.md\"\n    kind: \"authority_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"7b76d2e7c744229489e5288c9884774751fd75517782dc69c5a05e4de399df44\"\n  - path: \"approvals/decision-record.json\"\n    kind: \"approval_decision\"\n    media_type: \"application/json\"\n    sha256: \"a6c01bfb370b36c1aaada1ea78d82272f83a2274df37f9408e586084eb9d4037\"\n  - path: \"workbooks/review-capacity.xlsx\"\n    kind: \"review_capacity_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"5d15cee9f1d724d8d62edd10919360b3dcdecaed9cad60e9dd06e3bc5762385d\"\n  - path: \"controls/source-integrity.pdf\"\n    kind: \"source_integrity_control\"\n    media_type: \"application/pdf\"\n    sha256: \"531482d0b05961f3b5c6319d4d1e43eaf38532f6219484ee0d7d7e0e9ef70609\"\n  - path: \"audit/evidence-status.yaml\"\n    kind: \"evidence_status\"\n    media_type: \"application/yaml\"\n    sha256: \"c550de6f29e978b0a7158895a385a792d84e94ca3ff75dc19760191e8ab7e812\"\n  - path: \"audit/system-audit.log\"\n    kind: \"system_audit\"\n    media_type: \"text/plain\"\n    sha256: \"f9dc1845dd38f635737547edea2d22835eed51b0325a955c87096e7d168b8b6e\"\n  - path: \"communications/source-request.eml\"\n    kind: \"source_request\"\n    media_type: \"message/rfc822\"\n    sha256: \"71ac07775b8e73740d8eca633202db4ea8f0d050b0f5aaba26681fdf02db0ef3\"\n  - path: \"collaboration/operations-thread.json\"\n    kind: \"operations_thread\"\n    media_type: \"application/json\"\n    sha256: \"ee9939531302b9dcbaa4a54ec14dd2194d45f0bbba885fff19f6c86fa4b804f8\"\n  - path: \"contracts/provider-contracts.json\"\n    kind: \"provider_contract\"\n    media_type: \"application/json\"\n    sha256: \"5a9eb88314c1865713ee11d9eaaa79654cd305d13f594f1dc95ba43b8bfa7c84\"\n  - path: \"exports/live-snapshot.json\"\n    kind: \"live_snapshot\"\n    media_type: \"application/json\"\n    sha256: \"2e7cadda7ce5011d42b1d6fc83beb978808cb35140064c3cefb6ff21edf4ff6a\"\n",
+        "file_id": "DRV-005-35",
+        "folder": "Release Engineering/Cases/SHIP-0005",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-05-01T17:30:00",
+        "name": "evidence-index.yaml",
+        "sha256": "829be16b43d77c6c01b978cb885212d7890a7fc67d3ee332fb9a51ee081149e8"
+      }
+    ],
+    "engineers": [
+      {
+        "engineer_id": "ENG-KOWALCZYK",
+        "focus": "Checkout and storefront",
+        "name": "Ines Kowalczyk",
+        "role": "component_owner"
+      },
+      {
+        "engineer_id": "ENG-DESHPANDE",
+        "focus": "Payments",
+        "name": "Rohan Deshpande",
+        "role": "component_owner"
+      },
+      {
+        "engineer_id": "ENG-LINDGREN",
+        "focus": "Ledger, catalog, and ingest",
+        "name": "Maja Lindgren",
+        "role": "data_platform_lead"
+      },
+      {
+        "engineer_id": "ENG-ACHEBE",
+        "focus": "Compliance and CVE remediation",
+        "name": "Chidi Achebe",
+        "role": "security_engineer"
+      },
+      {
+        "engineer_id": "ENG-FARRELL",
+        "focus": "Platform reliability",
+        "name": "Siobhan Farrell",
+        "role": "sre_oncall"
+      }
+    ],
+    "environments": [
+      {
+        "cluster": "blue",
+        "environment_id": "ENV-PROD-SHARED",
+        "kind": "production",
+        "name": "Production (shared multi-tenant)"
+      },
+      {
+        "cluster": "green",
+        "environment_id": "ENV-PROD-DEDICATED",
+        "kind": "production",
+        "name": "Production (dedicated single-tenant pool)"
+      },
+      {
+        "cluster": "blue",
+        "environment_id": "ENV-STAGE",
+        "kind": "staging",
+        "name": "Staging"
+      }
+    ],
+    "evidence_files": [
+      {
+        "asset_id": "repodesk-005-01",
+        "kind": "policy",
+        "media_type": "text/markdown",
+        "path": "playbook/release-engineering-playbook.md",
+        "sha256": "85ed113e288198ab94c1d64b777ae03e14c774de6b60c0b20bdbebc8b85bb971",
+        "source": "drive",
+        "task_id": "repodesk-005",
+        "title": "Release engineering playbook v5 (effective)"
+      },
+      {
+        "asset_id": "repodesk-005-02",
+        "kind": "policy_superseded",
+        "media_type": "text/markdown",
+        "path": "playbook/superseded-release-playbook-2024.md",
+        "sha256": "c44929aa2d200b4b403d6b5234ac5b9d2ee54ddf47731ad9cb5a60af1e0a0e68",
+        "source": "drive",
+        "task_id": "repodesk-005",
+        "title": "Release engineering playbook 2024 (superseded)"
+      },
+      {
+        "asset_id": "repodesk-005-03",
+        "kind": "stale_commit_count",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "scm/fix-range-commit-count-2026-04.xlsx",
+        "sha256": "fcea42d623bc5d15314fa26163201964fea490c8d6379e59f0f1bfbfe158bd57",
+        "source": "drive",
+        "task_id": "repodesk-005",
+        "title": "Fix-range commit count — April sweep (stale)"
+      },
+      {
+        "asset_id": "repodesk-005-04",
+        "kind": "issue_export",
+        "media_type": "application/json",
+        "path": "tracker/issue-LKS-4500.json",
+        "sha256": "25b60a440119d4263f13bc05d3ef2dd9443a69019ce6db73e6ce87b64c939598",
+        "source": "tracker_export",
+        "task_id": "repodesk-005",
+        "title": "Issue LKS-4500 (tracker export)"
+      },
+      {
+        "asset_id": "repodesk-005-05",
+        "kind": "component_summary",
+        "media_type": "application/json",
+        "path": "scm/component-ingest-fleet-a-impact.json",
+        "sha256": "3ded2a40e201d8dab5b986e8e00f12a429582dd9e9ef1183c54b4e09cf6f9af9",
+        "source": "scm_export",
+        "task_id": "repodesk-005",
+        "title": "Component ingest-fleet-a summary with impact analyses (SCM export)"
+      },
+      {
+        "asset_id": "repodesk-005-06",
+        "kind": "commit_range",
+        "media_type": "text/csv",
+        "path": "scm/commits-release-26.1-fix-range.csv",
+        "sha256": "3d6d1b4b342ab34525f576350a3b2ea8eb03955ebfdcfff3ddd0778587ded901",
+        "source": "scm_export",
+        "task_id": "repodesk-005",
+        "title": "Commits on release/26.1 around the fix range (SCM export)"
+      },
+      {
+        "asset_id": "repodesk-005-07",
+        "kind": "pull_requests",
+        "media_type": "application/json",
+        "path": "scm/pull-requests-and-reviews.json",
+        "sha256": "bfed7709e7f289ad2bc23101f0f5cada66c888e3534468d993f05ef9e9daaea4",
+        "source": "scm_export",
+        "task_id": "repodesk-005",
+        "title": "Pull requests and reviews linked to the case (SCM export)"
+      },
+      {
+        "asset_id": "repodesk-005-08",
+        "kind": "module_registry",
+        "media_type": "text/csv",
+        "path": "scm/module-registry.csv",
+        "sha256": "1d709c1faa65eae7abc30baaf5e48545e908dddfce7a7cff0da76d7a63aea4c0",
+        "source": "scm_export",
+        "task_id": "repodesk-005",
+        "title": "Module registry: codeowners, gate class, revert / flag gates"
+      },
+      {
+        "asset_id": "repodesk-005-09",
+        "kind": "class_catalog",
+        "media_type": "text/csv",
+        "path": "ci/gate-class-catalog.csv",
+        "sha256": "1d738872545dfa39fc8817ceb270fd8d9c3728e7474263b2da05387c2d67a741",
+        "source": "ci_export",
+        "task_id": "repodesk-005",
+        "title": "Gate class catalog: runs per module and minimum validity"
+      },
+      {
+        "asset_id": "repodesk-005-10",
+        "kind": "evidence_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "ci/verification-results-by-set.xlsx",
+        "sha256": "6a358f77db20e181cd0fa9dd64e1af7c1ce6b94352c5fc3a47c73b4d9cd2f532",
+        "source": "ci_workbook",
+        "task_id": "repodesk-005",
+        "title": "Registered verification results by set (gross)"
+      },
+      {
+        "asset_id": "repodesk-005-11",
+        "kind": "verification_register",
+        "media_type": "text/csv",
+        "path": "ci/result-status-register.csv",
+        "sha256": "6792bbb96ca0cd586f8aad670bfb78539a06c9238c62d1bd8985ed6799f7f2a2",
+        "source": "ci_export",
+        "task_id": "repodesk-005",
+        "title": "Result-set status register (status, holds, incident notes)"
+      },
+      {
+        "asset_id": "repodesk-005-12",
+        "kind": "pipeline_runs",
+        "media_type": "text/csv",
+        "path": "ci/pipeline-runs.csv",
+        "sha256": "44228e71ca7f679cd1d09dee54265d5683464ace2301d7decb6023aa92eaafdf",
+        "source": "ci_export",
+        "task_id": "repodesk-005",
+        "title": "Pipelines and recent runs"
+      },
+      {
+        "asset_id": "repodesk-005-13",
+        "kind": "flaky_registry",
+        "media_type": "text/csv",
+        "path": "ci/flaky-test-registry.csv",
+        "sha256": "96c86f2df435e05397910e1013e43056d2f0913c8d46e748c61e894bbf130e00",
+        "source": "ci_export",
+        "task_id": "repodesk-005",
+        "title": "Flaky-test registry (quarantine and retry exposure)"
+      },
+      {
+        "asset_id": "repodesk-005-14",
+        "kind": "pool_capacity",
+        "media_type": "application/json",
+        "path": "ci/runner-pool-capacity.json",
+        "sha256": "0195951171dedaa710b960ac898caa3b7f83c954a0eb6dd303284b28fda04cad",
+        "source": "ci_export",
+        "task_id": "repodesk-005",
+        "title": "Runner pool capacity and queue — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-15",
+        "kind": "lane_calendar",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "deploy/lane-calendar-2026-05-04.xlsx",
+        "sha256": "aff6a5b501eeb6114725e3ea38de1422e3b6d25510ecf0d5bb3f62ca31cad9d1",
+        "source": "deploy_workbook",
+        "task_id": "repodesk-005",
+        "title": "Lane window calendar, three weeks from 2026-05-04"
+      },
+      {
+        "asset_id": "repodesk-005-16",
+        "kind": "lane_roster",
+        "media_type": "text/csv",
+        "path": "deploy/lane-roster-and-capabilities.csv",
+        "sha256": "da7fe508a778c74cfda652ab635c6ea545d02ba725ec00038508d4599e271c0d",
+        "source": "deploy_export",
+        "task_id": "repodesk-005",
+        "title": "Lane roster and tenant-isolation capability"
+      },
+      {
+        "asset_id": "repodesk-005-17",
+        "kind": "partner_confirmation",
+        "media_type": "application/pdf",
+        "path": "partners/certification-confirmation-CQ-88355.pdf",
+        "sha256": "0a7139e40e9f01387208dcc519a99985cb3d8dd4355b0fa1b14346a04018f421",
+        "source": "email_attachment",
+        "task_id": "repodesk-005",
+        "title": "Certification confirmation CQ-88355"
+      },
+      {
+        "asset_id": "repodesk-005-18",
+        "kind": "customer_commitment",
+        "media_type": "application/json",
+        "path": "success/commitment-COM-ORV-0507.json",
+        "sha256": "6eedb54232290408dfee1b76afc23f82759929f850dda784ce7db6e34ae374d6",
+        "source": "success_export",
+        "task_id": "repodesk-005",
+        "title": "Customer commitment COM-ORV-0507 (customer-success export)"
+      },
+      {
+        "asset_id": "repodesk-005-19",
+        "kind": "email",
+        "media_type": "message/rfc822",
+        "path": "messages/THR-1005.eml",
+        "sha256": "b9bc31535bb0b84915edb90c04c3f66274b31e0c2ca3f4fa58a45b7dbecf1d31",
+        "source": "messages",
+        "task_id": "repodesk-005",
+        "title": "SHIP-0005 ingest hotfix deploys — hotfix branch is behind"
+      },
+      {
+        "asset_id": "repodesk-005-20",
+        "kind": "chat_thread",
+        "media_type": "application/json",
+        "path": "chat/CHAT-1005.json",
+        "sha256": "64d93205a0a6d5a4f4ebbbea40aad5f5c135f12f6e98d8f0a9e18de47508e2b5",
+        "source": "chat",
+        "task_id": "repodesk-005",
+        "title": "SHIP-0005 ingest backport — hotfix/26.1.3"
+      },
+      {
+        "asset_id": "repodesk-005-21",
+        "kind": "approval",
+        "media_type": "application/json",
+        "path": "approvals/approval-AP-RD-0105.json",
+        "sha256": "10c61b6e554cd7fe4a2440819a2e6126d8d1a0cd97328123aa96c34542e24a67",
+        "source": "approvals_export",
+        "task_id": "repodesk-005",
+        "title": "Approval record AP-RD-0105"
+      },
+      {
+        "asset_id": "repodesk-005-22",
+        "kind": "starting_state",
+        "media_type": "application/json",
+        "path": "exports/starting-state-repodesk-005.json",
+        "sha256": "74c495006c7b1cfcd0380a97b859fd490d8418da8f90cd499de5acc594d3eff6",
+        "source": "deploy_export",
+        "task_id": "repodesk-005",
+        "title": "Starting-state export (changes, certification orders, backports)"
+      },
+      {
+        "asset_id": "repodesk-005-23",
+        "kind": "reviewer_availability",
+        "media_type": "text/csv",
+        "path": "oncall/reviewer-availability.csv",
+        "sha256": "ea1705487dd897f31eb87b4f35edd0a897ffac5096f6f5f9edeb2f23943bfc30",
+        "source": "oncall_export",
+        "task_id": "repodesk-005",
+        "title": "Reviewer and on-call availability"
+      },
+      {
+        "asset_id": "repodesk-005-24",
+        "kind": "backport_procedure",
+        "media_type": "text/markdown",
+        "path": "scm/backport-procedure.md",
+        "sha256": "c70fe179656c96bf7dcc2f0d84c5079fab23728126e0cd144eedf67ccfa2d3b7",
+        "source": "drive",
+        "task_id": "repodesk-005",
+        "title": "Hotfix backport procedure (extract)"
+      },
+      {
+        "asset_id": "repodesk-005-25",
+        "kind": "open_source_provenance",
+        "media_type": "application/json",
+        "path": "provenance/harbor-open-source-anchors.json",
+        "sha256": "24d8e0c341eff767aeebd1575b9ba091d9ec5aabfc6319beb4fb393e038e6aaa",
+        "source": "release_metadata",
+        "task_id": "repodesk-005",
+        "title": "Open-source benchmark provenance — RepoDesk"
+      },
+      {
+        "asset_id": "repodesk-005-26",
+        "kind": "record_lineage",
+        "media_type": "text/csv",
+        "path": "lineage/record-lineage.csv",
+        "sha256": "a0b44b5018cea5b837b6f8314d5fbd695e3dbf10155ff0fd093dbad0a0d516d3",
+        "source": "lineage_export",
+        "task_id": "repodesk-005",
+        "title": "Cross-system record lineage — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-27",
+        "kind": "authority_current",
+        "media_type": "text/markdown",
+        "path": "controls/current-authority.md",
+        "sha256": "0e9c1a5b1122e725c1421aaf7f7cec870783c21cdd44f3a7bc7312a42f1d26d4",
+        "source": "governance",
+        "task_id": "repodesk-005",
+        "title": "Current authority — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-28",
+        "kind": "authority_superseded",
+        "media_type": "text/markdown",
+        "path": "controls/retired-authority.md",
+        "sha256": "7b76d2e7c744229489e5288c9884774751fd75517782dc69c5a05e4de399df44",
+        "source": "governance_archive",
+        "task_id": "repodesk-005",
+        "title": "Retired authority — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-29",
+        "kind": "approval_decision",
+        "media_type": "application/json",
+        "path": "approvals/decision-record.json",
+        "sha256": "a6c01bfb370b36c1aaada1ea78d82272f83a2274df37f9408e586084eb9d4037",
+        "source": "approvals_export",
+        "task_id": "repodesk-005",
+        "title": "Decision control record — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-30",
+        "kind": "review_capacity_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "workbooks/review-capacity.xlsx",
+        "sha256": "5d15cee9f1d724d8d62edd10919360b3dcdecaed9cad60e9dd06e3bc5762385d",
+        "source": "operations_workbook",
+        "task_id": "repodesk-005",
+        "title": "Review capacity — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-31",
+        "kind": "source_integrity_control",
+        "media_type": "application/pdf",
+        "path": "controls/source-integrity.pdf",
+        "sha256": "531482d0b05961f3b5c6319d4d1e43eaf38532f6219484ee0d7d7e0e9ef70609",
+        "source": "governance",
+        "task_id": "repodesk-005",
+        "title": "Source integrity control — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-32",
+        "kind": "evidence_status",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-status.yaml",
+        "sha256": "c550de6f29e978b0a7158895a385a792d84e94ca3ff75dc19760191e8ab7e812",
+        "source": "audit_export",
+        "task_id": "repodesk-005",
+        "title": "Evidence readiness — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-33",
+        "kind": "system_audit",
+        "media_type": "text/plain",
+        "path": "audit/system-audit.log",
+        "sha256": "f9dc1845dd38f635737547edea2d22835eed51b0325a955c87096e7d168b8b6e",
+        "source": "audit_export",
+        "task_id": "repodesk-005",
+        "title": "System audit log — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-34",
+        "kind": "source_request",
+        "media_type": "message/rfc822",
+        "path": "communications/source-request.eml",
+        "sha256": "71ac07775b8e73740d8eca633202db4ea8f0d050b0f5aaba26681fdf02db0ef3",
+        "source": "messages",
+        "task_id": "repodesk-005",
+        "title": "Source integrity request — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-35",
+        "kind": "operations_thread",
+        "media_type": "application/json",
+        "path": "collaboration/operations-thread.json",
+        "sha256": "ee9939531302b9dcbaa4a54ec14dd2194d45f0bbba885fff19f6c86fa4b804f8",
+        "source": "chat",
+        "task_id": "repodesk-005",
+        "title": "Operations thread — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-36",
+        "kind": "provider_contract",
+        "media_type": "application/json",
+        "path": "contracts/provider-contracts.json",
+        "sha256": "5a9eb88314c1865713ee11d9eaaa79654cd305d13f594f1dc95ba43b8bfa7c84",
+        "source": "release_metadata",
+        "task_id": "repodesk-005",
+        "title": "Provider contract — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-37",
+        "kind": "live_snapshot",
+        "media_type": "application/json",
+        "path": "exports/live-snapshot.json",
+        "sha256": "2e7cadda7ce5011d42b1d6fc83beb978808cb35140064c3cefb6ff21edf4ff6a",
+        "source": "provider_export",
+        "task_id": "repodesk-005",
+        "title": "Live pre-action snapshot — SHIP-0005"
+      },
+      {
+        "asset_id": "repodesk-005-38",
+        "kind": "evidence_index",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-index.yaml",
+        "sha256": "829be16b43d77c6c01b978cb885212d7890a7fc67d3ee332fb9a51ee081149e8",
+        "source": "drive",
+        "task_id": "repodesk-005",
+        "title": "Evidence index"
+      }
+    ],
+    "feature_flags": [
+      {
+        "environment_id": "ENV-PROD-SHARED",
+        "flag_key": "ingest.replay.shared_cursor",
+        "last_updated": "2026-05-01T12:00:00",
+        "note": null,
+        "revision": 1,
+        "scope": "fleet A and fleet B",
+        "state": "cohort"
+      }
+    ],
+    "flaky_tests": [
+      {
+        "check_name": "ingest-replay/cursor-race",
+        "flaky_id": "FLK-150",
+        "module_id": "MOD-ING-A",
+        "note": "cleared 2026-04-30",
+        "quarantined_since": "2026-04-20",
+        "retry_minutes": 14,
+        "status": "CLEARED"
+      }
+    ],
+    "impact_reports": [
+      {
+        "component_id": "CMP-31170",
+        "generated_at": "2026-05-01",
+        "metric": "TOUCHED-MODULES",
+        "report_id": "IMP-31170",
+        "status": "final",
+        "unit": "MODULE",
+        "value": 1
+      },
+      {
+        "component_id": "CMP-31181",
+        "generated_at": "2026-05-01",
+        "metric": "TOUCHED-MODULES",
+        "report_id": "IMP-31181",
+        "status": "final",
+        "unit": "MODULE",
+        "value": 1
+      },
+      {
+        "component_id": "CMP-31190",
+        "generated_at": "2026-04-30",
+        "metric": "TOUCHED-MODULES",
+        "report_id": "IMP-31190",
+        "status": "final",
+        "unit": "MODULE",
+        "value": 1
+      }
+    ],
+    "issues": [
+      {
+        "bake_minutes": 30,
+        "basis": "fixed",
+        "build_minutes": 150,
+        "commitment_id": "COM-ORV-0507",
+        "component_id": "CMP-31170",
+        "customer_id": "CUST-ORVILLE",
+        "duplicate_of": null,
+        "environments_in_scope": 1,
+        "fix_version": null,
+        "fixed_modules": 1,
+        "gated_modules": 0,
+        "issue_key": "LKS-4500",
+        "kind": "regression",
+        "note": "The deploy builds from hotfix/26.1.3; the fix commits must be backported before the merge queue run that precedes the change.",
+        "opened_at": "2026-04-29",
+        "regression_from": null,
+        "regression_to": null,
+        "requested_by": "ENG-LINDGREN",
+        "scope_note": "fleet A hotfix deploy from hotfix/26.1.3",
+        "severity": "S2",
+        "status": "open",
+        "title": "Ingest checkpoint loss on fleet A after the 26.1 replay change",
+        "verification_class": "GATE-INGEST-2"
+      },
+      {
+        "bake_minutes": 30,
+        "basis": "fixed",
+        "build_minutes": 150,
+        "commitment_id": null,
+        "component_id": "CMP-31181",
+        "customer_id": null,
+        "duplicate_of": null,
+        "environments_in_scope": 1,
+        "fix_version": null,
+        "fixed_modules": 1,
+        "gated_modules": 0,
+        "issue_key": "LKS-4501",
+        "kind": "regression",
+        "note": null,
+        "opened_at": "2026-04-29",
+        "regression_from": null,
+        "regression_to": null,
+        "requested_by": "ENG-LINDGREN",
+        "scope_note": "fleet B hotfix deploy from hotfix/26.1.3",
+        "severity": "S2",
+        "status": "open",
+        "title": "Ingest checkpoint loss on fleet B",
+        "verification_class": "GATE-INGEST-2"
+      },
+      {
+        "bake_minutes": 30,
+        "basis": "fixed",
+        "build_minutes": 150,
+        "commitment_id": null,
+        "component_id": "CMP-31190",
+        "customer_id": null,
+        "duplicate_of": null,
+        "environments_in_scope": 1,
+        "fix_version": null,
+        "fixed_modules": 1,
+        "gated_modules": 0,
+        "issue_key": "LKS-4504",
+        "kind": "maintenance",
+        "note": "Runs on the partner-hosted rig; commit 6f7a8b9 is embargoed for it.",
+        "opened_at": "2026-04-30",
+        "regression_from": null,
+        "regression_to": null,
+        "requested_by": "ENG-FARRELL",
+        "scope_note": "partner-rig throttle change 2026-05-06 (runs on the partner-hosted rig, not the primary lanes)",
+        "severity": "S3",
+        "status": "open",
+        "title": "Partner rig throttle change",
+        "verification_class": "GATE-INGEST-2"
+      }
+    ],
+    "lanes": [
+      {
+        "cluster": "blue",
+        "isolation_capable": 1,
+        "lane_id": "LANE-1",
+        "name": "Release lane 1 (blue cluster)",
+        "status": "ACTIVE",
+        "status_note": null
+      },
+      {
+        "cluster": "blue",
+        "isolation_capable": 1,
+        "lane_id": "LANE-2",
+        "name": "Release lane 2 (blue cluster)",
+        "status": "ACTIVE",
+        "status_note": null
+      },
+      {
+        "cluster": "green",
+        "isolation_capable": 1,
+        "lane_id": "LANE-3",
+        "name": "Release lane 3 (green cluster)",
+        "status": "ACTIVE",
+        "status_note": null
+      }
+    ],
+    "messages": [
+      {
+        "attachments_json": "[{\"name\": \"certification-confirmation-CQ-88355.pdf\", \"mime_type\": \"application/pdf\"}]",
+        "body": "We have fleet A on Thursday 2026-05-07 (Orville's contracted date) and fleet B on Friday 2026-05-08, both building from hotfix/26.1.3, and the hotfix branch carries one of the fix commits. The release branch has six commits in the fix range, but one was reverted, one is embargoed for Siobhan's partner-rig change on the 6th, and one is docs-only.\n\nI have signed nothing myself — Priya approved AP-RD-0105 for a backport of eligible commits (up to three). Corvane quoted a certified re-verification of the branch (CQ-88355, attached) if we need it, but an expedited bench is Tobias's call, not ours.\n\nMaja",
+        "channel": "email",
+        "labels": "data-platform,SHIP-0005,SHIP-0005",
+        "message_id": "MSG-1005-01",
+        "recipients": "release-eng@larkspur.example",
+        "sender": "maja.lindgren@larkspur.example",
+        "sent_at": "2026-05-04T11:48:00",
+        "subject": "SHIP-0005 ingest hotfix deploys — hotfix branch is behind",
+        "thread_id": "THR-1005"
+      },
+      {
+        "attachments_json": "[]",
+        "body": "On-call rota for the week of 2026-05-04 is posted. Lane capability flags are on the shared drive roster; no changes to protected blocks.",
+        "channel": "email",
+        "labels": "operations",
+        "message_id": "MSG-0005-00",
+        "recipients": "release-eng@larkspur.example",
+        "sender": "hanna.solberg@larkspur.example",
+        "sent_at": "2026-05-01T08:00:00",
+        "subject": "Weekly release note",
+        "thread_id": "THR-0005-OPS"
+      }
+    ],
+    "modules": [
+      {
+        "codeowner_id": "ENG-LINDGREN",
+        "component_id": "CMP-31170",
+        "gate": null,
+        "gate_note": null,
+        "module_id": "MOD-ING-A",
+        "owner_team": "Data Platform",
+        "path": "services/ingest/fleet-a",
+        "repo_id": "REPO-PLATFORM",
+        "verification_class": "GATE-INGEST-2"
+      },
+      {
+        "codeowner_id": "ENG-LINDGREN",
+        "component_id": "CMP-31181",
+        "gate": null,
+        "gate_note": null,
+        "module_id": "MOD-ING-B",
+        "owner_team": "Data Platform",
+        "path": "services/ingest/fleet-b",
+        "repo_id": "REPO-PLATFORM",
+        "verification_class": "GATE-INGEST-2"
+      },
+      {
+        "codeowner_id": "ENG-FARRELL",
+        "component_id": "CMP-31190",
+        "gate": null,
+        "gate_note": null,
+        "module_id": "MOD-ING-RIG",
+        "owner_team": "Data Platform",
+        "path": "services/ingest/partner-rig",
+        "repo_id": "REPO-PLATFORM",
+        "verification_class": "GATE-INGEST-2"
+      },
+      {
+        "codeowner_id": "ENG-LINDGREN",
+        "component_id": "CMP-31170",
+        "gate": null,
+        "gate_note": null,
+        "module_id": "MOD-ING-DOCS",
+        "owner_team": "Data Platform",
+        "path": "services/ingest/docs",
+        "repo_id": "REPO-PLATFORM",
+        "verification_class": "GATE-INGEST-2"
+      }
+    ],
+    "partner_confirmations": [
+      {
+        "confirmation_id": "CONF-CRV-88355",
+        "expedite_fee_usd": 260,
+        "expedited_ready_date": "2026-05-06",
+        "note": "Certified re-verification of the hotfix branch. Standard bench 2026-05-11; expedited bench 2026-05-06 adds USD 260. Results import the next business day.",
+        "partner_id": "PRT-CORVANE",
+        "per_run_fee_usd": 58.0,
+        "reference": "CQ-88355",
+        "runs_available": 6,
+        "standard_ready_date": "2026-05-11",
+        "status": "OPEN",
+        "valid_until": "2026-05-05",
+        "verification_class": "GATE-INGEST-2"
+      }
+    ],
+    "partners": [
+      {
+        "account_number": "LS-2210",
+        "name": "Corvane Certification Labs",
+        "partner_id": "PRT-CORVANE"
+      },
+      {
+        "account_number": "LS-0874",
+        "name": "Brightwater Compliance Lab",
+        "partner_id": "PRT-BRIGHTWATER"
+      }
+    ],
+    "pipeline_runs": [
+      {
+        "exit_code": 0,
+        "finished_at": "2026-05-03T21:34:00",
+        "head_sha": null,
+        "pipeline_id": "PIPE-MQ",
+        "run_id": "PR-77820",
+        "started_at": "2026-05-03T21:00:00",
+        "status": "SUCCEEDED",
+        "summary": "evening merge-queue run completed; next pickup 2026-05-05 21:00, verified on the target branch the next business day"
+      },
+      {
+        "exit_code": 0,
+        "finished_at": "2026-05-01T03:07:00",
+        "head_sha": null,
+        "pipeline_id": "PIPE-EXPIRY",
+        "run_id": "PR-77809",
+        "started_at": "2026-05-01T03:00:00",
+        "status": "SUCCEEDED",
+        "summary": "no lapsed result sets this week"
+      }
+    ],
+    "pipelines": [
+      {
+        "base_minutes": 30,
+        "component_id": null,
+        "kind": "merge_queue",
+        "name": "merge-queue-backport",
+        "pipeline_id": "PIPE-MQ",
+        "repo_id": "REPO-PLATFORM",
+        "status": "enabled",
+        "trigger": "cron 21:00 daily"
+      },
+      {
+        "base_minutes": 10,
+        "component_id": null,
+        "kind": "evidence",
+        "name": "evidence-validity-sweep",
+        "pipeline_id": "PIPE-EXPIRY",
+        "repo_id": "REPO-PLATFORM",
+        "status": "enabled",
+        "trigger": "cron 03:00 Fri"
+      }
+    ],
+    "pull_requests": [
+      {
+        "author_id": "ENG-LINDGREN",
+        "base_branch": "release/26.1",
+        "head_sha": "3c4d5e6",
+        "issue_key": "LKS-4500",
+        "number": 8851,
+        "opened_at": "2026-04-29T09:40:00",
+        "pr_id": "PR-8851",
+        "repo_id": "REPO-PLATFORM",
+        "status": "merged",
+        "superseded_by": null,
+        "title": "ingest: fix fleet A checkpoint loss (LKS-4500)"
+      },
+      {
+        "author_id": "ENG-LINDGREN",
+        "base_branch": "release/26.1",
+        "head_sha": "4d5e6f7",
+        "issue_key": "LKS-4501",
+        "number": 8853,
+        "opened_at": "2026-05-01T10:30:00",
+        "pr_id": "PR-8853",
+        "repo_id": "REPO-PLATFORM",
+        "status": "merged",
+        "superseded_by": null,
+        "title": "ingest: fleet B checkpoint fence (LKS-4501)"
+      },
+      {
+        "author_id": "ENG-FARRELL",
+        "base_branch": "release/26.1",
+        "head_sha": "6f7a8b9",
+        "issue_key": "LKS-4504",
+        "number": 8855,
+        "opened_at": "2026-05-02T09:00:00",
+        "pr_id": "PR-8855",
+        "repo_id": "REPO-PLATFORM",
+        "status": "merged",
+        "superseded_by": null,
+        "title": "ingest: partner-rig throttle (LKS-4504, embargoed)"
+      },
+      {
+        "author_id": "ENG-FARRELL",
+        "base_branch": "release/26.1",
+        "head_sha": "5e6f7a8",
+        "issue_key": null,
+        "number": 8849,
+        "opened_at": "2026-05-01T16:00:00",
+        "pr_id": "PR-8849",
+        "repo_id": "REPO-PLATFORM",
+        "status": "merged",
+        "superseded_by": null,
+        "title": "ingest: partner-rig spacing tweak (reverted)"
+      }
+    ],
+    "release_windows": [
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-04",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260504-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-04",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260504-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-04",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260504-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-04",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260504-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-04",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260504-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-04",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260504-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-05",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260505-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-05",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260505-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-05",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260505-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-05",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260505-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-05",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260505-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-05",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260505-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-06",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260506-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-06",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260506-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-06",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260506-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-06",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260506-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-06",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260506-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-06",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260506-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-07",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260507-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "26.1 GA freeze verification block (protected)",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-07",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "protected",
+        "window_id": "RW-1-20260507-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-07",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260507-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-07",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260507-PM"
+      },
+      {
+        "change_id": "CHG-70890",
+        "end_time": "12:00:00",
+        "hold_reason": "change booked",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-07",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260507-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-07",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260507-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-08",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260508-AM"
+      },
+      {
+        "change_id": "CHG-70891",
+        "end_time": "17:00:00",
+        "hold_reason": "change booked",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-08",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260508-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-08",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260508-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-08",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260508-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-08",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260508-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-08",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260508-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-11",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260511-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-11",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260511-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-11",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260511-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-11",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260511-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-11",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260511-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-11",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260511-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-12",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260512-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-12",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260512-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-12",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260512-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-12",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260512-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-12",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260512-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-12",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260512-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-13",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260513-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-13",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260513-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-13",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "free",
+        "window_id": "RW-2-20260513-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-13",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260513-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-13",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260513-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-13",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260513-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-14",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260514-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-14",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260514-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-14",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260514-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-14",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260514-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-14",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260514-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-14",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "free",
+        "window_id": "RW-3-20260514-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260515-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-15",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260515-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260515-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-15",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260515-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260515-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-15",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260515-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-18",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260518-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-18",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260518-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-18",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260518-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-18",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260518-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-18",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260518-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-18",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260518-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-19",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260519-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-19",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260519-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-19",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260519-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-19",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260519-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-19",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260519-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-19",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260519-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-20",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260520-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-20",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260520-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-20",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260520-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-20",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260520-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-20",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260520-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-20",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260520-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-21",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260521-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-21",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260521-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-21",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260521-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-21",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260521-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-21",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260521-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-21",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260521-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260522-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-1",
+        "service_date": "2026-05-22",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-1-20260522-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260522-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-2",
+        "service_date": "2026-05-22",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-2-20260522-PM"
+      },
+      {
+        "change_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260522-AM"
+      },
+      {
+        "change_id": null,
+        "end_time": "17:00:00",
+        "hold_reason": "scheduled release load",
+        "lane_id": "LANE-3",
+        "service_date": "2026-05-22",
+        "session": "PM",
+        "start_time": "13:00:00",
+        "status": "busy",
+        "window_id": "RW-3-20260522-PM"
+      }
+    ],
+    "repositories": [
+      {
+        "default_branch": "main",
+        "name": "larkspur/platform",
+        "repo_id": "REPO-PLATFORM",
+        "visibility": "internal"
+      },
+      {
+        "default_branch": "main",
+        "name": "larkspur/infra-images",
+        "repo_id": "REPO-INFRA",
+        "visibility": "internal"
+      }
+    ],
+    "result_sources": [
+      {
+        "name": "Release verification pipeline (release-eligible)",
+        "source_id": "CI-MAIN",
+        "type": "release_pipeline"
+      },
+      {
+        "name": "Nightly smoke pipeline (not release-eligible)",
+        "source_id": "CI-NIGHTLY",
+        "type": "nightly_pipeline"
+      },
+      {
+        "name": "Corvane Certification Labs (external)",
+        "source_id": "LAB-CORVANE",
+        "type": "external_lab"
+      },
+      {
+        "name": "Brightwater Compliance Lab (external)",
+        "source_id": "LAB-BRIGHTWATER",
+        "type": "external_lab"
+      }
+    ],
+    "reviewer_availability": [
+      {
+        "availability_id": "AV-1005-01",
+        "engineer_id": "ENG-LINDGREN",
+        "note": "codeowner on shift",
+        "service_date": "2026-05-07",
+        "session": "AM",
+        "status": "available"
+      },
+      {
+        "availability_id": "AV-1005-02",
+        "engineer_id": "ENG-FARRELL",
+        "note": "partner-rig change",
+        "service_date": "2026-05-06",
+        "session": "PM",
+        "status": "oncall"
+      }
+    ],
+    "reviews": [
+      {
+        "pr_id": "PR-8851",
+        "review_id": "RV-8851-1",
+        "reviewer_id": "ENG-FARRELL",
+        "state": "APPROVED",
+        "submitted_at": "2026-04-30T16:00:00"
+      },
+      {
+        "pr_id": "PR-8853",
+        "review_id": "RV-8853-1",
+        "reviewer_id": "ENG-ACHEBE",
+        "state": "APPROVED",
+        "submitted_at": "2026-05-01T11:30:00"
+      }
+    ],
+    "runner_pools": [
+      {
+        "capacity": 6,
+        "name": "release-verify pool",
+        "note": null,
+        "pool_id": "POOL-RELEASE",
+        "queue_minutes": 15,
+        "status": "ACTIVE"
+      }
+    ],
+    "users": [
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Release Engineering Coordinator (you)",
+        "role": "release_engineering_coordinator",
+        "user_id": "U-RELENG"
+      },
+      {
+        "approval_limit_usd": 20000,
+        "display_name": "Priya Raghunathan",
+        "role": "release_engineering_manager",
+        "user_id": "U-RAGHUNATHAN"
+      },
+      {
+        "approval_limit_usd": 120000,
+        "display_name": "Tobias Wendel",
+        "role": "director_of_engineering",
+        "user_id": "U-WENDEL"
+      },
+      {
+        "approval_limit_usd": 15000,
+        "display_name": "Hanna Solberg",
+        "role": "sre_lead",
+        "user_id": "U-SOLBERG"
+      },
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Marcus Adeyemi",
+        "role": "change_board_chair",
+        "user_id": "U-ADEYEMI"
+      }
+    ],
+    "verification_classes": [
+      {
+        "display": "ingest hotfix gate, 2 required runs per module (unit + replay)",
+        "evidence_tier": "release-gate evidence",
+        "interchangeable_with": null,
+        "minimum_validity_days": 14,
+        "release_eligible": 1,
+        "required_checks_json": "[\"ingest-unit\", \"ingest-replay\"]",
+        "runs_per_module": 2,
+        "verification_class": "GATE-INGEST-2"
+      }
+    ],
+    "verification_results": [
+      {
+        "held_for_issue": null,
+        "result_id": "RES-ING-6610",
+        "result_label": "6610",
+        "run_count": 2,
+        "source_id": "CI-MAIN",
+        "status": "PASSED",
+        "status_reason": null,
+        "valid_until": "2026-10-31",
+        "verification_class": "GATE-INGEST-2"
+      }
+    ]
+  },
+  "starting_records": [
+    {
+      "resource_id": "CHG-70890",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "CHG-70891",
+      "resource_type": "ChangeRecord",
+      "status": "booked",
+      "system": "deploy"
+    },
+    {
+      "resource_id": "ORD-3400",
+      "resource_type": "CertificationOrder",
+      "status": "RECEIVED",
+      "system": "partners"
+    },
+    {
+      "resource_id": "BPR-2200",
+      "resource_type": "BackportRequest",
+      "status": "COMPLETED",
+      "system": "scm"
+    }
+  ],
+  "task_id": "repodesk-005",
+  "title": "Backport the ingest fix for this week's hotfix deploys",
+  "world": {
+    "id": "larkspur-release-engineering-v1",
+    "name": "Larkspur Systems — Release Engineering",
+    "organization_id": "ORG-LARKSPUR",
+    "primary_site": "REPO-PLATFORM",
+    "systems": [
+      "scm",
+      "tracker",
+      "ci",
+      "deploy",
+      "success",
+      "partners",
+      "oncall",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

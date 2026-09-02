@@ -1,0 +1,2459 @@
+{
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for revoke_supported_quantity.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for revoke_full_registry_holdings.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for order_expedited_custody_rollover.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "owner-held and expired KEY-API-PARTNER objects in the Brindle registry",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Brindle's confirmed standard and expedited custody-rollover dates on CR-88355.",
+        "type": "string"
+      },
+      "first_review_window": {
+        "description": "Responder window of the first in-scope review, as RESPONDER/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "object_unit": {
+        "description": "Unit of every revocation quantity (CREDENTIAL_OBJECT).",
+        "type": "string"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for the fleet partner-key custody reviews.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "owner_held_objects": {
+        "description": "Registry objects deferred for a named owner ticket that the SOC may not revoke.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: CREDENTIAL_OBJECT.",
+        "type": "string"
+      },
+      "receiving_scope_usable": {
+        "description": "Tenant-revocable KEY-API-PARTNER objects already held on the IAM side that count toward the requirement.",
+        "type": "integer"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing revoke_supported_quantity, revoke_full_registry_holdings, order_expedited_custody_rollover.",
+        "enum": [
+          "revoke_supported_quantity",
+          "revoke_full_registry_holdings",
+          "order_expedited_custody_rollover"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "scheduled_reviews": {
+        "description": "Count of partner-key custody reviews booked inside the in-scope window.",
+        "type": "integer"
+      },
+      "source_quantity": {
+        "description": "KEY-API-PARTNER objects required by the two custody reviews booked 2026-06-11 and 2026-06-12",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Brindle's confirmed standard and expedited custody-rollover dates on CR-88355.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "tenant-revocable KEY-API-PARTNER objects in the Brindle registry",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_review_window",
+      "object_unit",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "owner_held_objects",
+      "quantity_unit",
+      "receiving_scope_usable",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "scheduled_reviews",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "transaction_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-06-08",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "family": "secops",
+  "instruction": "The fleet A partner key was used from an egress that is not on the partner register, and both fleet custody reviews sit on the responder calendar this week. Rohan wants the Brindle registry revocation placed today. Work out how many credential objects the two reviews actually require, how many of the registry holdings are genuinely tenant-revocable once the owner-held DR copies and the expired key are set aside, what the IAM-side key already covers, and how many we should revoke under the approval Imre signed. Schedule the revocation that fits, draft the note for Rohan, and flag anything that would need Nienke instead of doing it.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-SO-0105"
+    },
+    "case_reference": "SEC-0005",
+    "chat": {
+      "thread_id": "CHAT-1005"
+    },
+    "drive": {
+      "case_folder_query": "SEC-0005",
+      "playbook_query": "playbook"
+    },
+    "iam": {
+      "credential_class": "KEY-API-PARTNER",
+      "identity_search": {
+        "arguments": {
+          "identifier": "svc-fleet-replay-a"
+        },
+        "tool": "iam.identities.search"
+      },
+      "systems": [
+        "cloudiam",
+        "iam"
+      ],
+      "username": "svc-fleet-replay-a"
+    },
+    "idpvendor": {
+      "confirmation_id": "CONF-BRN-88355"
+    },
+    "messages": {
+      "search_query": "SEC-0005"
+    },
+    "oncall": {
+      "calendar_window": {
+        "end_date": "2026-06-18",
+        "start_date": "2026-06-10"
+      },
+      "pool": "soc-tier2"
+    },
+    "siem": {
+      "alert_id": "AL-77820",
+      "rule_id": "RUL-PARTNERKEY-2"
+    }
+  },
+  "role": "security_operations_coordinator",
+  "seed_tables": {
+    "alert_events": [
+      {
+        "alert_id": "AL-77820",
+        "detail": "replay-export call signed with partner key 6588 from an egress absent from the partner register",
+        "event_id": "EV-77820-1",
+        "kind": "api_call",
+        "source_ip": "203.0.113.9",
+        "ts": "2026-06-07T04:09:00"
+      },
+      {
+        "alert_id": "AL-77820",
+        "detail": "bulk telemetry download attempted; throttled by the partner gateway quota",
+        "event_id": "EV-77820-2",
+        "kind": "api_call",
+        "source_ip": "203.0.113.9",
+        "ts": "2026-06-07T04:11:00"
+      },
+      {
+        "alert_id": "AL-77820",
+        "detail": "registered replay job fleet-replay-a-01 reported no partner calls in the window",
+        "event_id": "EV-77820-3",
+        "kind": "job_idle",
+        "source_ip": "10.50.1.8",
+        "ts": "2026-06-07T04:30:00"
+      }
+    ],
+    "alerts": [
+      {
+        "alert_id": "AL-77820",
+        "identity_id": "ID-41170",
+        "kind": "credential_compromise",
+        "opened_at": "2026-06-07T04:12:00",
+        "rule_id": "RUL-PARTNERKEY-2",
+        "severity": "high",
+        "status": "open",
+        "summary": "fleet A partner API key presented from an egress not on the partner register while the replay job was idle"
+      },
+      {
+        "alert_id": "AL-77809",
+        "identity_id": "ID-41170",
+        "kind": "credential_compromise",
+        "opened_at": "2026-06-07T04:13:00",
+        "rule_id": "RUL-PARTNERKEY-1",
+        "severity": "medium",
+        "status": "suppressed",
+        "summary": "duplicate partner-egress alert from the retired v1 rule"
+      }
+    ],
+    "analysts": [
+      {
+        "analyst_id": "AN-OKAFOR",
+        "focus": "Identity threat detection",
+        "name": "Chidi Okafor",
+        "role": "soc_analyst_tier2"
+      },
+      {
+        "analyst_id": "AN-LINDQVIST",
+        "focus": "Workforce identity and SSO",
+        "name": "Maja Lindqvist",
+        "role": "iam_platform_owner"
+      },
+      {
+        "analyst_id": "AN-PRADHAN",
+        "focus": "Cloud IAM and key custody",
+        "name": "Rohan Pradhan",
+        "role": "cloud_platform_owner"
+      },
+      {
+        "analyst_id": "AN-DELACROIX",
+        "focus": "Regulatory notification and audit",
+        "name": "Solène Delacroix",
+        "role": "grc_lead"
+      },
+      {
+        "analyst_id": "AN-MBEKI",
+        "focus": "Major incident coordination",
+        "name": "Thandiwe Mbeki",
+        "role": "incident_commander"
+      }
+    ],
+    "approvals": [
+      {
+        "approval_id": "AP-SO-0105",
+        "approver_id": "U-HAVILAND",
+        "approver_role": "soc_manager",
+        "granted_on": "2026-06-05",
+        "scope_json": "{\"credential_class\": \"KEY-API-PARTNER\", \"grants\": \"tenant-revocable objects only\", \"max_objects\": 3, \"not_covered\": [\"expedited custody rollover (CISO)\", \"revoking owner-held or expired objects (never)\"], \"system\": \"cloudiam\"}",
+        "status": "APPROVED",
+        "subject": "Partner-key tenant revocation for SEC-0005 (SR-61280, SR-61281)"
+      },
+      {
+        "approval_id": "AP-SO-0090",
+        "approver_id": "U-HAVILAND",
+        "approver_role": "soc_manager",
+        "granted_on": "2026-04-03",
+        "scope_json": "{\"category\": \"CONSUMABLES\", \"max_spend_usd\": 9000}",
+        "status": "APPROVED",
+        "subject": "Quarterly hardware security-key replenishment standing order"
+      }
+    ],
+    "bridges": [
+      {
+        "bridge_id": "BRG-70890",
+        "description": "fleet A partner-key custody review",
+        "end_time": "2026-06-11T11:00:00",
+        "identity_id": "ID-41170",
+        "last_updated": "2026-06-05T12:00:00",
+        "responder_id": "RESP-3",
+        "revision": 1,
+        "start_time": "2026-06-11T08:00:00",
+        "status": "booked",
+        "ticket_id": "SR-61280"
+      },
+      {
+        "bridge_id": "BRG-70891",
+        "description": "fleet B partner-key custody review",
+        "end_time": "2026-06-12T15:30:00",
+        "identity_id": "ID-41181",
+        "last_updated": "2026-06-05T12:00:00",
+        "responder_id": "RESP-1",
+        "revision": 1,
+        "start_time": "2026-06-12T12:30:00",
+        "status": "booked",
+        "ticket_id": "SR-61281"
+      }
+    ],
+    "chat_threads": [
+      {
+        "channel": "#soc-incidents",
+        "messages_json": "[{\"author\": \"Chidi Okafor\", \"ts\": \"2026-06-08T09:30:00\", \"text\": \"Grant 6571 is owner-held for the DR rig review on the 10th \\u2014 the SOC does not touch it. 6550 expired on the 29th and is queued for purge; it is not a live object.\"}, {\"author\": \"Imre Haviland\", \"ts\": \"2026-06-08T09:41:00\", \"text\": \"AP-SO-0105 is the tenant revocation only, up to three objects. An expedited Brindle rollover is Nienke's, not mine.\"}, {\"author\": \"Rohan Pradhan\", \"ts\": \"2026-06-08T09:55:00\", \"text\": \"Fleet B's single IAM-side key already counts toward the requirement; do not double-count it against the registry.\"}]",
+        "thread_id": "CHAT-1005",
+        "title": "SEC-0005 fleet partner-key reviews"
+      },
+      {
+        "channel": "#soc-incidents",
+        "messages_json": "[{\"author\": \"Beatriz Soriano\", \"ts\": \"2026-06-04T16:40:00\", \"text\": \"Reminder: log every detection-rule version change in the change tracker.\"}]",
+        "thread_id": "CHAT-0005-GEN",
+        "title": "General — detection tuning and badge access"
+      }
+    ],
+    "containment_tiers": [
+      {
+        "authority_level": "soc_manager",
+        "immediate_revocation_allowed": 1,
+        "name": "Confirmed credential compromise",
+        "note": "corroborated by SIEM correlation and an enabled detection-rule version; tenant-revocable objects are revoked without owner confirmation",
+        "owner_confirmation_required": 0,
+        "sla_hours": 24,
+        "tier_code": "T2-CONFIRMED",
+        "version": "v5"
+      },
+      {
+        "authority_level": "soc_manager",
+        "immediate_revocation_allowed": 0,
+        "name": "Suspected credential compromise",
+        "note": "single-signal; revocation waits for the owner's confirmation inside the SLA",
+        "owner_confirmation_required": 1,
+        "sla_hours": 72,
+        "tier_code": "T1-SUSPECTED",
+        "version": "v5"
+      },
+      {
+        "authority_level": "on_call_analyst",
+        "immediate_revocation_allowed": 1,
+        "name": "Confirmed credential compromise (2024 edition)",
+        "note": "SUPERSEDED on 2026-03-02 — retained for audit only",
+        "owner_confirmation_required": 0,
+        "sla_hours": 8,
+        "tier_code": "T2-CONFIRMED-2024",
+        "version": "v3"
+      }
+    ],
+    "credential_classes": [
+      {
+        "credential_class": "KEY-API-PARTNER",
+        "display": "partner API keys issued to an integration principal",
+        "interchangeable_with": null,
+        "object_kind": "api key",
+        "privileged": 1,
+        "revocation_channel": "Brindle registry disable; Brindle custody rollover for partner-held copies"
+      },
+      {
+        "credential_class": "KEY-SIGNING",
+        "display": "code-signing keys held in Brindle custody",
+        "interchangeable_with": null,
+        "object_kind": "signing key",
+        "privileged": 1,
+        "revocation_channel": "Brindle custody rollover only"
+      }
+    ],
+    "detection_rules": [
+      {
+        "name": "Partner API key presented from a non-partner egress",
+        "note": null,
+        "rule_id": "RUL-PARTNERKEY-2",
+        "status": "enabled",
+        "version": "v2"
+      },
+      {
+        "name": "Partner API key presented from a non-partner egress (static list)",
+        "note": "retired 2026-05-06; the static partner list produced duplicates",
+        "rule_id": "RUL-PARTNERKEY-1",
+        "status": "retired",
+        "version": "v1"
+      }
+    ],
+    "detections": [
+      {
+        "detection_id": "DT-005-1",
+        "host_id": "H-005-01",
+        "note": "scheduled replay export; benign",
+        "severity": "low",
+        "status": "closed",
+        "tactic": "collection"
+      }
+    ],
+    "drive_files": [
+      {
+        "content": "# Credential Compromise Containment Playbook (v5, effective 2026-03-02)\n\nApplies to Kestrel Grid Utilities Security Operations: the workforce identity tenant on Halyard Identity Cloud (TENANT-PRIMARY), the Brindle cloud key registry, the EDR host estate, and the responder on-call roster. This version supersedes the 2024 playbook in full. Every action in this playbook is defensive: it concerns the organisation's own credentials and hosts.\n\n## 1. Containment requirement\n\n1.1 A confirmed credential compromise is sized at the most recent final inventory snapshot for the identity in the IAM register (live app grants, live access keys, or live federated sessions). A stale snapshot is never used.\n1.2 Linked-principal rule: when a human identity is confirmed compromised, every service principal it owns or can impersonate is in scope; when a shared device is the pivot, every principal that signed in from it inside the alert window is in scope. Principals in scope are counted from the ticket, not inferred from the alert title.\n1.3 Credential objects are immutable revocation units. A grant, key, or session is revoked whole; partial revocation of an object is not a state the tenant supports.\n1.4 Tier T2-CONFIRMED (confirmed compromise, corroborated by SIEM correlation and the detection rule version in force): live objects the tenant can revoke are revoked without waiting for the owner. Objects the tenant cannot revoke itself (federated tokens, provider-issued keys) are covered by the identity-provider or key-custody vendor's invalidation job.\n1.5 Tier T1-SUSPECTED (single-signal, uncorroborated): revocation waits for the owner's confirmation inside the tier SLA; the owner review is booked on a qualified responder window. A responder review may be advanced by up to 5 business days with the owner's written note.\n1.6 Only detection rules in status ENABLED at the alert time count as corroboration. A rule version retired before the alert, or a duplicate alert raised by a suppressed rule, is context only.\n\n## 2. Revocable objects\n\n2.1 An object in the IAM register counts as tenant-revocable only when its status is ACTIVE and it is not deferred for a named owner ticket. Objects already EXPIRED, REVOKED, ROTATED, or DISABLED do not count, and neither do objects flagged in the register as owner-held.\n2.2 Objects issued by the identity provider (federated session tokens, provider-issued signing keys) are invalidated only through the vendor's tenant-wide invalidation job. A vendor confirmation quotes a standard job date and an expedited job date; the invalidation is verified and reflected in the register on the next business day after the job date.\n2.3 Invalidation sizing: order the uncovered requirement plus the class token-family margin from the margin table. Tenant revocations cover only ACTIVE unreferenced objects and only the receiving scope's uncovered quantity.\n2.4 Vendor or tenant revocation of an object never selects a containment tier; the tier comes from the corroboration rule in §1.\n\n## 3. Responder windows\n\n3.1 Responder review windows are AM 08:00-12:00 and PM 12:30-16:30, Monday to Friday, with SOC coverage on shift. A review of up to 4 hours including owner confirmation occupies one window; a longer review requires both windows of one responder on one day.\n3.2 Protected windows (major-incident bridges, regulator evidence sessions, change-freeze reviews) and blocked windows (identity-platform maintenance, tabletop exercises) are never displaced without the change advisory board.\n3.3 Two short reviews of the same tier (2 hours or less each including owner confirmation) may be sequenced in one window.\n3.4 A T2 containment review for a privileged principal is one continuous session on a Tier-2-qualified responder per the roster; it may not be split across windows on different days.\n3.5 Out-of-hours, weekend, and overtime responder windows require the on-call lead's separate approval.\n\n## 4. Authority\n\n4.1 SOC manager: vendor invalidation orders and tenant revocations within the signed approval's object count, vendor, class, and spend, including any expedite fee the approval names.\n4.2 Chief information security officer: expedited invalidation not named in an approval, tenant-wide sign-out or key-registry rollover outside an approval, revocation of objects deferred for an owner ticket, and revocation of owner-held or register-flagged objects.\n4.3 On-call lead: responder re-home plans, overtime, and out-of-hours windows.\n4.4 Change advisory board: displacing protected windows, containment exceptions, and moving a regulator evidence session.\n4.5 An approval covers exactly the ticket, object count, vendor, and options it names. It never selects an option in advance and never extends to a broader identity.\n\n---\nEvidence-room mount: secops-005 / SEC-0005.\n",
+        "file_id": "DRV-005-01",
+        "folder": "Security Operations/Playbooks",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "containment-playbook.md",
+        "sha256": "54abea01f719ec96c8d3519285b5cb379c4976297add6b82343d95c0d45c2026"
+      },
+      {
+        "content": "# Credential Compromise Containment Playbook (2024 edition) — SUPERSEDED\n\nThis edition was replaced by v5 on 2026-03-02 and is retained for audit only. Do not apply it.\n\n1. Compromises may be sized at the inventory snapshot taken when the identity was onboarded.\n2. Any alert from any rule version counts as corroboration for immediate revocation.\n3. An open vendor invalidation request counts as containment; the ticket may be closed once the request is confirmed.\n4. Expedite fees up to USD 500 may be approved by the SOC manager at discretion.\n5. Responder windows run a single 08:00-16:00 block; long reviews may be split across two days with the owner's agreement.\n6. Protected windows may be displaced by the on-call analyst when an incident is at risk.\n\n---\nEvidence-room mount: secops-005 / SEC-0005.\n",
+        "file_id": "DRV-005-02",
+        "folder": "Security Operations/Playbooks/Archive",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "superseded-containment-playbook-2024.md",
+        "sha256": "4d5f1c071f37dac6ff039b52c2722fc804802854641a257bc37d9a70e6675d4b"
+      },
+      {
+        "content": "{\n  \"export\": \"servicedesk.tickets.get\",\n  \"record\": {\n    \"alert\": null,\n    \"confirm_minutes\": 30,\n    \"credential_class\": {\n      \"code\": \"KEY-API-PARTNER\",\n      \"display\": \"partner API keys issued to an integration principal\",\n      \"object_kind\": \"api key\"\n    },\n    \"identity\": \"Identity/ID-30015\",\n    \"kind\": \"containment\",\n    \"note\": \"Runs at the Drayton DR site, not on the primary responder roster; grant 6571 is owner-held for it.\",\n    \"opened_at\": \"2026-06-04\",\n    \"priority\": \"high\",\n    \"requested_by\": \"Analyst/AN-OKAFOR\",\n    \"scope_note\": \"DR-site rig review 2026-06-10 (runs at the DR site; keys owner-held on the DR registry)\",\n    \"status\": \"open\",\n    \"ticket_id\": \"SR-61284\",\n    \"tier_code\": \"T1-SUSPECTED\",\n    \"triage_minutes\": 150,\n    \"unit_basis\": \"fixed\",\n    \"unit_kind\": \"principal\",\n    \"unit_objects\": 2,\n    \"units_in_scope\": 1\n  }\n}\n",
+        "file_id": "DRV-005-03",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "ticket-SR-61284.json",
+        "sha256": "209d9a36fea68a07961cc88c55c712a24f85a5bc1f36b1ba506e0992f5e4d150"
+      },
+      {
+        "content": "{\n  \"export\": \"servicedesk.tickets.get\",\n  \"record\": {\n    \"alert\": \"Alert/AL-77820\",\n    \"confirm_minutes\": 30,\n    \"credential_class\": {\n      \"code\": \"KEY-API-PARTNER\",\n      \"display\": \"partner API keys issued to an integration principal\",\n      \"object_kind\": \"api key\"\n    },\n    \"identity\": \"Identity/ID-41170\",\n    \"kind\": \"containment\",\n    \"note\": \"\",\n    \"opened_at\": \"2026-06-03\",\n    \"priority\": \"high\",\n    \"requested_by\": \"Analyst/AN-PRADHAN\",\n    \"scope_note\": \"weekly partner-key custody review\",\n    \"status\": \"open\",\n    \"ticket_id\": \"SR-61280\",\n    \"tier_code\": \"T2-CONFIRMED\",\n    \"triage_minutes\": 150,\n    \"unit_basis\": \"fixed\",\n    \"unit_kind\": \"principal\",\n    \"unit_objects\": 3,\n    \"units_in_scope\": 1\n  }\n}\n",
+        "file_id": "DRV-005-04",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "ticket-SR-61280.json",
+        "sha256": "06bfcea68e4977091ed2a59ff9da56a5d9e2195c1ae0831aae8193e61f6b20c2"
+      },
+      {
+        "content": "{\n  \"export\": \"siem.alerts.get\",\n  \"record\": {\n    \"alert_id\": \"AL-77820\",\n    \"identity\": \"Identity/ID-41170\",\n    \"kind\": \"credential_compromise\",\n    \"opened_at\": \"2026-06-07T04:12:00\",\n    \"rule\": {\n      \"name\": \"Partner API key presented from a non-partner egress\",\n      \"rule_id\": \"RUL-PARTNERKEY-2\",\n      \"status\": \"enabled\",\n      \"version\": \"v2\"\n    },\n    \"severity\": \"high\",\n    \"status\": \"open\",\n    \"summary\": \"fleet A partner API key presented from an egress not on the partner register while the replay job was idle\"\n  }\n}\n",
+        "file_id": "DRV-005-05",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "alert-AL-77820.json",
+        "sha256": "5734f930d0d70e88486dfadf01d10438e8f77a2b82a5e9f80378c710ac195b4f"
+      },
+      {
+        "content": "{\n  \"export\": \"iam.identities.get + iam.inventory.list\",\n  \"identity\": {\n    \"display_name\": \"Fleet telemetry replay principal \\u2014 fleet A\",\n    \"identity_id\": \"ID-41170\",\n    \"kind\": \"service_account\",\n    \"owner\": \"Analyst/AN-PRADHAN\",\n    \"owner_team\": \"Fleet Telemetry\",\n    \"tier\": \"tier-2\",\n    \"username\": \"svc-fleet-replay-a\"\n  },\n  \"inventory\": [\n    {\n      \"identity\": \"Identity/ID-41170\",\n      \"inventory_id\": \"INV-41170\",\n      \"measured_at\": \"2026-06-04\",\n      \"metric\": \"LIVE-KEYS\",\n      \"status\": \"final\",\n      \"unit\": \"CREDENTIAL_OBJECT\",\n      \"value\": 3\n    },\n    {\n      \"identity\": \"Identity/ID-41170\",\n      \"inventory_id\": \"INV-41170-2603\",\n      \"measured_at\": \"2026-03-13\",\n      \"metric\": \"LIVE-KEYS\",\n      \"status\": \"final\",\n      \"unit\": \"CREDENTIAL_OBJECT\",\n      \"value\": 0\n    }\n  ]\n}\n",
+        "file_id": "DRV-005-06",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "identity-svc-fleet-replay-a-summary.json",
+        "sha256": "204700602b3a52c06ef7fcd11fa38f37b9043577d25c16d3d7e568a0d527e046"
+      },
+      {
+        "content": "credential_class,display,object_kind,revocation_channel,privileged,interchangeable_with,hubbench_task_scope,hubbench_case_reference\nKEY-API-PARTNER,partner API keys issued to an integration principal,api key,Brindle registry disable; Brindle custody rollover for partner-held copies,yes,,secops-005,SEC-0005\nKEY-SIGNING,code-signing keys held in Brindle custody,signing key,Brindle custody rollover only,yes,,secops-005,SEC-0005\n",
+        "file_id": "DRV-005-07",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "credential-class-catalog.csv",
+        "sha256": "2c1fe94577056416cd1b9c6ca9e0ba9d92c3e4d50e01c58488d40f70b77589c9"
+      },
+      {
+        "content": "grant_label,credential_class,identity_id,system,object_count,expires_on\n6610,KEY-API-PARTNER,ID-41181,iam,1,2026-10-31\n6588,KEY-API-PARTNER,ID-41170,cloudiam,3,2026-11-30\n6571,KEY-API-PARTNER,ID-30015,cloudiam,2,2026-08-31\n6550,KEY-API-PARTNER,ID-41170,cloudiam,1,2026-05-29\n",
+        "file_id": "DRV-005-08",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "credential-register-by-grant.xlsx",
+        "sha256": "6167811318853ca2091cee87b81b922fe2ce00ea5d2cf9dd7b1e97580e00730e"
+      },
+      {
+        "content": "grant_label,credential_class,identity_id,system,status,status_reason,deferred_for_ticket,register_note\n6610,KEY-API-PARTNER,ID-41181,iam,ACTIVE,,,\n6588,KEY-API-PARTNER,ID-41170,cloudiam,ACTIVE,,,\n6571,KEY-API-PARTNER,ID-30015,cloudiam,ACTIVE,owner-held for the DR-site review 2026-06-10,SR-61284,deferred for SR-61284\n6550,KEY-API-PARTNER,ID-41170,cloudiam,EXPIRED,expired 2026-05-29; queued for registry purge,,\n",
+        "file_id": "DRV-005-09",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "grant-status-register.csv",
+        "sha256": "bcb553c16b3b8e2769c6988d62e63be1c4aaeeea15edbb81670e3a82f38a36f5"
+      },
+      {
+        "content": "event_id,alert_id,rule_id,rule_name,rule_version,rule_status,ts,kind,source_ip,detail\nEV-77820-1,AL-77820,RUL-PARTNERKEY-2,Partner API key presented from a non-partner egress,v2,enabled,2026-06-07T04:09:00,api_call,203.0.113.9,\"replay-export call signed with partner key 6588 from an egress absent from the partner register\"\nEV-77820-2,AL-77820,RUL-PARTNERKEY-2,Partner API key presented from a non-partner egress,v2,enabled,2026-06-07T04:11:00,api_call,203.0.113.9,\"bulk telemetry download attempted; throttled by the partner gateway quota\"\nEV-77820-3,AL-77820,RUL-PARTNERKEY-2,Partner API key presented from a non-partner egress,v2,enabled,2026-06-07T04:30:00,job_idle,10.50.1.8,\"registered replay job fleet-replay-a-01 reported no partner calls in the window\"\n",
+        "file_id": "DRV-005-10",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "alert-AL-77820-events.csv",
+        "sha256": "fe684d0dd4c966ed12135a5eb390f9dc3ee6182cb0f9245c853643292bcac217"
+      },
+      {
+        "content": "record_type,record_id,identity_id,source_ip_or_type,geo_or_status,device_or_enrolled,started_or_last_used,risk\nsession,SES-005-1,ID-41170,203.0.113.9,non-partner egress,api client,2026-06-07T04:09:00,high/ACTIVE\nsession,SES-005-2,ID-41170,10.50.1.8,Leeds data centre,fleet-replay-a-01 (registered),2026-06-07T01:00:00,low/ACTIVE\nfactor,FAC-005-1,ID-41170,workload_certificate,active,2026-02-09,2026-06-07T01:00:00,\n",
+        "file_id": "DRV-005-11",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "sessions-and-factors-svc-fleet-replay-a.csv",
+        "sha256": "4a2f85812d6d61e60ab4095b1a06438e4c5cf1bdd541efc12b3b06390538aa08"
+      },
+      {
+        "content": "host_id,hostname,identity_id,role,isolation_state,status,detection_id,tactic,severity,detection_status,note\nH-005-01,fleet-replay-a-01.prod.kestrelgrid.internal,ID-41170,batch,normal,in_service,DT-005-1,collection,low,closed,scheduled replay export; benign\nH-005-02,fleet-replay-b-01.prod.kestrelgrid.internal,ID-41181,batch,normal,in_service,,,,,\nH-005-90,bastion-01.mgmt.kestrelgrid.internal,,bastion,normal,in_service,,,,,\n",
+        "file_id": "DRV-005-12",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "host-inventory-and-detections.csv",
+        "sha256": "3353b861d21137761c934826f43a0f1775cbbd9c4d8d67d3dfc53f407ca187f0"
+      },
+      {
+        "content": "service_date,responder_id,session,start,end,status,hold_reason\n2026-06-08,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-08,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-08,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-08,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-08,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-08,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-09,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-09,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-09,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-09,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-09,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-09,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-10,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-10,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-10,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-10,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-10,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-10,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-11,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-11,RESP-1,PM,12:30:00,16:30:00,protected,major-incident bridge (protected)\n2026-06-11,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-11,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-11,RESP-3,AM,08:00:00,12:00:00,busy,bridge\n2026-06-11,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-12,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-12,RESP-1,PM,12:30:00,16:30:00,busy,bridge\n2026-06-12,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-12,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-12,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-12,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-15,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-15,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-15,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-15,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-15,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-15,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-16,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-16,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-16,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-16,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-16,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-16,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-17,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-17,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-17,RESP-2,AM,08:00:00,12:00:00,free,\n2026-06-17,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-17,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-17,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-18,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-18,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-18,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-18,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-18,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-18,RESP-3,PM,12:30:00,16:30:00,free,\n2026-06-19,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-19,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-19,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-19,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-19,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-19,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-22,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-22,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-22,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-22,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-22,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-22,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-23,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-23,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-23,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-23,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-23,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-23,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-24,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-24,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-24,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-24,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-24,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-24,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-25,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-25,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-25,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-25,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-25,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-25,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-26,RESP-1,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-26,RESP-1,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-26,RESP-2,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-26,RESP-2,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n2026-06-26,RESP-3,AM,08:00:00,12:00:00,busy,scheduled detection-engineering load\n2026-06-26,RESP-3,PM,12:30:00,16:30:00,busy,scheduled detection-engineering load\n",
+        "file_id": "DRV-005-13",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "responder-calendar-2026-06-08.xlsx",
+        "sha256": "2ab856b45d1304525313fa780695156066243ec20dfed1fd14d7aafc687d394b"
+      },
+      {
+        "content": "responder_id,name,status,tier2_capable,note,hubbench_task_scope,hubbench_case_reference\nRESP-1,Tier-2 responder 1 (identity pod),ACTIVE,yes,,secops-005,SEC-0005\nRESP-2,Tier-2 responder 2 (identity pod),ACTIVE,yes,,secops-005,SEC-0005\nRESP-3,Tier-2 responder 3 (cloud pod),ACTIVE,yes,,secops-005,SEC-0005\n",
+        "file_id": "DRV-005-14",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "responder-roster-and-qualification.csv",
+        "sha256": "863ca7a4fa935688db4ebf44b2d1db7fd269fd20ac83d58962730f928605e506"
+      },
+      {
+        "content": "Brindle Cloud Platform (key custody)\nInvalidation confirmation CR-88355 (system reference CONF-BRN-88355)\nCustomer: Kestrel Grid Utilities Security Operations, account KG-0874\nCase reference: SEC-0005\nItem: KEY-API-PARTNER — partner API keys issued to an integration principal\nCredential objects available for this confirmation: 6\nPer-object invalidation fee: USD 58.00\nStandard invalidation-job date: 2026-06-15\nExpedited invalidation-job date: 2026-06-10 (expedite fee USD 260, flat)\nValid until: 2026-06-09\nNotes: Custody rollover option. Standard rollover 2026-06-15; expedited rollover 2026-06-10 adds USD 260. Register verification next business day.\nInvalidation is executed tenant-wide by the vendor; the register reflects it after the customer's verification on the next business day.\n",
+        "file_id": "DRV-005-15",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "invalidation-confirmation-CR-88355.pdf",
+        "sha256": "c9890942df8bf0206e3deea65f06ab8b52d50cc9dcc65c4d86b0ba4c0f6ef6c0"
+      },
+      {
+        "content": "{\n  \"approval_id\": \"AP-SO-0105\",\n  \"approver_id\": \"U-HAVILAND\",\n  \"approver_role\": \"soc_manager\",\n  \"case_reference\": \"SEC-0005\",\n  \"granted_on\": \"2026-06-05\",\n  \"scope\": {\n    \"credential_class\": \"KEY-API-PARTNER\",\n    \"grants\": \"tenant-revocable objects only\",\n    \"max_objects\": 3,\n    \"not_covered\": [\n      \"expedited custody rollover (CISO)\",\n      \"revoking owner-held or expired objects (never)\"\n    ],\n    \"system\": \"cloudiam\"\n  },\n  \"status\": \"APPROVED\",\n  \"subject\": \"Partner-key tenant revocation for SEC-0005 (SR-61280, SR-61281)\"\n}\n",
+        "file_id": "DRV-005-16",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "approval-AP-SO-0105.json",
+        "sha256": "5cf4784ba8a814bddf9ba788e19a1a069519a7a7f1eb1244faee9109da8ceb9f"
+      },
+      {
+        "content": "{\n  \"as_of\": \"2026-06-08\",\n  \"bridges\": [\n    {\n      \"bridge_id\": \"BRG-70890\",\n      \"end\": \"2026-06-11T11:00:00\",\n      \"identity_id\": \"ID-41170\",\n      \"responder_id\": \"RESP-3\",\n      \"start\": \"2026-06-11T08:00:00\",\n      \"status\": \"booked\",\n      \"ticket_id\": \"SR-61280\"\n    },\n    {\n      \"bridge_id\": \"BRG-70891\",\n      \"end\": \"2026-06-12T15:30:00\",\n      \"identity_id\": \"ID-41181\",\n      \"responder_id\": \"RESP-1\",\n      \"start\": \"2026-06-12T12:30:00\",\n      \"status\": \"booked\",\n      \"ticket_id\": \"SR-61281\"\n    }\n  ],\n  \"case_reference\": \"SEC-0005\",\n  \"invalidation_orders\": [\n    {\n      \"order_id\": \"IVO-3400\",\n      \"status\": \"RECEIVED\"\n    }\n  ],\n  \"note\": \"Snapshot before any action; row order does not indicate applicability.\",\n  \"revocations\": [\n    {\n      \"revocation_id\": \"RVK-3400\",\n      \"status\": \"COMPLETED\"\n    }\n  ]\n}\n",
+        "file_id": "DRV-005-17",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "starting-state-secops-005.json",
+        "sha256": "859c994b6d878448a31d7140289f9aae58779769f2b60c0ca7d3072ace351efa"
+      },
+      {
+        "content": "# DR registry status — partner keys\n\nThe Drayton DR registry holds owner-held copies of the partner keys used by the DR rig. Owner-held objects are released only by the owning team's ticket; the SOC cannot revoke them without the CISO. Expedited custody rollovers bill USD 260 per request and require the CISO on the request.\n",
+        "file_id": "DRV-005-18",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "dr-registry-status.md",
+        "sha256": "65181c7e3c9e6595771daa2bbbb13cf48b37b82b4b7befc3c52a999fc30f4d10"
+      },
+      {
+        "content": "{\n  \"anchors\": [\n    {\n      \"evaluation_shape\": \"defensive security-operations tasks with deterministic end-state verification\",\n      \"harbor_dataset\": \"polyvorlabs/cyberdefense-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/polyvorlabs/cyberdefense-bench/latest\",\n      \"license\": \"per the upstream repository; nothing from it is redistributed here\",\n      \"name\": \"CyberDefense-Bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/polyvorlabs/cyberdefense-bench\"\n    },\n    {\n      \"evaluation_shape\": \"systems-security hardening and triage tasks graded on persisted state\",\n      \"harbor_dataset\": \"NovitaAI/tb21-systems-security\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/NovitaAI/tb21-systems-security/latest\",\n      \"license\": \"Apache-2.0\",\n      \"name\": \"Terminal-Bench 2.1 systems security\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/harbor-framework/terminal-bench\"\n    },\n    {\n      \"evaluation_shape\": \"audit-style security analysis tasks with exact graded findings\",\n      \"harbor_dataset\": \"binary-audit/binary-audit\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/binary-audit/binary-audit/latest\",\n      \"license\": \"per the upstream repository; nothing from it is redistributed here\",\n      \"name\": \"binary-audit\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://github.com/binary-audit/binary-audit\"\n    }\n  ],\n  \"clean_room\": true,\n  \"family\": \"secops\",\n  \"schema_version\": \"hubbench.provenance.v1\",\n  \"task_id\": \"secops-005\",\n  \"upstream_scores_claimed\": false,\n  \"upstream_tasks_copied\": false\n}\n",
+        "file_id": "DRV-005-19",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "harbor-open-source-anchors.json",
+        "sha256": "cc4d5edee9424fd2819c17672327bb4dbf9d51ba8fe35bdf4fa3bf624275a04f"
+      },
+      {
+        "content": "task_id,case_reference,subject_id,source_system,record_role,effective_revision\nsecops-005,SEC-0005,KEY-API-PARTNER,domain,authoritative_subject,v1\nsecops-005,SEC-0005,KEY-API-PARTNER,approvals,execution_authority,v1\nsecops-005,SEC-0005,KEY-API-PARTNER,drive,supporting_evidence,v1\n",
+        "file_id": "DRV-005-20",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/csv",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "record-lineage.csv",
+        "sha256": "04da730fa1414e61bccb936abeac8959ca5de6e46c17362b64fcc3f60951ce14"
+      },
+      {
+        "content": "# Current execution authority — SEC-0005\n\nEffective 2026-06-08. Applies only to KEY-API-PARTNER in SecOps. The signed approval record and provider contract jointly bound any write. A source record, search result, or prior decision never grants authority.\n\nRelease revision: v1. Task scope: secops-005.\n",
+        "file_id": "DRV-005-21",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "current-authority.md",
+        "sha256": "e1449ac7eadd9920dfdf6390cc43c4da8a04c9631040e9fca1199254cda25dcc"
+      },
+      {
+        "content": "# Retired authority — SEC-0005\n\nStatus: SUPERSEDED. This historical SecOps delegation ended before 2026-06-08. It references KEY-API-PARTNER but cannot authorize a current action for secops-005.\n",
+        "file_id": "DRV-005-22",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "retired-authority.md",
+        "sha256": "3f7490c7045cd1849956b12f1e10976370e5e973bc6f9f6e972cbcf5c598184e"
+      },
+      {
+        "content": "{\n  \"approval_record\": \"DEC-SECOPS-0005\",\n  \"authority_source\": \"signed family approval plus provider contract\",\n  \"case_reference\": \"SEC-0005\",\n  \"effective_revision\": \"v1\",\n  \"prohibited_basis\": [\n    \"retired authority\",\n    \"search ranking\",\n    \"request urgency\"\n  ],\n  \"status\": \"REVIEW_REQUIRED\",\n  \"subject_id\": \"KEY-API-PARTNER\"\n}\n",
+        "file_id": "DRV-005-23",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "decision-record.json",
+        "sha256": "599c1be4e01c1a97a92602abaded99affaf26f7d289ad108d72fa7766aadd5a0"
+      },
+      {
+        "content": "task_id,case_reference,review_lane,available_units,protected_units,effective_date\nsecops-005,SEC-0005,standard,13,2,2026-06-08\nsecops-005,SEC-0005,expedited,9,1,2026-06-08\n",
+        "file_id": "DRV-005-24",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "review-capacity.xlsx",
+        "sha256": "2a37ff3fbea86c30b7074218d4c74da29ee976aeed49737c374ef8357d588e22"
+      },
+      {
+        "content": "Source integrity control\nTask: secops-005\nCase: SEC-0005\nSubject: KEY-API-PARTNER\nEffective revision: v1\nRule: current provider state plus the signed approval govern. Search rank, filenames, request urgency, and archived authority do not.\n",
+        "file_id": "DRV-005-25",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "source-integrity.pdf",
+        "sha256": "a207e36bbce2fffc3036460a4e5cb28fd57ac35888e5327362bfbd2eeb7e8cbf"
+      },
+      {
+        "content": "task_id: \"secops-005\"\ncase_reference: \"SEC-0005\"\nas_of: \"2026-06-08\"\nchecks:\n  - name: \"identity_linked\"\n    status: \"PASS\"\n    record: \"KEY-API-PARTNER\"\n  - name: \"revision_current\"\n    status: \"PASS\"\n    record: \"v1\"\n  - name: \"authority_requires_live_read\"\n    status: \"OPEN\"\n    record: \"DEC-SECOPS-0005\"\n  - name: \"outcome_precomputed\"\n    status: \"NO\"\n    record: \"secops-005\"\n",
+        "file_id": "DRV-005-26",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "evidence-status.yaml",
+        "sha256": "cb18ed1aa2a3a584ef523fc3bd72dd06920b30e1dfd527028a83e3cbc04810b0"
+      },
+      {
+        "content": "2026-06-08T08:55:00Z INFO scope_created task=secops-005 case=SEC-0005\n2026-06-08T08:56:00Z INFO subject_linked family=secops subject=KEY-API-PARTNER\n2026-06-08T08:57:00Z WARN retired_authority_present case=SEC-0005 action=ignore_until_current_scope_verified\n2026-06-08T08:58:00Z INFO provider_state_ready task=secops-005 expected_mutations=2\n",
+        "file_id": "DRV-005-27",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "text/plain",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "system-audit.log",
+        "sha256": "8b67bb3f265e084ba1ea68b2611a9a2ddf85774c186328e044150681e68f728f"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SEC-0005\",\n  \"messages\": [\n    {\n      \"author\": \"operations\",\n      \"sent_at\": \"2026-06-08T08:35:00\",\n      \"text\": \"Use immutable subject KEY-API-PARTNER; the similarly named archived record is not in scope.\"\n    },\n    {\n      \"author\": \"governance\",\n      \"sent_at\": \"2026-06-08T08:41:00\",\n      \"text\": \"Current revision is v1. Confirm the signed approval before any state change.\"\n    },\n    {\n      \"author\": \"requester\",\n      \"sent_at\": \"2026-06-08T08:47:00\",\n      \"text\": \"Please leave the stakeholder communication as a draft for human review.\"\n    }\n  ],\n  \"thread_id\": \"OPS-SECOPS-0005\"\n}\n",
+        "file_id": "DRV-005-28",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "operations-thread.json",
+        "sha256": "1d4c5300c271873cafcf08d048bff1c66ec51cf06b3291505e50f8414d683273"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SEC-0005\",\n  \"network\": \"closed benchmark world\",\n  \"read_semantics\": \"provider-shaped records backed by the seeded task world\",\n  \"schema_version\": \"hubbench.provider-contract.v1\",\n  \"state_scope\": \"isolated SQLite episode\",\n  \"subject_id\": \"KEY-API-PARTNER\",\n  \"task_id\": \"secops-005\",\n  \"unsupported_claims\": [\n    \"byte parity with upstream providers\",\n    \"conversion of upstream benchmark tasks\",\n    \"upstream score comparability\"\n  ],\n  \"verifier_visibility\": \"hidden from the agent\",\n  \"write_semantics\": \"task-scoped, schema-validated, transactionally persisted and audited\"\n}\n",
+        "file_id": "DRV-005-29",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "provider-contracts.json",
+        "sha256": "41243962a8ea0533cb061e19c19e883c211044310549cdeb98b6cc332df4009d"
+      },
+      {
+        "content": "{\n  \"captured_as_of\": \"2026-06-08\",\n  \"case_reference\": \"SEC-0005\",\n  \"expected_mutation_count\": 2,\n  \"family\": \"secops\",\n  \"note\": \"Live provider state remains authoritative; this export is a correlation aid, not a write instruction.\",\n  \"organization\": \"Kestrel Grid Utilities \\u2014 Security Operations Center\",\n  \"schema_version\": \"hubbench.live-snapshot.v1\",\n  \"state\": \"PRE_ACTION\",\n  \"subject_id\": \"KEY-API-PARTNER\",\n  \"task_id\": \"secops-005\"\n}\n",
+        "file_id": "DRV-005-30",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/json",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "live-snapshot.json",
+        "sha256": "a399568c0d75def78360e5149aa7f5a5f51dea3c14f2e197a479966634d1f917"
+      },
+      {
+        "content": "case_reference: \"SEC-0005\"\nas_of: \"2026-06-08\"\nfiles:\n  - path: \"playbooks/containment-playbook.md\"\n    kind: \"policy\"\n    media_type: \"text/markdown\"\n    sha256: \"54abea01f719ec96c8d3519285b5cb379c4976297add6b82343d95c0d45c2026\"\n  - path: \"playbooks/superseded-containment-playbook-2024.md\"\n    kind: \"policy_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"4d5f1c071f37dac6ff039b52c2722fc804802854641a257bc37d9a70e6675d4b\"\n  - path: \"tickets/ticket-SR-61284.json\"\n    kind: \"decoy_ticket\"\n    media_type: \"application/json\"\n    sha256: \"209d9a36fea68a07961cc88c55c712a24f85a5bc1f36b1ba506e0992f5e4d150\"\n  - path: \"tickets/ticket-SR-61280.json\"\n    kind: \"ticket_export\"\n    media_type: \"application/json\"\n    sha256: \"06bfcea68e4977091ed2a59ff9da56a5d9e2195c1ae0831aae8193e61f6b20c2\"\n  - path: \"siem/alert-AL-77820.json\"\n    kind: \"alert_export\"\n    media_type: \"application/json\"\n    sha256: \"5734f930d0d70e88486dfadf01d10438e8f77a2b82a5e9f80378c710ac195b4f\"\n  - path: \"iam/identity-svc-fleet-replay-a-summary.json\"\n    kind: \"identity_summary\"\n    media_type: \"application/json\"\n    sha256: \"204700602b3a52c06ef7fcd11fa38f37b9043577d25c16d3d7e568a0d527e046\"\n  - path: \"iam/credential-class-catalog.csv\"\n    kind: \"class_catalog\"\n    media_type: \"text/csv\"\n    sha256: \"2c1fe94577056416cd1b9c6ca9e0ba9d92c3e4d50e01c58488d40f70b77589c9\"\n  - path: \"iam/credential-register-by-grant.xlsx\"\n    kind: \"holdings_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"6167811318853ca2091cee87b81b922fe2ce00ea5d2cf9dd7b1e97580e00730e\"\n  - path: \"iam/grant-status-register.csv\"\n    kind: \"verification_register\"\n    media_type: \"text/csv\"\n    sha256: \"bcb553c16b3b8e2769c6988d62e63be1c4aaeeea15edbb81670e3a82f38a36f5\"\n  - path: \"siem/alert-AL-77820-events.csv\"\n    kind: \"alert_events\"\n    media_type: \"text/csv\"\n    sha256: \"fe684d0dd4c966ed12135a5eb390f9dc3ee6182cb0f9245c853643292bcac217\"\n  - path: \"iam/sessions-and-factors-svc-fleet-replay-a.csv\"\n    kind: \"session_register\"\n    media_type: \"text/csv\"\n    sha256: \"4a2f85812d6d61e60ab4095b1a06438e4c5cf1bdd541efc12b3b06390538aa08\"\n  - path: \"edr/host-inventory-and-detections.csv\"\n    kind: \"edr_inventory\"\n    media_type: \"text/csv\"\n    sha256: \"3353b861d21137761c934826f43a0f1775cbbd9c4d8d67d3dfc53f407ca187f0\"\n  - path: \"oncall/responder-calendar-2026-06-08.xlsx\"\n    kind: \"responder_calendar\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"2ab856b45d1304525313fa780695156066243ec20dfed1fd14d7aafc687d394b\"\n  - path: \"oncall/responder-roster-and-qualification.csv\"\n    kind: \"responder_roster\"\n    media_type: \"text/csv\"\n    sha256: \"863ca7a4fa935688db4ebf44b2d1db7fd269fd20ac83d58962730f928605e506\"\n  - path: \"idpvendor/invalidation-confirmation-CR-88355.pdf\"\n    kind: \"vendor_confirmation\"\n    media_type: \"application/pdf\"\n    sha256: \"c9890942df8bf0206e3deea65f06ab8b52d50cc9dcc65c4d86b0ba4c0f6ef6c0\"\n  - path: \"messages/THR-1005.eml\"\n    kind: \"email\"\n    media_type: \"message/rfc822\"\n    sha256: \"b0ff57a75f58fa907a9888da8d15ecd5a98e8528aa076f499886dd9e8b9162ff\"\n  - path: \"chat/CHAT-1005.json\"\n    kind: \"chat_thread\"\n    media_type: \"application/json\"\n    sha256: \"932722d572ff28048f8e0a5f93273e8948a7557b5c0310ab8ef52ca5f539815f\"\n  - path: \"approvals/approval-AP-SO-0105.json\"\n    kind: \"approval\"\n    media_type: \"application/json\"\n    sha256: \"5cf4784ba8a814bddf9ba788e19a1a069519a7a7f1eb1244faee9109da8ceb9f\"\n  - path: \"exports/starting-state-secops-005.json\"\n    kind: \"starting_state\"\n    media_type: \"application/json\"\n    sha256: \"859c994b6d878448a31d7140289f9aae58779769f2b60c0ca7d3072ace351efa\"\n  - path: \"cloudiam/dr-registry-status.md\"\n    kind: \"dr_status\"\n    media_type: \"text/markdown\"\n    sha256: \"65181c7e3c9e6595771daa2bbbb13cf48b37b82b4b7befc3c52a999fc30f4d10\"\n  - path: \"provenance/harbor-open-source-anchors.json\"\n    kind: \"open_source_provenance\"\n    media_type: \"application/json\"\n    sha256: \"cc4d5edee9424fd2819c17672327bb4dbf9d51ba8fe35bdf4fa3bf624275a04f\"\n  - path: \"lineage/record-lineage.csv\"\n    kind: \"record_lineage\"\n    media_type: \"text/csv\"\n    sha256: \"04da730fa1414e61bccb936abeac8959ca5de6e46c17362b64fcc3f60951ce14\"\n  - path: \"controls/current-authority.md\"\n    kind: \"authority_current\"\n    media_type: \"text/markdown\"\n    sha256: \"e1449ac7eadd9920dfdf6390cc43c4da8a04c9631040e9fca1199254cda25dcc\"\n  - path: \"controls/retired-authority.md\"\n    kind: \"authority_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"3f7490c7045cd1849956b12f1e10976370e5e973bc6f9f6e972cbcf5c598184e\"\n  - path: \"approvals/decision-record.json\"\n    kind: \"approval_decision\"\n    media_type: \"application/json\"\n    sha256: \"599c1be4e01c1a97a92602abaded99affaf26f7d289ad108d72fa7766aadd5a0\"\n  - path: \"workbooks/review-capacity.xlsx\"\n    kind: \"review_capacity_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"2a37ff3fbea86c30b7074218d4c74da29ee976aeed49737c374ef8357d588e22\"\n  - path: \"controls/source-integrity.pdf\"\n    kind: \"source_integrity_control\"\n    media_type: \"application/pdf\"\n    sha256: \"a207e36bbce2fffc3036460a4e5cb28fd57ac35888e5327362bfbd2eeb7e8cbf\"\n  - path: \"audit/evidence-status.yaml\"\n    kind: \"evidence_status\"\n    media_type: \"application/yaml\"\n    sha256: \"cb18ed1aa2a3a584ef523fc3bd72dd06920b30e1dfd527028a83e3cbc04810b0\"\n  - path: \"audit/system-audit.log\"\n    kind: \"system_audit\"\n    media_type: \"text/plain\"\n    sha256: \"8b67bb3f265e084ba1ea68b2611a9a2ddf85774c186328e044150681e68f728f\"\n  - path: \"communications/source-request.eml\"\n    kind: \"source_request\"\n    media_type: \"message/rfc822\"\n    sha256: \"710c53b8c166e0809a143322ad31ffc09016e657b5ef467b90213ef4c142fe28\"\n  - path: \"collaboration/operations-thread.json\"\n    kind: \"operations_thread\"\n    media_type: \"application/json\"\n    sha256: \"1d4c5300c271873cafcf08d048bff1c66ec51cf06b3291505e50f8414d683273\"\n  - path: \"contracts/provider-contracts.json\"\n    kind: \"provider_contract\"\n    media_type: \"application/json\"\n    sha256: \"41243962a8ea0533cb061e19c19e883c211044310549cdeb98b6cc332df4009d\"\n  - path: \"exports/live-snapshot.json\"\n    kind: \"live_snapshot\"\n    media_type: \"application/json\"\n    sha256: \"a399568c0d75def78360e5149aa7f5a5f51dea3c14f2e197a479966634d1f917\"\n",
+        "file_id": "DRV-005-31",
+        "folder": "Security Operations/Cases/SEC-0005",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-06-05T17:30:00",
+        "name": "evidence-index.yaml",
+        "sha256": "827ce241b5a04fb006cb83b316df9b9f14de69d2bcecac7f8df96844d953ed4f"
+      }
+    ],
+    "evidence_files": [
+      {
+        "asset_id": "secops-005-01",
+        "kind": "policy",
+        "media_type": "text/markdown",
+        "path": "playbooks/containment-playbook.md",
+        "sha256": "54abea01f719ec96c8d3519285b5cb379c4976297add6b82343d95c0d45c2026",
+        "source": "drive",
+        "task_id": "secops-005",
+        "title": "Credential compromise containment playbook v5 (effective)"
+      },
+      {
+        "asset_id": "secops-005-02",
+        "kind": "policy_superseded",
+        "media_type": "text/markdown",
+        "path": "playbooks/superseded-containment-playbook-2024.md",
+        "sha256": "4d5f1c071f37dac6ff039b52c2722fc804802854641a257bc37d9a70e6675d4b",
+        "source": "drive",
+        "task_id": "secops-005",
+        "title": "Credential compromise containment playbook 2024 (superseded)"
+      },
+      {
+        "asset_id": "secops-005-03",
+        "kind": "decoy_ticket",
+        "media_type": "application/json",
+        "path": "tickets/ticket-SR-61284.json",
+        "sha256": "209d9a36fea68a07961cc88c55c712a24f85a5bc1f36b1ba506e0992f5e4d150",
+        "source": "servicedesk_export",
+        "task_id": "secops-005",
+        "title": "Ticket SR-61284 (DR-site rig review)"
+      },
+      {
+        "asset_id": "secops-005-04",
+        "kind": "ticket_export",
+        "media_type": "application/json",
+        "path": "tickets/ticket-SR-61280.json",
+        "sha256": "06bfcea68e4977091ed2a59ff9da56a5d9e2195c1ae0831aae8193e61f6b20c2",
+        "source": "servicedesk_export",
+        "task_id": "secops-005",
+        "title": "Ticket SR-61280 (service-desk export)"
+      },
+      {
+        "asset_id": "secops-005-05",
+        "kind": "alert_export",
+        "media_type": "application/json",
+        "path": "siem/alert-AL-77820.json",
+        "sha256": "5734f930d0d70e88486dfadf01d10438e8f77a2b82a5e9f80378c710ac195b4f",
+        "source": "siem_export",
+        "task_id": "secops-005",
+        "title": "Alert AL-77820 (SIEM export)"
+      },
+      {
+        "asset_id": "secops-005-06",
+        "kind": "identity_summary",
+        "media_type": "application/json",
+        "path": "iam/identity-svc-fleet-replay-a-summary.json",
+        "sha256": "204700602b3a52c06ef7fcd11fa38f37b9043577d25c16d3d7e568a0d527e046",
+        "source": "iam_export",
+        "task_id": "secops-005",
+        "title": "Identity svc-fleet-replay-a summary with inventory snapshots (IAM export)"
+      },
+      {
+        "asset_id": "secops-005-07",
+        "kind": "class_catalog",
+        "media_type": "text/csv",
+        "path": "iam/credential-class-catalog.csv",
+        "sha256": "2c1fe94577056416cd1b9c6ca9e0ba9d92c3e4d50e01c58488d40f70b77589c9",
+        "source": "iam_export",
+        "task_id": "secops-005",
+        "title": "Credential class catalog: object kinds and revocation channels"
+      },
+      {
+        "asset_id": "secops-005-08",
+        "kind": "holdings_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "iam/credential-register-by-grant.xlsx",
+        "sha256": "6167811318853ca2091cee87b81b922fe2ce00ea5d2cf9dd7b1e97580e00730e",
+        "source": "iam_workbook",
+        "task_id": "secops-005",
+        "title": "Registered credential objects by grant (gross)"
+      },
+      {
+        "asset_id": "secops-005-09",
+        "kind": "verification_register",
+        "media_type": "text/csv",
+        "path": "iam/grant-status-register.csv",
+        "sha256": "bcb553c16b3b8e2769c6988d62e63be1c4aaeeea15edbb81670e3a82f38a36f5",
+        "source": "iam_export",
+        "task_id": "secops-005",
+        "title": "Grant status register (expiry, rotation, revocation, owner deferrals)"
+      },
+      {
+        "asset_id": "secops-005-10",
+        "kind": "alert_events",
+        "media_type": "text/csv",
+        "path": "siem/alert-AL-77820-events.csv",
+        "sha256": "fe684d0dd4c966ed12135a5eb390f9dc3ee6182cb0f9245c853643292bcac217",
+        "source": "siem_export",
+        "task_id": "secops-005",
+        "title": "Correlated events and rule versions behind AL-77820"
+      },
+      {
+        "asset_id": "secops-005-11",
+        "kind": "session_register",
+        "media_type": "text/csv",
+        "path": "iam/sessions-and-factors-svc-fleet-replay-a.csv",
+        "sha256": "4a2f85812d6d61e60ab4095b1a06438e4c5cf1bdd541efc12b3b06390538aa08",
+        "source": "iam_export",
+        "task_id": "secops-005",
+        "title": "Sessions and MFA factors for svc-fleet-replay-a"
+      },
+      {
+        "asset_id": "secops-005-12",
+        "kind": "edr_inventory",
+        "media_type": "text/csv",
+        "path": "edr/host-inventory-and-detections.csv",
+        "sha256": "3353b861d21137761c934826f43a0f1775cbbd9c4d8d67d3dfc53f407ca187f0",
+        "source": "edr_export",
+        "task_id": "secops-005",
+        "title": "EDR host inventory and detections"
+      },
+      {
+        "asset_id": "secops-005-13",
+        "kind": "responder_calendar",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "oncall/responder-calendar-2026-06-08.xlsx",
+        "sha256": "2ab856b45d1304525313fa780695156066243ec20dfed1fd14d7aafc687d394b",
+        "source": "oncall_workbook",
+        "task_id": "secops-005",
+        "title": "Responder window calendar, three weeks from 2026-06-08"
+      },
+      {
+        "asset_id": "secops-005-14",
+        "kind": "responder_roster",
+        "media_type": "text/csv",
+        "path": "oncall/responder-roster-and-qualification.csv",
+        "sha256": "863ca7a4fa935688db4ebf44b2d1db7fd269fd20ac83d58962730f928605e506",
+        "source": "oncall_export",
+        "task_id": "secops-005",
+        "title": "Responder roster and Tier-2 qualification"
+      },
+      {
+        "asset_id": "secops-005-15",
+        "kind": "vendor_confirmation",
+        "media_type": "application/pdf",
+        "path": "idpvendor/invalidation-confirmation-CR-88355.pdf",
+        "sha256": "c9890942df8bf0206e3deea65f06ab8b52d50cc9dcc65c4d86b0ba4c0f6ef6c0",
+        "source": "email_attachment",
+        "task_id": "secops-005",
+        "title": "Vendor invalidation confirmation CR-88355"
+      },
+      {
+        "asset_id": "secops-005-16",
+        "kind": "email",
+        "media_type": "message/rfc822",
+        "path": "messages/THR-1005.eml",
+        "sha256": "b0ff57a75f58fa907a9888da8d15ecd5a98e8528aa076f499886dd9e8b9162ff",
+        "source": "messages",
+        "task_id": "secops-005",
+        "title": "SEC-0005 fleet partner keys — revoke what we can before Thursday"
+      },
+      {
+        "asset_id": "secops-005-17",
+        "kind": "chat_thread",
+        "media_type": "application/json",
+        "path": "chat/CHAT-1005.json",
+        "sha256": "932722d572ff28048f8e0a5f93273e8948a7557b5c0310ab8ef52ca5f539815f",
+        "source": "chat",
+        "task_id": "secops-005",
+        "title": "SEC-0005 fleet partner-key reviews"
+      },
+      {
+        "asset_id": "secops-005-18",
+        "kind": "approval",
+        "media_type": "application/json",
+        "path": "approvals/approval-AP-SO-0105.json",
+        "sha256": "5cf4784ba8a814bddf9ba788e19a1a069519a7a7f1eb1244faee9109da8ceb9f",
+        "source": "approvals_export",
+        "task_id": "secops-005",
+        "title": "Approval record AP-SO-0105"
+      },
+      {
+        "asset_id": "secops-005-19",
+        "kind": "starting_state",
+        "media_type": "application/json",
+        "path": "exports/starting-state-secops-005.json",
+        "sha256": "859c994b6d878448a31d7140289f9aae58779769f2b60c0ca7d3072ace351efa",
+        "source": "oncall_export",
+        "task_id": "secops-005",
+        "title": "Starting-state export (bridges, invalidation orders, revocations)"
+      },
+      {
+        "asset_id": "secops-005-20",
+        "kind": "dr_status",
+        "media_type": "text/markdown",
+        "path": "cloudiam/dr-registry-status.md",
+        "sha256": "65181c7e3c9e6595771daa2bbbb13cf48b37b82b4b7befc3c52a999fc30f4d10",
+        "source": "drive",
+        "task_id": "secops-005",
+        "title": "DR registry status — partner keys"
+      },
+      {
+        "asset_id": "secops-005-21",
+        "kind": "open_source_provenance",
+        "media_type": "application/json",
+        "path": "provenance/harbor-open-source-anchors.json",
+        "sha256": "cc4d5edee9424fd2819c17672327bb4dbf9d51ba8fe35bdf4fa3bf624275a04f",
+        "source": "release_metadata",
+        "task_id": "secops-005",
+        "title": "Open-source benchmark provenance — SecOps"
+      },
+      {
+        "asset_id": "secops-005-22",
+        "kind": "record_lineage",
+        "media_type": "text/csv",
+        "path": "lineage/record-lineage.csv",
+        "sha256": "04da730fa1414e61bccb936abeac8959ca5de6e46c17362b64fcc3f60951ce14",
+        "source": "lineage_export",
+        "task_id": "secops-005",
+        "title": "Cross-system record lineage — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-23",
+        "kind": "authority_current",
+        "media_type": "text/markdown",
+        "path": "controls/current-authority.md",
+        "sha256": "e1449ac7eadd9920dfdf6390cc43c4da8a04c9631040e9fca1199254cda25dcc",
+        "source": "governance",
+        "task_id": "secops-005",
+        "title": "Current authority — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-24",
+        "kind": "authority_superseded",
+        "media_type": "text/markdown",
+        "path": "controls/retired-authority.md",
+        "sha256": "3f7490c7045cd1849956b12f1e10976370e5e973bc6f9f6e972cbcf5c598184e",
+        "source": "governance_archive",
+        "task_id": "secops-005",
+        "title": "Retired authority — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-25",
+        "kind": "approval_decision",
+        "media_type": "application/json",
+        "path": "approvals/decision-record.json",
+        "sha256": "599c1be4e01c1a97a92602abaded99affaf26f7d289ad108d72fa7766aadd5a0",
+        "source": "approvals_export",
+        "task_id": "secops-005",
+        "title": "Decision control record — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-26",
+        "kind": "review_capacity_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "workbooks/review-capacity.xlsx",
+        "sha256": "2a37ff3fbea86c30b7074218d4c74da29ee976aeed49737c374ef8357d588e22",
+        "source": "operations_workbook",
+        "task_id": "secops-005",
+        "title": "Review capacity — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-27",
+        "kind": "source_integrity_control",
+        "media_type": "application/pdf",
+        "path": "controls/source-integrity.pdf",
+        "sha256": "a207e36bbce2fffc3036460a4e5cb28fd57ac35888e5327362bfbd2eeb7e8cbf",
+        "source": "governance",
+        "task_id": "secops-005",
+        "title": "Source integrity control — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-28",
+        "kind": "evidence_status",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-status.yaml",
+        "sha256": "cb18ed1aa2a3a584ef523fc3bd72dd06920b30e1dfd527028a83e3cbc04810b0",
+        "source": "audit_export",
+        "task_id": "secops-005",
+        "title": "Evidence readiness — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-29",
+        "kind": "system_audit",
+        "media_type": "text/plain",
+        "path": "audit/system-audit.log",
+        "sha256": "8b67bb3f265e084ba1ea68b2611a9a2ddf85774c186328e044150681e68f728f",
+        "source": "audit_export",
+        "task_id": "secops-005",
+        "title": "System audit log — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-30",
+        "kind": "source_request",
+        "media_type": "message/rfc822",
+        "path": "communications/source-request.eml",
+        "sha256": "710c53b8c166e0809a143322ad31ffc09016e657b5ef467b90213ef4c142fe28",
+        "source": "messages",
+        "task_id": "secops-005",
+        "title": "Source integrity request — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-31",
+        "kind": "operations_thread",
+        "media_type": "application/json",
+        "path": "collaboration/operations-thread.json",
+        "sha256": "1d4c5300c271873cafcf08d048bff1c66ec51cf06b3291505e50f8414d683273",
+        "source": "chat",
+        "task_id": "secops-005",
+        "title": "Operations thread — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-32",
+        "kind": "provider_contract",
+        "media_type": "application/json",
+        "path": "contracts/provider-contracts.json",
+        "sha256": "41243962a8ea0533cb061e19c19e883c211044310549cdeb98b6cc332df4009d",
+        "source": "release_metadata",
+        "task_id": "secops-005",
+        "title": "Provider contract — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-33",
+        "kind": "live_snapshot",
+        "media_type": "application/json",
+        "path": "exports/live-snapshot.json",
+        "sha256": "a399568c0d75def78360e5149aa7f5a5f51dea3c14f2e197a479966634d1f917",
+        "source": "provider_export",
+        "task_id": "secops-005",
+        "title": "Live pre-action snapshot — SEC-0005"
+      },
+      {
+        "asset_id": "secops-005-34",
+        "kind": "evidence_index",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-index.yaml",
+        "sha256": "827ce241b5a04fb006cb83b316df9b9f14de69d2bcecac7f8df96844d953ed4f",
+        "source": "drive",
+        "task_id": "secops-005",
+        "title": "Evidence index"
+      }
+    ],
+    "grant_inventory": [
+      {
+        "identity_id": "ID-41170",
+        "inventory_id": "INV-41170",
+        "measured_at": "2026-06-04",
+        "metric": "LIVE-KEYS",
+        "status": "final",
+        "unit": "CREDENTIAL_OBJECT",
+        "value": 3
+      },
+      {
+        "identity_id": "ID-41170",
+        "inventory_id": "INV-41170-2603",
+        "measured_at": "2026-03-13",
+        "metric": "LIVE-KEYS",
+        "status": "final",
+        "unit": "CREDENTIAL_OBJECT",
+        "value": 0
+      },
+      {
+        "identity_id": "ID-41181",
+        "inventory_id": "INV-41181",
+        "measured_at": "2026-06-04",
+        "metric": "LIVE-KEYS",
+        "status": "final",
+        "unit": "CREDENTIAL_OBJECT",
+        "value": 3
+      },
+      {
+        "identity_id": "ID-30015",
+        "inventory_id": "INV-30015",
+        "measured_at": "2026-06-02",
+        "metric": "LIVE-KEYS",
+        "status": "final",
+        "unit": "CREDENTIAL_OBJECT",
+        "value": 2
+      }
+    ],
+    "grant_sets": [
+      {
+        "credential_class": "KEY-API-PARTNER",
+        "deferred_for_ticket": null,
+        "expires_on": "2026-10-31",
+        "grant_id": "GS-PK-6610",
+        "grant_label": "6610",
+        "identity_id": "ID-41181",
+        "object_count": 1,
+        "register_flag": null,
+        "status": "ACTIVE",
+        "status_reason": null,
+        "system": "iam"
+      },
+      {
+        "credential_class": "KEY-API-PARTNER",
+        "deferred_for_ticket": null,
+        "expires_on": "2026-11-30",
+        "grant_id": "GS-PK-6588",
+        "grant_label": "6588",
+        "identity_id": "ID-41170",
+        "object_count": 3,
+        "register_flag": null,
+        "status": "ACTIVE",
+        "status_reason": null,
+        "system": "cloudiam"
+      },
+      {
+        "credential_class": "KEY-API-PARTNER",
+        "deferred_for_ticket": "SR-61284",
+        "expires_on": "2026-08-31",
+        "grant_id": "GS-PK-6571",
+        "grant_label": "6571",
+        "identity_id": "ID-30015",
+        "object_count": 2,
+        "register_flag": null,
+        "status": "ACTIVE",
+        "status_reason": "owner-held for the DR-site review 2026-06-10",
+        "system": "cloudiam"
+      },
+      {
+        "credential_class": "KEY-API-PARTNER",
+        "deferred_for_ticket": null,
+        "expires_on": "2026-05-29",
+        "grant_id": "GS-PK-6550",
+        "grant_label": "6550",
+        "identity_id": "ID-41170",
+        "object_count": 1,
+        "register_flag": null,
+        "status": "EXPIRED",
+        "status_reason": "expired 2026-05-29; queued for registry purge",
+        "system": "cloudiam"
+      }
+    ],
+    "hosts": [
+      {
+        "host_id": "H-005-01",
+        "hostname": "fleet-replay-a-01.prod.kestrelgrid.internal",
+        "identity_id": "ID-41170",
+        "isolation_state": "normal",
+        "note": "registered replay job host; idle during the alert window",
+        "role": "batch",
+        "status": "in_service"
+      },
+      {
+        "host_id": "H-005-02",
+        "hostname": "fleet-replay-b-01.prod.kestrelgrid.internal",
+        "identity_id": "ID-41181",
+        "isolation_state": "normal",
+        "note": null,
+        "role": "batch",
+        "status": "in_service"
+      },
+      {
+        "host_id": "H-005-90",
+        "hostname": "bastion-01.mgmt.kestrelgrid.internal",
+        "identity_id": null,
+        "isolation_state": "normal",
+        "note": null,
+        "role": "bastion",
+        "status": "in_service"
+      }
+    ],
+    "identities": [
+      {
+        "display_name": "Fleet telemetry replay principal — fleet A",
+        "identity_id": "ID-41170",
+        "kind": "service_account",
+        "owner_analyst_id": "AN-PRADHAN",
+        "owner_team": "Fleet Telemetry",
+        "tier": "tier-2",
+        "username": "svc-fleet-replay-a"
+      },
+      {
+        "display_name": "Fleet telemetry replay principal — fleet B",
+        "identity_id": "ID-41181",
+        "kind": "service_account",
+        "owner_analyst_id": "AN-PRADHAN",
+        "owner_team": "Fleet Telemetry",
+        "tier": "tier-2",
+        "username": "svc-fleet-replay-b"
+      },
+      {
+        "display_name": "Fleet telemetry replay principal — Drayton DR rig",
+        "identity_id": "ID-30015",
+        "kind": "service_account",
+        "owner_analyst_id": "AN-OKAFOR",
+        "owner_team": "Fleet Telemetry",
+        "tier": "tier-3",
+        "username": "svc-fleet-dr-rig"
+      }
+    ],
+    "idp_vendors": [
+      {
+        "account_number": "KG-2210",
+        "name": "Halyard Identity Cloud (managed IdP)",
+        "vendor_id": "VND-HALYARD"
+      },
+      {
+        "account_number": "KG-0874",
+        "name": "Brindle Cloud Platform (key custody)",
+        "vendor_id": "VND-BRINDLE"
+      }
+    ],
+    "invalidation_confirmations": [
+      {
+        "confirmation_id": "CONF-BRN-88355",
+        "credential_class": "KEY-API-PARTNER",
+        "expedite_fee_usd": 260,
+        "expedited_ready_date": "2026-06-10",
+        "note": "Custody rollover option. Standard rollover 2026-06-15; expedited rollover 2026-06-10 adds USD 260. Register verification next business day.",
+        "objects_available": 6,
+        "per_object_fee_usd": 58.0,
+        "reference": "CR-88355",
+        "standard_ready_date": "2026-06-15",
+        "status": "OPEN",
+        "valid_until": "2026-06-09",
+        "vendor_id": "VND-BRINDLE"
+      }
+    ],
+    "invalidation_orders": [
+      {
+        "confirmation_id": null,
+        "created_at": "2026-05-22T09:30:00",
+        "credential_class": "KEY-SIGNING",
+        "expected_ready_date": "2026-05-27",
+        "object_count": 2,
+        "order_id": "IVO-3400",
+        "requested_by": "security_operations_coordinator",
+        "revision": 1,
+        "service_option": "standard",
+        "status": "RECEIVED",
+        "unit": "CREDENTIAL_OBJECT",
+        "vendor_id": "VND-HALYARD"
+      }
+    ],
+    "messages": [
+      {
+        "attachments_json": "[{\"name\": \"invalidation-confirmation-CR-88355.pdf\", \"mime_type\": \"application/pdf\"}]",
+        "body": "The fleet A partner key was used from a non-partner egress on Sunday (AL-77820) and both fleet custody reviews are booked this week: fleet A Thursday 2026-06-11, fleet B Friday 2026-06-12. Please revoke in the Brindle registry what we are actually allowed to revoke before Thursday and tell me what the rest depends on.\n\nBrindle's rollover confirmation CR-88355 is attached; Imre has signed AP-SO-0105 for the tenant revocation.\n\nRohan",
+        "channel": "email",
+        "labels": "fleet,SEC-0005,SEC-0005",
+        "message_id": "MSG-1005-01",
+        "recipients": "soc@kestrelgrid.example",
+        "sender": "rohan.pradhan@kestrelgrid.example",
+        "sent_at": "2026-06-08T09:10:00",
+        "subject": "SEC-0005 fleet partner keys — revoke what we can before Thursday",
+        "thread_id": "THR-1005"
+      },
+      {
+        "attachments_json": "[]",
+        "body": "On-call rota for the week of 2026-06-08 is posted. Responder qualification flags are on the shared drive roster; no changes to protected bridges.",
+        "channel": "email",
+        "labels": "operations",
+        "message_id": "MSG-0005-00",
+        "recipients": "soc@kestrelgrid.example",
+        "sender": "beatriz.soriano@kestrelgrid.example",
+        "sent_at": "2026-06-05T08:00:00",
+        "subject": "Weekly SOC operations note",
+        "thread_id": "THR-0005-OPS"
+      }
+    ],
+    "mfa_factors": [
+      {
+        "enrolled_at": "2026-02-09",
+        "factor_id": "FAC-005-1",
+        "factor_type": "workload_certificate",
+        "identity_id": "ID-41170",
+        "last_used": "2026-06-07T01:00:00",
+        "status": "active"
+      }
+    ],
+    "oncall_windows": [
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-08",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260608-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-08",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260608-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-08",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260608-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-08",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260608-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-08",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260608-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-08",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260608-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-09",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260609-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-09",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260609-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-09",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260609-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-09",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260609-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-09",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260609-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-09",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260609-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-10",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260610-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-10",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260610-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-10",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260610-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-10",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260610-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-10",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260610-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-10",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260610-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-11",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260611-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "major-incident bridge (protected)",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-11",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "protected",
+        "window_id": "OCW-1-20260611-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-11",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260611-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-11",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260611-PM"
+      },
+      {
+        "bridge_id": "BRG-70890",
+        "end_time": "12:00:00",
+        "hold_reason": "bridge",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-11",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260611-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-11",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260611-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-12",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260612-AM"
+      },
+      {
+        "bridge_id": "BRG-70891",
+        "end_time": "16:30:00",
+        "hold_reason": "bridge",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-12",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260612-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-12",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260612-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-12",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260612-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-12",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260612-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-12",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260612-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260615-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-15",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260615-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260615-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-15",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260615-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-15",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260615-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-15",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260615-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-16",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260616-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-16",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260616-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-16",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260616-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-16",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260616-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-16",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260616-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-16",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260616-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-17",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260617-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-17",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260617-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": null,
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-17",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "free",
+        "window_id": "OCW-2-20260617-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-17",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260617-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-17",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260617-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-17",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260617-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-18",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260618-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-18",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260618-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-18",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260618-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-18",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260618-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-18",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260618-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": null,
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-18",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "free",
+        "window_id": "OCW-3-20260618-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-19",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260619-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-19",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260619-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-19",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260619-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-19",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260619-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-19",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260619-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-19",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260619-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260622-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-22",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260622-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260622-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-22",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260622-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-22",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260622-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-22",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260622-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-23",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260623-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-23",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260623-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-23",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260623-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-23",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260623-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-23",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260623-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-23",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260623-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-24",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260624-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-24",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260624-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-24",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260624-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-24",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260624-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-24",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260624-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-24",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260624-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-25",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260625-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-25",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260625-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-25",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260625-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-25",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260625-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-25",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260625-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-25",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260625-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-26",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260626-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-1",
+        "service_date": "2026-06-26",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-1-20260626-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-26",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260626-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-2",
+        "service_date": "2026-06-26",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-2-20260626-PM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "12:00:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-26",
+        "session": "AM",
+        "start_time": "08:00:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260626-AM"
+      },
+      {
+        "bridge_id": null,
+        "end_time": "16:30:00",
+        "hold_reason": "scheduled detection-engineering load",
+        "responder_id": "RESP-3",
+        "service_date": "2026-06-26",
+        "session": "PM",
+        "start_time": "12:30:00",
+        "status": "busy",
+        "window_id": "OCW-3-20260626-PM"
+      }
+    ],
+    "responders": [
+      {
+        "name": "Tier-2 responder 1 (identity pod)",
+        "pool": "soc-tier2",
+        "responder_id": "RESP-1",
+        "status": "ACTIVE",
+        "status_note": null,
+        "tier2_capable": 1
+      },
+      {
+        "name": "Tier-2 responder 2 (identity pod)",
+        "pool": "soc-tier2",
+        "responder_id": "RESP-2",
+        "status": "ACTIVE",
+        "status_note": null,
+        "tier2_capable": 1
+      },
+      {
+        "name": "Tier-2 responder 3 (cloud pod)",
+        "pool": "soc-tier2",
+        "responder_id": "RESP-3",
+        "status": "ACTIVE",
+        "status_note": null,
+        "tier2_capable": 1
+      }
+    ],
+    "revocations": [
+      {
+        "created_at": "2026-05-26T10:15:00",
+        "credential_class": "KEY-SIGNING",
+        "effective_date": "2026-05-26",
+        "identity_id": "ID-41170",
+        "object_count": 1,
+        "requested_by": "security_operations_coordinator",
+        "revision": 1,
+        "revocation_id": "RVK-3400",
+        "status": "COMPLETED",
+        "system": "iam"
+      }
+    ],
+    "sessions": [
+      {
+        "device": "api client",
+        "geo": "non-partner egress",
+        "identity_id": "ID-41170",
+        "risk": "high",
+        "session_id": "SES-005-1",
+        "source_ip": "203.0.113.9",
+        "started_at": "2026-06-07T04:09:00",
+        "status": "ACTIVE"
+      },
+      {
+        "device": "fleet-replay-a-01 (registered)",
+        "geo": "Leeds data centre",
+        "identity_id": "ID-41170",
+        "risk": "low",
+        "session_id": "SES-005-2",
+        "source_ip": "10.50.1.8",
+        "started_at": "2026-06-07T01:00:00",
+        "status": "ACTIVE"
+      }
+    ],
+    "tickets": [
+      {
+        "alert_id": "AL-77820",
+        "confirm_minutes": 30,
+        "credential_class": "KEY-API-PARTNER",
+        "identity_id": "ID-41170",
+        "kind": "containment",
+        "note": null,
+        "opened_at": "2026-06-03",
+        "priority": "high",
+        "requested_by": "AN-PRADHAN",
+        "scope_note": "weekly partner-key custody review",
+        "status": "open",
+        "ticket_id": "SR-61280",
+        "tier_code": "T2-CONFIRMED",
+        "triage_minutes": 150,
+        "unit_basis": "fixed",
+        "unit_kind": "principal",
+        "unit_objects": 3,
+        "units_in_scope": 1
+      },
+      {
+        "alert_id": "AL-77820",
+        "confirm_minutes": 30,
+        "credential_class": "KEY-API-PARTNER",
+        "identity_id": "ID-41181",
+        "kind": "containment",
+        "note": null,
+        "opened_at": "2026-06-03",
+        "priority": "high",
+        "requested_by": "AN-PRADHAN",
+        "scope_note": "weekly partner-key custody review",
+        "status": "open",
+        "ticket_id": "SR-61281",
+        "tier_code": "T2-CONFIRMED",
+        "triage_minutes": 150,
+        "unit_basis": "fixed",
+        "unit_kind": "principal",
+        "unit_objects": 3,
+        "units_in_scope": 1
+      },
+      {
+        "alert_id": null,
+        "confirm_minutes": 30,
+        "credential_class": "KEY-API-PARTNER",
+        "identity_id": "ID-30015",
+        "kind": "containment",
+        "note": "Runs at the Drayton DR site, not on the primary responder roster; grant 6571 is owner-held for it.",
+        "opened_at": "2026-06-04",
+        "priority": "high",
+        "requested_by": "AN-OKAFOR",
+        "scope_note": "DR-site rig review 2026-06-10 (runs at the DR site; keys owner-held on the DR registry)",
+        "status": "open",
+        "ticket_id": "SR-61284",
+        "tier_code": "T1-SUSPECTED",
+        "triage_minutes": 150,
+        "unit_basis": "fixed",
+        "unit_kind": "principal",
+        "unit_objects": 2,
+        "units_in_scope": 1
+      }
+    ],
+    "users": [
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Security Operations Coordinator (you)",
+        "role": "security_operations_coordinator",
+        "user_id": "U-SOC"
+      },
+      {
+        "approval_limit_usd": 20000,
+        "display_name": "Imre Haviland",
+        "role": "soc_manager",
+        "user_id": "U-HAVILAND"
+      },
+      {
+        "approval_limit_usd": 120000,
+        "display_name": "Nienke Achterberg",
+        "role": "chief_information_security_officer",
+        "user_id": "U-ACHTERBERG"
+      },
+      {
+        "approval_limit_usd": 15000,
+        "display_name": "Beatriz Soriano",
+        "role": "on_call_lead",
+        "user_id": "U-SORIANO"
+      },
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Oksana Kovalenko",
+        "role": "change_advisory_chair",
+        "user_id": "U-KOVALENKO"
+      }
+    ]
+  },
+  "starting_records": [
+    {
+      "resource_id": "BRG-70890",
+      "resource_type": "Bridge",
+      "status": "booked",
+      "system": "oncall"
+    },
+    {
+      "resource_id": "BRG-70891",
+      "resource_type": "Bridge",
+      "status": "booked",
+      "system": "oncall"
+    },
+    {
+      "resource_id": "IVO-3400",
+      "resource_type": "InvalidationOrder",
+      "status": "RECEIVED",
+      "system": "idpvendor"
+    },
+    {
+      "resource_id": "RVK-3400",
+      "resource_type": "Revocation",
+      "status": "COMPLETED",
+      "system": "iam"
+    }
+  ],
+  "task_id": "secops-005",
+  "title": "Revoke the fleet partner keys the tenant can actually revoke",
+  "world": {
+    "id": "kestrel-secops-v1",
+    "name": "Kestrel Grid Utilities — Security Operations Center",
+    "organization_id": "ORG-KESTREL",
+    "primary_site": "TENANT-PRIMARY",
+    "systems": [
+      "siem",
+      "edr",
+      "iam",
+      "cloudiam",
+      "servicedesk",
+      "playbooks",
+      "oncall",
+      "idpvendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

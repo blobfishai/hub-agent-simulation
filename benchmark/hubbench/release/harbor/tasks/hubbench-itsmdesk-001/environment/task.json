@@ -1,0 +1,3430 @@
+{
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_early_access_build.",
+        "type": "string"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for weekend_standard_window.",
+        "type": "string"
+      },
+      "budget_consumed_minutes": {
+        "description": "Charged incident minutes inside the rolling 30-day window as of the planning date.",
+        "type": "integer"
+      },
+      "budget_reserve_minutes": {
+        "description": "Reserve floor the policy protects inside the SLO budget.",
+        "type": "integer"
+      },
+      "budget_roll_date": {
+        "description": "First date on which the spendable budget covers the planned downtime (ISO date).",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "earliest_qualified_base_window": {
+        "description": "First eligible payments-lane session on or after standard package readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for tonight_with_board_exception.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_completion_days_saved": {
+        "description": "Days the early-access build saves after the budget roll and the calendar are reapplied.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Quillstone's confirmed standard and early-access release dates on QSA-2026-118.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered BUDGET_MINUTE that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "charged incident minutes plus the 10-minute reserve floor",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for spendable payments-api error-budget minutes in the 30-day window before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: BUDGET_MINUTE.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing weekend_standard_window, expedite_early_access_build, tonight_with_board_exception.",
+        "enum": [
+          "weekend_standard_window",
+          "expedite_early_access_build",
+          "tonight_with_board_exception"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_quantity": {
+        "description": "planned downtime minutes the QSA-2026-118 fix needs at the current 7-minute restart metering (2 full-pool restarts + 5 minutes validation)",
+        "type": "integer"
+      },
+      "restart_minutes": {
+        "description": "Restart-to-healthy minutes from the current final RESTART-MIN metering, not the stale one.",
+        "type": "integer"
+      },
+      "restarts_required": {
+        "description": "Full-pool restarts the current advisory revision requires (not the withdrawn revision).",
+        "type": "integer"
+      },
+      "selected_lane_window": {
+        "description": "Lane and session used by the selected option, as LANE/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered BUDGET_MINUTE after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Quillstone's confirmed standard and early-access release dates on QSA-2026-118.",
+        "type": "string"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing charged incident minutes plus the 10-minute reserve floor.",
+        "type": "integer"
+      },
+      "validation_minutes": {
+        "description": "Post-change validation minutes from the service runbook.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "baseline_completion",
+      "budget_consumed_minutes",
+      "budget_reserve_minutes",
+      "budget_roll_date",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "earliest_qualified_base_window",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_completion_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_quantity",
+      "restart_minutes",
+      "restarts_required",
+      "selected_lane_window",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "usable_coverage_quantity",
+      "validation_minutes"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-04-14",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "family": "itsmdesk",
+  "instruction": "Quillstone's high-severity runtime advisory landed on Friday and security wants the payments API patched tonight. Before anyone promises that, I need the honest picture: how many minutes of downtime the fix really costs at our current restart timing rather than the vendor's estimate, how much error budget is genuinely spendable once the charged incidents and the reserve are netted, whether the settlement freeze or the weekday embargo pushes the work to the weekend, and what buying the early-access build or asking Tunde for an exception would actually change. Schedule the change into the window that holds up and leave Lena a draft she can send security. Anything that needs Tunde or Inês should be flagged, not assumed.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-SO-0101"
+    },
+    "calendar": {
+      "calendar_window": {
+        "end_date": "2026-04-26",
+        "lane_id": "LANE-PAY",
+        "start_date": "2026-04-14"
+      },
+      "lanes": [
+        "LANE-PAY",
+        "LANE-DATA"
+      ]
+    },
+    "case_reference": "SVCOPS-0001",
+    "chat": {
+      "thread_id": "CHAT-2001"
+    },
+    "drive": {
+      "case_folder_query": "SVCOPS-0001",
+      "policy_query": "policy"
+    },
+    "itsm": {
+      "change_id": "CHG-40311",
+      "service_code": "payments-api",
+      "service_search": {
+        "arguments": {
+          "identifier": "payments-api"
+        },
+        "tool": "itsm.cis.search"
+      }
+    },
+    "messages": {
+      "search_query": "SVCOPS-0001"
+    },
+    "oncall": {
+      "secondary_schedule": "SCHED-PAY-SEC"
+    },
+    "telemetry": {
+      "slo_id": "SLO-PAY-AVAIL"
+    },
+    "vendor": {
+      "advisory_id": "ADV-QS-2026-118"
+    }
+  },
+  "role": "service_operations_coordinator",
+  "seed_tables": {
+    "alerts": [
+      {
+        "alert_id": "ALRT-001-01",
+        "fired_at": "2026-03-05T11:20:00",
+        "incident_id": "INC-70601",
+        "resolved_at": "2026-03-05T11:52:00",
+        "rule": "availability-burn-fast",
+        "service_id": "SVC-31020",
+        "severity": "sev2"
+      },
+      {
+        "alert_id": "ALRT-001-02",
+        "fired_at": "2026-03-18T14:02:00",
+        "incident_id": "INC-70812",
+        "resolved_at": "2026-03-18T14:31:00",
+        "rule": "availability-burn-fast",
+        "service_id": "SVC-31020",
+        "severity": "sev2"
+      },
+      {
+        "alert_id": "ALRT-001-03",
+        "fired_at": "2026-04-02T03:40:00",
+        "incident_id": "INC-70855",
+        "resolved_at": "2026-04-02T04:07:00",
+        "rule": "availability-burn-fast",
+        "service_id": "SVC-31020",
+        "severity": "sev1"
+      },
+      {
+        "alert_id": "ALRT-001-04",
+        "fired_at": "2026-04-11T09:15:00",
+        "incident_id": "INC-70870",
+        "resolved_at": "2026-04-11T09:44:00",
+        "rule": "synthetic-probe-failure",
+        "service_id": "SVC-31020",
+        "severity": "sev3"
+      }
+    ],
+    "approvals": [
+      {
+        "approval_id": "AP-SO-0101",
+        "approver_id": "U-LINDGREN",
+        "approver_role": "change_manager",
+        "granted_on": "2026-04-13",
+        "scope_json": "{\"advisory\": \"ADV-QS-2026-118\", \"budget_exception\": 0, \"expedite_fee_allowed_usd\": 0, \"lane\": \"LANE-PAY\", \"max_spend_usd\": 0, \"not_covered\": [\"weekday-embargo or freeze exception (change board chair)\", \"early-access build fee (security lead)\", \"error-budget exception (change board chair)\"], \"record\": \"CHG-40311\", \"windows\": \"weekend standard sessions on LANE-PAY only\"}",
+        "status": "APPROVED",
+        "subject": "Payments API QSA-2026-118 remediation (SVCOPS-0001, CHG-40311)"
+      },
+      {
+        "approval_id": "AP-SO-0090",
+        "approver_id": "U-LINDGREN",
+        "approver_role": "change_manager",
+        "granted_on": "2026-02-09",
+        "scope_json": "{\"category\": \"LICENCES\", \"max_spend_usd\": 7000}",
+        "status": "APPROVED",
+        "subject": "Quarterly observability licence renewal standing order"
+      }
+    ],
+    "burn_samples": [
+      {
+        "burn_rate_1h": 0.5,
+        "burn_rate_6h": 0.35,
+        "raw_consumed_minutes": 22.3,
+        "sample_id": "BURN-001-1",
+        "sampled_at": "2026-04-12T08:00:00",
+        "slo_id": "SLO-PAY-AVAIL"
+      },
+      {
+        "burn_rate_1h": 0.5,
+        "burn_rate_6h": 0.35,
+        "raw_consumed_minutes": 22.5,
+        "sample_id": "BURN-001-2",
+        "sampled_at": "2026-04-13T08:00:00",
+        "slo_id": "SLO-PAY-AVAIL"
+      },
+      {
+        "burn_rate_1h": 0.5,
+        "burn_rate_6h": 0.35,
+        "raw_consumed_minutes": 22.7,
+        "sample_id": "BURN-001-3",
+        "sampled_at": "2026-04-14T08:00:00",
+        "slo_id": "SLO-PAY-AVAIL"
+      }
+    ],
+    "change_lanes": [
+      {
+        "lane_id": "LANE-PAY",
+        "name": "Payments change lane",
+        "status": "ACTIVE",
+        "status_note": null,
+        "tier1_capable": 1,
+        "weekday_policy": "embargo"
+      },
+      {
+        "lane_id": "LANE-DATA",
+        "name": "Data and messaging change lane",
+        "status": "ACTIVE",
+        "status_note": null,
+        "tier1_capable": 0,
+        "weekday_policy": "open"
+      }
+    ],
+    "change_requests": [
+      {
+        "advisory_id": "ADV-QS-2026-118",
+        "change_id": "CHG-40311",
+        "change_type": "normal",
+        "downtime_minutes": 19,
+        "lane_id": "LANE-PAY",
+        "last_updated": "2026-04-13T17:30:00",
+        "opened_at": "2026-04-13T10:05:00",
+        "planned_end": null,
+        "planned_start": null,
+        "requested_by": "ENG-VARGA",
+        "restarts": 2,
+        "revision": 1,
+        "risk": "moderate",
+        "service_id": "SVC-31020",
+        "state": "authorize",
+        "summary": "QSA-2026-118 runtime patch — payments-api",
+        "window_id": null
+      },
+      {
+        "advisory_id": "ADV-QS-2026-118",
+        "change_id": "CHG-40309",
+        "change_type": "normal",
+        "downtime_minutes": 8,
+        "lane_id": null,
+        "last_updated": "2026-04-13T17:30:00",
+        "opened_at": "2026-04-12T02:10:00",
+        "planned_end": null,
+        "planned_start": null,
+        "requested_by": "ENG-VARGA",
+        "restarts": 1,
+        "revision": 1,
+        "risk": "low",
+        "service_id": "SVC-31077",
+        "state": "cancelled",
+        "summary": "QSA-2026-118 runtime patch — duplicate raised against payments-api-legacy by the vendor-sync bot; cancelled 2026-04-13",
+        "window_id": null
+      },
+      {
+        "advisory_id": null,
+        "change_id": "CHG-40302",
+        "change_type": "standard",
+        "downtime_minutes": 0,
+        "lane_id": "LANE-PAY",
+        "last_updated": "2026-04-13T17:30:00",
+        "opened_at": "2026-04-06T09:00:00",
+        "planned_end": "2026-04-26T20:30:00",
+        "planned_start": "2026-04-26T19:00:00",
+        "requested_by": "ENG-VARGA",
+        "restarts": 0,
+        "revision": 1,
+        "risk": "low",
+        "service_id": "SVC-31077",
+        "state": "scheduled",
+        "summary": "legacy region decommission step 2 — payments-api-legacy",
+        "window_id": "MW-PAY-20260426-EVE"
+      }
+    ],
+    "change_tasks": [],
+    "chat_threads": [
+      {
+        "channel": "#service-ops",
+        "messages_json": "[{\"author\": \"Saoirse Lindgren\", \"ts\": \"2026-04-14T08:04:00\", \"text\": \"INC-70870 was reclassified by PRB-4118 \\u2014 not charged. The March 18 pool exhaustion rolls out of the 30-day window on the 17th.\"}, {\"author\": \"Wren Haviland\", \"ts\": \"2026-04-14T08:11:00\", \"text\": \"Weekday sessions on the payments lane are embargoed. Anyone wanting tonight is asking Tunde, not me. Dario is on secondary tonight and tomorrow night without the payments runbook cert.\"}, {\"author\": \"Tunde Abara\", \"ts\": \"2026-04-14T08:26:00\", \"text\": \"The settlement cutover freeze holds the payments lane Friday and Saturday. Sunday night is open and nobody has asked me for an exception.\"}]",
+        "thread_id": "CHAT-2001",
+        "title": "SVCOPS-0001 payments API — QSA-2026-118"
+      },
+      {
+        "channel": "#service-ops",
+        "messages_json": "[{\"author\": \"Wren Haviland\", \"ts\": \"2026-04-12T16:40:00\", \"text\": \"Reminder: log every alert-routing change in the change tracker before the CAB agenda closes.\"}]",
+        "thread_id": "CHAT-0001-GEN",
+        "title": "General — alert routing and CAB agenda"
+      }
+    ],
+    "drive_files": [
+      {
+        "content": "# Change and Error-Budget Policy (v3, effective 2026-02-01)\n\nApplies to Brightmoor Commerce Service Operations: every production service in the CMDB, the change lanes on the change calendar, the SLOs published in telemetry, and the on-call schedules. This version supersedes the 2024 policy in full. Planning date for this room: 2026-04-14.\n\n## 1. Sizing a change\n\n1.1 Planned downtime = restarts required by the vendor advisory x the service's current restart-to-healthy metering (RESTART-MIN, most recent final metering in the CMDB) + the service runbook's post-change validation minutes. A vendor's own downtime estimate is never the figure of record. A stale metering is never used.\n1.2 The planned interval of a change (planned start to planned end) is the planned downtime plus the service runbook's rollback reserve, starting at the window start.\n1.3 Rolling node patches drain one node at a time and consume no error budget; each node takes the current DRAIN-MIN metering, so a window fits floor(window minutes / DRAIN-MIN) nodes.\n1.4 A planned-outage notice covers the planned downtime plus the rollback reserve; the notice length is the figure customer communications publish.\n1.5 A certificate rotation or model-runtime patch reserves the whole window: no other change shares it.\n1.6 Coverage for a tier-1 change is the change window plus a two-hour post-change watch by a secondary responder holding the service's runbook certification.\n\n## 2. Error budget\n\n2.1 Each service's availability SLO carries a whole-minute budget for its rolling window, as published in telemetry. The rolling window ends on the evaluation day and excludes incidents opened on or before the day exactly one window earlier.\n2.2 Budget consumed = the sum of charged impact minutes of incidents in the window. Only incidents the problem review left charged count; an incident the review reclassified as not customer-impacting is not charged. Raw SLI burn in telemetry is informational and never the governing figure.\n2.3 Spendable budget = budget - consumed - the SLO's reserve floor. Planned downtime (or a planned-outage notice) may be scheduled on a day only if it fits inside the spendable budget on that day; otherwise the change waits for the window to roll or needs a budget exception from the change board chair.\n2.4 While the remaining budget (budget - consumed) is below half the window budget, a rolling batch may not exceed half of the service's active nodes on the lane, rounded down.\n\n## 3. Change windows\n\n3.1 Sessions are NIGHT 01:00-05:00 and EVE 19:00-23:00 on every calendar day. A change must start and end inside one session of one lane.\n3.2 Lanes with the weekday embargo (tier-1 lanes) accept standard changes in weekend sessions only; weekday sessions are protected and an embargo exception needs the change board chair.\n3.3 Freeze windows on the freeze register (financial close, audit evidence, peak trading, vendor maintenance) protect every session they cover on the lanes they name; a freeze exception needs the authority the register names.\n3.4 A lane whose deployment runner is suspended accepts no change until its return date; re-laning a change onto another lane requires that lane to be certified for the service's tier.\n3.5 Nodes pinned for a named canary or drill are never patched before the pin ends; nodes on another lane are patched through that lane's own windows.\n3.6 A multi-pool model-runtime patch runs one pool per day with drift monitoring between pools; two pools in one night need the risk lead and the change board.\n3.7 A tier-1 change window is eligible only when a certified secondary responder is on the service's secondary schedule (rotation or override) for the whole coverage block of 1.6.\n\n## 4. Vendor packages\n\n4.1 A vendor package is production-eligible on the next business day after its release date, once the canary soak passes. Standard release dates and early-access (expedited) dates come from the vendor advisory; a superseded advisory revision must not be used.\n4.2 Early-access packages carry the premium-support fee printed on the advisory; the fee needs the security lead unless a signed approval names it.\n4.3 Remediation is due within the advisory's remediation SLA (days from publication). A deferral past the SLA needs the security lead.\n\n## 5. Authority\n\n5.1 Change manager: standard changes inside a signed approval's record, lane, windows, batch cap, and spend.\n5.2 Change board chair: embargo exceptions, freeze exceptions, budget exceptions, and any emergency change.\n5.3 SRE lead: on-call overrides and override premiums; suspended-lane returns.\n5.4 Security lead: early-access fees not named in an approval and SLA deferrals; risk lead with the change board for pool sequencing exceptions.\n5.5 An approval covers exactly the record, lane, windows, quantity, engineer, and fees it names. It never selects an option in advance and never extends to a broader record.\n\n---\nEvidence-room mount: itsmdesk-001 / SVCOPS-0001.\n",
+        "file_id": "DRV-001-01",
+        "folder": "Service Operations/Policies",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-and-error-budget-policy.md",
+        "sha256": "bc543646d25c82c780d833377952ecb3795733eef16a7c3c003811924451ef90"
+      },
+      {
+        "content": "# Change and Error-Budget Policy (2024 edition) — SUPERSEDED\n\nThis edition was replaced by v3 on 2026-02-01 and is retained for audit only. Do not apply it.\n\n1. Planned downtime may be sized at the vendor's published estimate.\n2. Error budget consumed is the raw SLI burn shown in telemetry; there is no reserve floor.\n3. Tier-1 services may take weekday evening changes with the change manager's approval.\n4. A vendor package may be deployed on its release date without a canary soak.\n5. Any rostered secondary responder satisfies the coverage rule, certified or not.\n6. Freeze windows may be overridden by the on-call primary when a vendor SLA is at risk.\n\n---\nEvidence-room mount: itsmdesk-001 / SVCOPS-0001.\n",
+        "file_id": "DRV-001-02",
+        "folder": "Service Operations/Policies/Archive",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "superseded-change-policy-2024.md",
+        "sha256": "9ea3e4daeae6e21a53f19be0367b9bafd015574b5beec671b368379727a8210e"
+      },
+      {
+        "content": "slo_id,exported_on,window_end,budget_minutes,consumed_minutes,remaining_minutes,note,hubbench_task_scope,hubbench_case_reference\nSLO-PAY-AVAIL,2026-03-31,2026-03-31,43,23,20,exported before INC-70855 and before PRB-4118 reclassified INC-70870; superseded by the live ledger,itsmdesk-001,SVCOPS-0001\n",
+        "file_id": "DRV-001-03",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "slo-export-2026-03-31.csv",
+        "sha256": "90e677c6ca7f4a2f2d7b7e3d2e706433fa7c610b8196b96b296b339b5074551a"
+      },
+      {
+        "content": "{\n  \"export\": \"itsm.changes.get\",\n  \"record\": {\n    \"advisory\": \"ADV-QS-2026-118\",\n    \"change_id\": \"CHG-40311\",\n    \"downtime_minutes\": 19,\n    \"lane\": \"LANE-PAY\",\n    \"meta\": {\n      \"lastUpdated\": \"2026-04-13T17:30:00\",\n      \"versionId\": \"1\"\n    },\n    \"opened_at\": \"2026-04-13T10:05:00\",\n    \"planned_end\": null,\n    \"planned_start\": null,\n    \"requested_by\": \"Engineer/ENG-VARGA\",\n    \"restarts\": 2,\n    \"risk\": \"moderate\",\n    \"service\": \"Service/SVC-31020\",\n    \"state\": \"authorize\",\n    \"summary\": \"QSA-2026-118 runtime patch \\u2014 payments-api\",\n    \"type\": \"normal\",\n    \"window\": null\n  }\n}\n",
+        "file_id": "DRV-001-04",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-CHG-40311.json",
+        "sha256": "d96a1ed4958bb087588526456f2b0ea176af462ac2ce937b6807620aede6d5fb"
+      },
+      {
+        "content": "{\n  \"export\": \"itsm.cis.get + itsm.meterings.list\",\n  \"meterings\": [\n    {\n      \"measured_at\": \"2026-04-09\",\n      \"metering_id\": \"MTR-31020\",\n      \"metric\": \"RESTART-MIN\",\n      \"service\": \"Service/SVC-31020\",\n      \"status\": \"final\",\n      \"unit\": \"MIN\",\n      \"value\": 7.0\n    },\n    {\n      \"measured_at\": \"2026-01-20\",\n      \"metering_id\": \"MTR-31020-2601\",\n      \"metric\": \"RESTART-MIN\",\n      \"service\": \"Service/SVC-31020\",\n      \"status\": \"final\",\n      \"unit\": \"MIN\",\n      \"value\": 4.0\n    }\n  ],\n  \"service\": {\n    \"code\": \"payments-api\",\n    \"lane\": \"LANE-PAY\",\n    \"name\": \"Payments API\",\n    \"owner_team\": \"Payments Platform\",\n    \"primary_engineer\": \"Engineer/ENG-VARGA\",\n    \"required_certification\": \"payments-runbook\",\n    \"rollback_minutes\": 26,\n    \"runtime\": \"quillstone-runtime 7.4\",\n    \"service_id\": \"SVC-31020\",\n    \"tier\": \"tier-1\",\n    \"validation_minutes\": 5,\n    \"version\": \"7.4.2\"\n  }\n}\n",
+        "file_id": "DRV-001-05",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "service-payments-api-summary.json",
+        "sha256": "edec631aa719554feaba9f46e2a00a830fdc69241a641fb7180ee9c128f73fb5"
+      },
+      {
+        "content": "slo_id,service_id,name,objective_pct,window_days,budget_minutes,reserve_minutes,status\nSLO-PAY-AVAIL,SVC-31020,payments-api availability (30-day),99.9,30,43,10,ACTIVE\nSLO-PAY-LAT,SVC-31020,payments-api p95 latency (30-day),99.0,30,432,0,INFORMATIONAL\n",
+        "file_id": "DRV-001-06",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "slo-catalog.csv",
+        "sha256": "7572699f6b81fd7f3445e12cbce73f06acf103857ccc69d376cf10c247751cab"
+      },
+      {
+        "content": "incident_id,service_id,opened_at,severity,impact_minutes,slo_charged,problem_id\nINC-70601,SVC-31020,2026-03-05T11:20:00,sev2,14,yes,\nINC-70812,SVC-31020,2026-03-18T14:02:00,sev2,9,yes,PRB-4101\nINC-70855,SVC-31020,2026-04-02T03:40:00,sev1,12,yes,\nINC-70870,SVC-31020,2026-04-11T09:15:00,sev3,6,no,PRB-4118\n",
+        "file_id": "DRV-001-07",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "error-budget-ledger.xlsx",
+        "sha256": "beca980ce0b8f90072af4f65b69ba6ac55ea479e58919086c9f9324e467c8b49"
+      },
+      {
+        "content": "incident_id,opened_at,resolved_at,severity,impact_minutes,slo_charged,problem_id,review_note,summary\nINC-70601,2026-03-05T11:20:00,2026-03-05T11:52:00,sev2,14,yes,,\"\",\"gateway certificate rollover fault (outside the current 30-day window)\"\nINC-70812,2026-03-18T14:02:00,2026-03-18T14:31:00,sev2,9,yes,PRB-4101,\"Root cause confirmed (pool sizing regression). INC-70812 stays charged in full: 9 minutes.\",\"connection-pool exhaustion after the deploy\"\nINC-70855,2026-04-02T03:40:00,2026-04-02T04:07:00,sev1,12,yes,,\"\",\"authorization timeouts during the database failover\"\nINC-70870,2026-04-11T09:15:00,2026-04-11T09:44:00,sev3,6,no,PRB-4118,\"INC-70870 reclassified: the probe targeted a retired endpoint; no customer impact; not charged to SLO-PAY-AVAIL.\",\"synthetic probe alerts; reclassified by PRB-4118, no customer impact\"\n",
+        "file_id": "DRV-001-08",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "incident-register.csv",
+        "sha256": "8d9104eef211c4f133fef58f14709a4073f6fa07d64776b703702353cc10e84a"
+      },
+      {
+        "content": "sample_id,slo_id,sampled_at,burn_rate_1h,burn_rate_6h,raw_consumed_minutes\nBURN-001-1,SLO-PAY-AVAIL,2026-04-12T08:00:00,0.5,0.35,22.3\nBURN-001-2,SLO-PAY-AVAIL,2026-04-13T08:00:00,0.5,0.35,22.5\nBURN-001-3,SLO-PAY-AVAIL,2026-04-14T08:00:00,0.5,0.35,22.7\n",
+        "file_id": "DRV-001-09",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "burn-rate-samples.csv",
+        "sha256": "fe70b423f4241ea4725e90df33e18f38dd37f7ebfba5bf12d526a9552bece8c9"
+      },
+      {
+        "content": "service_date,lane_id,session,start,end,status,hold_reason,change_id\n2026-04-14,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-14,LANE-DATA,NIGHT,01:00:00,05:00:00,busy,elapsed before the planning time,\n2026-04-14,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-14,LANE-PAY,NIGHT,01:00:00,05:00:00,busy,elapsed before the planning time,\n2026-04-15,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-15,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-15,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-15,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-16,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-16,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-16,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-16,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-17,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-17,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-17,LANE-PAY,EVE,19:00:00,23:00:00,protected,card-network settlement cutover freeze (protected),\n2026-04-17,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,card-network settlement cutover freeze (protected),\n2026-04-18,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-18,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-18,LANE-PAY,EVE,19:00:00,23:00:00,protected,card-network settlement cutover freeze (protected),\n2026-04-18,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,card-network settlement cutover freeze (protected),\n2026-04-19,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-19,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-19,LANE-PAY,EVE,19:00:00,23:00:00,free,,\n2026-04-19,LANE-PAY,NIGHT,01:00:00,05:00:00,free,,\n2026-04-20,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-20,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-20,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-20,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-21,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-21,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-21,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-21,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-22,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-22,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-22,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-22,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-23,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-23,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-23,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-23,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-24,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-24,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-24,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-24,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-25,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-25,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-25,LANE-PAY,EVE,19:00:00,23:00:00,free,,\n2026-04-25,LANE-PAY,NIGHT,01:00:00,05:00:00,blocked,hypervisor firmware maintenance (blocked),\n2026-04-26,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-26,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-26,LANE-PAY,EVE,19:00:00,23:00:00,busy,scheduled change,CHG-40302\n2026-04-26,LANE-PAY,NIGHT,01:00:00,05:00:00,free,,\n2026-04-27,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-04-27,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-04-27,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-27,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n2026-04-28,LANE-DATA,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-28,LANE-DATA,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-28,LANE-PAY,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-28,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-DATA,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-DATA,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-PAY,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-29,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-DATA,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-DATA,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-PAY,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-04-30,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-DATA,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-DATA,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-PAY,EVE,19:00:00,23:00:00,protected,month-end financial close freeze (protected),\n2026-05-01,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,month-end financial close freeze (protected),\n2026-05-02,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-05-02,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-05-02,LANE-PAY,EVE,19:00:00,23:00:00,free,,\n2026-05-02,LANE-PAY,NIGHT,01:00:00,05:00:00,free,,\n2026-05-03,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-05-03,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-05-03,LANE-PAY,EVE,19:00:00,23:00:00,free,,\n2026-05-03,LANE-PAY,NIGHT,01:00:00,05:00:00,free,,\n2026-05-04,LANE-DATA,EVE,19:00:00,23:00:00,free,,\n2026-05-04,LANE-DATA,NIGHT,01:00:00,05:00:00,free,,\n2026-05-04,LANE-PAY,EVE,19:00:00,23:00:00,protected,tier-1 weekday change embargo (protected),\n2026-05-04,LANE-PAY,NIGHT,01:00:00,05:00:00,protected,tier-1 weekday change embargo (protected),\n",
+        "file_id": "DRV-001-10",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "change-calendar-2026-04-14.xlsx",
+        "sha256": "44e6e3531bf6f8e02e4b9d108695c49dc7a2c8cd721580923407dee11bb797f5"
+      },
+      {
+        "content": "freeze_id,name,kind,start_date,end_date,lanes,authority,status,hubbench_task_scope,hubbench_case_reference\nFRZ-2026-14,card-network settlement cutover freeze,financial,2026-04-17,2026-04-18,LANE-PAY,change board chair,ACTIVE,itsmdesk-001,SVCOPS-0001\nFRZ-2026-15,month-end financial close freeze,financial,2026-04-28,2026-05-01,ALL,change board chair,ACTIVE,itsmdesk-001,SVCOPS-0001\n",
+        "file_id": "DRV-001-11",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "freeze-register.csv",
+        "sha256": "cf27349164c3eff35c7c62cd3bea6b8a27ccc81ff6725188458e119f4326cbbc"
+      },
+      {
+        "content": "lane_id,name,weekday_policy,tier1_capable,status,note,hubbench_task_scope,hubbench_case_reference\nLANE-PAY,Payments change lane,embargo,yes,ACTIVE,,itsmdesk-001,SVCOPS-0001\nLANE-DATA,Data and messaging change lane,open,no,ACTIVE,,itsmdesk-001,SVCOPS-0001\n",
+        "file_id": "DRV-001-12",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "lane-roster.csv",
+        "sha256": "eff76e24443b4316af3833aef9a316861a85fc6bdc914980a0dc7377755a797a"
+      },
+      {
+        "content": "shift_id,schedule_id,engineer_id,start_time,end_time,source,certified,hubbench_task_scope,hubbench_case_reference\nSHIFT-PAY-SEC-20260414-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-14T00:00:00,2026-04-14T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260414-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-14T08:00:00,2026-04-14T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260414-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-14T16:00:00,2026-04-14T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260415-1,SCHED-PAY-SEC,ENG-HOLM,2026-04-15T00:00:00,2026-04-15T08:00:00,swap,no,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260415-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-15T08:00:00,2026-04-15T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260415-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-15T16:00:00,2026-04-15T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260416-1,SCHED-PAY-SEC,ENG-HOLM,2026-04-16T00:00:00,2026-04-16T08:00:00,swap,no,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260416-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-16T08:00:00,2026-04-16T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260416-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-16T16:00:00,2026-04-16T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260417-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-17T00:00:00,2026-04-17T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260417-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-17T08:00:00,2026-04-17T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260417-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-17T16:00:00,2026-04-17T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260418-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-18T00:00:00,2026-04-18T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260418-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-18T08:00:00,2026-04-18T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260418-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-18T16:00:00,2026-04-18T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260419-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-19T00:00:00,2026-04-19T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260419-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-19T08:00:00,2026-04-19T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260419-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-19T16:00:00,2026-04-19T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260420-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-20T00:00:00,2026-04-20T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260420-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-20T08:00:00,2026-04-20T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260420-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-20T16:00:00,2026-04-20T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260421-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-21T00:00:00,2026-04-21T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260421-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-21T08:00:00,2026-04-21T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260421-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-21T16:00:00,2026-04-21T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260422-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-22T00:00:00,2026-04-22T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260422-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-22T08:00:00,2026-04-22T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260422-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-22T16:00:00,2026-04-22T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260423-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-23T00:00:00,2026-04-23T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260423-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-23T08:00:00,2026-04-23T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260423-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-23T16:00:00,2026-04-23T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260424-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-24T00:00:00,2026-04-24T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260424-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-24T08:00:00,2026-04-24T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260424-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-24T16:00:00,2026-04-24T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260425-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-25T00:00:00,2026-04-25T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260425-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-25T08:00:00,2026-04-25T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260425-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-25T16:00:00,2026-04-25T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260426-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-26T00:00:00,2026-04-26T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260426-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-26T08:00:00,2026-04-26T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260426-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-26T16:00:00,2026-04-26T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260427-1,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-27T00:00:00,2026-04-27T08:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260427-2,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-27T08:00:00,2026-04-27T16:00:00,rotation,yes,itsmdesk-001,SVCOPS-0001\nSHIFT-PAY-SEC-20260427-3,SCHED-PAY-SEC,ENG-OKAFOR,2026-04-27T16:00:00,2026-04-27T23:59:59,rotation,yes,itsmdesk-001,SVCOPS-0001\n",
+        "file_id": "DRV-001-13",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "secondary-roster.csv",
+        "sha256": "018eff53081f4b15f88faa857b6c02085a6ca384d0fafdb7ff178de75a58cd6d"
+      },
+      {
+        "content": "Quillstone Runtime Systems\nSecurity advisory QSA-2026-118 (portal id ADV-QS-2026-118) — status CURRENT\nCustomer: Brightmoor Commerce Service Operations, account BM-2207\nCase reference: SVCOPS-0001\nProduct: quillstone-runtime 7.4\nSeverity: high; published 2026-04-10; remediation SLA 10 days\nAffected versions: 7.4.0-7.4.2; fixed version: 7.4.3\nRestarts required: 2; vendor downtime estimate: 8 minutes (reference hardware)\nStandard release date: 2026-04-16\nEarly-access release date: 2026-04-14 (premium-support fee USD 900, flat)\nValid until: 2026-04-30\nNotes: The fix replaces the shared connection pool: two full-pool restarts (apply, then verify); a rolling restart is not supported for this fix. GA build 7.4.3 on 2026-04-16; early-access build 7.4.3-ea on 2026-04-14 under premium support (USD 900 flat).\nPackages are production-eligible only after the customer's canary soak.\n",
+        "file_id": "DRV-001-14",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "advisory-QSA-2026-118.pdf",
+        "sha256": "b7cd605d2ffcf08537490c3f682f0a7ca0b5ec0d182cf3cb4ce6fc6d5d4fd6d2"
+      },
+      {
+        "content": "{\n  \"approval_id\": \"AP-SO-0101\",\n  \"approver_id\": \"U-LINDGREN\",\n  \"approver_role\": \"change_manager\",\n  \"case_reference\": \"SVCOPS-0001\",\n  \"granted_on\": \"2026-04-13\",\n  \"scope\": {\n    \"advisory\": \"ADV-QS-2026-118\",\n    \"budget_exception\": 0,\n    \"expedite_fee_allowed_usd\": 0,\n    \"lane\": \"LANE-PAY\",\n    \"max_spend_usd\": 0,\n    \"not_covered\": [\n      \"weekday-embargo or freeze exception (change board chair)\",\n      \"early-access build fee (security lead)\",\n      \"error-budget exception (change board chair)\"\n    ],\n    \"record\": \"CHG-40311\",\n    \"windows\": \"weekend standard sessions on LANE-PAY only\"\n  },\n  \"status\": \"APPROVED\",\n  \"subject\": \"Payments API QSA-2026-118 remediation (SVCOPS-0001, CHG-40311)\"\n}\n",
+        "file_id": "DRV-001-15",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "approval-AP-SO-0101.json",
+        "sha256": "6c7e0eb9e7e116d00d859088d104c5237df453dd841bb1752023923f6dc08099"
+      },
+      {
+        "content": "{\n  \"as_of\": \"2026-04-14\",\n  \"case_reference\": \"SVCOPS-0001\",\n  \"change_tasks\": [],\n  \"changes\": [\n    {\n      \"change_id\": \"CHG-40311\",\n      \"lane_id\": \"LANE-PAY\",\n      \"planned_end\": null,\n      \"planned_start\": null,\n      \"service_id\": \"SVC-31020\",\n      \"state\": \"authorize\"\n    },\n    {\n      \"change_id\": \"CHG-40309\",\n      \"lane_id\": null,\n      \"planned_end\": null,\n      \"planned_start\": null,\n      \"service_id\": \"SVC-31077\",\n      \"state\": \"cancelled\"\n    },\n    {\n      \"change_id\": \"CHG-40302\",\n      \"lane_id\": \"LANE-PAY\",\n      \"planned_end\": \"2026-04-26T20:30:00\",\n      \"planned_start\": \"2026-04-26T19:00:00\",\n      \"service_id\": \"SVC-31077\",\n      \"state\": \"scheduled\"\n    }\n  ],\n  \"note\": \"Snapshot before any action; row order does not indicate applicability.\",\n  \"oncall_overrides\": [],\n  \"planned_outages\": []\n}\n",
+        "file_id": "DRV-001-16",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "starting-state-itsmdesk-001.json",
+        "sha256": "a595867300ee860715367aa295926b79346dd07767c09ad99877bd6a81983ea5"
+      },
+      {
+        "content": "# Quillstone Runtime Systems — support terms (extract)\n\nGA builds are published on the advisory's standard release date. Early-access builds are released to premium-support customers on the advisory's early-access date for the flat fee printed on the advisory (QSA-2026-118: USD 900).\n\nEvery build is production-eligible only after the customer's own canary soak, which Brightmoor runs to the next business day. Withdrawn advisory revisions (for example QSA-2026-118 rev 1) must not be used for scheduling.\n",
+        "file_id": "DRV-001-17",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "quillstone-support-terms.md",
+        "sha256": "1f183c067678e06c61864c3f6e7a7e8280ec16fd36a41a75a5e9caf92ee29440"
+      },
+      {
+        "content": "{\n  \"anchors\": [\n    {\n      \"evaluation_shape\": \"IT service-management ticket handling with deterministic end-state checks\",\n      \"harbor_dataset\": \"vibrantlabsai/itsm-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/vibrantlabsai/itsm-bench/latest\",\n      \"license\": \"per the Harbor Hub listing; nothing from it is redistributed here\",\n      \"name\": \"ITSM-Bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://hub.harborframework.com/datasets/vibrantlabsai/itsm-bench\"\n    },\n    {\n      \"evaluation_shape\": \"observability investigations over telemetry with graded conclusions\",\n      \"harbor_dataset\": \"grafana/o11y-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/grafana/o11y-bench/latest\",\n      \"license\": \"per the Harbor Hub listing; nothing from it is redistributed here\",\n      \"name\": \"o11y-bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://hub.harborframework.com/datasets/grafana/o11y-bench\"\n    },\n    {\n      \"evaluation_shape\": \"telemetry-pipeline tasks with executable verification\",\n      \"harbor_dataset\": \"quesma/otel-bench\",\n      \"harbor_url\": \"https://hub.harborframework.com/datasets/quesma/otel-bench/latest\",\n      \"license\": \"per the Harbor Hub listing; nothing from it is redistributed here\",\n      \"name\": \"otel-bench\",\n      \"relationship\": \"evaluation-shape inspiration only; clean-room task, state, tools, and answer\",\n      \"upstream_url\": \"https://hub.harborframework.com/datasets/quesma/otel-bench\"\n    }\n  ],\n  \"clean_room\": true,\n  \"family\": \"itsmdesk\",\n  \"schema_version\": \"hubbench.provenance.v1\",\n  \"task_id\": \"itsmdesk-001\",\n  \"upstream_scores_claimed\": false,\n  \"upstream_tasks_copied\": false\n}\n",
+        "file_id": "DRV-001-18",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "harbor-open-source-anchors.json",
+        "sha256": "059d339788ff60f2ffdade5f4e69e63feb13ed81108b5844f95b3b557c8d6cd9"
+      },
+      {
+        "content": "task_id,case_reference,subject_id,source_system,record_role,effective_revision\nitsmdesk-001,SVCOPS-0001,SLO-PAY-AVAIL,domain,authoritative_subject,v1\nitsmdesk-001,SVCOPS-0001,SLO-PAY-AVAIL,approvals,execution_authority,v1\nitsmdesk-001,SVCOPS-0001,SLO-PAY-AVAIL,drive,supporting_evidence,v1\n",
+        "file_id": "DRV-001-19",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/csv",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "record-lineage.csv",
+        "sha256": "245baeccfd2a5170a9e3fa7385218b9d163b1e8b4b2c4ab04839557018edd11f"
+      },
+      {
+        "content": "# Current execution authority — SVCOPS-0001\n\nEffective 2026-04-14. Applies only to SLO-PAY-AVAIL in ITSMDesk. The signed approval record and provider contract jointly bound any write. A source record, search result, or prior decision never grants authority.\n\nRelease revision: v1. Task scope: itsmdesk-001.\n",
+        "file_id": "DRV-001-20",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "current-authority.md",
+        "sha256": "5c31185e11c0343a7f08a50f0d22b4d3300292e8b5850070e5a144ba0516d9ad"
+      },
+      {
+        "content": "# Retired authority — SVCOPS-0001\n\nStatus: SUPERSEDED. This historical ITSMDesk delegation ended before 2026-04-14. It references SLO-PAY-AVAIL but cannot authorize a current action for itsmdesk-001.\n",
+        "file_id": "DRV-001-21",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/markdown",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "retired-authority.md",
+        "sha256": "295e5338fd3cee13eee3df8a13789c85f98f04a189a10817f4d499defc29dbe7"
+      },
+      {
+        "content": "{\n  \"approval_record\": \"DEC-ITSMDESK-0001\",\n  \"authority_source\": \"signed family approval plus provider contract\",\n  \"case_reference\": \"SVCOPS-0001\",\n  \"effective_revision\": \"v1\",\n  \"prohibited_basis\": [\n    \"retired authority\",\n    \"search ranking\",\n    \"request urgency\"\n  ],\n  \"status\": \"REVIEW_REQUIRED\",\n  \"subject_id\": \"SLO-PAY-AVAIL\"\n}\n",
+        "file_id": "DRV-001-22",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "decision-record.json",
+        "sha256": "234a89d66cd76ae3720cbc260bc01786e20de2393d1bedf152138c0b943f1853"
+      },
+      {
+        "content": "task_id,case_reference,review_lane,available_units,protected_units,effective_date\nitsmdesk-001,SVCOPS-0001,standard,9,2,2026-04-14\nitsmdesk-001,SVCOPS-0001,expedited,5,1,2026-04-14\n",
+        "file_id": "DRV-001-23",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "review-capacity.xlsx",
+        "sha256": "9906f51bef0603cc459635ace231c0919f7760c6e52a049b672961274c325e93"
+      },
+      {
+        "content": "Source integrity control\nTask: itsmdesk-001\nCase: SVCOPS-0001\nSubject: SLO-PAY-AVAIL\nEffective revision: v1\nRule: current provider state plus the signed approval govern. Search rank, filenames, request urgency, and archived authority do not.\n",
+        "file_id": "DRV-001-24",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/pdf",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "source-integrity.pdf",
+        "sha256": "08e0549797aa645b0901739734762e8949e634875465d58dbdd393ce200cb982"
+      },
+      {
+        "content": "task_id: \"itsmdesk-001\"\ncase_reference: \"SVCOPS-0001\"\nas_of: \"2026-04-14\"\nchecks:\n  - name: \"identity_linked\"\n    status: \"PASS\"\n    record: \"SLO-PAY-AVAIL\"\n  - name: \"revision_current\"\n    status: \"PASS\"\n    record: \"v1\"\n  - name: \"authority_requires_live_read\"\n    status: \"OPEN\"\n    record: \"DEC-ITSMDESK-0001\"\n  - name: \"outcome_precomputed\"\n    status: \"NO\"\n    record: \"itsmdesk-001\"\n",
+        "file_id": "DRV-001-25",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "evidence-status.yaml",
+        "sha256": "8fa437932397c80090339cf8d6229fc29ac17ae0af5123647d7c80b35a10d1d2"
+      },
+      {
+        "content": "2026-04-14T08:55:00Z INFO scope_created task=itsmdesk-001 case=SVCOPS-0001\n2026-04-14T08:56:00Z INFO subject_linked family=itsmdesk subject=SLO-PAY-AVAIL\n2026-04-14T08:57:00Z WARN retired_authority_present case=SVCOPS-0001 action=ignore_until_current_scope_verified\n2026-04-14T08:58:00Z INFO provider_state_ready task=itsmdesk-001 expected_mutations=2\n",
+        "file_id": "DRV-001-26",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "text/plain",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "system-audit.log",
+        "sha256": "b7c233eb5836f562277004ad7171aee1b17068178a849dcfa21b05ce50db57ad"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SVCOPS-0001\",\n  \"messages\": [\n    {\n      \"author\": \"operations\",\n      \"sent_at\": \"2026-04-14T08:35:00\",\n      \"text\": \"Use immutable subject SLO-PAY-AVAIL; the similarly named archived record is not in scope.\"\n    },\n    {\n      \"author\": \"governance\",\n      \"sent_at\": \"2026-04-14T08:41:00\",\n      \"text\": \"Current revision is v1. Confirm the signed approval before any state change.\"\n    },\n    {\n      \"author\": \"requester\",\n      \"sent_at\": \"2026-04-14T08:47:00\",\n      \"text\": \"Please leave the stakeholder communication as a draft for human review.\"\n    }\n  ],\n  \"thread_id\": \"OPS-ITSMDESK-0001\"\n}\n",
+        "file_id": "DRV-001-27",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "operations-thread.json",
+        "sha256": "747d8d58d40c8e8620af5628fca5da618c47f3df84369183dfe2c3d2017c2ef7"
+      },
+      {
+        "content": "{\n  \"case_reference\": \"SVCOPS-0001\",\n  \"network\": \"closed benchmark world\",\n  \"read_semantics\": \"provider-shaped records backed by the seeded task world\",\n  \"schema_version\": \"hubbench.provider-contract.v1\",\n  \"state_scope\": \"isolated SQLite episode\",\n  \"subject_id\": \"SLO-PAY-AVAIL\",\n  \"task_id\": \"itsmdesk-001\",\n  \"unsupported_claims\": [\n    \"byte parity with upstream providers\",\n    \"conversion of upstream benchmark tasks\",\n    \"upstream score comparability\"\n  ],\n  \"verifier_visibility\": \"hidden from the agent\",\n  \"write_semantics\": \"task-scoped, schema-validated, transactionally persisted and audited\"\n}\n",
+        "file_id": "DRV-001-28",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "provider-contracts.json",
+        "sha256": "3e73edbada68f97eb6457ad92438e9cf79412668501c114a26f84b3aa99a8b4e"
+      },
+      {
+        "content": "{\n  \"captured_as_of\": \"2026-04-14\",\n  \"case_reference\": \"SVCOPS-0001\",\n  \"expected_mutation_count\": 2,\n  \"family\": \"itsmdesk\",\n  \"note\": \"Live provider state remains authoritative; this export is a correlation aid, not a write instruction.\",\n  \"organization\": \"Brightmoor Commerce \\u2014 Service Operations\",\n  \"schema_version\": \"hubbench.live-snapshot.v1\",\n  \"state\": \"PRE_ACTION\",\n  \"subject_id\": \"SLO-PAY-AVAIL\",\n  \"task_id\": \"itsmdesk-001\"\n}\n",
+        "file_id": "DRV-001-29",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/json",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "live-snapshot.json",
+        "sha256": "3199c5d3bba60c4d1a7d2513844fe8f1ed704fb7091bd5038a09c44eac5b98a6"
+      },
+      {
+        "content": "case_reference: \"SVCOPS-0001\"\nas_of: \"2026-04-14\"\nfiles:\n  - path: \"policy/change-and-error-budget-policy.md\"\n    kind: \"policy\"\n    media_type: \"text/markdown\"\n    sha256: \"bc543646d25c82c780d833377952ecb3795733eef16a7c3c003811924451ef90\"\n  - path: \"policy/superseded-change-policy-2024.md\"\n    kind: \"policy_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"9ea3e4daeae6e21a53f19be0367b9bafd015574b5beec671b368379727a8210e\"\n  - path: \"telemetry/slo-export-2026-03-31.csv\"\n    kind: \"stale_slo_export\"\n    media_type: \"text/csv\"\n    sha256: \"90e677c6ca7f4a2f2d7b7e3d2e706433fa7c610b8196b96b296b339b5074551a\"\n  - path: \"itsm/change-CHG-40311.json\"\n    kind: \"change_export\"\n    media_type: \"application/json\"\n    sha256: \"d96a1ed4958bb087588526456f2b0ea176af462ac2ce937b6807620aede6d5fb\"\n  - path: \"itsm/service-payments-api-summary.json\"\n    kind: \"service_summary\"\n    media_type: \"application/json\"\n    sha256: \"edec631aa719554feaba9f46e2a00a830fdc69241a641fb7180ee9c128f73fb5\"\n  - path: \"telemetry/slo-catalog.csv\"\n    kind: \"slo_catalog\"\n    media_type: \"text/csv\"\n    sha256: \"7572699f6b81fd7f3445e12cbce73f06acf103857ccc69d376cf10c247751cab\"\n  - path: \"telemetry/error-budget-ledger.xlsx\"\n    kind: \"budget_ledger_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"beca980ce0b8f90072af4f65b69ba6ac55ea479e58919086c9f9324e467c8b49\"\n  - path: \"itsm/incident-register.csv\"\n    kind: \"incident_register\"\n    media_type: \"text/csv\"\n    sha256: \"8d9104eef211c4f133fef58f14709a4073f6fa07d64776b703702353cc10e84a\"\n  - path: \"telemetry/burn-rate-samples.csv\"\n    kind: \"burn_samples\"\n    media_type: \"text/csv\"\n    sha256: \"fe70b423f4241ea4725e90df33e18f38dd37f7ebfba5bf12d526a9552bece8c9\"\n  - path: \"calendar/change-calendar-2026-04-14.xlsx\"\n    kind: \"change_calendar\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"44e6e3531bf6f8e02e4b9d108695c49dc7a2c8cd721580923407dee11bb797f5\"\n  - path: \"calendar/freeze-register.csv\"\n    kind: \"freeze_register\"\n    media_type: \"text/csv\"\n    sha256: \"cf27349164c3eff35c7c62cd3bea6b8a27ccc81ff6725188458e119f4326cbbc\"\n  - path: \"calendar/lane-roster.csv\"\n    kind: \"lane_roster\"\n    media_type: \"text/csv\"\n    sha256: \"eff76e24443b4316af3833aef9a316861a85fc6bdc914980a0dc7377755a797a\"\n  - path: \"oncall/secondary-roster.csv\"\n    kind: \"oncall_roster\"\n    media_type: \"text/csv\"\n    sha256: \"018eff53081f4b15f88faa857b6c02085a6ca384d0fafdb7ff178de75a58cd6d\"\n  - path: \"vendor/advisory-QSA-2026-118.pdf\"\n    kind: \"vendor_advisory\"\n    media_type: \"application/pdf\"\n    sha256: \"b7cd605d2ffcf08537490c3f682f0a7ca0b5ec0d182cf3cb4ce6fc6d5d4fd6d2\"\n  - path: \"messages/THR-2001.eml\"\n    kind: \"email\"\n    media_type: \"message/rfc822\"\n    sha256: \"c02e5dbe93f98e2e2b86dd8e641be57c177772bcfc1507e8165eaadcbe76310b\"\n  - path: \"chat/CHAT-2001.json\"\n    kind: \"chat_thread\"\n    media_type: \"application/json\"\n    sha256: \"f62e0425aa3d8dac156960fbd4619204010d316556bb602b7e489e9a319472ac\"\n  - path: \"approvals/approval-AP-SO-0101.json\"\n    kind: \"approval\"\n    media_type: \"application/json\"\n    sha256: \"6c7e0eb9e7e116d00d859088d104c5237df453dd841bb1752023923f6dc08099\"\n  - path: \"exports/starting-state-itsmdesk-001.json\"\n    kind: \"starting_state\"\n    media_type: \"application/json\"\n    sha256: \"a595867300ee860715367aa295926b79346dd07767c09ad99877bd6a81983ea5\"\n  - path: \"vendor/quillstone-support-terms.md\"\n    kind: \"vendor_terms\"\n    media_type: \"text/markdown\"\n    sha256: \"1f183c067678e06c61864c3f6e7a7e8280ec16fd36a41a75a5e9caf92ee29440\"\n  - path: \"provenance/harbor-open-source-anchors.json\"\n    kind: \"open_source_provenance\"\n    media_type: \"application/json\"\n    sha256: \"059d339788ff60f2ffdade5f4e69e63feb13ed81108b5844f95b3b557c8d6cd9\"\n  - path: \"lineage/record-lineage.csv\"\n    kind: \"record_lineage\"\n    media_type: \"text/csv\"\n    sha256: \"245baeccfd2a5170a9e3fa7385218b9d163b1e8b4b2c4ab04839557018edd11f\"\n  - path: \"controls/current-authority.md\"\n    kind: \"authority_current\"\n    media_type: \"text/markdown\"\n    sha256: \"5c31185e11c0343a7f08a50f0d22b4d3300292e8b5850070e5a144ba0516d9ad\"\n  - path: \"controls/retired-authority.md\"\n    kind: \"authority_superseded\"\n    media_type: \"text/markdown\"\n    sha256: \"295e5338fd3cee13eee3df8a13789c85f98f04a189a10817f4d499defc29dbe7\"\n  - path: \"approvals/decision-record.json\"\n    kind: \"approval_decision\"\n    media_type: \"application/json\"\n    sha256: \"234a89d66cd76ae3720cbc260bc01786e20de2393d1bedf152138c0b943f1853\"\n  - path: \"workbooks/review-capacity.xlsx\"\n    kind: \"review_capacity_workbook\"\n    media_type: \"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"\n    sha256: \"9906f51bef0603cc459635ace231c0919f7760c6e52a049b672961274c325e93\"\n  - path: \"controls/source-integrity.pdf\"\n    kind: \"source_integrity_control\"\n    media_type: \"application/pdf\"\n    sha256: \"08e0549797aa645b0901739734762e8949e634875465d58dbdd393ce200cb982\"\n  - path: \"audit/evidence-status.yaml\"\n    kind: \"evidence_status\"\n    media_type: \"application/yaml\"\n    sha256: \"8fa437932397c80090339cf8d6229fc29ac17ae0af5123647d7c80b35a10d1d2\"\n  - path: \"audit/system-audit.log\"\n    kind: \"system_audit\"\n    media_type: \"text/plain\"\n    sha256: \"b7c233eb5836f562277004ad7171aee1b17068178a849dcfa21b05ce50db57ad\"\n  - path: \"communications/source-request.eml\"\n    kind: \"source_request\"\n    media_type: \"message/rfc822\"\n    sha256: \"187fe9b17a557022c5c9474fc7611a441d0d129d8fffdaba6614f22e123cd4f3\"\n  - path: \"collaboration/operations-thread.json\"\n    kind: \"operations_thread\"\n    media_type: \"application/json\"\n    sha256: \"747d8d58d40c8e8620af5628fca5da618c47f3df84369183dfe2c3d2017c2ef7\"\n  - path: \"contracts/provider-contracts.json\"\n    kind: \"provider_contract\"\n    media_type: \"application/json\"\n    sha256: \"3e73edbada68f97eb6457ad92438e9cf79412668501c114a26f84b3aa99a8b4e\"\n  - path: \"exports/live-snapshot.json\"\n    kind: \"live_snapshot\"\n    media_type: \"application/json\"\n    sha256: \"3199c5d3bba60c4d1a7d2513844fe8f1ed704fb7091bd5038a09c44eac5b98a6\"\n",
+        "file_id": "DRV-001-30",
+        "folder": "Service Operations/Cases/SVCOPS-0001",
+        "mime_type": "application/yaml",
+        "modified_time": "2026-04-13T17:30:00",
+        "name": "evidence-index.yaml",
+        "sha256": "37a14d54699a37e318589d4151ca88c937599bb1151feef2122cd0002080952b"
+      }
+    ],
+    "engineers": [
+      {
+        "certifications": "payments-runbook,change-implementer",
+        "engineer_id": "ENG-VARGA",
+        "name": "Lena Varga",
+        "role": "service_owner",
+        "team": "Payments Platform"
+      },
+      {
+        "certifications": "payments-runbook,identity-runbook,checkout-runbook,web-runbook,change-implementer",
+        "engineer_id": "ENG-OKAFOR",
+        "name": "Chidi Okafor",
+        "role": "sre_secondary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "identity-runbook,checkout-runbook,change-implementer",
+        "engineer_id": "ENG-DUBOIS",
+        "name": "Mathis Dubois",
+        "role": "sre_primary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "checkout-runbook,change-implementer",
+        "engineer_id": "ENG-SATO",
+        "name": "Rin Sato",
+        "role": "service_owner",
+        "team": "Checkout"
+      },
+      {
+        "certifications": "data-runbook,messaging-runbook,change-implementer",
+        "engineer_id": "ENG-NKEMELU",
+        "name": "Adaeze Nkemelu",
+        "role": "data_platform_lead",
+        "team": "Data Platform"
+      },
+      {
+        "certifications": "change-implementer",
+        "engineer_id": "ENG-HOLM",
+        "name": "Dario Holm",
+        "role": "sre_secondary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "search-runbook,payments-runbook,fraud-runbook,data-runbook,messaging-runbook,change-implementer",
+        "engineer_id": "ENG-RAMAN",
+        "name": "Priya Raman",
+        "role": "sre_secondary",
+        "team": "Platform SRE"
+      },
+      {
+        "certifications": "fraud-runbook,change-implementer",
+        "engineer_id": "ENG-FERREIRA",
+        "name": "Bruno Ferreira",
+        "role": "risk_engineer",
+        "team": "Risk Platform"
+      },
+      {
+        "certifications": "web-runbook,change-implementer",
+        "engineer_id": "ENG-KOWALSKI",
+        "name": "Zofia Kowalski",
+        "role": "web_owner",
+        "team": "Merchant Web"
+      },
+      {
+        "certifications": "search-runbook,change-implementer",
+        "engineer_id": "ENG-TANAKA",
+        "name": "Yuki Tanaka",
+        "role": "search_owner",
+        "team": "Search Platform"
+      }
+    ],
+    "escalation_policies": [
+      {
+        "levels_json": "[{\"level\": 1, \"target\": \"SCHED-PAY-PRI\", \"timeout_minutes\": 10}, {\"level\": 2, \"target\": \"SCHED-PAY-SEC\", \"timeout_minutes\": 10}, {\"level\": 3, \"target\": \"U-HAVILAND (SRE lead)\", \"timeout_minutes\": 15}]",
+        "name": "payments-api escalation",
+        "policy_id": "ESC-31020",
+        "service_id": "SVC-31020"
+      }
+    ],
+    "evidence_files": [
+      {
+        "asset_id": "itsmdesk-001-01",
+        "kind": "policy",
+        "media_type": "text/markdown",
+        "path": "policy/change-and-error-budget-policy.md",
+        "sha256": "bc543646d25c82c780d833377952ecb3795733eef16a7c3c003811924451ef90",
+        "source": "drive",
+        "task_id": "itsmdesk-001",
+        "title": "Change and error-budget policy v3 (effective)"
+      },
+      {
+        "asset_id": "itsmdesk-001-02",
+        "kind": "policy_superseded",
+        "media_type": "text/markdown",
+        "path": "policy/superseded-change-policy-2024.md",
+        "sha256": "9ea3e4daeae6e21a53f19be0367b9bafd015574b5beec671b368379727a8210e",
+        "source": "drive",
+        "task_id": "itsmdesk-001",
+        "title": "Change and error-budget policy 2024 (superseded)"
+      },
+      {
+        "asset_id": "itsmdesk-001-03",
+        "kind": "stale_slo_export",
+        "media_type": "text/csv",
+        "path": "telemetry/slo-export-2026-03-31.csv",
+        "sha256": "90e677c6ca7f4a2f2d7b7e3d2e706433fa7c610b8196b96b296b339b5074551a",
+        "source": "drive",
+        "task_id": "itsmdesk-001",
+        "title": "SLO-PAY-AVAIL error-budget export — 2026-03-31 (stale)"
+      },
+      {
+        "asset_id": "itsmdesk-001-04",
+        "kind": "change_export",
+        "media_type": "application/json",
+        "path": "itsm/change-CHG-40311.json",
+        "sha256": "d96a1ed4958bb087588526456f2b0ea176af462ac2ce937b6807620aede6d5fb",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-001",
+        "title": "Change CHG-40311 (ITSM export)"
+      },
+      {
+        "asset_id": "itsmdesk-001-05",
+        "kind": "service_summary",
+        "media_type": "application/json",
+        "path": "itsm/service-payments-api-summary.json",
+        "sha256": "edec631aa719554feaba9f46e2a00a830fdc69241a641fb7180ee9c128f73fb5",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-001",
+        "title": "Service payments-api summary with restart meterings (ITSM export)"
+      },
+      {
+        "asset_id": "itsmdesk-001-06",
+        "kind": "slo_catalog",
+        "media_type": "text/csv",
+        "path": "telemetry/slo-catalog.csv",
+        "sha256": "7572699f6b81fd7f3445e12cbce73f06acf103857ccc69d376cf10c247751cab",
+        "source": "telemetry_export",
+        "task_id": "itsmdesk-001",
+        "title": "SLO catalog: objectives, windows, budgets, and reserve floors"
+      },
+      {
+        "asset_id": "itsmdesk-001-07",
+        "kind": "budget_ledger_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "telemetry/error-budget-ledger.xlsx",
+        "sha256": "beca980ce0b8f90072af4f65b69ba6ac55ea479e58919086c9f9324e467c8b49",
+        "source": "telemetry_workbook",
+        "task_id": "itsmdesk-001",
+        "title": "Error-budget ledger — payments-api (gross incident minutes)"
+      },
+      {
+        "asset_id": "itsmdesk-001-08",
+        "kind": "incident_register",
+        "media_type": "text/csv",
+        "path": "itsm/incident-register.csv",
+        "sha256": "8d9104eef211c4f133fef58f14709a4073f6fa07d64776b703702353cc10e84a",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-001",
+        "title": "Incident register with problem-review notes"
+      },
+      {
+        "asset_id": "itsmdesk-001-09",
+        "kind": "burn_samples",
+        "media_type": "text/csv",
+        "path": "telemetry/burn-rate-samples.csv",
+        "sha256": "fe70b423f4241ea4725e90df33e18f38dd37f7ebfba5bf12d526a9552bece8c9",
+        "source": "telemetry_export",
+        "task_id": "itsmdesk-001",
+        "title": "Burn-rate samples — SLO-PAY-AVAIL"
+      },
+      {
+        "asset_id": "itsmdesk-001-10",
+        "kind": "change_calendar",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "calendar/change-calendar-2026-04-14.xlsx",
+        "sha256": "44e6e3531bf6f8e02e4b9d108695c49dc7a2c8cd721580923407dee11bb797f5",
+        "source": "calendar_workbook",
+        "task_id": "itsmdesk-001",
+        "title": "Change calendar, three weeks from 2026-04-14"
+      },
+      {
+        "asset_id": "itsmdesk-001-11",
+        "kind": "freeze_register",
+        "media_type": "text/csv",
+        "path": "calendar/freeze-register.csv",
+        "sha256": "cf27349164c3eff35c7c62cd3bea6b8a27ccc81ff6725188458e119f4326cbbc",
+        "source": "calendar_export",
+        "task_id": "itsmdesk-001",
+        "title": "Freeze register (change calendar)"
+      },
+      {
+        "asset_id": "itsmdesk-001-12",
+        "kind": "lane_roster",
+        "media_type": "text/csv",
+        "path": "calendar/lane-roster.csv",
+        "sha256": "eff76e24443b4316af3833aef9a316861a85fc6bdc914980a0dc7377755a797a",
+        "source": "calendar_export",
+        "task_id": "itsmdesk-001",
+        "title": "Change-lane roster and certification"
+      },
+      {
+        "asset_id": "itsmdesk-001-13",
+        "kind": "oncall_roster",
+        "media_type": "text/csv",
+        "path": "oncall/secondary-roster.csv",
+        "sha256": "018eff53081f4b15f88faa857b6c02085a6ca384d0fafdb7ff178de75a58cd6d",
+        "source": "oncall_export",
+        "task_id": "itsmdesk-001",
+        "title": "Secondary on-call roster — SCHED-PAY-SEC"
+      },
+      {
+        "asset_id": "itsmdesk-001-14",
+        "kind": "vendor_advisory",
+        "media_type": "application/pdf",
+        "path": "vendor/advisory-QSA-2026-118.pdf",
+        "sha256": "b7cd605d2ffcf08537490c3f682f0a7ca0b5ec0d182cf3cb4ce6fc6d5d4fd6d2",
+        "source": "email_attachment",
+        "task_id": "itsmdesk-001",
+        "title": "Vendor advisory QSA-2026-118"
+      },
+      {
+        "asset_id": "itsmdesk-001-15",
+        "kind": "email",
+        "media_type": "message/rfc822",
+        "path": "messages/THR-2001.eml",
+        "sha256": "c02e5dbe93f98e2e2b86dd8e641be57c177772bcfc1507e8165eaadcbe76310b",
+        "source": "messages",
+        "task_id": "itsmdesk-001",
+        "title": "SVCOPS-0001 payments API patch — tonight or the weekend?"
+      },
+      {
+        "asset_id": "itsmdesk-001-16",
+        "kind": "chat_thread",
+        "media_type": "application/json",
+        "path": "chat/CHAT-2001.json",
+        "sha256": "f62e0425aa3d8dac156960fbd4619204010d316556bb602b7e489e9a319472ac",
+        "source": "chat",
+        "task_id": "itsmdesk-001",
+        "title": "SVCOPS-0001 payments API — QSA-2026-118"
+      },
+      {
+        "asset_id": "itsmdesk-001-17",
+        "kind": "approval",
+        "media_type": "application/json",
+        "path": "approvals/approval-AP-SO-0101.json",
+        "sha256": "6c7e0eb9e7e116d00d859088d104c5237df453dd841bb1752023923f6dc08099",
+        "source": "approvals_export",
+        "task_id": "itsmdesk-001",
+        "title": "Approval record AP-SO-0101"
+      },
+      {
+        "asset_id": "itsmdesk-001-18",
+        "kind": "starting_state",
+        "media_type": "application/json",
+        "path": "exports/starting-state-itsmdesk-001.json",
+        "sha256": "a595867300ee860715367aa295926b79346dd07767c09ad99877bd6a81983ea5",
+        "source": "itsm_export",
+        "task_id": "itsmdesk-001",
+        "title": "Starting-state export (changes, tasks, outages, overrides)"
+      },
+      {
+        "asset_id": "itsmdesk-001-19",
+        "kind": "vendor_terms",
+        "media_type": "text/markdown",
+        "path": "vendor/quillstone-support-terms.md",
+        "sha256": "1f183c067678e06c61864c3f6e7a7e8280ec16fd36a41a75a5e9caf92ee29440",
+        "source": "drive",
+        "task_id": "itsmdesk-001",
+        "title": "Quillstone Runtime Systems — support terms (extract)"
+      },
+      {
+        "asset_id": "itsmdesk-001-20",
+        "kind": "open_source_provenance",
+        "media_type": "application/json",
+        "path": "provenance/harbor-open-source-anchors.json",
+        "sha256": "059d339788ff60f2ffdade5f4e69e63feb13ed81108b5844f95b3b557c8d6cd9",
+        "source": "release_metadata",
+        "task_id": "itsmdesk-001",
+        "title": "Open-source benchmark provenance — ITSMDesk"
+      },
+      {
+        "asset_id": "itsmdesk-001-21",
+        "kind": "record_lineage",
+        "media_type": "text/csv",
+        "path": "lineage/record-lineage.csv",
+        "sha256": "245baeccfd2a5170a9e3fa7385218b9d163b1e8b4b2c4ab04839557018edd11f",
+        "source": "lineage_export",
+        "task_id": "itsmdesk-001",
+        "title": "Cross-system record lineage — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-22",
+        "kind": "authority_current",
+        "media_type": "text/markdown",
+        "path": "controls/current-authority.md",
+        "sha256": "5c31185e11c0343a7f08a50f0d22b4d3300292e8b5850070e5a144ba0516d9ad",
+        "source": "governance",
+        "task_id": "itsmdesk-001",
+        "title": "Current authority — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-23",
+        "kind": "authority_superseded",
+        "media_type": "text/markdown",
+        "path": "controls/retired-authority.md",
+        "sha256": "295e5338fd3cee13eee3df8a13789c85f98f04a189a10817f4d499defc29dbe7",
+        "source": "governance_archive",
+        "task_id": "itsmdesk-001",
+        "title": "Retired authority — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-24",
+        "kind": "approval_decision",
+        "media_type": "application/json",
+        "path": "approvals/decision-record.json",
+        "sha256": "234a89d66cd76ae3720cbc260bc01786e20de2393d1bedf152138c0b943f1853",
+        "source": "approvals_export",
+        "task_id": "itsmdesk-001",
+        "title": "Decision control record — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-25",
+        "kind": "review_capacity_workbook",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "path": "workbooks/review-capacity.xlsx",
+        "sha256": "9906f51bef0603cc459635ace231c0919f7760c6e52a049b672961274c325e93",
+        "source": "operations_workbook",
+        "task_id": "itsmdesk-001",
+        "title": "Review capacity — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-26",
+        "kind": "source_integrity_control",
+        "media_type": "application/pdf",
+        "path": "controls/source-integrity.pdf",
+        "sha256": "08e0549797aa645b0901739734762e8949e634875465d58dbdd393ce200cb982",
+        "source": "governance",
+        "task_id": "itsmdesk-001",
+        "title": "Source integrity control — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-27",
+        "kind": "evidence_status",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-status.yaml",
+        "sha256": "8fa437932397c80090339cf8d6229fc29ac17ae0af5123647d7c80b35a10d1d2",
+        "source": "audit_export",
+        "task_id": "itsmdesk-001",
+        "title": "Evidence readiness — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-28",
+        "kind": "system_audit",
+        "media_type": "text/plain",
+        "path": "audit/system-audit.log",
+        "sha256": "b7c233eb5836f562277004ad7171aee1b17068178a849dcfa21b05ce50db57ad",
+        "source": "audit_export",
+        "task_id": "itsmdesk-001",
+        "title": "System audit log — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-29",
+        "kind": "source_request",
+        "media_type": "message/rfc822",
+        "path": "communications/source-request.eml",
+        "sha256": "187fe9b17a557022c5c9474fc7611a441d0d129d8fffdaba6614f22e123cd4f3",
+        "source": "messages",
+        "task_id": "itsmdesk-001",
+        "title": "Source integrity request — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-30",
+        "kind": "operations_thread",
+        "media_type": "application/json",
+        "path": "collaboration/operations-thread.json",
+        "sha256": "747d8d58d40c8e8620af5628fca5da618c47f3df84369183dfe2c3d2017c2ef7",
+        "source": "chat",
+        "task_id": "itsmdesk-001",
+        "title": "Operations thread — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-31",
+        "kind": "provider_contract",
+        "media_type": "application/json",
+        "path": "contracts/provider-contracts.json",
+        "sha256": "3e73edbada68f97eb6457ad92438e9cf79412668501c114a26f84b3aa99a8b4e",
+        "source": "release_metadata",
+        "task_id": "itsmdesk-001",
+        "title": "Provider contract — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-32",
+        "kind": "live_snapshot",
+        "media_type": "application/json",
+        "path": "exports/live-snapshot.json",
+        "sha256": "3199c5d3bba60c4d1a7d2513844fe8f1ed704fb7091bd5038a09c44eac5b98a6",
+        "source": "provider_export",
+        "task_id": "itsmdesk-001",
+        "title": "Live pre-action snapshot — SVCOPS-0001"
+      },
+      {
+        "asset_id": "itsmdesk-001-33",
+        "kind": "evidence_index",
+        "media_type": "application/yaml",
+        "path": "audit/evidence-index.yaml",
+        "sha256": "37a14d54699a37e318589d4151ca88c937599bb1151feef2122cd0002080952b",
+        "source": "drive",
+        "task_id": "itsmdesk-001",
+        "title": "Evidence index"
+      }
+    ],
+    "freeze_windows": [
+      {
+        "authority": "change board chair",
+        "end_date": "2026-04-18",
+        "freeze_id": "FRZ-2026-14",
+        "kind": "financial",
+        "lanes": "LANE-PAY",
+        "name": "card-network settlement cutover freeze",
+        "start_date": "2026-04-17",
+        "status": "ACTIVE"
+      },
+      {
+        "authority": "change board chair",
+        "end_date": "2026-05-01",
+        "freeze_id": "FRZ-2026-15",
+        "kind": "financial",
+        "lanes": "ALL",
+        "name": "month-end financial close freeze",
+        "start_date": "2026-04-28",
+        "status": "ACTIVE"
+      }
+    ],
+    "incidents": [
+      {
+        "impact_minutes": 14,
+        "incident_id": "INC-70601",
+        "opened_at": "2026-03-05T11:20:00",
+        "problem_id": null,
+        "resolved_at": "2026-03-05T11:52:00",
+        "service_id": "SVC-31020",
+        "severity": "sev2",
+        "slo_charged": 1,
+        "summary": "gateway certificate rollover fault (outside the current 30-day window)"
+      },
+      {
+        "impact_minutes": 9,
+        "incident_id": "INC-70812",
+        "opened_at": "2026-03-18T14:02:00",
+        "problem_id": "PRB-4101",
+        "resolved_at": "2026-03-18T14:31:00",
+        "service_id": "SVC-31020",
+        "severity": "sev2",
+        "slo_charged": 1,
+        "summary": "connection-pool exhaustion after the deploy"
+      },
+      {
+        "impact_minutes": 12,
+        "incident_id": "INC-70855",
+        "opened_at": "2026-04-02T03:40:00",
+        "problem_id": null,
+        "resolved_at": "2026-04-02T04:07:00",
+        "service_id": "SVC-31020",
+        "severity": "sev1",
+        "slo_charged": 1,
+        "summary": "authorization timeouts during the database failover"
+      },
+      {
+        "impact_minutes": 6,
+        "incident_id": "INC-70870",
+        "opened_at": "2026-04-11T09:15:00",
+        "problem_id": "PRB-4118",
+        "resolved_at": "2026-04-11T09:44:00",
+        "service_id": "SVC-31020",
+        "severity": "sev3",
+        "slo_charged": 0,
+        "summary": "synthetic probe alerts; reclassified by PRB-4118, no customer impact"
+      }
+    ],
+    "maintenance_windows": [
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-14",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260414-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "elapsed before the planning time",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-14",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_id": "MW-DATA-20260414-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-14",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260414-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "elapsed before the planning time",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-14",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "busy",
+        "window_id": "MW-PAY-20260414-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-15",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260415-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-15",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260415-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-15",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260415-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-15",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260415-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-16",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260416-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-16",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260416-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-16",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260416-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-16",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260416-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-17",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260417-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-17",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260417-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "card-network settlement cutover freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-17",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260417-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "card-network settlement cutover freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-17",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260417-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-18",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260418-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-18",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260418-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "card-network settlement cutover freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-18",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260418-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "card-network settlement cutover freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-18",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260418-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-19",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260419-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-19",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260419-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-19",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-PAY-20260419-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-19",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-PAY-20260419-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-20",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260420-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-20",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260420-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-20",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260420-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-20",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260420-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-21",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260421-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-21",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260421-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-21",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260421-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-21",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260421-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-22",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260422-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-22",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260422-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-22",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260422-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-22",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260422-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-23",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260423-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-23",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260423-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-23",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260423-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-23",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260423-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-24",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260424-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-24",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260424-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-24",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260424-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-24",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260424-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-25",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260425-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-25",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260425-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-25",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-PAY-20260425-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "hypervisor firmware maintenance (blocked)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-25",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "blocked",
+        "window_id": "MW-PAY-20260425-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-26",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260426-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-26",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260426-NIGHT"
+      },
+      {
+        "change_id": "CHG-40302",
+        "end_time": "23:00:00",
+        "hold_reason": "scheduled change",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-26",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "busy",
+        "window_id": "MW-PAY-20260426-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-26",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-PAY-20260426-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-27",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260427-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-27",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260427-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-27",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260427-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-27",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260427-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-28",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260428-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-28",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260428-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-28",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260428-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-28",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260428-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-29",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260429-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-29",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260429-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-29",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260429-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-29",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260429-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-30",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260430-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-04-30",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260430-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-30",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260430-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-04-30",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260430-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-01",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260501-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-01",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-DATA-20260501-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-05-01",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260501-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "month-end financial close freeze (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-05-01",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260501-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-02",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260502-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-02",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260502-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-05-02",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-PAY-20260502-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-05-02",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-PAY-20260502-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-03",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260503-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-03",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260503-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-05-03",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-PAY-20260503-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-05-03",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-PAY-20260503-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-04",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260504-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": null,
+        "lane_id": "LANE-DATA",
+        "service_date": "2026-05-04",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "free",
+        "window_id": "MW-DATA-20260504-NIGHT"
+      },
+      {
+        "change_id": null,
+        "end_time": "23:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-05-04",
+        "session": "EVE",
+        "start_time": "19:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260504-EVE"
+      },
+      {
+        "change_id": null,
+        "end_time": "05:00:00",
+        "hold_reason": "tier-1 weekday change embargo (protected)",
+        "lane_id": "LANE-PAY",
+        "service_date": "2026-05-04",
+        "session": "NIGHT",
+        "start_time": "01:00:00",
+        "status": "protected",
+        "window_id": "MW-PAY-20260504-NIGHT"
+      }
+    ],
+    "messages": [
+      {
+        "attachments_json": "[{\"name\": \"advisory-QSA-2026-118.pdf\", \"mime_type\": \"application/pdf\"}]",
+        "body": "Morning,\n\nQuillstone published QSA-2026-118 on Friday. It is high severity, so the fix is due by 2026-04-20. Security would like it tonight; before I answer them I need to know whether the error budget and the settlement freeze even allow that, or whether it is honestly a weekend job. The two-restart note on the advisory worries me because our restarts are slower than the vendor's estimate.\n\nSaoirse has signed AP-SO-0101 for the standard weekend session on the payments lane. The advisory is attached.\n\nLena",
+        "channel": "email",
+        "labels": "payments,SVCOPS-0001,SVCOPS-0001",
+        "message_id": "MSG-2001-01",
+        "recipients": "service-ops@brightmoor.example",
+        "sender": "lena.varga@brightmoor.example",
+        "sent_at": "2026-04-14T07:48:00",
+        "subject": "SVCOPS-0001 payments API patch — tonight or the weekend?",
+        "thread_id": "THR-2001"
+      },
+      {
+        "attachments_json": "[]",
+        "body": "On-call rotations for the week of 2026-04-13 are posted. Lane certification flags are on the shared drive roster; the change board meets Thursday.",
+        "channel": "email",
+        "labels": "operations",
+        "message_id": "MSG-0001-00",
+        "recipients": "service-ops@brightmoor.example",
+        "sender": "wren.haviland@brightmoor.example",
+        "sent_at": "2026-04-13T08:00:00",
+        "subject": "Weekly service-operations note",
+        "thread_id": "THR-0001-OPS"
+      }
+    ],
+    "meterings": [
+      {
+        "measured_at": "2026-04-09",
+        "metering_id": "MTR-31020",
+        "metric": "RESTART-MIN",
+        "service_id": "SVC-31020",
+        "status": "final",
+        "unit": "MIN",
+        "value": 7.0
+      },
+      {
+        "measured_at": "2026-01-20",
+        "metering_id": "MTR-31020-2601",
+        "metric": "RESTART-MIN",
+        "service_id": "SVC-31020",
+        "status": "final",
+        "unit": "MIN",
+        "value": 4.0
+      },
+      {
+        "measured_at": "2026-03-30",
+        "metering_id": "MTR-31077",
+        "metric": "RESTART-MIN",
+        "service_id": "SVC-31077",
+        "status": "final",
+        "unit": "MIN",
+        "value": 5.0
+      }
+    ],
+    "nodes": [
+      {
+        "build_status": null,
+        "lane_id": "LANE-PAY",
+        "node_id": "NODE-PAY-01",
+        "pinned_for": null,
+        "pool": "api-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31020",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-PAY",
+        "node_id": "NODE-PAY-02",
+        "pinned_for": null,
+        "pool": "api-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31020",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-PAY",
+        "node_id": "NODE-PAY-03",
+        "pinned_for": null,
+        "pool": "api-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31020",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-PAY",
+        "node_id": "NODE-PAY-04",
+        "pinned_for": null,
+        "pool": "api-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31020",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-PAY",
+        "node_id": "NODE-PAY-05",
+        "pinned_for": null,
+        "pool": "api-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31020",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      },
+      {
+        "build_status": null,
+        "lane_id": "LANE-PAY",
+        "node_id": "NODE-PAY-06",
+        "pinned_for": null,
+        "pool": "api-eu",
+        "region": "eu-west",
+        "service_id": "SVC-31020",
+        "staged_build": null,
+        "status": "active",
+        "version": "7.4.2"
+      }
+    ],
+    "oncall_overrides": [],
+    "oncall_schedules": [
+      {
+        "name": "payments primary",
+        "required_certification": null,
+        "role": "primary",
+        "schedule_id": "SCHED-PAY-PRI",
+        "service_id": "SVC-31020"
+      },
+      {
+        "name": "payments secondary (certified)",
+        "required_certification": "payments-runbook",
+        "role": "secondary",
+        "schedule_id": "SCHED-PAY-SEC",
+        "service_id": "SVC-31020"
+      }
+    ],
+    "oncall_shifts": [
+      {
+        "end_time": "2026-04-14T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260414-1",
+        "source": "rotation",
+        "start_time": "2026-04-14T00:00:00"
+      },
+      {
+        "end_time": "2026-04-14T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260414-2",
+        "source": "rotation",
+        "start_time": "2026-04-14T08:00:00"
+      },
+      {
+        "end_time": "2026-04-14T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260414-3",
+        "source": "rotation",
+        "start_time": "2026-04-14T16:00:00"
+      },
+      {
+        "end_time": "2026-04-15T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260415-1",
+        "source": "rotation",
+        "start_time": "2026-04-15T00:00:00"
+      },
+      {
+        "end_time": "2026-04-15T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260415-2",
+        "source": "rotation",
+        "start_time": "2026-04-15T08:00:00"
+      },
+      {
+        "end_time": "2026-04-15T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260415-3",
+        "source": "rotation",
+        "start_time": "2026-04-15T16:00:00"
+      },
+      {
+        "end_time": "2026-04-16T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260416-1",
+        "source": "rotation",
+        "start_time": "2026-04-16T00:00:00"
+      },
+      {
+        "end_time": "2026-04-16T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260416-2",
+        "source": "rotation",
+        "start_time": "2026-04-16T08:00:00"
+      },
+      {
+        "end_time": "2026-04-16T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260416-3",
+        "source": "rotation",
+        "start_time": "2026-04-16T16:00:00"
+      },
+      {
+        "end_time": "2026-04-17T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260417-1",
+        "source": "rotation",
+        "start_time": "2026-04-17T00:00:00"
+      },
+      {
+        "end_time": "2026-04-17T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260417-2",
+        "source": "rotation",
+        "start_time": "2026-04-17T08:00:00"
+      },
+      {
+        "end_time": "2026-04-17T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260417-3",
+        "source": "rotation",
+        "start_time": "2026-04-17T16:00:00"
+      },
+      {
+        "end_time": "2026-04-18T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260418-1",
+        "source": "rotation",
+        "start_time": "2026-04-18T00:00:00"
+      },
+      {
+        "end_time": "2026-04-18T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260418-2",
+        "source": "rotation",
+        "start_time": "2026-04-18T08:00:00"
+      },
+      {
+        "end_time": "2026-04-18T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260418-3",
+        "source": "rotation",
+        "start_time": "2026-04-18T16:00:00"
+      },
+      {
+        "end_time": "2026-04-19T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260419-1",
+        "source": "rotation",
+        "start_time": "2026-04-19T00:00:00"
+      },
+      {
+        "end_time": "2026-04-19T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260419-2",
+        "source": "rotation",
+        "start_time": "2026-04-19T08:00:00"
+      },
+      {
+        "end_time": "2026-04-19T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260419-3",
+        "source": "rotation",
+        "start_time": "2026-04-19T16:00:00"
+      },
+      {
+        "end_time": "2026-04-20T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260420-1",
+        "source": "rotation",
+        "start_time": "2026-04-20T00:00:00"
+      },
+      {
+        "end_time": "2026-04-20T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260420-2",
+        "source": "rotation",
+        "start_time": "2026-04-20T08:00:00"
+      },
+      {
+        "end_time": "2026-04-20T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260420-3",
+        "source": "rotation",
+        "start_time": "2026-04-20T16:00:00"
+      },
+      {
+        "end_time": "2026-04-21T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260421-1",
+        "source": "rotation",
+        "start_time": "2026-04-21T00:00:00"
+      },
+      {
+        "end_time": "2026-04-21T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260421-2",
+        "source": "rotation",
+        "start_time": "2026-04-21T08:00:00"
+      },
+      {
+        "end_time": "2026-04-21T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260421-3",
+        "source": "rotation",
+        "start_time": "2026-04-21T16:00:00"
+      },
+      {
+        "end_time": "2026-04-22T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260422-1",
+        "source": "rotation",
+        "start_time": "2026-04-22T00:00:00"
+      },
+      {
+        "end_time": "2026-04-22T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260422-2",
+        "source": "rotation",
+        "start_time": "2026-04-22T08:00:00"
+      },
+      {
+        "end_time": "2026-04-22T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260422-3",
+        "source": "rotation",
+        "start_time": "2026-04-22T16:00:00"
+      },
+      {
+        "end_time": "2026-04-23T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260423-1",
+        "source": "rotation",
+        "start_time": "2026-04-23T00:00:00"
+      },
+      {
+        "end_time": "2026-04-23T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260423-2",
+        "source": "rotation",
+        "start_time": "2026-04-23T08:00:00"
+      },
+      {
+        "end_time": "2026-04-23T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260423-3",
+        "source": "rotation",
+        "start_time": "2026-04-23T16:00:00"
+      },
+      {
+        "end_time": "2026-04-24T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260424-1",
+        "source": "rotation",
+        "start_time": "2026-04-24T00:00:00"
+      },
+      {
+        "end_time": "2026-04-24T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260424-2",
+        "source": "rotation",
+        "start_time": "2026-04-24T08:00:00"
+      },
+      {
+        "end_time": "2026-04-24T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260424-3",
+        "source": "rotation",
+        "start_time": "2026-04-24T16:00:00"
+      },
+      {
+        "end_time": "2026-04-25T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260425-1",
+        "source": "rotation",
+        "start_time": "2026-04-25T00:00:00"
+      },
+      {
+        "end_time": "2026-04-25T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260425-2",
+        "source": "rotation",
+        "start_time": "2026-04-25T08:00:00"
+      },
+      {
+        "end_time": "2026-04-25T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260425-3",
+        "source": "rotation",
+        "start_time": "2026-04-25T16:00:00"
+      },
+      {
+        "end_time": "2026-04-26T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260426-1",
+        "source": "rotation",
+        "start_time": "2026-04-26T00:00:00"
+      },
+      {
+        "end_time": "2026-04-26T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260426-2",
+        "source": "rotation",
+        "start_time": "2026-04-26T08:00:00"
+      },
+      {
+        "end_time": "2026-04-26T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260426-3",
+        "source": "rotation",
+        "start_time": "2026-04-26T16:00:00"
+      },
+      {
+        "end_time": "2026-04-27T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260427-1",
+        "source": "rotation",
+        "start_time": "2026-04-27T00:00:00"
+      },
+      {
+        "end_time": "2026-04-27T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260427-2",
+        "source": "rotation",
+        "start_time": "2026-04-27T08:00:00"
+      },
+      {
+        "end_time": "2026-04-27T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260427-3",
+        "source": "rotation",
+        "start_time": "2026-04-27T16:00:00"
+      },
+      {
+        "end_time": "2026-04-28T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260428-1",
+        "source": "rotation",
+        "start_time": "2026-04-28T00:00:00"
+      },
+      {
+        "end_time": "2026-04-28T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260428-2",
+        "source": "rotation",
+        "start_time": "2026-04-28T08:00:00"
+      },
+      {
+        "end_time": "2026-04-28T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260428-3",
+        "source": "rotation",
+        "start_time": "2026-04-28T16:00:00"
+      },
+      {
+        "end_time": "2026-04-29T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260429-1",
+        "source": "rotation",
+        "start_time": "2026-04-29T00:00:00"
+      },
+      {
+        "end_time": "2026-04-29T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260429-2",
+        "source": "rotation",
+        "start_time": "2026-04-29T08:00:00"
+      },
+      {
+        "end_time": "2026-04-29T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260429-3",
+        "source": "rotation",
+        "start_time": "2026-04-29T16:00:00"
+      },
+      {
+        "end_time": "2026-04-30T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260430-1",
+        "source": "rotation",
+        "start_time": "2026-04-30T00:00:00"
+      },
+      {
+        "end_time": "2026-04-30T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260430-2",
+        "source": "rotation",
+        "start_time": "2026-04-30T08:00:00"
+      },
+      {
+        "end_time": "2026-04-30T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260430-3",
+        "source": "rotation",
+        "start_time": "2026-04-30T16:00:00"
+      },
+      {
+        "end_time": "2026-05-01T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260501-1",
+        "source": "rotation",
+        "start_time": "2026-05-01T00:00:00"
+      },
+      {
+        "end_time": "2026-05-01T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260501-2",
+        "source": "rotation",
+        "start_time": "2026-05-01T08:00:00"
+      },
+      {
+        "end_time": "2026-05-01T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260501-3",
+        "source": "rotation",
+        "start_time": "2026-05-01T16:00:00"
+      },
+      {
+        "end_time": "2026-05-02T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260502-1",
+        "source": "rotation",
+        "start_time": "2026-05-02T00:00:00"
+      },
+      {
+        "end_time": "2026-05-02T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260502-2",
+        "source": "rotation",
+        "start_time": "2026-05-02T08:00:00"
+      },
+      {
+        "end_time": "2026-05-02T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260502-3",
+        "source": "rotation",
+        "start_time": "2026-05-02T16:00:00"
+      },
+      {
+        "end_time": "2026-05-03T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260503-1",
+        "source": "rotation",
+        "start_time": "2026-05-03T00:00:00"
+      },
+      {
+        "end_time": "2026-05-03T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260503-2",
+        "source": "rotation",
+        "start_time": "2026-05-03T08:00:00"
+      },
+      {
+        "end_time": "2026-05-03T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260503-3",
+        "source": "rotation",
+        "start_time": "2026-05-03T16:00:00"
+      },
+      {
+        "end_time": "2026-05-04T08:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260504-1",
+        "source": "rotation",
+        "start_time": "2026-05-04T00:00:00"
+      },
+      {
+        "end_time": "2026-05-04T16:00:00",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260504-2",
+        "source": "rotation",
+        "start_time": "2026-05-04T08:00:00"
+      },
+      {
+        "end_time": "2026-05-04T23:59:59",
+        "engineer_id": "ENG-DUBOIS",
+        "schedule_id": "SCHED-PAY-PRI",
+        "shift_id": "SHIFT-PAY-PRI-20260504-3",
+        "source": "rotation",
+        "start_time": "2026-05-04T16:00:00"
+      },
+      {
+        "end_time": "2026-04-14T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260414-1",
+        "source": "rotation",
+        "start_time": "2026-04-14T00:00:00"
+      },
+      {
+        "end_time": "2026-04-14T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260414-2",
+        "source": "rotation",
+        "start_time": "2026-04-14T08:00:00"
+      },
+      {
+        "end_time": "2026-04-14T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260414-3",
+        "source": "rotation",
+        "start_time": "2026-04-14T16:00:00"
+      },
+      {
+        "end_time": "2026-04-15T08:00:00",
+        "engineer_id": "ENG-HOLM",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260415-1",
+        "source": "swap",
+        "start_time": "2026-04-15T00:00:00"
+      },
+      {
+        "end_time": "2026-04-15T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260415-2",
+        "source": "rotation",
+        "start_time": "2026-04-15T08:00:00"
+      },
+      {
+        "end_time": "2026-04-15T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260415-3",
+        "source": "rotation",
+        "start_time": "2026-04-15T16:00:00"
+      },
+      {
+        "end_time": "2026-04-16T08:00:00",
+        "engineer_id": "ENG-HOLM",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260416-1",
+        "source": "swap",
+        "start_time": "2026-04-16T00:00:00"
+      },
+      {
+        "end_time": "2026-04-16T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260416-2",
+        "source": "rotation",
+        "start_time": "2026-04-16T08:00:00"
+      },
+      {
+        "end_time": "2026-04-16T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260416-3",
+        "source": "rotation",
+        "start_time": "2026-04-16T16:00:00"
+      },
+      {
+        "end_time": "2026-04-17T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260417-1",
+        "source": "rotation",
+        "start_time": "2026-04-17T00:00:00"
+      },
+      {
+        "end_time": "2026-04-17T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260417-2",
+        "source": "rotation",
+        "start_time": "2026-04-17T08:00:00"
+      },
+      {
+        "end_time": "2026-04-17T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260417-3",
+        "source": "rotation",
+        "start_time": "2026-04-17T16:00:00"
+      },
+      {
+        "end_time": "2026-04-18T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260418-1",
+        "source": "rotation",
+        "start_time": "2026-04-18T00:00:00"
+      },
+      {
+        "end_time": "2026-04-18T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260418-2",
+        "source": "rotation",
+        "start_time": "2026-04-18T08:00:00"
+      },
+      {
+        "end_time": "2026-04-18T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260418-3",
+        "source": "rotation",
+        "start_time": "2026-04-18T16:00:00"
+      },
+      {
+        "end_time": "2026-04-19T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260419-1",
+        "source": "rotation",
+        "start_time": "2026-04-19T00:00:00"
+      },
+      {
+        "end_time": "2026-04-19T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260419-2",
+        "source": "rotation",
+        "start_time": "2026-04-19T08:00:00"
+      },
+      {
+        "end_time": "2026-04-19T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260419-3",
+        "source": "rotation",
+        "start_time": "2026-04-19T16:00:00"
+      },
+      {
+        "end_time": "2026-04-20T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260420-1",
+        "source": "rotation",
+        "start_time": "2026-04-20T00:00:00"
+      },
+      {
+        "end_time": "2026-04-20T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260420-2",
+        "source": "rotation",
+        "start_time": "2026-04-20T08:00:00"
+      },
+      {
+        "end_time": "2026-04-20T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260420-3",
+        "source": "rotation",
+        "start_time": "2026-04-20T16:00:00"
+      },
+      {
+        "end_time": "2026-04-21T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260421-1",
+        "source": "rotation",
+        "start_time": "2026-04-21T00:00:00"
+      },
+      {
+        "end_time": "2026-04-21T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260421-2",
+        "source": "rotation",
+        "start_time": "2026-04-21T08:00:00"
+      },
+      {
+        "end_time": "2026-04-21T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260421-3",
+        "source": "rotation",
+        "start_time": "2026-04-21T16:00:00"
+      },
+      {
+        "end_time": "2026-04-22T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260422-1",
+        "source": "rotation",
+        "start_time": "2026-04-22T00:00:00"
+      },
+      {
+        "end_time": "2026-04-22T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260422-2",
+        "source": "rotation",
+        "start_time": "2026-04-22T08:00:00"
+      },
+      {
+        "end_time": "2026-04-22T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260422-3",
+        "source": "rotation",
+        "start_time": "2026-04-22T16:00:00"
+      },
+      {
+        "end_time": "2026-04-23T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260423-1",
+        "source": "rotation",
+        "start_time": "2026-04-23T00:00:00"
+      },
+      {
+        "end_time": "2026-04-23T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260423-2",
+        "source": "rotation",
+        "start_time": "2026-04-23T08:00:00"
+      },
+      {
+        "end_time": "2026-04-23T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260423-3",
+        "source": "rotation",
+        "start_time": "2026-04-23T16:00:00"
+      },
+      {
+        "end_time": "2026-04-24T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260424-1",
+        "source": "rotation",
+        "start_time": "2026-04-24T00:00:00"
+      },
+      {
+        "end_time": "2026-04-24T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260424-2",
+        "source": "rotation",
+        "start_time": "2026-04-24T08:00:00"
+      },
+      {
+        "end_time": "2026-04-24T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260424-3",
+        "source": "rotation",
+        "start_time": "2026-04-24T16:00:00"
+      },
+      {
+        "end_time": "2026-04-25T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260425-1",
+        "source": "rotation",
+        "start_time": "2026-04-25T00:00:00"
+      },
+      {
+        "end_time": "2026-04-25T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260425-2",
+        "source": "rotation",
+        "start_time": "2026-04-25T08:00:00"
+      },
+      {
+        "end_time": "2026-04-25T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260425-3",
+        "source": "rotation",
+        "start_time": "2026-04-25T16:00:00"
+      },
+      {
+        "end_time": "2026-04-26T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260426-1",
+        "source": "rotation",
+        "start_time": "2026-04-26T00:00:00"
+      },
+      {
+        "end_time": "2026-04-26T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260426-2",
+        "source": "rotation",
+        "start_time": "2026-04-26T08:00:00"
+      },
+      {
+        "end_time": "2026-04-26T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260426-3",
+        "source": "rotation",
+        "start_time": "2026-04-26T16:00:00"
+      },
+      {
+        "end_time": "2026-04-27T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260427-1",
+        "source": "rotation",
+        "start_time": "2026-04-27T00:00:00"
+      },
+      {
+        "end_time": "2026-04-27T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260427-2",
+        "source": "rotation",
+        "start_time": "2026-04-27T08:00:00"
+      },
+      {
+        "end_time": "2026-04-27T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260427-3",
+        "source": "rotation",
+        "start_time": "2026-04-27T16:00:00"
+      },
+      {
+        "end_time": "2026-04-28T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260428-1",
+        "source": "rotation",
+        "start_time": "2026-04-28T00:00:00"
+      },
+      {
+        "end_time": "2026-04-28T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260428-2",
+        "source": "rotation",
+        "start_time": "2026-04-28T08:00:00"
+      },
+      {
+        "end_time": "2026-04-28T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260428-3",
+        "source": "rotation",
+        "start_time": "2026-04-28T16:00:00"
+      },
+      {
+        "end_time": "2026-04-29T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260429-1",
+        "source": "rotation",
+        "start_time": "2026-04-29T00:00:00"
+      },
+      {
+        "end_time": "2026-04-29T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260429-2",
+        "source": "rotation",
+        "start_time": "2026-04-29T08:00:00"
+      },
+      {
+        "end_time": "2026-04-29T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260429-3",
+        "source": "rotation",
+        "start_time": "2026-04-29T16:00:00"
+      },
+      {
+        "end_time": "2026-04-30T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260430-1",
+        "source": "rotation",
+        "start_time": "2026-04-30T00:00:00"
+      },
+      {
+        "end_time": "2026-04-30T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260430-2",
+        "source": "rotation",
+        "start_time": "2026-04-30T08:00:00"
+      },
+      {
+        "end_time": "2026-04-30T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260430-3",
+        "source": "rotation",
+        "start_time": "2026-04-30T16:00:00"
+      },
+      {
+        "end_time": "2026-05-01T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260501-1",
+        "source": "rotation",
+        "start_time": "2026-05-01T00:00:00"
+      },
+      {
+        "end_time": "2026-05-01T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260501-2",
+        "source": "rotation",
+        "start_time": "2026-05-01T08:00:00"
+      },
+      {
+        "end_time": "2026-05-01T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260501-3",
+        "source": "rotation",
+        "start_time": "2026-05-01T16:00:00"
+      },
+      {
+        "end_time": "2026-05-02T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260502-1",
+        "source": "rotation",
+        "start_time": "2026-05-02T00:00:00"
+      },
+      {
+        "end_time": "2026-05-02T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260502-2",
+        "source": "rotation",
+        "start_time": "2026-05-02T08:00:00"
+      },
+      {
+        "end_time": "2026-05-02T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260502-3",
+        "source": "rotation",
+        "start_time": "2026-05-02T16:00:00"
+      },
+      {
+        "end_time": "2026-05-03T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260503-1",
+        "source": "rotation",
+        "start_time": "2026-05-03T00:00:00"
+      },
+      {
+        "end_time": "2026-05-03T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260503-2",
+        "source": "rotation",
+        "start_time": "2026-05-03T08:00:00"
+      },
+      {
+        "end_time": "2026-05-03T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260503-3",
+        "source": "rotation",
+        "start_time": "2026-05-03T16:00:00"
+      },
+      {
+        "end_time": "2026-05-04T08:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260504-1",
+        "source": "rotation",
+        "start_time": "2026-05-04T00:00:00"
+      },
+      {
+        "end_time": "2026-05-04T16:00:00",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260504-2",
+        "source": "rotation",
+        "start_time": "2026-05-04T08:00:00"
+      },
+      {
+        "end_time": "2026-05-04T23:59:59",
+        "engineer_id": "ENG-OKAFOR",
+        "schedule_id": "SCHED-PAY-SEC",
+        "shift_id": "SHIFT-PAY-SEC-20260504-3",
+        "source": "rotation",
+        "start_time": "2026-05-04T16:00:00"
+      }
+    ],
+    "planned_outages": [],
+    "problems": [
+      {
+        "problem_id": "PRB-4101",
+        "review_note": "Root cause confirmed (pool sizing regression). INC-70812 stays charged in full: 9 minutes.",
+        "service_id": "SVC-31020",
+        "status": "closed",
+        "title": "Connection-pool exhaustion after the March deploy"
+      },
+      {
+        "problem_id": "PRB-4118",
+        "review_note": "INC-70870 reclassified: the probe targeted a retired endpoint; no customer impact; not charged to SLO-PAY-AVAIL.",
+        "service_id": "SVC-31020",
+        "status": "closed",
+        "title": "Synthetic probe misconfiguration on 2026-04-11"
+      }
+    ],
+    "services": [
+      {
+        "code": "payments-api",
+        "lane_id": "LANE-PAY",
+        "name": "Payments API",
+        "owner_team": "Payments Platform",
+        "primary_engineer_id": "ENG-VARGA",
+        "required_certification": "payments-runbook",
+        "rollback_minutes": 26,
+        "runtime": "quillstone-runtime 7.4",
+        "service_id": "SVC-31020",
+        "tier": "tier-1",
+        "validation_minutes": 5,
+        "version": "7.4.2"
+      },
+      {
+        "code": "payments-api-legacy",
+        "lane_id": "LANE-PAY",
+        "name": "Payments API (legacy region, decommissioning)",
+        "owner_team": "Payments Platform",
+        "primary_engineer_id": "ENG-VARGA",
+        "required_certification": "payments-runbook",
+        "rollback_minutes": 20,
+        "runtime": "quillstone-runtime 7.2",
+        "service_id": "SVC-31077",
+        "tier": "tier-3",
+        "validation_minutes": 5,
+        "version": "7.2.9"
+      }
+    ],
+    "slos": [
+      {
+        "budget_minutes": 43,
+        "name": "payments-api availability (30-day)",
+        "objective_pct": 99.9,
+        "reserve_minutes": 10,
+        "service_id": "SVC-31020",
+        "sli": "successful authorizations / attempted authorizations",
+        "slo_id": "SLO-PAY-AVAIL",
+        "status": "ACTIVE",
+        "window_days": 30
+      },
+      {
+        "budget_minutes": 432,
+        "name": "payments-api p95 latency (30-day)",
+        "objective_pct": 99.0,
+        "reserve_minutes": 0,
+        "service_id": "SVC-31020",
+        "sli": "authorizations under 800 ms / all authorizations",
+        "slo_id": "SLO-PAY-LAT",
+        "status": "INFORMATIONAL",
+        "window_days": 30
+      }
+    ],
+    "users": [
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Service Operations Coordinator (you)",
+        "role": "service_operations_coordinator",
+        "user_id": "U-OPS"
+      },
+      {
+        "approval_limit_usd": 5000,
+        "display_name": "Saoirse Lindgren",
+        "role": "change_manager",
+        "user_id": "U-LINDGREN"
+      },
+      {
+        "approval_limit_usd": 0,
+        "display_name": "Tunde Abara",
+        "role": "change_board_chair",
+        "user_id": "U-ABARA"
+      },
+      {
+        "approval_limit_usd": 8000,
+        "display_name": "Wren Haviland",
+        "role": "sre_lead",
+        "user_id": "U-HAVILAND"
+      },
+      {
+        "approval_limit_usd": 12000,
+        "display_name": "Inês Moraes",
+        "role": "security_lead",
+        "user_id": "U-MORAES"
+      }
+    ],
+    "vendor_advisories": [
+      {
+        "advisory_id": "ADV-QS-2026-118",
+        "affected_versions": "7.4.0-7.4.2",
+        "expedite_fee_usd": 900,
+        "expedited_release_date": "2026-04-14",
+        "fixed_version": "7.4.3",
+        "note": "The fix replaces the shared connection pool: two full-pool restarts (apply, then verify); a rolling restart is not supported for this fix. GA build 7.4.3 on 2026-04-16; early-access build 7.4.3-ea on 2026-04-14 under premium support (USD 900 flat).",
+        "product": "quillstone-runtime 7.4",
+        "published_on": "2026-04-10",
+        "reference": "QSA-2026-118",
+        "remediation_sla_days": 10,
+        "restarts_required": 2,
+        "severity": "high",
+        "standard_release_date": "2026-04-16",
+        "status": "CURRENT",
+        "valid_until": "2026-04-30",
+        "vendor_estimate_minutes": 8,
+        "vendor_id": "VND-QUILLSTONE"
+      },
+      {
+        "advisory_id": "ADV-QS-2026-118-R1",
+        "affected_versions": "7.4.0-7.4.2",
+        "expedite_fee_usd": 900,
+        "expedited_release_date": "2026-04-11",
+        "fixed_version": "7.4.3-rc1",
+        "note": "Withdrawn 2026-04-11: the rc1 build regressed TLS session resumption. Superseded by ADV-QS-2026-118; its single-restart procedure no longer applies.",
+        "product": "quillstone-runtime 7.4",
+        "published_on": "2026-04-08",
+        "reference": "QSA-2026-118 (rev 1, withdrawn)",
+        "remediation_sla_days": 10,
+        "restarts_required": 1,
+        "severity": "high",
+        "standard_release_date": "2026-04-13",
+        "status": "SUPERSEDED",
+        "valid_until": "2026-04-11",
+        "vendor_estimate_minutes": 8,
+        "vendor_id": "VND-QUILLSTONE"
+      }
+    ],
+    "vendors": [
+      {
+        "account_number": "BM-2207",
+        "name": "Quillstone Runtime Systems",
+        "vendor_id": "VND-QUILLSTONE"
+      },
+      {
+        "account_number": "BM-0931",
+        "name": "Orrinwave Data Systems",
+        "vendor_id": "VND-ORRINWAVE"
+      },
+      {
+        "account_number": "BM-1148",
+        "name": "Sablegate Edge Security",
+        "vendor_id": "VND-SABLEGATE"
+      }
+    ]
+  },
+  "starting_records": [
+    {
+      "resource_id": "CHG-40311",
+      "resource_type": "ChangeRequest",
+      "status": "authorize",
+      "system": "itsm"
+    },
+    {
+      "resource_id": "CHG-40309",
+      "resource_type": "ChangeRequest",
+      "status": "cancelled",
+      "system": "itsm"
+    },
+    {
+      "resource_id": "CHG-40302",
+      "resource_type": "ChangeRequest",
+      "status": "scheduled",
+      "system": "itsm"
+    }
+  ],
+  "task_id": "itsmdesk-001",
+  "title": "Patch the payments API tonight or in the weekend window",
+  "world": {
+    "id": "brightmoor-serviceops-v1",
+    "name": "Brightmoor Commerce — Service Operations",
+    "organization_id": "ORG-BRIGHTMOOR",
+    "primary_site": "DC-HALDEN",
+    "systems": [
+      "itsm",
+      "telemetry",
+      "calendar",
+      "oncall",
+      "vendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

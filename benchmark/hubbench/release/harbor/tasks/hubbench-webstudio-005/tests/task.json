@@ -1,0 +1,2870 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "mutations",
+    "note_drafts",
+    "token_pins"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for pin_active_consumers_and_ship.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for full_wave_after_standard_migration.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "deprecated_consumers": {
+        "description": "Registry consumers recorded as DEPRECATED and excluded from the count.",
+        "type": "integer"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for agency_rush_migration_full_wave.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "consumers that are on the homepage itself, deprecated, or already migrated",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Orchidworks' confirmed standard and rush migration delivery dates on ORQ-2210.",
+        "type": "string"
+      },
+      "first_release_window": {
+        "description": "Deploy window of the scheduled homepage release, as LANE/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "migrated_consumers": {
+        "description": "Registry consumers already recorded as MIGRATED to the proposed version.",
+        "type": "integer"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for the homepage accent ramp change.",
+        "type": "integer"
+      },
+      "on_page_consumers": {
+        "description": "Registry consumers on the change request's own page; they take the new version and are not pinned.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: CONSUMER.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing pin_active_consumers_and_ship, full_wave_after_standard_migration, agency_rush_migration_full_wave.",
+        "enum": [
+          "pin_active_consumers_and_ship",
+          "full_wave_after_standard_migration",
+          "agency_rush_migration_full_wave"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "source_quantity": {
+        "description": "consumers of TOK-COLOR-ACCENT-500 that the v3.0 change reaches per the change request's impact panel",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Orchidworks' confirmed standard and rush migration delivery dates on ORQ-2210.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "active off-page consumers that the pin must hold on v2.4",
+        "type": "integer"
+      },
+      "token_current_version": {
+        "description": "Version of the token currently published in the registry (the version the pin holds).",
+        "type": "string"
+      },
+      "token_proposed_version": {
+        "description": "Proposed breaking version the change ships on the homepage surfaces.",
+        "type": "string"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "deprecated_consumers",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_release_window",
+      "migrated_consumers",
+      "observed_quantity",
+      "on_page_consumers",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "token_current_version",
+      "token_proposed_version",
+      "transaction_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-05-11",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope; consumers that are on the homepage itself, deprecated, or already migrated = 5 CONSUMER; uncovered scope = 7 CONSUMER",
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-18 as the documented control date for the homepage accent ramp change; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 11 CONSUMER for consumers of TOK-COLOR-ACCENT-500 that the v3.0 change reaches per the change request's impact panel.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 9 observed CONSUMER.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 5 CONSUMER for consumers that are on the homepage itself, deprecated, or already migrated.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 5 excluded = 4 supported CONSUMER.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 4 CONSUMER, the measure required by the chosen disposition under the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in CONSUMER.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-05-18 for pin_active_consumers_and_ship.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-22 for full_wave_after_standard_migration.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-18 for agency_rush_migration_full_wave and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-21 as the independently confirmed standard readiness date for Orchidworks' confirmed standard and rush migration delivery dates on ORQ-2210.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-15 as the independently confirmed expedited readiness date for Orchidworks' confirmed standard and rush migration delivery dates on ORQ-2210.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read v2.4 as the CURRENT version of TOK-COLOR-ACCENT-500 in the registry.",
+        "field": "token_current_version",
+        "id": "read_current_token_version",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read v3.0 as the PROPOSED version and confirmed its breaking flag (hue shift).",
+        "field": "token_proposed_version",
+        "id": "read_proposed_breaking_version",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded the 2 homepage consumers (CON-6101, CON-6102) that take v3.0 themselves.",
+        "field": "on_page_consumers",
+        "id": "exclude_on_page_consumers",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Excluded the 2 DEPRECATED consumers (careers ribbon, old checkout banner).",
+        "field": "deprecated_consumers",
+        "id": "exclude_deprecated_consumers",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded CON-6109, already MIGRATED to v3.0 in the pricing refresh.",
+        "field": "migrated_consumers",
+        "id": "exclude_migrated_consumers",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified LANE-WEB-1/2026-05-18/AM (REL-88930) as the scheduled homepage release the pin must precede.",
+        "field": "first_release_window",
+        "id": "identify_first_release_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for pin_active_consumers_and_ship; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that agency_rush_migration_full_wave remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of pin_active_consumers_and_ship, full_wave_after_standard_migration, agency_rush_migration_full_wave; selected pin_active_consumers_and_ship because it alone gives the best currently authorized result under the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-18 as the supported outcome date for pin_active_consumers_and_ship.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-18 with the independent control date 2026-05-18 and calculated a signed variance of 0 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located TOK-COLOR-ACCENT-500 using immutable identifiers and preserved effective revision v1: slug homepage resolves to PAGE-3520 and open change request CR-4457; CR-4452 (checkout accent refresh) is superseded by the token wave.",
+        "sources": [
+          "cms",
+          "messages"
+        ],
+        "statement": "WEB-0005: slug homepage resolves to PAGE-3520 and open change request CR-4457; CR-4452 (checkout accent refresh) is superseded by the token wave; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective change request and playbook to establish 11 CONSUMER for consumers of TOK-COLOR-ACCENT-500 that the v3.0 change reaches per the change request's impact panel, with control date 2026-05-18.",
+        "sources": [
+          "cms",
+          "drive"
+        ],
+        "statement": "The effective change request and playbook establish consumers of TOK-COLOR-ACCENT-500 that the v3.0 change reaches per the change request's impact panel = 11 CONSUMER: the impact panel on CR-4457 claims 11 consumers from the February export; the live registry, not the header, sets the pin. The control date is 2026-05-18 (the scheduled homepage hero release (REL-88930))."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 9 observed less 5 excluded to 4 supported CONSUMER for active off-page consumers that the pin must hold on v2.4.",
+        "sources": [
+          "dam",
+          "tokens",
+          "checklist",
+          "drive"
+        ],
+        "statement": "the registry lists 9 consumers of TOK-COLOR-ACCENT-500 in gross; 2 are on the homepage itself, 2 are DEPRECATED, and 1 is MIGRATED, so 4 active off-page consumers must be held on v2.4; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-05-15 expedited readiness input for full_wave_after_standard_migration, then separately derived its 2026-05-22 operating outcome under the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope instead of treating a vendor promise as authorization or a completion date.",
+        "sources": [
+          "vendors",
+          "messages"
+        ],
+        "statement": "Orchidworks' confirmed standard and rush migration delivery dates on ORQ-2210: Orchidworks ORQ-2210 confirms migration delivery standard 2026-05-20 and rush 2026-05-14 (+USD 1400); migrated components register the next business day; a vendor quote alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied the scheduled homepage release that fixes the deploy date to derive the three option outcomes without using protected or blocked windows.",
+        "sources": [
+          "cdn",
+          "drive"
+        ],
+        "statement": "the scheduled homepage release that fixes the deploy date: the scheduled homepage release fixes the date: lane 1 AM on 2026-05-18; the first free window after the standard migration is lane 2 PM on 2026-05-22; protected and blocked windows cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-WS-0105 only to pin_active_consumers_and_ship and TOK-COLOR-ACCENT-500; kept agency_rush_migration_full_wave outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-WS-0105 covers one v2.4 pin for up to 4 active off-page consumers; agency spend outside the retainer needs the head of digital. The approval does not select an option in advance and does not authorize agency_rush_migration_full_wave."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected pin_active_consumers_and_ship: it is the best currently authorized response that satisfies the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "the homepage hero must ship v3.0 on 2026-05-18 without breaking the four other pages before the 2026-05-19 campaign; a faster or broader action has value only if it remains inside the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope."
+      }
+    ],
+    "mode": "quantity",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-05-18",
+        "consequence": "pin active consumers and ship holds the 4 active off-page consumers on v2.4 under a new pin so the homepage hero ships v3.0 in its scheduled 2026-05-18 window, at no incremental cost, inside AP-WS-0105.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "pin_active_consumers_and_ship",
+        "incremental_cost": 0,
+        "label": "pin_active_consumers_and_ship: outcome 2026-05-18, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-05-22",
+        "consequence": "full wave after standard migration waits for Orchidworks' 2026-05-20 sprint drop (registered 2026-05-21) and moves the homepage into the first free window on 2026-05-22 so every consumer ships v3.0 together; it costs nothing but lands 4 days after the scheduled release and after the campaign.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "full_wave_after_standard_migration",
+        "incremental_cost": 0,
+        "label": "full_wave_after_standard_migration: outcome 2026-05-22, incremental cost USD 0, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-05-18",
+        "consequence": "agency rush migration full wave would have Orchidworks migrate the 4 consumers by 2026-05-14 (registered 2026-05-15) so the whole wave ships v3.0 on 2026-05-18 without a pin, and adds USD 1400, but agency spend outside the retainer needs the head of digital, which AP-WS-0105 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "agency_rush_migration_full_wave",
+        "incremental_cost": 1400,
+        "label": "agency_rush_migration_full_wave: outcome 2026-05-18, incremental cost USD 1400, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "pin_active_consumers_and_ship is the best currently authorized response that satisfies the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope and lands 0 day(s) on or before the control date.",
+    "selected_completion": "2026-05-18",
+    "selected_cost": 0,
+    "selected_option": "pin_active_consumers_and_ship"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "baseline_resolution_date": "2026-05-18",
+      "business_need_date": "2026-05-18",
+      "controlled_item_or_record": "TOK-COLOR-ACCENT-500",
+      "controlled_resolution_date": "2026-05-22",
+      "decision_timing_status": "ON_TIME",
+      "deprecated_consumers": 2,
+      "escalated_resolution_date": "2026-05-18",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 5,
+      "expedited_external_readiness": "2026-05-15",
+      "first_release_window": "LANE-WEB-1/2026-05-18/AM",
+      "migrated_consumers": 1,
+      "observed_quantity": 9,
+      "on_page_consumers": 2,
+      "outcome_vs_control_days": 0,
+      "quantity_unit": "CONSUMER",
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "pin_active_consumers_and_ship",
+      "recommended_outcome_date": "2026-05-18",
+      "source_quantity": 11,
+      "standard_external_readiness": "2026-05-21",
+      "supported_quantity": 4,
+      "token_current_version": "v2.4",
+      "token_proposed_version": "v3.0",
+      "transaction_quantity": 4
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'pin_active_consumers_and_ship', tied to TOK-COLOR-ACCENT-500, revision v1, and the selected pin_active_consumers_and_ship outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-05-18', tied to TOK-COLOR-ACCENT-500, revision v1, and the selected pin_active_consumers_and_ship outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'TOK-COLOR-ACCENT-500', tied to TOK-COLOR-ACCENT-500, revision v1, and the selected pin_active_consumers_and_ship outcome.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 4, tied to TOK-COLOR-ACCENT-500, revision v1, and the selected pin_active_consumers_and_ship outcome.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to TOK-COLOR-ACCENT-500, revision v1, and the selected pin_active_consumers_and_ship outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required TOK-COLOR-ACCENT-500 to reach business outcome 'Token version pinned' through tokens.pins.create with exact provider-critical values token_id='TOK-COLOR-ACCENT-500', version='v2.4', change_request_id='CR-4457', consumer_count=4. The audited change binds selected option pin_active_consumers_and_ship, approval AP-WS-0105, and constraint the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "token_id",
+          "version",
+          "change_request_id",
+          "consumer_count"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "change_request_id": "CR-4457",
+            "consumer_count": 4,
+            "token_id": "TOK-COLOR-ACCENT-500",
+            "version": "v2.4"
+          },
+          "tool": "tokens.pins.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "PIN-5101",
+          "status": "PINNED",
+          "table_name": "token_pins",
+          "tool": "tokens.pins.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "webstudio-005-mutation-01",
+          "task_id": "webstudio-005"
+        }
+      },
+      {
+        "description": "Persisted PIN-5101 in token_pins with the supported values (token_id='TOK-COLOR-ACCENT-500', version='v2.4', cr_id='CR-4457', consumer_count=4, status='PINNED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "token_pins",
+        "values": {
+          "consumer_count": 4,
+          "cr_id": "CR-4457",
+          "status": "PINNED",
+          "token_id": "TOK-COLOR-ACCENT-500",
+          "version": "v2.4"
+        },
+        "weight": 2.0,
+        "where": {
+          "pin_id": "PIN-5101"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying pin_active_consumers_and_ship, the 2026-05-18 outcome, the binding constraint, and the WEB-0005 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "priya.raghunathan@larkspur.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "WEB-0005",
+            "homepage",
+            "CR-4457"
+          ]
+        ],
+        "payload_text_contains": [
+          "pin_active_consumers_and_ship",
+          "2026-05-18"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "webstudio-005-mutation-02",
+          "task_id": "webstudio-005"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for WEB-0005: the primary change and the stakeholder draft; no additional release, pin, licence request, or waiver.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "webstudio-005"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-18 as the documented control date for the homepage accent ramp change; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 11 CONSUMER for consumers of TOK-COLOR-ACCENT-500 that the v3.0 change reaches per the change request's impact panel.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 9 observed CONSUMER.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 5 CONSUMER for consumers that are on the homepage itself, deprecated, or already migrated.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 5 excluded = 4 supported CONSUMER.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 4 CONSUMER, the measure required by the chosen disposition under the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in CONSUMER.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-05-18 for pin_active_consumers_and_ship.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-22 for full_wave_after_standard_migration.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-18 for agency_rush_migration_full_wave and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-21 as the independently confirmed standard readiness date for Orchidworks' confirmed standard and rush migration delivery dates on ORQ-2210.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-15 as the independently confirmed expedited readiness date for Orchidworks' confirmed standard and rush migration delivery dates on ORQ-2210.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read v2.4 as the CURRENT version of TOK-COLOR-ACCENT-500 in the registry.",
+        "field": "token_current_version",
+        "id": "read_current_token_version",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read v3.0 as the PROPOSED version and confirmed its breaking flag (hue shift).",
+        "field": "token_proposed_version",
+        "id": "read_proposed_breaking_version",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded the 2 homepage consumers (CON-6101, CON-6102) that take v3.0 themselves.",
+        "field": "on_page_consumers",
+        "id": "exclude_on_page_consumers",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Excluded the 2 DEPRECATED consumers (careers ribbon, old checkout banner).",
+        "field": "deprecated_consumers",
+        "id": "exclude_deprecated_consumers",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded CON-6109, already MIGRATED to v3.0 in the pricing refresh.",
+        "field": "migrated_consumers",
+        "id": "exclude_migrated_consumers",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified LANE-WEB-1/2026-05-18/AM (REL-88930) as the scheduled homepage release the pin must precede.",
+        "field": "first_release_window",
+        "id": "identify_first_release_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for pin_active_consumers_and_ship; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that agency_rush_migration_full_wave remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of pin_active_consumers_and_ship, full_wave_after_standard_migration, agency_rush_migration_full_wave; selected pin_active_consumers_and_ship because it alone gives the best currently authorized result under the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-18 as the supported outcome date for pin_active_consumers_and_ship.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-18 with the independent control date 2026-05-18 and calculated a signed variance of 0 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "WEB-0005"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated WEB-0005 scope, immutable handles, mounted systems, and evidence index before investigating TOK-COLOR-ACCENT-500.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "WEB-0005"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1005-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for WEB-0005 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "slug": "homepage"
+            },
+            "expected_result_contains": {
+              "pages": [
+                {
+                  "page_id": "PAGE-3520"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cms.pages.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved slug homepage to the immutable page record through a slug search rather than a title match against a similarly named page.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "WEB-0005"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-005-17"
+                },
+                {
+                  "id": "DRV-005-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the WEB-0005 case folder on the shared drive and identified the approval record and the change-request export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "playbook"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-005-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the playbook folder and distinguished the effective v3 playbook from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_request_id": "CR-4457"
+            },
+            "expected_result_contains": {
+              "change_request_id": "CR-4457",
+              "status": "open"
+            },
+            "match": "result_contains",
+            "tool": "cms.change_requests.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active change request CR-4457: launch territories, entries in scope, durations, and impact notes.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_request_id": "CR-4457"
+            },
+            "expected_result_contains": {
+              "entries": [
+                {
+                  "entry_id": "E-3520-21"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cms.entries.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the entries of CR-4457 with their token, component, and asset bindings and blocking reasons.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v3 playbook for the scope, licence-eligibility, breaking-token, window, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "token_id": "TOK-COLOR-ACCENT-500"
+            },
+            "expected_result_contains": {
+              "token_id": "TOK-COLOR-ACCENT-500"
+            },
+            "match": "result_contains",
+            "tool": "tokens.tokens.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read design token TOK-COLOR-ACCENT-500: its current version and any proposed version with its breaking flag.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "page_id": "PAGE-3520"
+            },
+            "expected_result_contains": {
+              "change_requests": [
+                {
+                  "change_request_id": "CR-4457"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cms.change_requests.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the change requests that define the requirement (CR-4457) and excluded duplicate, superseded, or out-of-scope requests.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_request_id": "CR-4457"
+            },
+            "expected_result_contains": {
+              "gates": [
+                {
+                  "gate_id": "GATE-4457-QA"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "checklist.gates.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the release checklist for CR-4457 to ground which gates passed, which failed, and who can waive what.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "asset_id": "AST-IMG-7760"
+            },
+            "expected_result_contains": {
+              "licences": [
+                {
+                  "licence_id": "LIC-7760-A"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "dam.licences.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every AST-IMG-7760 licence grant with territories, expiry, countersign status, scope, and reservations before netting the coverage.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-26",
+              "start_date": "2026-05-15"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "DW-1-20260518-AM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cdn.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the deploy-window calendar for 2026-05-15 onward to find the first free window that displaces no protected or blocked block.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "quote_id": "QT-OR-2210"
+            },
+            "expected_result_contains": {
+              "quote_id": "QT-OR-2210",
+              "standard_issue_date": "2026-05-20"
+            },
+            "match": "result_contains",
+            "tool": "vendors.quotes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the vendor quote QT-OR-2210 for the independently confirmed standard and expedited issue dates and the rush fee.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "token_id": "TOK-COLOR-ACCENT-500"
+            },
+            "expected_result_contains": {
+              "consumers": [
+                {
+                  "consumer_id": "CON-6101"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "tokens.consumers.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the gross registry consumers of TOK-COLOR-ACCENT-500 so deprecated, migrated, and on-page rows could be excluded from the impact count.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DF-3520-07"
+            },
+            "expected_result_contains": {
+              "frames": [
+                {
+                  "frame_id": "FR-3520-701"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "design.frames.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the frames of the current design file DF-3520-07 and distinguished the approved frame from superseded and in-review frames.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "page_id": "PAGE-3520"
+            },
+            "expected_result_contains": {
+              "budgets": [
+                {
+                  "budget_id": "BUD-3520-WEIGHT"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "checklist.budgets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the performance budgets for PAGE-3520 with their measured values and headroom.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "lanes": [
+                {
+                  "lane_id": "LANE-WEB-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cdn.lanes.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the deploy-lane roster for lane status and instant-rollback capability before choosing a lane for the release window.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-WS-0105"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-WS-0105"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-WS-0105 for its exact scope: record, quantity, vendor, fee allowance, and what it does not cover.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-17"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-17"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1005-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1005-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1005-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1005"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1005"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1005 for grant, token, window, and authority remarks that qualify the system records.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-22",
+              "start_date": "2026-05-18",
+              "status": "scheduled"
+            },
+            "expected_result_contains": {
+              "releases": [
+                {
+                  "id": "REL-88930"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cms.releases.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the scheduled releases that fix the deploy scope by immutable id.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-30"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-30"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for WEB-0005 and confirmed that TOK-COLOR-ACCENT-500 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for WEB-0005 and joined TOK-COLOR-ACCENT-500 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for WEB-0005; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for WEB-0005 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-31"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-31"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for TOK-COLOR-ACCENT-500 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for WEB-0005 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for WEB-0005, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_30",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-27"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-27"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for WEB-0005: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_31",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "tokens.pins.create",
+        "any_of": [
+          {
+            "arguments": {
+              "pin_id": "PIN-5101"
+            },
+            "expected_result_contains": {
+              "consumer_count": 4,
+              "pin_id": "PIN-5101",
+              "status": "PINNED",
+              "version": "v2.4"
+            },
+            "match": "result_contains",
+            "tool": "tokens.pins.get"
+          }
+        ],
+        "description": "Read PIN-5101 back through tokens.pins.get after the change and confirmed the persisted provider values (pin_id='PIN-5101', version='v2.4', consumer_count=4, status='PINNED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "consumer_count": 4,
+          "pin_id": "PIN-5101",
+          "status": "PINNED",
+          "version": "v2.4"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "pin_id": "PIN-5101"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "webstudio",
+  "instruction": "The homepage hero ships Monday on the new accent ramp and the design file's impact panel claims eleven consumers are affected, which nobody trusts. Tell me exactly how many consumers the breaking token version reaches per the change request, how many the live registry actually shows, how many of those genuinely have to be held on the current version once the deprecated, migrated, and homepage rows drop out, and whether waiting for the agency migration is the better call. Record the pin the evidence supports and draft the message to Priya so the design-system side is not surprised.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "change_request_id": "CR-4457",
+        "consumer_count": 9,
+        "token_id": "TOK-COLOR-ACCENT-500",
+        "version": "v2.4"
+      },
+      "tool": "tokens.pins.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-005-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "tokens.pins.create",
+      "any_of": [
+        {
+          "arguments": {
+            "pin_id": "PIN-5101"
+          },
+          "expected_result_contains": {
+            "consumer_count": 4,
+            "pin_id": "PIN-5101",
+            "status": "PINNED",
+            "version": "v2.4"
+          },
+          "match": "result_contains",
+          "tool": "tokens.pins.get"
+        }
+      ],
+      "description": "Read PIN-5101 back through tokens.pins.get after the change and confirmed the persisted provider values (pin_id='PIN-5101', version='v2.4', consumer_count=4, status='PINNED') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "consumer_count": 4,
+        "pin_id": "PIN-5101",
+        "status": "PINNED",
+        "version": "v2.4"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "pin_id": "PIN-5101"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-WS-0105"
+    },
+    "case_reference": "WEB-0005",
+    "cdn": {
+      "calendar_window": {
+        "end_date": "2026-05-26",
+        "start_date": "2026-05-15"
+      },
+      "pool": "web-pool"
+    },
+    "chat": {
+      "thread_id": "CHAT-1005"
+    },
+    "checklist": {
+      "change_request_id": "CR-4457",
+      "page_id": "PAGE-3520"
+    },
+    "cms": {
+      "change_request_id": "CR-4457",
+      "page_search": {
+        "arguments": {
+          "slug": "homepage"
+        },
+        "tool": "cms.pages.search"
+      },
+      "page_slug": "homepage"
+    },
+    "dam": {
+      "asset_id": "AST-IMG-7760"
+    },
+    "design": {
+      "file_id": "DF-3520-07"
+    },
+    "drive": {
+      "case_folder_query": "WEB-0005",
+      "playbook_query": "playbook"
+    },
+    "messages": {
+      "search_query": "WEB-0005"
+    },
+    "tokens": {
+      "token_id": "TOK-COLOR-ACCENT-500"
+    },
+    "vendors": {
+      "quote_id": "QT-OR-2210"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "WEB-0005"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated WEB-0005 scope, immutable handles, mounted systems, and evidence index before investigating TOK-COLOR-ACCENT-500.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "WEB-0005"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1005-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for WEB-0005 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "slug": "homepage"
+          },
+          "expected_result_contains": {
+            "pages": [
+              {
+                "page_id": "PAGE-3520"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cms.pages.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved slug homepage to the immutable page record through a slug search rather than a title match against a similarly named page.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "WEB-0005"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-005-17"
+              },
+              {
+                "id": "DRV-005-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the WEB-0005 case folder on the shared drive and identified the approval record and the change-request export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "playbook"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-005-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the playbook folder and distinguished the effective v3 playbook from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_request_id": "CR-4457"
+          },
+          "expected_result_contains": {
+            "change_request_id": "CR-4457",
+            "status": "open"
+          },
+          "match": "result_contains",
+          "tool": "cms.change_requests.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active change request CR-4457: launch territories, entries in scope, durations, and impact notes.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_request_id": "CR-4457"
+          },
+          "expected_result_contains": {
+            "entries": [
+              {
+                "entry_id": "E-3520-21"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cms.entries.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the entries of CR-4457 with their token, component, and asset bindings and blocking reasons.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v3 playbook for the scope, licence-eligibility, breaking-token, window, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "token_id": "TOK-COLOR-ACCENT-500"
+          },
+          "expected_result_contains": {
+            "token_id": "TOK-COLOR-ACCENT-500"
+          },
+          "match": "result_contains",
+          "tool": "tokens.tokens.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read design token TOK-COLOR-ACCENT-500: its current version and any proposed version with its breaking flag.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "page_id": "PAGE-3520"
+          },
+          "expected_result_contains": {
+            "change_requests": [
+              {
+                "change_request_id": "CR-4457"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cms.change_requests.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the change requests that define the requirement (CR-4457) and excluded duplicate, superseded, or out-of-scope requests.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_request_id": "CR-4457"
+          },
+          "expected_result_contains": {
+            "gates": [
+              {
+                "gate_id": "GATE-4457-QA"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "checklist.gates.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the release checklist for CR-4457 to ground which gates passed, which failed, and who can waive what.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "asset_id": "AST-IMG-7760"
+          },
+          "expected_result_contains": {
+            "licences": [
+              {
+                "licence_id": "LIC-7760-A"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "dam.licences.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every AST-IMG-7760 licence grant with territories, expiry, countersign status, scope, and reservations before netting the coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-26",
+            "start_date": "2026-05-15"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "DW-1-20260518-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cdn.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the deploy-window calendar for 2026-05-15 onward to find the first free window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "quote_id": "QT-OR-2210"
+          },
+          "expected_result_contains": {
+            "quote_id": "QT-OR-2210",
+            "standard_issue_date": "2026-05-20"
+          },
+          "match": "result_contains",
+          "tool": "vendors.quotes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the vendor quote QT-OR-2210 for the independently confirmed standard and expedited issue dates and the rush fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "token_id": "TOK-COLOR-ACCENT-500"
+          },
+          "expected_result_contains": {
+            "consumers": [
+              {
+                "consumer_id": "CON-6101"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "tokens.consumers.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the gross registry consumers of TOK-COLOR-ACCENT-500 so deprecated, migrated, and on-page rows could be excluded from the impact count.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DF-3520-07"
+          },
+          "expected_result_contains": {
+            "frames": [
+              {
+                "frame_id": "FR-3520-701"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "design.frames.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the frames of the current design file DF-3520-07 and distinguished the approved frame from superseded and in-review frames.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "page_id": "PAGE-3520"
+          },
+          "expected_result_contains": {
+            "budgets": [
+              {
+                "budget_id": "BUD-3520-WEIGHT"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "checklist.budgets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the performance budgets for PAGE-3520 with their measured values and headroom.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "lanes": [
+              {
+                "lane_id": "LANE-WEB-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cdn.lanes.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the deploy-lane roster for lane status and instant-rollback capability before choosing a lane for the release window.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-WS-0105"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-WS-0105"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-WS-0105 for its exact scope: record, quantity, vendor, fee allowance, and what it does not cover.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1005-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1005-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1005-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1005"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1005"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1005 for grant, token, window, and authority remarks that qualify the system records.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-22",
+            "start_date": "2026-05-18",
+            "status": "scheduled"
+          },
+          "expected_result_contains": {
+            "releases": [
+              {
+                "id": "REL-88930"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cms.releases.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the scheduled releases that fix the deploy scope by immutable id.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-30"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-30"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for WEB-0005 and confirmed that TOK-COLOR-ACCENT-500 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for WEB-0005 and joined TOK-COLOR-ACCENT-500 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for WEB-0005; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for WEB-0005 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-31"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-31"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for TOK-COLOR-ACCENT-500 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for WEB-0005 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for WEB-0005, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_30",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-005-27"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-005-27"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for WEB-0005: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_31",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "WEB-0005"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "WEB-0005"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1005-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "slug": "homepage"
+      },
+      "expected_result_contains": {
+        "pages": [
+          {
+            "page_id": "PAGE-3520"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cms.pages.search"
+    },
+    {
+      "arguments": {
+        "q": "WEB-0005"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-005-17"
+          },
+          {
+            "id": "DRV-005-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "playbook"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-005-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "change_request_id": "CR-4457"
+      },
+      "expected_result_contains": {
+        "change_request_id": "CR-4457",
+        "status": "open"
+      },
+      "match": "result_contains",
+      "tool": "cms.change_requests.get"
+    },
+    {
+      "arguments": {
+        "change_request_id": "CR-4457"
+      },
+      "expected_result_contains": {
+        "entries": [
+          {
+            "entry_id": "E-3520-21"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cms.entries.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "token_id": "TOK-COLOR-ACCENT-500"
+      },
+      "expected_result_contains": {
+        "token_id": "TOK-COLOR-ACCENT-500"
+      },
+      "match": "result_contains",
+      "tool": "tokens.tokens.get"
+    },
+    {
+      "arguments": {
+        "page_id": "PAGE-3520"
+      },
+      "expected_result_contains": {
+        "change_requests": [
+          {
+            "change_request_id": "CR-4457"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cms.change_requests.list"
+    },
+    {
+      "arguments": {
+        "change_request_id": "CR-4457"
+      },
+      "expected_result_contains": {
+        "gates": [
+          {
+            "gate_id": "GATE-4457-QA"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "checklist.gates.list"
+    },
+    {
+      "arguments": {
+        "asset_id": "AST-IMG-7760"
+      },
+      "expected_result_contains": {
+        "licences": [
+          {
+            "licence_id": "LIC-7760-A"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "dam.licences.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-26",
+        "start_date": "2026-05-15"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "DW-1-20260518-AM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cdn.windows.list"
+    },
+    {
+      "arguments": {
+        "quote_id": "QT-OR-2210"
+      },
+      "expected_result_contains": {
+        "quote_id": "QT-OR-2210",
+        "standard_issue_date": "2026-05-20"
+      },
+      "match": "result_contains",
+      "tool": "vendors.quotes.get"
+    },
+    {
+      "arguments": {
+        "token_id": "TOK-COLOR-ACCENT-500"
+      },
+      "expected_result_contains": {
+        "consumers": [
+          {
+            "consumer_id": "CON-6101"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "tokens.consumers.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DF-3520-07"
+      },
+      "expected_result_contains": {
+        "frames": [
+          {
+            "frame_id": "FR-3520-701"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "design.frames.list"
+    },
+    {
+      "arguments": {
+        "page_id": "PAGE-3520"
+      },
+      "expected_result_contains": {
+        "budgets": [
+          {
+            "budget_id": "BUD-3520-WEIGHT"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "checklist.budgets.list"
+    },
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "lanes": [
+          {
+            "lane_id": "LANE-WEB-1"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cdn.lanes.list"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-WS-0105"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-WS-0105"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-17"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-17"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1005-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1005-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1005"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1005"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-22",
+        "start_date": "2026-05-18",
+        "status": "scheduled"
+      },
+      "expected_result_contains": {
+        "releases": [
+          {
+            "id": "REL-88930"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cms.releases.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-30"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-30"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-31"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-31"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-005-27"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-005-27"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "cms.pages.search",
+    "cms.change_requests.list",
+    "cms.change_requests.get",
+    "cms.entries.list",
+    "checklist.gates.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "tokens.tokens.get",
+    "dam.licences.list",
+    "tokens.consumers.list",
+    "design.frames.list",
+    "checklist.budgets.list",
+    "cms.releases.list",
+    "cdn.windows.list",
+    "cdn.lanes.list",
+    "vendors.quotes.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "web_release_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_24",
+        "investigation_25"
+      ],
+      "description": "Establish the isolated WEB-0005 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 7.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_26"
+      ],
+      "description": "Determine the operative v1 requirement for TOK-COLOR-ACCENT-500 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 10.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_15",
+        "investigation_16",
+        "investigation_17",
+        "investigation_18",
+        "investigation_27",
+        "investigation_28",
+        "investigation_30"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 9 observed less 5 excluded to 4 supported CONSUMER for active off-page consumers that the pin must hold on v2.4. Applied the scheduled homepage release that fixes the deploy date to derive the three option outcomes without using protected or blocked windows. Used the independently confirmed 2026-05-15 expedited readiness input for full_wave_after_standard_migration, then separately derived its 2026-05-22 operating outcome under the breaking-token rule (every active off-page consumer migrated or pinned) and the signed approval scope instead of treating a vendor promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_19",
+        "investigation_20",
+        "investigation_29"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-WS-0105 only to pin_active_consumers_and_ship and TOK-COLOR-ACCENT-500; kept agency_rush_migration_full_wave outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_21",
+        "investigation_22",
+        "investigation_23",
+        "investigation_31"
+      ],
+      "description": "Correlate TOK-COLOR-ACCENT-500 by immutable identifiers across the systems of record (cms, tokens, dam, checklist, cdn, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 20.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "establish_source_quantity",
+        "reconcile_observed_quantity",
+        "identify_excluded_quantity",
+        "calculate_supported_quantity",
+        "bound_transaction_quantity",
+        "preserve_transaction_unit",
+        "compare_quantity_option_one",
+        "compare_quantity_option_two",
+        "compare_quantity_option_three",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "read_current_token_version",
+        "read_proposed_breaking_version",
+        "exclude_on_page_consumers",
+        "exclude_deprecated_consumers",
+        "exclude_migrated_consumers",
+        "identify_first_release_window"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for the homepage accent ramp change.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for pin_active_consumers_and_ship under the actual operating window and report whether the 2026-05-18 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select pin_active_consumers_and_ship only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported 'Token version pinned' change for TOK-COLOR-ACCENT-500 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read TOK-COLOR-ACCENT-500 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_controlled_item_or_record",
+        "answer_transaction_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for the homepage accent ramp change.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside WEB-0005's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "7bdf39ceda16ea14c8bdf692fc579d90a043014da1ee2cc56cd6407e6f0e8bf9",
+  "starting_records": [
+    {
+      "resource_id": "REL-88930",
+      "resource_type": "Release",
+      "status": "scheduled",
+      "system": "cms"
+    },
+    {
+      "resource_id": "REL-88931",
+      "resource_type": "Release",
+      "status": "scheduled",
+      "system": "cms"
+    },
+    {
+      "resource_id": "PIN-5100",
+      "resource_type": "TokenPin",
+      "status": "PINNED",
+      "system": "tokens"
+    },
+    {
+      "resource_id": "LR-6200",
+      "resource_type": "LicenceRequest",
+      "status": "ISSUED",
+      "system": "dam"
+    }
+  ],
+  "task_id": "webstudio-005",
+  "title": "Pin the accent token for the homepage hero ramp",
+  "workflow": {
+    "answer_fields": 25,
+    "readbacks": 1,
+    "reads": 32,
+    "writes": 2
+  },
+  "world": {
+    "id": "larkspur-webstudio-v1",
+    "name": "Larkspur Commerce — Web Platform Studio",
+    "organization_id": "ORG-LARKSPUR",
+    "primary_site": "ENV-PROD-WEB",
+    "systems": [
+      "cms",
+      "tokens",
+      "design",
+      "dam",
+      "checklist",
+      "cdn",
+      "vendors",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}
