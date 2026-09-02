@@ -1,0 +1,1682 @@
+{
+  "benchmark": "HubBench",
+  "family": "designops",
+  "schema_version": "hubbench.tool-contract.v1",
+  "servers": {
+    "approvals": {
+      "description": "Approval workflow records with exact scope.",
+      "tools": [
+        "approvals.get",
+        "approvals.list"
+      ]
+    },
+    "bom": {
+      "description": "Multi-level bill of materials: assembly lines, alternates, phantoms, and where-used.",
+      "tools": [
+        "bom.lines.list",
+        "bom.whereused.list"
+      ]
+    },
+    "calendar": {
+      "description": "Production release calendar: lines, cut-in windows with freeze and maintenance holds, cut-in reservations.",
+      "tools": [
+        "calendar.lines.list",
+        "calendar.reservations.create",
+        "calendar.reservations.get",
+        "calendar.reservations.list",
+        "calendar.reservations.update",
+        "calendar.windows.list"
+      ]
+    },
+    "cert": {
+      "description": "Certification register: certified assembly configurations, covered component revisions, re-certification lead time and fee.",
+      "tools": [
+        "cert.configurations.get",
+        "cert.configurations.list"
+      ]
+    },
+    "chat": {
+      "description": "Engineering change office chat threads.",
+      "tools": [
+        "chat.threads.get",
+        "chat.threads.list"
+      ]
+    },
+    "drive": {
+      "description": "Shared drive holding procedures, registers, calendars, and exports.",
+      "tools": [
+        "drive.files.export",
+        "drive.files.get",
+        "drive.files.list"
+      ]
+    },
+    "eco": {
+      "description": "Engineering change orders: workflow state, class, affected items, effectivity release.",
+      "tools": [
+        "eco.affected.list",
+        "eco.changes.get",
+        "eco.changes.list",
+        "eco.changes.update"
+      ]
+    },
+    "hubbench": {
+      "description": "Benchmark-only discovery and structured answer submission controls.",
+      "tools": [
+        "hubbench.context.get",
+        "hubbench.submit_answer"
+      ]
+    },
+    "messages": {
+      "description": "Engineering change office mailbox.",
+      "tools": [
+        "messages.get",
+        "messages.list"
+      ]
+    },
+    "notes": {
+      "description": "Stakeholder draft notes (never sent by the benchmark).",
+      "tools": [
+        "notes.drafts.create"
+      ]
+    },
+    "plm": {
+      "description": "Product lifecycle management: parts, revision lifecycle, CAD models and drawings, check-in history, engineers.",
+      "tools": [
+        "plm.checkins.list",
+        "plm.documents.list",
+        "plm.engineers.get",
+        "plm.parts.get",
+        "plm.parts.search",
+        "plm.revisions.list"
+      ]
+    },
+    "supplier": {
+      "description": "Supplier portal: fixture-build and laboratory re-certification quotes and orders.",
+      "tools": [
+        "supplier.orders.create",
+        "supplier.orders.get",
+        "supplier.orders.list",
+        "supplier.quotes.get",
+        "supplier.quotes.list"
+      ]
+    },
+    "tooling": {
+      "description": "Tooling register: fixture families, lot register with calibration state, inter-plant transfers.",
+      "tools": [
+        "tooling.families.get",
+        "tooling.inventory.list",
+        "tooling.sets.list",
+        "tooling.transfers.create",
+        "tooling.transfers.get"
+      ]
+    }
+  },
+  "task_id": "hubbench-designops-005",
+  "tools": [
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "plm",
+          "shape": "PLM part search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "plm.parts.search"
+      },
+      "description": "Search parts by immutable part number or by name fragment.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "name fragment",
+            "type": "string"
+          },
+          "number": {
+            "description": "part number",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "plm.parts.search"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "plm",
+          "shape": "PLM part record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "plm.parts.get"
+      },
+      "description": "Read one part master record by id.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "part_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "part_id"
+        ],
+        "type": "object"
+      },
+      "name": "plm.parts.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "plm",
+          "shape": "PLM engineer record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "plm.engineers.get"
+      },
+      "description": "Read one engineer record.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "engineer_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "engineer_id"
+        ],
+        "type": "object"
+      },
+      "name": "plm.engineers.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "plm",
+          "shape": "PLM revision lifecycle"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "plm.revisions.list"
+      },
+      "description": "List the lifecycle revisions of a part with RELEASED / SUPERSEDED / OBSOLETE / IN_WORK status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "part_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "part_id"
+        ],
+        "type": "object"
+      },
+      "name": "plm.revisions.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "plm",
+          "shape": "PLM CAD document list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "plm.documents.list"
+      },
+      "description": "List CAD models and drawings for a part with check-in version, revision, and release status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "description": "model | drawing",
+            "type": "string"
+          },
+          "part_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "part_id"
+        ],
+        "type": "object"
+      },
+      "name": "plm.documents.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "plm",
+          "shape": "PLM check-in history"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "plm.checkins.list"
+      },
+      "description": "List CAD check-in history by document, part, status, or date window: version, check kind, result, and summary.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "document_id": {
+            "type": "string"
+          },
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "part_id": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "plm.checkins.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "eco",
+          "shape": "change order search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "eco.changes.list"
+      },
+      "description": "List engineering change orders by part, state, fixture family, or change class.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_class": {
+            "type": "string"
+          },
+          "fixture_family": {
+            "type": "string"
+          },
+          "part_id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "eco.changes.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "eco",
+          "shape": "change order record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "eco.changes.get"
+      },
+      "description": "Read one engineering change order: class, revisions, workflow state, effectivity, FAI and changeover durations.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "change_id"
+        ],
+        "type": "object"
+      },
+      "name": "eco.changes.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "eco",
+          "shape": "change order affected items"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "eco.affected.list"
+      },
+      "description": "List the affected items of a change order with disposition and scope flag.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "change_id"
+        ],
+        "type": "object"
+      },
+      "name": "eco.affected.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "eco",
+          "shape": "change order release"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "eco.changes.update"
+      },
+      "description": "Release a CCB-approved change order with an effectivity (cut-in) date, or update its effectivity or note. The effectivity date must have a free cut-in window on an active line; freeze and blocked days are rejected. The record revision increments.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_id": {
+            "type": "string"
+          },
+          "effectivity_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "RELEASED"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "change_id"
+        ],
+        "type": "object"
+      },
+      "name": "eco.changes.update"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "bom",
+          "shape": "multi-level BOM lines"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "bom.lines.list"
+      },
+      "description": "List the bill-of-material lines of an assembly revision: component, find number, quantity per, and line kind (primary / alternate / phantom).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "parent_part_id": {
+            "type": "string"
+          },
+          "parent_revision": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "parent_part_id"
+        ],
+        "type": "object"
+      },
+      "name": "bom.lines.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "bom",
+          "shape": "BOM where-used"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "bom.whereused.list"
+      },
+      "description": "Gross where-used for a component: every parent assembly revision with revision status, quantity per, line kind, and effectivity end.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "component_part_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "component_part_id"
+        ],
+        "type": "object"
+      },
+      "name": "bom.whereused.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cert",
+          "shape": "certification register"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cert.configurations.list"
+      },
+      "description": "List certified assembly configurations by assembly, covered component, or status, with covered component revisions and re-certification lead time and fee.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "assembly_part_id": {
+            "type": "string"
+          },
+          "component_part_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "cert.configurations.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cert",
+          "shape": "certification register"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cert.configurations.get"
+      },
+      "description": "Read one certified configuration record.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "cert_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "cert_id"
+        ],
+        "type": "object"
+      },
+      "name": "cert.configurations.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tooling",
+          "shape": "tooling family record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tooling.families.get"
+      },
+      "description": "Read a fixture family: sets per station, calibration interval, minimum remaining calibration days, revision specificity.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "family_code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "family_code"
+        ],
+        "type": "object"
+      },
+      "name": "tooling.families.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tooling",
+          "shape": "tooling register balance"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tooling.inventory.list"
+      },
+      "description": "Gross registered fixture-set balances by family and plant (no netting of calibration, reservation, or revision state).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "family_code": {
+            "type": "string"
+          },
+          "plant_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "tooling.inventory.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tooling",
+          "shape": "tooling set register"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tooling.sets.list"
+      },
+      "description": "List registered fixture-set lots for a family with set count, calibration due date, status, and reservations.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "family_code": {
+            "type": "string"
+          },
+          "plant_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "family_code"
+        ],
+        "type": "object"
+      },
+      "name": "tooling.sets.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tooling",
+          "shape": "inter-plant fixture transfer"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tooling.transfers.get"
+      },
+      "description": "Read one inter-plant fixture transfer.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "transfer_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "transfer_id"
+        ],
+        "type": "object"
+      },
+      "name": "tooling.transfers.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "tooling",
+          "shape": "inter-plant fixture transfer"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "tooling.transfers.create"
+      },
+      "description": "Schedule an inter-plant fixture-set transfer. Only releasable lots at the source (calibrated, unreserved, outside the calibration-due horizon) may move.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "family_code": {
+            "type": "string"
+          },
+          "from_plant_id": {
+            "type": "string"
+          },
+          "scheduled_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "set_count": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "to_plant_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "family_code",
+          "set_count",
+          "from_plant_id",
+          "to_plant_id",
+          "scheduled_date"
+        ],
+        "type": "object"
+      },
+      "name": "tooling.transfers.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "supplier",
+          "shape": "supplier portal quote"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "supplier.quotes.list"
+      },
+      "description": "List supplier-portal quotes (fixture builds and laboratory re-certification slots).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "item_code": {
+            "type": "string"
+          },
+          "supplier_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "supplier.quotes.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "supplier",
+          "shape": "supplier portal quote"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "supplier.quotes.get"
+      },
+      "description": "Read one quote: quantity available, standard and expedited ready dates, expedite fee, unit price, validity.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "quote_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "quote_id"
+        ],
+        "type": "object"
+      },
+      "name": "supplier.quotes.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "supplier",
+          "shape": "supplier portal order"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "supplier.orders.list"
+      },
+      "description": "List supplier-portal orders by item, status, or supplier.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "item_code": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "supplier_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "supplier.orders.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "supplier",
+          "shape": "supplier portal order"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "supplier.orders.get"
+      },
+      "description": "Read one supplier-portal order.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "order_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "order_id"
+        ],
+        "type": "object"
+      },
+      "name": "supplier.orders.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "supplier",
+          "shape": "supplier portal order"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "supplier.orders.create"
+      },
+      "description": "Place a supplier-portal order against an open quote (fixture sets or laboratory re-certification configurations). The expected ready date and total cost are taken from the quote for the chosen service option.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "item_code": {
+            "type": "string"
+          },
+          "quantity": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "quote_id": {
+            "type": "string"
+          },
+          "service_option": {
+            "enum": [
+              "standard",
+              "expedited"
+            ],
+            "type": "string"
+          },
+          "supplier_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "supplier_id",
+          "quote_id",
+          "item_code",
+          "quantity",
+          "service_option"
+        ],
+        "type": "object"
+      },
+      "name": "supplier.orders.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "calendar",
+          "shape": "release calendar line roster"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "calendar.lines.list"
+      },
+      "description": "List production lines with station count, status, and first-article (CMM) capability.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "plant_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "calendar.lines.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "calendar",
+          "shape": "release calendar windows"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "calendar.windows.list"
+      },
+      "description": "List cut-in windows on the release calendar between two dates with free / busy / protected / blocked status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "line_id": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date"
+        ],
+        "type": "object"
+      },
+      "name": "calendar.windows.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "calendar",
+          "shape": "cut-in reservation search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "calendar.reservations.list"
+      },
+      "description": "List cut-in reservations by change, line, assembly, status, or date window.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "assembly_part_id": {
+            "type": "string"
+          },
+          "change_id": {
+            "type": "string"
+          },
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "line_id": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "calendar.reservations.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "calendar",
+          "shape": "cut-in reservation record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "calendar.reservations.get"
+      },
+      "description": "Read one cut-in reservation.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "reservation_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "reservation_id"
+        ],
+        "type": "object"
+      },
+      "name": "calendar.reservations.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "calendar",
+          "shape": "cut-in reservation create"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "calendar.reservations.create"
+      },
+      "description": "Book a cut-in reservation for a CCB-approved or released change on a line. Every window the interval touches must be free; protected freeze and blocked windows are never displaced.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "assembly_part_id": {
+            "type": "string"
+          },
+          "change_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "end_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "line_id": {
+            "type": "string"
+          },
+          "start_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          }
+        },
+        "required": [
+          "change_id",
+          "assembly_part_id",
+          "line_id",
+          "start_time",
+          "end_time"
+        ],
+        "type": "object"
+      },
+      "name": "calendar.reservations.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "calendar",
+          "shape": "cut-in reservation update"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "calendar.reservations.update"
+      },
+      "description": "Move, book, or cancel an existing cut-in reservation. Moving re-validates the target windows; the record revision increments.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "end_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "line_id": {
+            "type": "string"
+          },
+          "reservation_id": {
+            "type": "string"
+          },
+          "start_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "booked",
+              "pending",
+              "cancelled"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "reservation_id"
+        ],
+        "type": "object"
+      },
+      "name": "calendar.reservations.update"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.list"
+      },
+      "description": "List approval records, optionally by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "approvals.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.get"
+      },
+      "description": "Read one approval record with its exact scope and approver.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "approval_id"
+        ],
+        "type": "object"
+      },
+      "name": "approvals.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "messages",
+          "shape": "mailbox search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "messages.list"
+      },
+      "description": "Search engineering-change mail by keyword (subject, body, labels).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_results": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "messages.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "messages",
+          "shape": "mailbox message"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "messages.get"
+      },
+      "description": "Read one message with body and attachment list.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "message_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message_id"
+        ],
+        "type": "object"
+      },
+      "name": "messages.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.list"
+      },
+      "description": "Search team chat threads by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat thread"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.get"
+      },
+      "description": "Read one team chat thread.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "thread_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "thread_id"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.list"
+      },
+      "description": "Search shared-drive files by keyword (name, folder, content).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive file"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.get"
+      },
+      "description": "Read shared-drive file metadata.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive export"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.export"
+      },
+      "description": "Export a shared-drive file as text (spreadsheets as CSV, PDFs as extracted text).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.export"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "notes",
+          "shape": "collaboration draft"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "notes.drafts.create"
+      },
+      "description": "Create, but do not send, a stakeholder draft note.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "related_change_id": {
+            "type": "string"
+          },
+          "related_part_id": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipient",
+          "subject",
+          "body"
+        ],
+        "type": "object"
+      },
+      "name": "notes.drafts.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "hubbench.context.get"
+      },
+      "description": "Return the isolated task scope: case reference, immutable record handles, mounted servers, identity, and the evidence index.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "hubbench.context.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "hubbench.submit_answer"
+      },
+      "description": "Record the structured decision for the current task. Every field of the task's answer contract is required; resubmission replaces earlier values.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_resolution_date": {
+            "description": "Resolution date for transfer_releasable_sets.",
+            "type": "string"
+          },
+          "business_need_date": {
+            "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+            "type": "string"
+          },
+          "certifications_invalidated": {
+            "description": "Certificates invalidated by the change after applying its classification.",
+            "type": "integer"
+          },
+          "controlled_item_or_record": {
+            "description": "Immutable item, lot set, or transaction record in scope.",
+            "type": "string"
+          },
+          "controlled_resolution_date": {
+            "description": "Resolution date for transfer_full_kelbrook_holdings.",
+            "type": "string"
+          },
+          "decision_timing_status": {
+            "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+            "enum": [
+              "ON_TIME",
+              "LATE"
+            ],
+            "type": "string"
+          },
+          "escalated_resolution_date": {
+            "description": "Resolution date for order_direct_expedited.",
+            "type": "string"
+          },
+          "escalation_approval_required": {
+            "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+            "type": "integer"
+          },
+          "excluded_quantity": {
+            "description": "Kelbrook sets reserved for a named change or past calibration",
+            "type": "integer"
+          },
+          "expedited_external_readiness": {
+            "description": "Expedited readiness date independently confirmed for Ferrin's confirmed standard and expedited build dates on RQ-6120.",
+            "type": "string"
+          },
+          "first_cutin_window": {
+            "description": "Release-calendar window of the first cut-in, as LINE/YYYY-MM-DD/SESSION.",
+            "type": "string"
+          },
+          "kelbrook_reserved_sets": {
+            "description": "Kelbrook sets reserved for the rig cut-in that cannot move.",
+            "type": "integer"
+          },
+          "observed_quantity": {
+            "description": "Gross observed quantity before applying the control for this week's two drive shaft spacer cut-ins.",
+            "type": "integer"
+          },
+          "outcome_vs_control_days": {
+            "description": "Selected outcome date minus the documented control date; positive means late.",
+            "type": "integer"
+          },
+          "quantity_unit": {
+            "description": "Unit of measure for every controlled quantity: SET.",
+            "type": "string"
+          },
+          "receiving_plant_usable": {
+            "description": "Releasable sets already at the receiving Ashgrove plant that reduce the transfer.",
+            "type": "integer"
+          },
+          "recommended_incremental_cost_usd": {
+            "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+            "type": "integer"
+          },
+          "recommended_option": {
+            "description": "Best authorized option identifier after comparing transfer_releasable_sets, transfer_full_kelbrook_holdings, order_direct_expedited.",
+            "enum": [
+              "transfer_releasable_sets",
+              "transfer_full_kelbrook_holdings",
+              "order_direct_expedited"
+            ],
+            "type": "string"
+          },
+          "recommended_outcome_date": {
+            "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+            "type": "string"
+          },
+          "scheduled_cutins": {
+            "description": "Count of spacer cut-ins booked at Ashgrove this week.",
+            "type": "integer"
+          },
+          "sets_per_station": {
+            "description": "Fixture-family sets required per station.",
+            "type": "integer"
+          },
+          "source_quantity": {
+            "description": "FIX-SHFT-6120 sets required by the two cut-ins booked 2026-05-14 and 2026-05-15 at the current station counts",
+            "type": "integer"
+          },
+          "standard_external_readiness": {
+            "description": "Standard readiness date independently confirmed for Ferrin's confirmed standard and expedited build dates on RQ-6120.",
+            "type": "string"
+          },
+          "supported_quantity": {
+            "description": "releasable FIX-SHFT-6120 sets at the Kelbrook plant",
+            "type": "integer"
+          },
+          "transaction_quantity": {
+            "description": "Exact quantity the primary state change may persist.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "baseline_resolution_date",
+          "business_need_date",
+          "certifications_invalidated",
+          "controlled_item_or_record",
+          "controlled_resolution_date",
+          "decision_timing_status",
+          "escalated_resolution_date",
+          "escalation_approval_required",
+          "excluded_quantity",
+          "expedited_external_readiness",
+          "first_cutin_window",
+          "kelbrook_reserved_sets",
+          "observed_quantity",
+          "outcome_vs_control_days",
+          "quantity_unit",
+          "receiving_plant_usable",
+          "recommended_incremental_cost_usd",
+          "recommended_option",
+          "recommended_outcome_date",
+          "scheduled_cutins",
+          "sets_per_station",
+          "source_quantity",
+          "standard_external_readiness",
+          "supported_quantity",
+          "transaction_quantity"
+        ],
+        "type": "object"
+      },
+      "name": "hubbench.submit_answer"
+    }
+  ]
+}

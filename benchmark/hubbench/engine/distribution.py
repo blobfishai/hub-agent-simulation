@@ -41,7 +41,7 @@ from .tasks import HUBBENCH_ROOT, load_release_contract, load_release_tasks, rel
 
 BENCHMARK = "HubBench"
 METRIC = "HubScore"
-DEFAULT_VERSION = "1.1.0"
+DEFAULT_VERSION = "1.2.0"
 HARBOR_ORG = "blobfishai"
 HARBOR_DATASET = f"{HARBOR_ORG}/hubbench"
 HARBOR_URL = f"https://hub.harborframework.com/datasets/{HARBOR_DATASET}/latest"
@@ -1339,9 +1339,16 @@ def write_hf_trajectories(target: Path, version: str, families: list[FamilyInput
         }
         _write_json(target / "reference" / path.name, public)
         index["reference"].append({"task_id": task_id, "family": family_by_task[task_id], "harbor_task": record["harbor_task"], "job": record["job"], "trial": record["trial"], "score": record["score"], "reward": record["reward"], "strict_pass": record["strict_pass"], "sample_only": True, "leaderboard_eligible": False, "tool_calls": len(record["trace"]), "sha256": sha256_json(public), "path": f"reference/{path.name}"})
-    missing_families = sorted({inputs.slug for inputs in families} - {row["family"] for row in index["reference"]})
+    publication_path = HUBBENCH_ROOT / "reports" / "publication.json"
+    publication = json.loads(publication_path.read_text(encoding="utf-8")) if publication_path.is_file() else {}
+    required_families = (
+        set(publication.get("publishedFamilies", []))
+        if publication.get("version") == version
+        else set()
+    )
+    missing_families = sorted(required_families - {row["family"] for row in index["reference"]})
     if missing_families:
-        raise ValueError(f"missing Docker-gated reference trajectories for: {', '.join(missing_families)}")
+        raise ValueError(f"missing Docker-gated reference trajectories for published families: {', '.join(missing_families)}")
     run_dirs = sorted(path for path in model_dir.iterdir() if (path / "run.json").is_file()) if model_dir.is_dir() else []
     for run_dir in run_dirs:
         run = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))

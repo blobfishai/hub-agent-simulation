@@ -1,0 +1,1000 @@
+{
+  "contract": {
+    "answer": {
+      "baseline_resolution_date": "2026-05-18",
+      "business_need_date": "2026-05-19",
+      "certifications_invalidated": 0,
+      "controlled_item_or_record": "FIX-CLMP-2260",
+      "controlled_resolution_date": "2026-05-19",
+      "decision_timing_status": "ON_TIME",
+      "escalated_resolution_date": "2026-05-14",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 3,
+      "expedited_external_readiness": "2026-05-14",
+      "first_cutin_window": "LINE-1/2026-05-19/AM",
+      "margin_sets": 1,
+      "observed_quantity": 7,
+      "outcome_vs_control_days": -1,
+      "quantity_unit": "SET",
+      "rebalanced_line_stations": 3,
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "order_standard_to_margin",
+      "recommended_outcome_date": "2026-05-18",
+      "scheduled_cutins": 4,
+      "sets_per_station": 1,
+      "source_quantity": 9,
+      "standard_external_readiness": "2026-05-18",
+      "supported_quantity": 4,
+      "transaction_quantity": 6
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'order_standard_to_margin', tied to FIX-CLMP-2260, revision D, and the selected order_standard_to_margin outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-05-18', tied to FIX-CLMP-2260, revision D, and the selected order_standard_to_margin outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'FIX-CLMP-2260', tied to FIX-CLMP-2260, revision D, and the selected order_standard_to_margin outcome.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 6, tied to FIX-CLMP-2260, revision D, and the selected order_standard_to_margin outcome.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to FIX-CLMP-2260, revision D, and the selected order_standard_to_margin outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required FIX-CLMP-2260 to reach business outcome 'Fixture order submitted' through supplier.orders.create with exact provider-critical values supplier_id='SUP-BRAMWELL', quote_id='QT-BR-5520', item_code='FIX-CLMP-2260', quantity=6, service_option='standard'. The audited change binds selected option order_standard_to_margin, approval AP-DO-0102, and constraint the spare-set policy and the signed approval scope; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "supplier_id",
+          "quote_id",
+          "item_code",
+          "quantity",
+          "service_option"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "item_code": "FIX-CLMP-2260",
+            "quantity": 6,
+            "quote_id": "QT-BR-5520",
+            "service_option": "standard",
+            "supplier_id": "SUP-BRAMWELL"
+          },
+          "tool": "supplier.orders.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "SO-8801",
+          "status": "SUBMITTED",
+          "table_name": "supplier_orders",
+          "tool": "supplier.orders.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "designops-002-mutation-01",
+          "task_id": "designops-002"
+        }
+      },
+      {
+        "description": "Persisted SO-8801 in supplier_orders with the supported values (supplier_id='SUP-BRAMWELL', quote_id='QT-BR-5520', item_code='FIX-CLMP-2260', quantity=6, unit='SET', service_option='standard', expected_ready_date='2026-05-15', status='SUBMITTED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "supplier_orders",
+        "values": {
+          "expected_ready_date": "2026-05-15",
+          "item_code": "FIX-CLMP-2260",
+          "quantity": 6,
+          "quote_id": "QT-BR-5520",
+          "service_option": "standard",
+          "status": "SUBMITTED",
+          "supplier_id": "SUP-BRAMWELL",
+          "unit": "SET"
+        },
+        "weight": 2.0,
+        "where": {
+          "order_id": "SO-8801"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying order_standard_to_margin, the 2026-05-18 outcome, the binding constraint, and the DSGN-0002 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "celia.baptiste@ashgrove.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "DSGN-0002",
+            "CLP-2260",
+            "ECO-24120"
+          ]
+        ],
+        "payload_text_contains": [
+          "order_standard_to_margin",
+          "2026-05-18"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "designops-002-mutation-02",
+          "task_id": "designops-002"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for DSGN-0002: the primary change and the stakeholder draft; no additional order, transfer, release, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "designops-002"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-19 as the documented control date for next week's harness clamp cut-ins; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 9 SET for FIX-CLMP-2260 check-gauge sets required by the four cut-ins booked 2026-05-19 to 2026-05-21 at the current station counts.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 7 observed SET.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 3 SET for lot 2260-B sets whose calibration is due 2026-05-20, inside the 14-day horizon.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 7 observed − 3 excluded = 4 supported SET.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 6 SET, the measure required by the chosen disposition under the spare-set policy and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in SET.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-05-18 for order_standard_to_margin.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-19 for use_calibration_due_lot.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-14 for expedite_fixture_build and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-18 as the independently confirmed standard readiness date for Bramwell's confirmed standard and expedited build dates on RQ-5520.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-14 as the independently confirmed expedited readiness date for Bramwell's confirmed standard and expedited build dates on RQ-5520.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 4 booked cut-ins between 2026-05-18 and 2026-05-22; excluded the cancelled RES-33105 and the rear harness tray's 2026-05-27 cut-in.",
+        "field": "scheduled_cutins",
+        "id": "count_scheduled_cutins",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Used LINE-2's current roster count of 3 stations after the May rebalance, not the 2 stations on the old layout sheet.",
+        "field": "rebalanced_line_stations",
+        "id": "read_current_station_count",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the family's 1 set per station to every booked line (2 + 3 + 2 + 2 = 9 sets).",
+        "field": "sets_per_station",
+        "id": "apply_sets_per_station",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied the spare-set policy's 1 spare set for FIX-CLMP-2260 on top of the 5 uncovered sets.",
+        "field": "margin_sets",
+        "id": "apply_spare_margin",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the Class II classification: CERT-7760 and CERT-7766 list the clamp but a process-only change invalidates neither, so the cut-ins are tooling-bound.",
+        "field": "certifications_invalidated",
+        "id": "apply_class_two_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified LINE-1/2026-05-19/AM (RES-33110) as the first cut-in the order must beat.",
+        "field": "first_cutin_window",
+        "id": "identify_first_cutin_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for order_standard_to_margin; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that expedite_fixture_build remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of order_standard_to_margin, use_calibration_due_lot, expedite_fixture_build; selected order_standard_to_margin because it alone gives the best currently authorized result under the spare-set policy and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-18 as the supported outcome date for order_standard_to_margin.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-18 with the independent control date 2026-05-19 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "DSGN-0002"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated DSGN-0002 scope, immutable handles, mounted systems, and evidence index before investigating FIX-CLMP-2260.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DSGN-0002"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1002-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for DSGN-0002 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "number": "CLP-2260"
+            },
+            "expected_result_contains": {
+              "parts": [
+                {
+                  "part_id": "PRT-2260"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "plm.parts.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved part number CLP-2260 to the immutable part record through an identifier search rather than a name match against a similarly named part.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DSGN-0002"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-002-14"
+                },
+                {
+                  "id": "DRV-002-03"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the DSGN-0002 case folder on the shared drive and identified the approval record and the change-order export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "procedure"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-002-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the procedure folder and distinguished the effective ECP-12 rev 5 from the superseded rev 3 by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_id": "ECO-24120"
+            },
+            "expected_result_contains": {
+              "change_id": "ECO-24120",
+              "state": "RELEASED"
+            },
+            "match": "result_contains",
+            "tool": "eco.changes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active change order ECO-24120: class, revisions, workflow state, effectivity, and run durations.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "component_part_id": "PRT-2260"
+            },
+            "expected_result_contains": {
+              "lines": [
+                {
+                  "line_id": "BL-7710D-14"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "bom.whereused.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live where-used for CLP-2260 with parent revision status and line kind; did not take the scope from an export or the affected-item list alone.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective ECP-12 rev 5 for the scope, certification, tooling, calendar, and authority rules; did not apply the superseded rev 3.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "family_code": "FIX-CLMP-2260"
+            },
+            "expected_result_contains": {
+              "family_code": "FIX-CLMP-2260"
+            },
+            "match": "result_contains",
+            "tool": "tooling.families.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the fixture family record for FIX-CLMP-2260: sets per station and minimum remaining calibration.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_id": "ECO-24120"
+            },
+            "expected_result_contains": {
+              "items": [
+                {
+                  "item_id": "AI-24120-1"
+                },
+                {
+                  "item_id": "AI-24120-2"
+                },
+                {
+                  "item_id": "AI-24120-3"
+                },
+                {
+                  "item_id": "AI-24120-4"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "eco.affected.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the affected items of ECO-24120 (PRT-7710, PRT-7722, PRT-7735, PRT-7748, PRT-7760) and excluded the out-of-scope items.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "document_id": "DOC-2260-DRW-D"
+            },
+            "expected_result_contains": {
+              "checkins": [
+                {
+                  "checkin_id": "CHK-77820"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "plm.checkins.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the CAD check-in history for CLP-2260 to ground which version passed, which failed, and what is approved for release.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "assembly_part_id": "PRT-7710"
+            },
+            "expected_result_contains": {
+              "certifications": [
+                {
+                  "cert_id": "CERT-7760"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cert.configurations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the certified configurations for PRT-7710 with status, covered component revisions, and re-certification lead time before netting the coverage.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-22",
+              "start_date": "2026-05-18"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "WIN-1-20260519-AM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the release calendar windows for 2026-05-18 onward to find the first free cut-in window that displaces no protected or blocked block.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "quote_id": "QT-BR-5520"
+            },
+            "expected_result_contains": {
+              "quote_id": "QT-BR-5520",
+              "standard_ready_date": "2026-05-15"
+            },
+            "match": "result_contains",
+            "tool": "supplier.quotes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the supplier-portal quotation QT-BR-5520 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-DO-0102"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-DO-0102"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-DO-0102 for its exact scope: record, quantity, supplier or laboratory, fee allowance, and what it does not cover.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-14"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-14"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1002-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1002-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1002-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1002"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1002"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1002 for certificate, lot, window, and authority remarks that qualify the system records.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-22",
+              "start_date": "2026-05-18",
+              "status": "booked"
+            },
+            "expected_result_contains": {
+              "reservations": [
+                {
+                  "id": "RES-33110"
+                },
+                {
+                  "id": "RES-33111"
+                },
+                {
+                  "id": "RES-33112"
+                },
+                {
+                  "id": "RES-33113"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.reservations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the cut-in reservations that fix the schedule scope by immutable id.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "family_code": "FIX-CLMP-2260"
+            },
+            "expected_result_contains": {
+              "sets": [
+                {
+                  "set_id": "SET-2260-A"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "tooling.sets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every FIX-CLMP-2260 fixture lot with set count, calibration due date, status, and reservations before netting the tooling coverage.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "item_code": "FIX-CLMP-2260"
+            },
+            "expected_result_contains": {
+              "orders": []
+            },
+            "match": "result_contains",
+            "tool": "supplier.orders.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the supplier-portal orders for FIX-CLMP-2260 to read any in-flight order's confirmed ready date and to avoid double-ordering; did not count an open order as sets on hand.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-27"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-27"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for DSGN-0002 and confirmed that FIX-CLMP-2260 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-18"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-18"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for DSGN-0002 and joined FIX-CLMP-2260 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for DSGN-0002; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for DSGN-0002 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for FIX-CLMP-2260 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for DSGN-0002 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for DSGN-0002, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-002-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-002-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for DSGN-0002: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "supplier.orders.create",
+        "any_of": [
+          {
+            "arguments": {
+              "order_id": "SO-8801"
+            },
+            "expected_result_contains": {
+              "expected_ready_date": "2026-05-15",
+              "order_id": "SO-8801",
+              "quantity": 6,
+              "service_option": "standard",
+              "status": "SUBMITTED"
+            },
+            "match": "result_contains",
+            "tool": "supplier.orders.get"
+          }
+        ],
+        "description": "Read SO-8801 back through supplier.orders.get after the change and confirmed the persisted provider values (order_id='SO-8801', quantity=6, service_option='standard', expected_ready_date='2026-05-15', status='SUBMITTED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "expected_ready_date": "2026-05-15",
+          "order_id": "SO-8801",
+          "quantity": 6,
+          "service_option": "standard",
+          "status": "SUBMITTED"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "order_id": "SO-8801"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family_task_id": "designops-002",
+  "metric": "HubScore",
+  "task_id": "hubbench-designops-002"
+}

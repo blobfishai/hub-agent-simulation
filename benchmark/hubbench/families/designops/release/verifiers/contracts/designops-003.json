@@ -1,0 +1,992 @@
+{
+  "answer": {
+    "affected_resource_or_operation": "RES-33118",
+    "base_completion": "2026-05-15",
+    "business_need_date": "2026-05-15",
+    "candidate_capacity": 16,
+    "capacity_gap": 2,
+    "capacity_unit": "LINE_HOUR",
+    "decision_timing_status": "ON_TIME",
+    "escalated_completion": "2026-05-14",
+    "escalation_approval_required": 1,
+    "expedited_external_readiness": "2026-05-21",
+    "fixture_sets_required": 3,
+    "fixture_sets_usable": 4,
+    "net_usable_capacity": 4,
+    "outcome_vs_control_days": 0,
+    "qualified_alternative_completion": "2026-05-14",
+    "recommended_incremental_cost_usd": 0,
+    "recommended_option": "run_first_full_free_day",
+    "recommended_outcome_date": "2026-05-15",
+    "requested_day": "2026-05-14",
+    "required_capacity": 6,
+    "selected_resource_or_control": "LINE-2/2026-05-15/AM+PM",
+    "standard_external_readiness": "2026-05-27",
+    "unavailable_or_protected_capacity": 12,
+    "windows_required": 2
+  },
+  "answer_checks": [
+    {
+      "description": "Reported recommended option as 'run_first_full_free_day', tied to RES-33118, revision G, and the selected run_first_full_free_day outcome.",
+      "field": "recommended_option",
+      "id": "answer_recommended_option",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported recommended outcome date as '2026-05-15', tied to RES-33118, revision G, and the selected run_first_full_free_day outcome.",
+      "field": "recommended_outcome_date",
+      "id": "answer_recommended_outcome_date",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported affected resource or operation as 'RES-33118', tied to RES-33118, revision G, and the selected run_first_full_free_day outcome.",
+      "field": "affected_resource_or_operation",
+      "id": "answer_affected_resource_or_operation",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported capacity gap as 2, tied to RES-33118, revision G, and the selected run_first_full_free_day outcome.",
+      "field": "capacity_gap",
+      "id": "answer_capacity_gap",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported decision timing status as 'ON_TIME', tied to RES-33118, revision G, and the selected run_first_full_free_day outcome.",
+      "field": "decision_timing_status",
+      "id": "answer_decision_timing_status",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    }
+  ],
+  "assertions": [
+    {
+      "description": "Required RES-33118 to reach business outcome 'Pending first-article run booked' through calendar.reservations.update with exact provider-critical values reservation_id='RES-33118', line_id='LINE-2', start_time='2026-05-15T07:00:00', end_time='2026-05-15T13:00:00', status='booked'. The audited change binds selected option run_first_full_free_day, approval AP-DO-0103, and constraint one continuous first-article run on a CMM-capable line without displacing protected windows; no other record satisfies this state criterion.",
+      "id": "mutation_01",
+      "milestone_id": "state.primary",
+      "payload_allowed_argument_paths": [
+        "reservation_id",
+        "line_id",
+        "start_time",
+        "end_time",
+        "status"
+      ],
+      "payload_contains": {
+        "arguments": {
+          "end_time": "2026-05-15T13:00:00",
+          "line_id": "LINE-2",
+          "reservation_id": "RES-33118",
+          "start_time": "2026-05-15T07:00:00",
+          "status": "booked"
+        },
+        "tool": "calendar.reservations.update"
+      },
+      "table": "mutations",
+      "values": {
+        "record_id": "RES-33118",
+        "status": "booked",
+        "table_name": "cutin_reservations",
+        "tool": "calendar.reservations.update"
+      },
+      "weight": 3.0,
+      "where": {
+        "mutation_id": "designops-003-mutation-01",
+        "task_id": "designops-003"
+      }
+    },
+    {
+      "description": "Persisted RES-33118 in cutin_reservations with the supported values (assembly_part_id='PRT-8120', change_id='ECO-24125', line_id='LINE-2', start_time='2026-05-15T07:00:00', end_time='2026-05-15T13:00:00', status='booked', revision=2) so a later reader sees the change, not just the acknowledgement.",
+      "id": "state_01",
+      "milestone_id": "state.primary",
+      "table": "cutin_reservations",
+      "values": {
+        "assembly_part_id": "PRT-8120",
+        "change_id": "ECO-24125",
+        "end_time": "2026-05-15T13:00:00",
+        "line_id": "LINE-2",
+        "revision": 2,
+        "start_time": "2026-05-15T07:00:00",
+        "status": "booked"
+      },
+      "weight": 2.0,
+      "where": {
+        "reservation_id": "RES-33118"
+      }
+    },
+    {
+      "description": "Held LINE-2's 2026-05-15 AM window (and PM) for RES-33118 without touching the protected Thursday audit preparation block.",
+      "id": "state_02",
+      "milestone_id": "state.primary",
+      "table": "release_windows",
+      "values": {
+        "reservation_id": "RES-33118",
+        "status": "busy"
+      },
+      "weight": 1.0,
+      "where": {
+        "window_id": "WIN-2-20260515-AM"
+      }
+    },
+    {
+      "description": "Created \u2014 but did not send \u2014 the stakeholder draft carrying run_first_full_free_day, the 2026-05-15 outcome, the binding constraint, and the DSGN-0003 business reference.",
+      "id": "mutation_02",
+      "milestone_id": "state.collaboration",
+      "payload_contains": {
+        "arguments": {
+          "recipient": "celia.baptiste@ashgrove.example"
+        },
+        "tool": "notes.drafts.create"
+      },
+      "payload_text_any_of": [
+        [
+          "DSGN-0003",
+          "HSG-3105",
+          "ECO-24125"
+        ]
+      ],
+      "payload_text_contains": [
+        "run_first_full_free_day",
+        "2026-05-15"
+      ],
+      "table": "mutations",
+      "values": {
+        "status": "DRAFT",
+        "table_name": "note_drafts",
+        "tool": "notes.drafts.create"
+      },
+      "weight": 1.5,
+      "where": {
+        "mutation_id": "designops-003-mutation-02",
+        "task_id": "designops-003"
+      }
+    },
+    {
+      "count": 2,
+      "description": "Made exactly two state changes for DSGN-0003: the primary change and the stakeholder draft; no additional order, transfer, release, or booking.",
+      "id": "containment_01",
+      "milestone_id": "containment.scope",
+      "table": "mutations",
+      "weight": 1.0,
+      "where": {
+        "task_id": "designops-003"
+      }
+    }
+  ],
+  "calculations": [
+    {
+      "description": "Preserved 2026-05-15 as the documented control date for the gearbox first-article run; did not infer urgency from a title or a request tone.",
+      "field": "business_need_date",
+      "id": "identify_business_date",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 6 LINE_HOUR for line-hours for one continuous Class I first-article run (300 min inspection + 60 min changeover).",
+      "field": "required_capacity",
+      "id": "calculate_required_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Established 16 gross candidate LINE_HOUR associated with line-hours on CMM-capable lines (LINE-1, LINE-2) on the requested Thursday 2026-05-14; did not call it usable before applying protected load.",
+      "field": "candidate_capacity",
+      "id": "establish_candidate_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Excluded 12 LINE_HOUR for Thursday line-hours already reserved or held as the protected customer audit preparation block.",
+      "field": "unavailable_or_protected_capacity",
+      "id": "remove_protected_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Calculated 16 candidate \u2212 12 unavailable/protected = 4 net usable LINE_HOUR.",
+      "field": "net_usable_capacity",
+      "id": "calculate_net_usable_capacity",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 6 required \u2212 4 net usable = 2 LINE_HOUR uncovered inside the requested window.",
+      "field": "capacity_gap",
+      "id": "calculate_capacity_gap",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Kept load and availability in LINE_HOUR.",
+      "field": "capacity_unit",
+      "id": "preserve_capacity_unit",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Bound the recovery to provider identifier LINE-2/2026-05-15/AM+PM only after confirming one continuous first-article run on a CMM-capable line without displacing protected windows.",
+      "field": "selected_resource_or_control",
+      "id": "identify_selected_resource_or_control",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Calculated 2026-05-15 for run_first_full_free_day.",
+      "field": "base_completion",
+      "id": "compare_base_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 2026-05-14 for split_fai_across_days using free full-day line windows with CMM capability.",
+      "field": "qualified_alternative_completion",
+      "id": "compare_qualified_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated 2026-05-14 for extend_thursday_second_shift and retained its authority constraint.",
+      "field": "escalated_completion",
+      "id": "compare_escalated_schedule",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-05-27 as the independently confirmed standard readiness date for Northbank's confirmed post-first-article re-certification report dates on RQ-3315.",
+      "field": "standard_external_readiness",
+      "id": "read_standard_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-05-21 as the independently confirmed expedited readiness date for Northbank's confirmed post-first-article re-certification report dates on RQ-3315.",
+      "field": "expedited_external_readiness",
+      "id": "read_expedited_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Derived 3 rev G sets for the three-station LINE-2 at one set per station.",
+      "field": "fixture_sets_required",
+      "id": "derive_fixture_sets_required",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Confirmed 4 calibrated rev G sets (lot 3105-G1) cover the run; the 2 rev F nests (lot 3105-F2) were excluded.",
+      "field": "fixture_sets_usable",
+      "id": "confirm_fixture_coverage",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Converted 300 + 60 minutes into a 6-hour continuous block that needs both windows of one line on one day.",
+      "field": "windows_required",
+      "id": "convert_duration_to_windows",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Kept 2026-05-14 as the requested day and tested it honestly rather than assuming it.",
+      "field": "requested_day",
+      "id": "preserve_requested_day",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Applied USD 0 as the documented incremental cost for run_first_full_free_day; did not invent a premium where spend is not a decision driver.",
+      "field": "recommended_incremental_cost_usd",
+      "id": "calculate_selected_cost",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Recognized that extend_thursday_second_shift remains outside current authority and requires an additional approval.",
+      "field": "escalation_approval_required",
+      "id": "apply_escalation_authority",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Compared the timing, cost, control status, and consequence of run_first_full_free_day, split_fai_across_days, extend_thursday_second_shift; selected run_first_full_free_day because it alone gives the best currently authorized result under one continuous first-article run on a CMM-capable line without displacing protected windows.",
+      "field": "recommended_option",
+      "id": "choose_task_specific_option",
+      "milestone_id": "decision.options",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 2026-05-15 as the supported outcome date for run_first_full_free_day.",
+      "field": "recommended_outcome_date",
+      "id": "calculate_recommended_outcome",
+      "milestone_id": "analysis.timeline",
+      "weight": 2.0
+    },
+    {
+      "description": "Compared 2026-05-15 with the independent control date 2026-05-15 and calculated a signed variance of 0 day(s).",
+      "field": "outcome_vs_control_days",
+      "id": "calculate_outcome_variance",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.5
+    },
+    {
+      "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+      "field": "decision_timing_status",
+      "id": "state_honest_timing_status",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    }
+  ],
+  "investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "DSGN-0003"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated DSGN-0003 scope, immutable handles, mounted systems, and evidence index before investigating RES-33118.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DSGN-0003"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1003-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for DSGN-0003 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "number": "HSG-3105"
+          },
+          "expected_result_contains": {
+            "parts": [
+              {
+                "part_id": "PRT-3105"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "plm.parts.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved part number HSG-3105 to the immutable part record through an identifier search rather than a name match against a similarly named part.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DSGN-0003"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-003-15"
+              },
+              {
+                "id": "DRV-003-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the DSGN-0003 case folder on the shared drive and identified the approval record and the change-order export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "procedure"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-003-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the procedure folder and distinguished the effective ECP-12 rev 5 from the superseded rev 3 by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_id": "ECO-24125"
+          },
+          "expected_result_contains": {
+            "change_id": "ECO-24125",
+            "state": "CCB_APPROVED"
+          },
+          "match": "result_contains",
+          "tool": "eco.changes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active change order ECO-24125: class, revisions, workflow state, effectivity, and run durations.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "component_part_id": "PRT-3105"
+          },
+          "expected_result_contains": {
+            "lines": [
+              {
+                "line_id": "BL-8120E-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "bom.whereused.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live where-used for HSG-3105 with parent revision status and line kind; did not take the scope from an export or the affected-item list alone.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective ECP-12 rev 5 for the scope, certification, tooling, calendar, and authority rules; did not apply the superseded rev 3.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "family_code": "FIX-HSG-3105"
+          },
+          "expected_result_contains": {
+            "family_code": "FIX-HSG-3105"
+          },
+          "match": "result_contains",
+          "tool": "tooling.families.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the fixture family record for FIX-HSG-3105: sets per station and minimum remaining calibration.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_id": "ECO-24125"
+          },
+          "expected_result_contains": {
+            "items": [
+              {
+                "item_id": "AI-24125-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "eco.affected.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the affected items of ECO-24125 (PRT-8120) and excluded the out-of-scope items.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-08",
+            "part_id": "PRT-3105",
+            "start_date": "2026-05-06"
+          },
+          "expected_result_contains": {
+            "checkins": [
+              {
+                "checkin_id": "CHK-77830"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "plm.checkins.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the CAD check-in history for HSG-3105 to ground which version passed, which failed, and what is approved for release.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "assembly_part_id": "PRT-8120"
+          },
+          "expected_result_contains": {
+            "certifications": [
+              {
+                "cert_id": "CERT-7840"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cert.configurations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the certified configurations for PRT-8120 with status, covered component revisions, and re-certification lead time before netting the coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-22",
+            "start_date": "2026-05-13"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "WIN-2-20260515-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the release calendar windows for 2026-05-13 onward to find the first free cut-in window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "quote_id": "QT-NB-3315"
+          },
+          "expected_result_contains": {
+            "quote_id": "QT-NB-3315",
+            "standard_ready_date": "2026-05-26"
+          },
+          "match": "result_contains",
+          "tool": "supplier.quotes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the supplier-portal quotation QT-NB-3315 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-DO-0103"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-DO-0103"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-DO-0103 for its exact scope: record, quantity, supplier or laboratory, fee allowance, and what it does not cover.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-15"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-15"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1003-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1003-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1003-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1003"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1003"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1003 for certificate, lot, window, and authority remarks that qualify the system records.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_id": "ECO-24125"
+          },
+          "expected_result_contains": {
+            "reservations": [
+              {
+                "id": "RES-33118"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.reservations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the cut-in reservations that fix the schedule scope by immutable id.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "family_code": "FIX-HSG-3105"
+          },
+          "expected_result_contains": {
+            "sets": [
+              {
+                "set_id": "SET-3105-G1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "tooling.sets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every FIX-HSG-3105 fixture lot with set count, calibration due date, status, and reservations before netting the tooling coverage.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "item_code": "FIX-HSG-3105"
+          },
+          "expected_result_contains": {
+            "orders": [
+              {
+                "order_id": "SO-8800"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "supplier.orders.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the supplier-portal orders for FIX-HSG-3105 to read any in-flight order's confirmed ready date and to avoid double-ordering; did not count an open order as sets on hand.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for DSGN-0003 and confirmed that RES-33118 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for DSGN-0003 and joined RES-33118 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for DSGN-0003; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for DSGN-0003 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for RES-33118 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for DSGN-0003 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for DSGN-0003, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-003-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-003-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for DSGN-0003: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "post_write_verifications": [
+    {
+      "after_tool": "calendar.reservations.update",
+      "any_of": [
+        {
+          "arguments": {
+            "reservation_id": "RES-33118"
+          },
+          "expected_result_contains": {
+            "end": "2026-05-15T13:00:00",
+            "id": "RES-33118",
+            "line": "LINE-2",
+            "meta": {
+              "versionId": "2"
+            },
+            "start": "2026-05-15T07:00:00",
+            "status": "booked"
+          },
+          "match": "result_contains",
+          "tool": "calendar.reservations.get"
+        }
+      ],
+      "description": "Read RES-33118 back through calendar.reservations.get after the change and confirmed the persisted provider values (id='RES-33118', status='booked', line='LINE-2', start='2026-05-15T07:00:00', end='2026-05-15T13:00:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "end": "2026-05-15T13:00:00",
+        "id": "RES-33118",
+        "line": "LINE-2",
+        "meta": {
+          "versionId": "2"
+        },
+        "start": "2026-05-15T07:00:00",
+        "status": "booked"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": false,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "reservation_id": "RES-33118"
+      },
+      "weight": 2.0
+    }
+  ]
+}

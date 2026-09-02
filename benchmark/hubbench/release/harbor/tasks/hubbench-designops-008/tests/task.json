@@ -1,0 +1,2797 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "mutations",
+    "note_drafts",
+    "supplier_orders"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "baseline_resolution_date": {
+        "description": "Resolution date for order_standard_to_margin.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "certifications_invalidated": {
+        "description": "Certificates invalidated by the change after applying its classification.",
+        "type": "integer"
+      },
+      "controlled_item_or_record": {
+        "description": "Immutable item, lot set, or transaction record in scope.",
+        "type": "string"
+      },
+      "controlled_resolution_date": {
+        "description": "Resolution date for use_bulletin_excluded_sets.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "escalated_resolution_date": {
+        "description": "Resolution date for expedite_gauge_build.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "excluded_quantity": {
+        "description": "lot 9340-A sets whose second drop-shock event is outside the calibration bulletin",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Bramwell's confirmed standard and expedited build dates on RQ-9340.",
+        "type": "string"
+      },
+      "first_cutin_window": {
+        "description": "Release-calendar window of the first Monday cut-in, as LINE/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "margin_sets": {
+        "description": "Spare sets the policy adds on top of the uncovered requirement.",
+        "type": "integer"
+      },
+      "observed_quantity": {
+        "description": "Gross observed quantity before applying the control for Monday's locating pin cut-ins.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit of measure for every controlled quantity: SET.",
+        "type": "string"
+      },
+      "rebalanced_line_stations": {
+        "description": "Current station count of the rebalanced line taken from the line roster, not the old layout sheet.",
+        "type": "integer"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing order_standard_to_margin, use_bulletin_excluded_sets, expedite_gauge_build.",
+        "enum": [
+          "order_standard_to_margin",
+          "use_bulletin_excluded_sets",
+          "expedite_gauge_build"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "scheduled_cutins": {
+        "description": "Count of FIX-PIN-9340 cut-ins booked for Monday; the short-series jig uses a different gauge family.",
+        "type": "integer"
+      },
+      "sets_per_station": {
+        "description": "Fixture-family sets required per station.",
+        "type": "integer"
+      },
+      "source_quantity": {
+        "description": "FIX-PIN-9340 gauge sets required by the three cut-ins booked for 2026-05-18 at the current station counts",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Bramwell's confirmed standard and expedited build dates on RQ-9340.",
+        "type": "string"
+      },
+      "supported_quantity": {
+        "description": "FIX-PIN-9340 sets usable for Monday at the Ashgrove plant",
+        "type": "integer"
+      },
+      "transaction_quantity": {
+        "description": "Exact quantity the primary state change may persist.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "baseline_resolution_date",
+      "business_need_date",
+      "certifications_invalidated",
+      "controlled_item_or_record",
+      "controlled_resolution_date",
+      "decision_timing_status",
+      "escalated_resolution_date",
+      "escalation_approval_required",
+      "excluded_quantity",
+      "expedited_external_readiness",
+      "first_cutin_window",
+      "margin_sets",
+      "observed_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "rebalanced_line_stations",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "scheduled_cutins",
+      "sets_per_station",
+      "source_quantity",
+      "standard_external_readiness",
+      "supported_quantity",
+      "transaction_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-05-11",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "the calibration-bulletin rule, the spare-set margin, and the signed approval scope; lot 9340-A sets whose second drop-shock event is outside the calibration bulletin = 4 SET; uncovered scope = 2 SET",
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-18 as the documented control date for Monday's locating pin cut-ins; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 7 SET for FIX-PIN-9340 gauge sets required by the three cut-ins booked for 2026-05-18 at the current station counts.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 9 observed SET.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 4 SET for lot 9340-A sets whose second drop-shock event is outside the calibration bulletin.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 4 excluded = 5 supported SET.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 4 SET, the measure required by the chosen disposition under the calibration-bulletin rule, the spare-set margin, and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in SET.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-05-15 for order_standard_to_margin.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-18 for use_bulletin_excluded_sets.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-13 for expedite_gauge_build and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-15 as the independently confirmed standard readiness date for Bramwell's confirmed standard and expedited build dates on RQ-9340.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-13 as the independently confirmed expedited readiness date for Bramwell's confirmed standard and expedited build dates on RQ-9340.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 3 booked FIX-PIN-9340 cut-ins on 2026-05-18; the short-series jig (RES-33173) runs on the S gauge family under ECO-24161.",
+        "field": "scheduled_cutins",
+        "id": "count_scheduled_cutins",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Used LINE-2's current roster count of 3 stations, not the 2 on the old layout sheet (2 + 3 + 2 = 7 sets).",
+        "field": "rebalanced_line_stations",
+        "id": "read_current_station_count",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the family's 1 set per station.",
+        "field": "sets_per_station",
+        "id": "apply_sets_per_station",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied the spare-set policy's 2 spare sets for FIX-PIN-9340 on top of the 2 uncovered sets.",
+        "field": "margin_sets",
+        "id": "apply_spare_margin",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the Class II classification: CERT-7905 and CERT-7911 list the pin but a surface-treatment change invalidates neither.",
+        "field": "certifications_invalidated",
+        "id": "apply_class_two_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified LINE-1/2026-05-18/AM (RES-33170) as the first cut-in the order must beat.",
+        "field": "first_cutin_window",
+        "id": "identify_first_cutin_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for order_standard_to_margin; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that expedite_gauge_build remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of order_standard_to_margin, use_bulletin_excluded_sets, expedite_gauge_build; selected order_standard_to_margin because it alone gives the best currently authorized result under the calibration-bulletin rule, the spare-set margin, and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-15 as the supported outcome date for order_standard_to_margin.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-15 with the independent control date 2026-05-18 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located FIX-PIN-9340 using immutable identifiers and preserved effective revision B: the in-scope cut-ins are RES-33170, RES-33171, and RES-33172 for ASM-5510, ASM-5522, and ASM-5534 under ECO-24160; RES-33173 (short-series jig) runs on FIX-PIN-9340-S under ECO-24161 and is out of this count.",
+        "sources": [
+          "plm",
+          "messages"
+        ],
+        "statement": "DSGN-0008: the in-scope cut-ins are RES-33170, RES-33171, and RES-33172 for ASM-5510, ASM-5522, and ASM-5534 under ECO-24160; RES-33173 (short-series jig) runs on FIX-PIN-9340-S under ECO-24161 and is out of this count; the effective revision is B."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective change order and procedure to establish 7 SET for FIX-PIN-9340 gauge sets required by the three cut-ins booked for 2026-05-18 at the current station counts, with control date 2026-05-18.",
+        "sources": [
+          "eco",
+          "bom",
+          "drive"
+        ],
+        "statement": "The effective change order and procedure establish FIX-PIN-9340 gauge sets required by the three cut-ins booked for 2026-05-18 at the current station counts = 7 SET: one set per station on LINE-1 (2), the rebalanced LINE-2 (3), and LINE-1 again (2) gives 7 sets for Monday. The control date is 2026-05-18 (first locating pin cut-in of the week (RES-33170))."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 9 observed less 4 excluded to 5 supported SET for FIX-PIN-9340 sets usable for Monday at the Ashgrove plant.",
+        "sources": [
+          "cert",
+          "tooling",
+          "calendar",
+          "drive"
+        ],
+        "statement": "the register shows 9 FIX-PIN-9340 sets in gross at Ashgrove; lot 9340-A (4 sets) is outside the 2026-05 calibration bulletin after its second drop-shock event, so 5 sets are usable; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-05-13 expedited readiness input for use_bulletin_excluded_sets, then separately derived its 2026-05-18 operating outcome under the calibration-bulletin rule, the spare-set margin, and the signed approval scope instead of treating a supplier promise as authorization or a completion date.",
+        "sources": [
+          "supplier",
+          "messages"
+        ],
+        "statement": "Bramwell's confirmed standard and expedited build dates on RQ-9340: Bramwell RQ-9340 confirms a standard build ready 2026-05-14 and an expedited build 2026-05-12 (+USD 380); sets release the next business day; a supplier or laboratory quotation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied the booked cut-in reservations that fix the dates to derive the three option outcomes without using protected or blocked windows.",
+        "sources": [
+          "calendar",
+          "drive"
+        ],
+        "statement": "the booked cut-in reservations that fix the dates: the booked cut-in reservations fix Monday's dates: the first is LINE-1 AM on 2026-05-18; protected and blocked windows cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-DO-0108 only to order_standard_to_margin and FIX-PIN-9340; kept expedite_gauge_build outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-DO-0108 covers one standard Bramwell order up to 4 sets / USD 1500 with no expedite fee; an expedited build and lot 9340-A need the director of engineering. The approval does not select an option in advance and does not authorize expedite_gauge_build."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected order_standard_to_margin: it is the best currently authorized response that satisfies the calibration-bulletin rule, the spare-set margin, and the signed approval scope.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "Monday's cut-ins must run from 2026-05-18 with two spare sets left in the tool room; a faster or broader action has value only if it remains inside the calibration-bulletin rule, the spare-set margin, and the signed approval scope."
+      }
+    ],
+    "mode": "quantity",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-05-15",
+        "consequence": "order standard to margin places 4 sets (2 uncovered + 2 spare) on Bramwell's standard build, released to the line 2026-05-15, one business day before the cut-ins, at no incremental cost.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "order_standard_to_margin",
+        "incremental_cost": 0,
+        "label": "order_standard_to_margin: outcome 2026-05-15, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "NOT_SUPPORTED_BY_CURRENT_EVIDENCE",
+        "completion": "2026-05-18",
+        "consequence": "use bulletin-excluded sets would cover Monday from lot 9340-A at no cost, but its second drop-shock event is outside the 2026-05 calibration bulletin, so the procedure keeps it off the line.",
+        "control_status": "FAILS_CURRENT_CONTROL",
+        "id": "use_bulletin_excluded_sets",
+        "incremental_cost": 0,
+        "label": "use_bulletin_excluded_sets: outcome 2026-05-18, incremental cost USD 0, FAILS_CURRENT_CONTROL",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-05-13",
+        "consequence": "expedite gauge build would release sets on 2026-05-13, two business days earlier than order standard to margin, and adds USD 380, but AP-DO-0108 allows no expedite fee, so an expedited build needs the director of engineering.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "expedite_gauge_build",
+        "incremental_cost": 380,
+        "label": "expedite_gauge_build: outcome 2026-05-13, incremental cost USD 380, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "order_standard_to_margin is the best currently authorized response that satisfies the calibration-bulletin rule, the spare-set margin, and the signed approval scope and lands 3 day(s) on or before the control date.",
+    "selected_completion": "2026-05-15",
+    "selected_cost": 0,
+    "selected_option": "order_standard_to_margin"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "baseline_resolution_date": "2026-05-15",
+      "business_need_date": "2026-05-18",
+      "certifications_invalidated": 0,
+      "controlled_item_or_record": "FIX-PIN-9340",
+      "controlled_resolution_date": "2026-05-18",
+      "decision_timing_status": "ON_TIME",
+      "escalated_resolution_date": "2026-05-13",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 4,
+      "expedited_external_readiness": "2026-05-13",
+      "first_cutin_window": "LINE-1/2026-05-18/AM",
+      "margin_sets": 2,
+      "observed_quantity": 9,
+      "outcome_vs_control_days": -3,
+      "quantity_unit": "SET",
+      "rebalanced_line_stations": 3,
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "order_standard_to_margin",
+      "recommended_outcome_date": "2026-05-15",
+      "scheduled_cutins": 3,
+      "sets_per_station": 1,
+      "source_quantity": 7,
+      "standard_external_readiness": "2026-05-15",
+      "supported_quantity": 5,
+      "transaction_quantity": 4
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'order_standard_to_margin', tied to FIX-PIN-9340, revision B, and the selected order_standard_to_margin outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-05-15', tied to FIX-PIN-9340, revision B, and the selected order_standard_to_margin outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'FIX-PIN-9340', tied to FIX-PIN-9340, revision B, and the selected order_standard_to_margin outcome.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 4, tied to FIX-PIN-9340, revision B, and the selected order_standard_to_margin outcome.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to FIX-PIN-9340, revision B, and the selected order_standard_to_margin outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required FIX-PIN-9340 to reach business outcome 'Replacement gauge order submitted' through supplier.orders.create with exact provider-critical values supplier_id='SUP-BRAMWELL', quote_id='QT-BR-9340', item_code='FIX-PIN-9340', quantity=4, service_option='standard'. The audited change binds selected option order_standard_to_margin, approval AP-DO-0108, and constraint the calibration-bulletin rule, the spare-set margin, and the signed approval scope; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "supplier_id",
+          "quote_id",
+          "item_code",
+          "quantity",
+          "service_option"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "item_code": "FIX-PIN-9340",
+            "quantity": 4,
+            "quote_id": "QT-BR-9340",
+            "service_option": "standard",
+            "supplier_id": "SUP-BRAMWELL"
+          },
+          "tool": "supplier.orders.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "SO-8801",
+          "status": "SUBMITTED",
+          "table_name": "supplier_orders",
+          "tool": "supplier.orders.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "designops-008-mutation-01",
+          "task_id": "designops-008"
+        }
+      },
+      {
+        "description": "Persisted SO-8801 in supplier_orders with the supported values (supplier_id='SUP-BRAMWELL', quote_id='QT-BR-9340', item_code='FIX-PIN-9340', quantity=4, unit='SET', service_option='standard', expected_ready_date='2026-05-14', status='SUBMITTED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "supplier_orders",
+        "values": {
+          "expected_ready_date": "2026-05-14",
+          "item_code": "FIX-PIN-9340",
+          "quantity": 4,
+          "quote_id": "QT-BR-9340",
+          "service_option": "standard",
+          "status": "SUBMITTED",
+          "supplier_id": "SUP-BRAMWELL",
+          "unit": "SET"
+        },
+        "weight": 2.0,
+        "where": {
+          "order_id": "SO-8801"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying order_standard_to_margin, the 2026-05-15 outcome, the binding constraint, and the DSGN-0008 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "tunde.oyelowo@ashgrove.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "DSGN-0008",
+            "PIN-9340",
+            "ECO-24160"
+          ]
+        ],
+        "payload_text_contains": [
+          "order_standard_to_margin",
+          "2026-05-15"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "designops-008-mutation-02",
+          "task_id": "designops-008"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for DSGN-0008: the primary change and the stakeholder draft; no additional order, transfer, release, or booking.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "designops-008"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-18 as the documented control date for Monday's locating pin cut-ins; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 7 SET for FIX-PIN-9340 gauge sets required by the three cut-ins booked for 2026-05-18 at the current station counts.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 9 observed SET.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 4 SET for lot 9340-A sets whose second drop-shock event is outside the calibration bulletin.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 4 excluded = 5 supported SET.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 4 SET, the measure required by the chosen disposition under the calibration-bulletin rule, the spare-set margin, and the signed approval scope; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in SET.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-05-15 for order_standard_to_margin.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-18 for use_bulletin_excluded_sets.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-05-13 for expedite_gauge_build and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-15 as the independently confirmed standard readiness date for Bramwell's confirmed standard and expedited build dates on RQ-9340.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-13 as the independently confirmed expedited readiness date for Bramwell's confirmed standard and expedited build dates on RQ-9340.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 3 booked FIX-PIN-9340 cut-ins on 2026-05-18; the short-series jig (RES-33173) runs on the S gauge family under ECO-24161.",
+        "field": "scheduled_cutins",
+        "id": "count_scheduled_cutins",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Used LINE-2's current roster count of 3 stations, not the 2 on the old layout sheet (2 + 3 + 2 = 7 sets).",
+        "field": "rebalanced_line_stations",
+        "id": "read_current_station_count",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the family's 1 set per station.",
+        "field": "sets_per_station",
+        "id": "apply_sets_per_station",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied the spare-set policy's 2 spare sets for FIX-PIN-9340 on top of the 2 uncovered sets.",
+        "field": "margin_sets",
+        "id": "apply_spare_margin",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the Class II classification: CERT-7905 and CERT-7911 list the pin but a surface-treatment change invalidates neither.",
+        "field": "certifications_invalidated",
+        "id": "apply_class_two_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified LINE-1/2026-05-18/AM (RES-33170) as the first cut-in the order must beat.",
+        "field": "first_cutin_window",
+        "id": "identify_first_cutin_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for order_standard_to_margin; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that expedite_gauge_build remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of order_standard_to_margin, use_bulletin_excluded_sets, expedite_gauge_build; selected order_standard_to_margin because it alone gives the best currently authorized result under the calibration-bulletin rule, the spare-set margin, and the signed approval scope.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-15 as the supported outcome date for order_standard_to_margin.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-15 with the independent control date 2026-05-18 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "DSGN-0008"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated DSGN-0008 scope, immutable handles, mounted systems, and evidence index before investigating FIX-PIN-9340.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DSGN-0008"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1008-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for DSGN-0008 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "number": "PIN-9340"
+            },
+            "expected_result_contains": {
+              "parts": [
+                {
+                  "part_id": "PRT-9340"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "plm.parts.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved part number PIN-9340 to the immutable part record through an identifier search rather than a name match against a similarly named part.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DSGN-0008"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-008-15"
+                },
+                {
+                  "id": "DRV-008-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the DSGN-0008 case folder on the shared drive and identified the approval record and the change-order export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "procedure"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-008-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the procedure folder and distinguished the effective ECP-12 rev 5 from the superseded rev 3 by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_id": "ECO-24160"
+            },
+            "expected_result_contains": {
+              "change_id": "ECO-24160",
+              "state": "RELEASED"
+            },
+            "match": "result_contains",
+            "tool": "eco.changes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active change order ECO-24160: class, revisions, workflow state, effectivity, and run durations.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "component_part_id": "PRT-9340"
+            },
+            "expected_result_contains": {
+              "lines": [
+                {
+                  "line_id": "BL-5510B-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "bom.whereused.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live where-used for PIN-9340 with parent revision status and line kind; did not take the scope from an export or the affected-item list alone.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective ECP-12 rev 5 for the scope, certification, tooling, calendar, and authority rules; did not apply the superseded rev 3.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "family_code": "FIX-PIN-9340"
+            },
+            "expected_result_contains": {
+              "family_code": "FIX-PIN-9340"
+            },
+            "match": "result_contains",
+            "tool": "tooling.families.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the fixture family record for FIX-PIN-9340: sets per station and minimum remaining calibration.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_id": "ECO-24160"
+            },
+            "expected_result_contains": {
+              "items": [
+                {
+                  "item_id": "AI-24160-1"
+                },
+                {
+                  "item_id": "AI-24160-2"
+                },
+                {
+                  "item_id": "AI-24160-3"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "eco.affected.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the affected items of ECO-24160 (PRT-5510, PRT-5522, PRT-5534) and excluded the out-of-scope items.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "document_id": "DOC-9340-DRW-B"
+            },
+            "expected_result_contains": {
+              "checkins": [
+                {
+                  "checkin_id": "CHK-77890"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "plm.checkins.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the CAD check-in history for PIN-9340 to ground which version passed, which failed, and what is approved for release.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "assembly_part_id": "PRT-5510"
+            },
+            "expected_result_contains": {
+              "certifications": [
+                {
+                  "cert_id": "CERT-7905"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cert.configurations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the certified configurations for PRT-5510 with status, covered component revisions, and re-certification lead time before netting the coverage.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-22",
+              "start_date": "2026-05-15"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "WIN-1-20260518-AM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the release calendar windows for 2026-05-15 onward to find the first free cut-in window that displaces no protected or blocked block.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "quote_id": "QT-BR-9340"
+            },
+            "expected_result_contains": {
+              "quote_id": "QT-BR-9340",
+              "standard_ready_date": "2026-05-14"
+            },
+            "match": "result_contains",
+            "tool": "supplier.quotes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the supplier-portal quotation QT-BR-9340 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-DO-0108"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-DO-0108"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-DO-0108 for its exact scope: record, quantity, supplier or laboratory, fee allowance, and what it does not cover.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-15"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-15"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1008-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1008-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1008-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1008"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1008"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1008 for certificate, lot, window, and authority remarks that qualify the system records.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-22",
+              "start_date": "2026-05-18",
+              "status": "booked"
+            },
+            "expected_result_contains": {
+              "reservations": [
+                {
+                  "id": "RES-33170"
+                },
+                {
+                  "id": "RES-33171"
+                },
+                {
+                  "id": "RES-33172"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.reservations.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the cut-in reservations that fix the schedule scope by immutable id.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "family_code": "FIX-PIN-9340"
+            },
+            "expected_result_contains": {
+              "sets": [
+                {
+                  "set_id": "SET-9340-A"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "tooling.sets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every FIX-PIN-9340 fixture lot with set count, calibration due date, status, and reservations before netting the tooling coverage.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "item_code": "FIX-PIN-9340"
+            },
+            "expected_result_contains": {
+              "orders": []
+            },
+            "match": "result_contains",
+            "tool": "supplier.orders.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the supplier-portal orders for FIX-PIN-9340 to read any in-flight order's confirmed ready date and to avoid double-ordering; did not count an open order as sets on hand.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-30"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-30"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for DSGN-0008 and confirmed that FIX-PIN-9340 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for DSGN-0008 and joined FIX-PIN-9340 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for DSGN-0008; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for DSGN-0008 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-31"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-31"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for FIX-PIN-9340 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for DSGN-0008 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for DSGN-0008, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-27"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-27"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for DSGN-0008: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "supplier.orders.create",
+        "any_of": [
+          {
+            "arguments": {
+              "order_id": "SO-8801"
+            },
+            "expected_result_contains": {
+              "expected_ready_date": "2026-05-14",
+              "order_id": "SO-8801",
+              "quantity": 4,
+              "service_option": "standard",
+              "status": "SUBMITTED"
+            },
+            "match": "result_contains",
+            "tool": "supplier.orders.get"
+          }
+        ],
+        "description": "Read SO-8801 back through supplier.orders.get after the change and confirmed the persisted provider values (order_id='SO-8801', quantity=4, service_option='standard', expected_ready_date='2026-05-14', status='SUBMITTED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "expected_ready_date": "2026-05-14",
+          "order_id": "SO-8801",
+          "quantity": 4,
+          "service_option": "standard",
+          "status": "SUBMITTED"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "order_id": "SO-8801"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "designops",
+  "instruction": "The morning calibration bulletin excluded part of the locating pin gauge stock after last week's drop-shock event, and Monday has three pin cut-ins on the calendar plus the short-series jig on its own gauge family. Tell me how many gauge sets Monday genuinely needs with line two at its rebalanced station count, which lots can still be used under the new bulletin rather than the old one, and how many sets to order from Bramwell under Folake's approval. Place that order, then draft the note for Tunde so the tool room knows what is arriving and what stays quarantined.",
+  "level": "employee-decision",
+  "mode": "quantity",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "item_code": "FIX-PIN-9340",
+        "quantity": 7,
+        "quote_id": "QT-BR-9340",
+        "service_option": "expedited",
+        "supplier_id": "SUP-BRAMWELL"
+      },
+      "tool": "supplier.orders.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-008-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "supplier.orders.create",
+      "any_of": [
+        {
+          "arguments": {
+            "order_id": "SO-8801"
+          },
+          "expected_result_contains": {
+            "expected_ready_date": "2026-05-14",
+            "order_id": "SO-8801",
+            "quantity": 4,
+            "service_option": "standard",
+            "status": "SUBMITTED"
+          },
+          "match": "result_contains",
+          "tool": "supplier.orders.get"
+        }
+      ],
+      "description": "Read SO-8801 back through supplier.orders.get after the change and confirmed the persisted provider values (order_id='SO-8801', quantity=4, service_option='standard', expected_ready_date='2026-05-14', status='SUBMITTED') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "expected_ready_date": "2026-05-14",
+        "order_id": "SO-8801",
+        "quantity": 4,
+        "service_option": "standard",
+        "status": "SUBMITTED"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "order_id": "SO-8801"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-DO-0108"
+    },
+    "bom": {
+      "component_part_id": "PRT-9340"
+    },
+    "calendar": {
+      "calendar_window": {
+        "end_date": "2026-05-22",
+        "start_date": "2026-05-15"
+      }
+    },
+    "case_reference": "DSGN-0008",
+    "cert": {
+      "assembly_part_ids": [
+        "PRT-5510",
+        "PRT-5522",
+        "PRT-5534"
+      ]
+    },
+    "chat": {
+      "thread_id": "CHAT-1008"
+    },
+    "drive": {
+      "case_folder_query": "DSGN-0008",
+      "procedure_query": "procedure"
+    },
+    "eco": {
+      "change_id": "ECO-24160"
+    },
+    "messages": {
+      "search_query": "DSGN-0008"
+    },
+    "plm": {
+      "part_number": "PIN-9340",
+      "part_search": {
+        "arguments": {
+          "number": "PIN-9340"
+        },
+        "tool": "plm.parts.search"
+      }
+    },
+    "supplier": {
+      "quote_id": "QT-BR-9340"
+    },
+    "tooling": {
+      "family_code": "FIX-PIN-9340",
+      "plants": [
+        "PLANT-ASH"
+      ]
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "DSGN-0008"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated DSGN-0008 scope, immutable handles, mounted systems, and evidence index before investigating FIX-PIN-9340.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DSGN-0008"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1008-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for DSGN-0008 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "number": "PIN-9340"
+          },
+          "expected_result_contains": {
+            "parts": [
+              {
+                "part_id": "PRT-9340"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "plm.parts.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved part number PIN-9340 to the immutable part record through an identifier search rather than a name match against a similarly named part.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DSGN-0008"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-008-15"
+              },
+              {
+                "id": "DRV-008-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the DSGN-0008 case folder on the shared drive and identified the approval record and the change-order export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "procedure"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-008-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the procedure folder and distinguished the effective ECP-12 rev 5 from the superseded rev 3 by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_id": "ECO-24160"
+          },
+          "expected_result_contains": {
+            "change_id": "ECO-24160",
+            "state": "RELEASED"
+          },
+          "match": "result_contains",
+          "tool": "eco.changes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active change order ECO-24160: class, revisions, workflow state, effectivity, and run durations.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "component_part_id": "PRT-9340"
+          },
+          "expected_result_contains": {
+            "lines": [
+              {
+                "line_id": "BL-5510B-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "bom.whereused.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live where-used for PIN-9340 with parent revision status and line kind; did not take the scope from an export or the affected-item list alone.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective ECP-12 rev 5 for the scope, certification, tooling, calendar, and authority rules; did not apply the superseded rev 3.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "family_code": "FIX-PIN-9340"
+          },
+          "expected_result_contains": {
+            "family_code": "FIX-PIN-9340"
+          },
+          "match": "result_contains",
+          "tool": "tooling.families.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the fixture family record for FIX-PIN-9340: sets per station and minimum remaining calibration.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_id": "ECO-24160"
+          },
+          "expected_result_contains": {
+            "items": [
+              {
+                "item_id": "AI-24160-1"
+              },
+              {
+                "item_id": "AI-24160-2"
+              },
+              {
+                "item_id": "AI-24160-3"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "eco.affected.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the affected items of ECO-24160 (PRT-5510, PRT-5522, PRT-5534) and excluded the out-of-scope items.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "document_id": "DOC-9340-DRW-B"
+          },
+          "expected_result_contains": {
+            "checkins": [
+              {
+                "checkin_id": "CHK-77890"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "plm.checkins.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the CAD check-in history for PIN-9340 to ground which version passed, which failed, and what is approved for release.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "assembly_part_id": "PRT-5510"
+          },
+          "expected_result_contains": {
+            "certifications": [
+              {
+                "cert_id": "CERT-7905"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cert.configurations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the certified configurations for PRT-5510 with status, covered component revisions, and re-certification lead time before netting the coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-22",
+            "start_date": "2026-05-15"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "WIN-1-20260518-AM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the release calendar windows for 2026-05-15 onward to find the first free cut-in window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "quote_id": "QT-BR-9340"
+          },
+          "expected_result_contains": {
+            "quote_id": "QT-BR-9340",
+            "standard_ready_date": "2026-05-14"
+          },
+          "match": "result_contains",
+          "tool": "supplier.quotes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the supplier-portal quotation QT-BR-9340 for the independently confirmed standard and expedited ready dates and the expedite fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-DO-0108"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-DO-0108"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-DO-0108 for its exact scope: record, quantity, supplier or laboratory, fee allowance, and what it does not cover.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-15"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-15"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1008-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1008-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1008-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1008"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1008"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1008 for certificate, lot, window, and authority remarks that qualify the system records.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-22",
+            "start_date": "2026-05-18",
+            "status": "booked"
+          },
+          "expected_result_contains": {
+            "reservations": [
+              {
+                "id": "RES-33170"
+              },
+              {
+                "id": "RES-33171"
+              },
+              {
+                "id": "RES-33172"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.reservations.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the cut-in reservations that fix the schedule scope by immutable id.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "family_code": "FIX-PIN-9340"
+          },
+          "expected_result_contains": {
+            "sets": [
+              {
+                "set_id": "SET-9340-A"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "tooling.sets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every FIX-PIN-9340 fixture lot with set count, calibration due date, status, and reservations before netting the tooling coverage.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "item_code": "FIX-PIN-9340"
+          },
+          "expected_result_contains": {
+            "orders": []
+          },
+          "match": "result_contains",
+          "tool": "supplier.orders.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the supplier-portal orders for FIX-PIN-9340 to read any in-flight order's confirmed ready date and to avoid double-ordering; did not count an open order as sets on hand.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-30"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-30"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for DSGN-0008 and confirmed that FIX-PIN-9340 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for DSGN-0008 and joined FIX-PIN-9340 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for DSGN-0008; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for DSGN-0008 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-31"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-31"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for FIX-PIN-9340 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for DSGN-0008 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for DSGN-0008, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-008-27"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-008-27"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for DSGN-0008: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "DSGN-0008"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "DSGN-0008"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1008-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "number": "PIN-9340"
+      },
+      "expected_result_contains": {
+        "parts": [
+          {
+            "part_id": "PRT-9340"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "plm.parts.search"
+    },
+    {
+      "arguments": {
+        "q": "DSGN-0008"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-008-15"
+          },
+          {
+            "id": "DRV-008-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "procedure"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-008-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "change_id": "ECO-24160"
+      },
+      "expected_result_contains": {
+        "change_id": "ECO-24160",
+        "state": "RELEASED"
+      },
+      "match": "result_contains",
+      "tool": "eco.changes.get"
+    },
+    {
+      "arguments": {
+        "component_part_id": "PRT-9340"
+      },
+      "expected_result_contains": {
+        "lines": [
+          {
+            "line_id": "BL-5510B-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "bom.whereused.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "family_code": "FIX-PIN-9340"
+      },
+      "expected_result_contains": {
+        "family_code": "FIX-PIN-9340"
+      },
+      "match": "result_contains",
+      "tool": "tooling.families.get"
+    },
+    {
+      "arguments": {
+        "change_id": "ECO-24160"
+      },
+      "expected_result_contains": {
+        "items": [
+          {
+            "item_id": "AI-24160-1"
+          },
+          {
+            "item_id": "AI-24160-2"
+          },
+          {
+            "item_id": "AI-24160-3"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "eco.affected.list"
+    },
+    {
+      "arguments": {
+        "document_id": "DOC-9340-DRW-B"
+      },
+      "expected_result_contains": {
+        "checkins": [
+          {
+            "checkin_id": "CHK-77890"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "plm.checkins.list"
+    },
+    {
+      "arguments": {
+        "assembly_part_id": "PRT-5510"
+      },
+      "expected_result_contains": {
+        "certifications": [
+          {
+            "cert_id": "CERT-7905"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cert.configurations.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-22",
+        "start_date": "2026-05-15"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "WIN-1-20260518-AM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.windows.list"
+    },
+    {
+      "arguments": {
+        "quote_id": "QT-BR-9340"
+      },
+      "expected_result_contains": {
+        "quote_id": "QT-BR-9340",
+        "standard_ready_date": "2026-05-14"
+      },
+      "match": "result_contains",
+      "tool": "supplier.quotes.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-DO-0108"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-DO-0108"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-15"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-15"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1008-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1008-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1008"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1008"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-22",
+        "start_date": "2026-05-18",
+        "status": "booked"
+      },
+      "expected_result_contains": {
+        "reservations": [
+          {
+            "id": "RES-33170"
+          },
+          {
+            "id": "RES-33171"
+          },
+          {
+            "id": "RES-33172"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.reservations.list"
+    },
+    {
+      "arguments": {
+        "family_code": "FIX-PIN-9340"
+      },
+      "expected_result_contains": {
+        "sets": [
+          {
+            "set_id": "SET-9340-A"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "tooling.sets.list"
+    },
+    {
+      "arguments": {
+        "item_code": "FIX-PIN-9340"
+      },
+      "expected_result_contains": {
+        "orders": []
+      },
+      "match": "result_contains",
+      "tool": "supplier.orders.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-30"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-30"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-31"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-31"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-008-27"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-008-27"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "plm.parts.search",
+    "eco.changes.get",
+    "eco.affected.list",
+    "bom.whereused.list",
+    "plm.checkins.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "tooling.families.get",
+    "cert.configurations.list",
+    "tooling.sets.list",
+    "supplier.orders.list",
+    "calendar.reservations.list",
+    "calendar.windows.list",
+    "supplier.quotes.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "engineering_change_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_22",
+        "investigation_23"
+      ],
+      "description": "Establish the isolated DSGN-0008 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 7.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_24"
+      ],
+      "description": "Determine the operative B requirement for FIX-PIN-9340 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 8.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_20",
+        "investigation_21",
+        "investigation_25",
+        "investigation_26",
+        "investigation_28"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 9 observed less 4 excluded to 5 supported SET for FIX-PIN-9340 sets usable for Monday at the Ashgrove plant. Applied the booked cut-in reservations that fix the dates to derive the three option outcomes without using protected or blocked windows. Used the independently confirmed 2026-05-13 expedited readiness input for use_bulletin_excluded_sets, then separately derived its 2026-05-18 operating outcome under the calibration-bulletin rule, the spare-set margin, and the signed approval scope instead of treating a supplier promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_15",
+        "investigation_16",
+        "investigation_27"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-DO-0108 only to order_standard_to_margin and FIX-PIN-9340; kept expedite_gauge_build outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_17",
+        "investigation_18",
+        "investigation_19",
+        "investigation_29"
+      ],
+      "description": "Correlate FIX-PIN-9340 by immutable identifiers across the systems of record (plm, eco, bom, cert, tooling, calendar, messages, chat) and preserve the effective B state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 21.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "establish_source_quantity",
+        "reconcile_observed_quantity",
+        "identify_excluded_quantity",
+        "calculate_supported_quantity",
+        "bound_transaction_quantity",
+        "preserve_transaction_unit",
+        "compare_quantity_option_one",
+        "compare_quantity_option_two",
+        "compare_quantity_option_three",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "count_scheduled_cutins",
+        "read_current_station_count",
+        "apply_sets_per_station",
+        "apply_spare_margin",
+        "apply_class_two_rule",
+        "identify_first_cutin_window"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for Monday's locating pin cut-ins.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for order_standard_to_margin under the actual operating window and report whether the 2026-05-15 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select order_standard_to_margin only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported 'Replacement gauge order submitted' change for FIX-PIN-9340 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read FIX-PIN-9340 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_controlled_item_or_record",
+        "answer_transaction_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for Monday's locating pin cut-ins.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside DSGN-0008's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "24ad03092d04e29e24f1e9bb129efc8fb63e9f60cdd68fc69b7871325dc2a961",
+  "starting_records": [
+    {
+      "resource_id": "RES-33170",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "calendar"
+    },
+    {
+      "resource_id": "RES-33171",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "calendar"
+    },
+    {
+      "resource_id": "RES-33172",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "calendar"
+    },
+    {
+      "resource_id": "RES-33173",
+      "resource_type": "Reservation",
+      "status": "booked",
+      "system": "calendar"
+    },
+    {
+      "resource_id": "SO-8800",
+      "resource_type": "Order",
+      "status": "RECEIVED",
+      "system": "supplier"
+    }
+  ],
+  "task_id": "designops-008",
+  "title": "Replace the gauge sets the calibration bulletin excluded before Monday's cut-ins",
+  "workflow": {
+    "answer_fields": 25,
+    "readbacks": 1,
+    "reads": 30,
+    "writes": 2
+  },
+  "world": {
+    "id": "ashgrove-eco-v1",
+    "name": "Ashgrove Motion Systems — Engineering Change Office",
+    "organization_id": "ORG-ASHGROVE",
+    "primary_site": "PLANT-ASH",
+    "systems": [
+      "plm",
+      "eco",
+      "bom",
+      "cert",
+      "tooling",
+      "supplier",
+      "calendar",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

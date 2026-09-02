@@ -17,21 +17,26 @@ tags:
 - synthetic
 - healthcare
 - data-engineering-analytics
+- manufacturing-engineering-design
 - terminal-operations
+- it-operations-observability
 - policy-compliance-instruction-following
+- software-engineering
 - reasoning-knowledge-qa
 - scientific-research
+- security
+- web-product-design
 - customer-workplace-agents
 pretty_name: HubBench
 size_categories:
 - n<1K
 ---
 
-# HubBench 1.1.0
+# HubBench 1.2.0
 
 **One Blobfish-authored, oracle-proven benchmark family per Harbor Hub professional-domain cluster.** Every task is an employee decision worked over a dependent chain of evidence — never a lookup — against mock stateful tools over an isolated SQLite world. The agent reaches the world only through its public surfaces (MCP over streamable HTTP, a terminal `tool` CLI, a REST API, and a web console); a deterministic verifier (**HubScore**) grades the finished world from executable checks only. Zero LLM-judge calls.
 
-Released families: ClinicOps (healthcare), DataDesk (data-engineering-analytics), HostOps (terminal-operations), PolicyDesk (policy-compliance-instruction-following), ResearchDesk (reasoning-knowledge-qa), SciLab (scientific-research), Workplace (customer-workplace-agents). 56 tasks, 269 provider-shaped tools across 84 MCP servers, 1767 agent-visible evidence files, 3649 atomic criteria.
+Released families: ClinicOps (healthcare), DataDesk (data-engineering-analytics), DesignOps (manufacturing-engineering-design), HostOps (terminal-operations), ITSMDesk (it-operations-observability), PolicyDesk (policy-compliance-instruction-following), RepoDesk (software-engineering), ResearchDesk (reasoning-knowledge-qa), SciLab (scientific-research), SecOps (security), WebStudio (web-product-design), Workplace (customer-workplace-agents). 96 tasks, 503 provider-shaped tools across 148 MCP servers, 3157 agent-visible evidence files, 6424 atomic criteria.
 
 ## Families
 
@@ -39,10 +44,15 @@ Released families: ClinicOps (healthcare), DataDesk (data-engineering-analytics)
 |---|---|---|---|---|---|---|---|---|
 | ClinicOps (`clinicops`) | healthcare | 8 | 10 | 34 | 61–66 | 24–27 | 29–31 | `stanford/medagentbench`, `josancamon19/physician-bench` |
 | DataDesk (`datadesk`) | data-engineering-analytics | 8 | 10 | 33 | 60–62 | 23–24 | 30–32 | `snowflake-labs/data-eng-bench`, `dbt-labs/ade-bench` |
+| DesignOps (`designops`) | manufacturing-engineering-design | 8 | 13 | 42 | 65–73 | 24–31 | 32–35 | `gnucleus-ai/cad-bench`, `hwe-bench/hwe-bench`, `blobfishai/factorybench-100` |
 | HostOps (`hostops`) | terminal-operations | 8 | 12 | 39 | 62–67 | 24–27 | 30–33 | `terminal-bench/terminal-bench`, `NovitaAI/tb21-file-recovery` |
+| ITSMDesk (`itsmdesk`) | it-operations-observability | 8 | 11 | 43 | 65–71 | 25–30 | 33–34 | `vibrantlabsai/itsm-bench`, `grafana/o11y-bench`, `quesma/otel-bench` |
 | PolicyDesk (`policydesk`) | policy-compliance-instruction-following | 8 | 16 | 41 | 65–66 | 25–27 | 30–32 | `openthoughts/tasktrove-nemotron-gym-instruction-following-adversarial-v3`, `strongreject/strongreject`, `islo-labs/reward-hack-bench` |
+| RepoDesk (`repodesk`) | software-engineering | 8 | 13 | 57 | 70–78 | 25–31 | 37–40 | `swe-bench/swe-bench-verified`, `scale-ai/swe-bench-pro`, `aider/aider-polyglot` |
 | ResearchDesk (`researchdesk`) | reasoning-knowledge-qa | 8 | 12 | 32 | 60–62 | 27–28 | 30 | `gaia/gaia`, `kgmon/deepsearchqa`, `openai/simpleqa` |
 | SciLab (`scilab`) | scientific-research | 8 | 11 | 43 | 68–73 | 24–28 | 32–36 | `scienceagentbench/scienceagentbench`, `futurehouse/bixbench`, `futurehouse/labbench` |
+| SecOps (`secops`) | security | 8 | 14 | 48 | 68–72 | 24–27 | 33–34 | `polyvorlabs/cyberdefense-bench`, `NovitaAI/tb21-systems-security`, `binary-audit/binary-audit` |
+| WebStudio (`webstudio`) | web-product-design | 8 | 13 | 44 | 66–72 | 24–28 | 34–36 | `webgen-bench/webgen-bench`, `open-design/open-design`, `thetalab/vector-edit-gym` |
 | Workplace (`workplace`) | customer-workplace-agents | 8 | 13 | 47 | 70–74 | 25–27 | 34–35 | `theagentcompany/theagentcompany`, `sierra-research/tau3-bench`, `apple/mmau`, `gorilla/bfcl` |
 
 ## HubScore
@@ -55,13 +65,18 @@ HubScore is contract-driven and deterministic: required investigations before th
 |---|---|---|---|---|---|---|
 | `clinicops` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
 | `datadesk` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
+| `designops` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
 | `hostops` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
+| `itsmdesk` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
 | `policydesk` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
+| `repodesk` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
 | `researchdesk` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
 | `scilab` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
+| `secops` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
+| `webstudio` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
 | `workplace` | 8/8 at 100.0 | 8/8 | 80 across 10 policies | 0 | 16/16 | 112 |
 
-Totals: 56/56 oracle strict passes at mean 100.0; 56/56 byte-identical replays; 560 negative-control executions across 10 policies (incomplete_read, missing_readback, noop, shortcut, state_only, unauthorized_write, write_before_read, wrong_decision, wrong_evidence, wrong_value) with 0 false accepts; 112/112 mutation omissions detected; 784 qualification executions in total.
+Totals: 96/96 oracle strict passes at mean 100.0; 96/96 byte-identical replays; 960 negative-control executions across 10 policies (incomplete_read, missing_readback, noop, shortcut, state_only, unauthorized_write, write_before_read, wrong_decision, wrong_evidence, wrong_value) with 0 false accepts; 192/192 mutation omissions detected; 1344 qualification executions in total.
 
 ## Reasoning-chain audit (computed from the committed reports)
 
@@ -71,21 +86,26 @@ Measured with the unmodified portfolio audit (`benchmark/reasoning_chain_audit.p
 |---|---|---|---|---|---|---|---|
 | `clinicops` | 8/8 | 8–8 | 8/8 on every hop | 23–26 | 26–26 | 9–9 | 24–27 |
 | `datadesk` | 8/8 | 8–8 | 8/8 on every hop | 22–23 | 26–26 | 8–9 | 23–24 |
+| `designops` | 8/8 | 8–8 | 8/8 on every hop | 23–30 | 29–29 | 12–12 | 24–31 |
 | `hostops` | 8/8 | 8–8 | 8/8 on every hop | 23–26 | 27–27 | 11–11 | 24–27 |
+| `itsmdesk` | 8/8 | 8–8 | 8/8 on every hop | 24–29 | 29–29 | 10–10 | 25–30 |
 | `policydesk` | 8/8 | 8–8 | 8/8 on every hop | 24–26 | 28–28 | 15–15 | 25–27 |
+| `repodesk` | 8/8 | 8–8 | 8/8 on every hop | 24–30 | 34–34 | 12–12 | 25–31 |
 | `researchdesk` | 8/8 | 7–8 | 3–8/8 | 22–23 | 26–26 | 10–10 | 27–28 |
 | `scilab` | 8/8 | 8–8 | 8/8 on every hop | 23–27 | 32–32 | 10–10 | 24–28 |
+| `secops` | 8/8 | 8–8 | 8/8 on every hop | 23–26 | 33–33 | 12–12 | 24–27 |
+| `webstudio` | 8/8 | 8–8 | 8/8 on every hop | 23–27 | 31–31 | 12–12 | 24–28 |
 | `workplace` | 8/8 | 8–8 | 8/8 on every hop | 24–26 | 33–36 | 11–12 | 25–27 |
 
-Totals: 56/56 tasks pass; every one of the 13 hop classes is covered by all 56 tasks (3–8 per hop); dependent derivations 22–27; evidence reads before the decision 26–36.
+Totals: 96/96 tasks pass; every one of the 13 hop classes is covered by all 96 tasks (3–8 per hop); dependent derivations 22–30; evidence reads before the decision 26–36.
 
 ## Run on Harbor
 
 ```bash
-harbor run -d blobfishai/hubbench@v1.1.0 -a <agent> -m <provider/model>
+harbor run -d blobfishai/hubbench@v1.2.0 -a <agent> -m <provider/model>
 ```
 
-Harbor dataset: `blobfishai/hubbench` (56 task packages `blobfishai/hubbench-<family>-NNN`, root digest `86f5805930e7674b6b32ce39fe07fe188fc8f24b6a30137c1a67d1d3a893e2af`). Each package is self-contained on a digest-pinned `python:3.12-slim` base: an agent container (non-root `agent`, `tool` on PATH, evidence under `/workspace/evidence`) and a `world` service on port 8765. The sealed contract, expected answer, and oracle policy exist only in `tests/` (root verifier) and `solution/` (oracle replayed through the HTTP surfaces).
+Harbor dataset: `blobfishai/hubbench` (96 task packages `blobfishai/hubbench-<family>-NNN`, root digest `ade39d4b1f539182a7942423ae345243bf4466a8f8172fb5456325a999847bc3`). Each package is self-contained on a digest-pinned `python:3.12-slim` base: an agent container (non-root `agent`, `tool` on PATH, evidence under `/workspace/evidence`) and a `world` service on port 8765. The sealed contract, expected answer, and oracle policy exist only in `tests/` (root verifier) and `solution/` (oracle replayed through the HTTP surfaces).
 
 ## Layout
 
@@ -94,7 +114,7 @@ Harbor dataset: `blobfishai/hubbench` (56 task packages `blobfishai/hubbench-<fa
 - `contracts/tools.json` — the provider-shaped MCP tool contracts per family.
 - `verifiers/<task>.json` — the sealed verifier contracts (expected answer, assertions, calculations, required investigations, readbacks). Keep them away from the agent.
 - `ANCHORS.md` — public Harbor Hub anchors and the clean-room boundary per family.
-- `trajectories/` — `index.json`, 56 Docker-gated oracle traces under `reference/`, and 1 imported model run(s) under `model/<run>/`. Oracle traces disclose valid solutions and are excluded from rankings; every model `run.json` states whether the run is ranked or a disclosed partial run.
+- `trajectories/` — `index.json`, 96 Docker-gated oracle traces under `reference/`, and 1 imported model run(s) under `model/<run>/`. Oracle traces disclose valid solutions and are excluded from rankings; every model `run.json` states whether the run is ranked or a disclosed partial run.
 
 ## Synthetic-data notice
 

@@ -1,0 +1,2856 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "change_requests",
+    "maintenance_windows",
+    "mutations",
+    "note_drafts"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_arm_package.",
+        "type": "string"
+      },
+      "arm_downtime_minutes": {
+        "description": "Planned downtime of the arm pool restart: 1 restart x 6 minutes + 5 validation minutes, tested against the budget.",
+        "type": "integer"
+      },
+      "arm_nodes_superseded_build": {
+        "description": "Affected arm nodes whose staged build was cut from the withdrawn revision and cannot deploy.",
+        "type": "integer"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for standard_arm_package_first_window.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "earliest_qualified_base_window": {
+        "description": "First free LANE-DATA session on or after standard package readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for business_hours_change_with_board_exception.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_completion_days_saved": {
+        "description": "Days the early-access package saves once the calendar is reapplied.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered NODE that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "nodes whose staged build was cut from the withdrawn revision",
+        "type": "integer"
+      },
+      "nodes_on_fixed_version": {
+        "description": "Nodes already on 12.6.4 from the canary and outside the requirement.",
+        "type": "integer"
+      },
+      "nodes_total": {
+        "description": "Active ledger-sync nodes in the CMDB across both pools.",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for affected nodes holding a staged 12.6.4 build before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: NODE.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing standard_arm_package_first_window, expedite_arm_package, business_hours_change_with_board_exception.",
+        "enum": [
+          "standard_arm_package_first_window",
+          "expedite_arm_package",
+          "business_hours_change_with_board_exception"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_quantity": {
+        "description": "ledger-sync nodes still on an affected orrinwave-db version that OWA-2026-052 must reach",
+        "type": "integer"
+      },
+      "selected_lane_window": {
+        "description": "Lane and session used by the selected option, as LANE/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered NODE after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "type": "string"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing nodes whose staged build was cut from the withdrawn revision.",
+        "type": "integer"
+      },
+      "x86_nodes_validated": {
+        "description": "Affected x86 nodes covered by the validated 12.6.4 build.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "arm_downtime_minutes",
+      "arm_nodes_superseded_build",
+      "baseline_completion",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "earliest_qualified_base_window",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_completion_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "nodes_on_fixed_version",
+      "nodes_total",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_quantity",
+      "selected_lane_window",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "usable_coverage_quantity",
+      "x86_nodes_validated"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-04-14",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "the current advisory revision and the data-lane calendar before the SLA; nodes whose staged build was cut from the withdrawn revision = 3 NODE; uncovered scope = 3 NODE",
+    "calculations": [
+      {
+        "description": "Preserved 2026-04-21 as the documented control date for the ledger-sync arm64 pool patch; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 9 NODE for ledger-sync nodes still on an affected orrinwave-db version that OWA-2026-052 must reach at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 9 NODE of gross observed affected nodes holding a staged 12.6.4 build.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 3 NODE for nodes whose staged build was cut from the withdrawn revision.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 3 ineligible = 6 usable NODE.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 9 required − 6 usable = 3 NODE uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in NODE.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_arm_package_first_window outcome as 2026-04-23 under free LANE-DATA sessions outside the reconciliation block and the reindex hold.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_arm_package outcome as 2026-04-20 using Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated business_hours_change_with_board_exception outcome as 2026-04-17 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-23 as the independently confirmed standard readiness date for Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-17 as the independently confirmed expedited readiness date for Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 3 NODE uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 11 active ledger-sync nodes: 8 in sync-x86 and 3 in sync-arm.",
+        "field": "nodes_total",
+        "id": "count_fleet_nodes",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Excluded NODE-LDG-10 and NODE-LDG-11 (already 12.6.4): 9 nodes still need the fix.",
+        "field": "nodes_on_fixed_version",
+        "id": "exclude_fixed_version_nodes",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted the 6 x86 nodes covered by B-12.6.4-x86-r2, validated 2026-04-12.",
+        "field": "x86_nodes_validated",
+        "id": "count_validated_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Rejected B-12.6.3-arm-r1 for the 3 arm nodes: it was cut from the withdrawn revision, so those nodes depend on the vendor's arm64 package.",
+        "field": "arm_nodes_superseded_build",
+        "id": "reject_superseded_build",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 1 x 6 + 5 = 11 minutes for the arm pool restart and confirmed it fits the 36 spendable minutes (64 - 20 charged - 8 reserve).",
+        "field": "arm_downtime_minutes",
+        "id": "test_arm_downtime_against_budget",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-04-23 NIGHT as the first free LANE-DATA session on or after the 2026-04-23 standard readiness.",
+        "field": "earliest_qualified_base_window",
+        "id": "identify_first_eligible_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the change to LANE-DATA/2026-04-20/NIGHT, the first free session on or after the 2026-04-17 early-access readiness once the reconciliation block and the reindex hold are skipped.",
+        "field": "selected_lane_window",
+        "id": "bind_selected_lane_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared 2026-04-20 with 2026-04-23: the early-access package saves 3 days and is the only authorized path inside the 2026-04-21 SLA.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 750 as the documented incremental cost for expedite_arm_package; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that business_hours_change_with_board_exception remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_arm_package_first_window, expedite_arm_package, business_hours_change_with_board_exception; selected expedite_arm_package because it alone gives the best currently authorized result under the current advisory revision and the data-lane calendar before the SLA.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-04-20 as the supported outcome date for expedite_arm_package.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-04-20 with the independent control date 2026-04-21 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located ADV-OW-2026-052 using immutable identifiers and preserved effective revision v1: service code ledger-sync resolves to SVC-31302 and pending change CHG-40340; CHG-40339 is the x86 rolling patch and CHG-40336 is ledger-reporting's reindex.",
+        "sources": [
+          "itsm",
+          "messages"
+        ],
+        "statement": "SVCOPS-0004: service code ledger-sync resolves to SVC-31302 and pending change CHG-40340; CHG-40339 is the x86 rolling patch and CHG-40336 is ledger-reporting's reindex; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective change, advisory, and policy to establish 9 NODE for ledger-sync nodes still on an affected orrinwave-db version that OWA-2026-052 must reach, with control date 2026-04-21.",
+        "sources": [
+          "itsm",
+          "vendor",
+          "drive"
+        ],
+        "statement": "The effective change, advisory, and policy establish ledger-sync nodes still on an affected orrinwave-db version that OWA-2026-052 must reach = 9 NODE: 9 of 11 nodes still run 12.6.1; the arm pool restart costs 11 budget minutes, which the budget covers. The control date is 2026-04-21 (OWA-2026-052 is high severity with a 14-day remediation SLA from its 2026-04-07 publication)."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 9 observed less 3 excluded to 6 supported NODE for affected nodes holding a staged 12.6.4 build.",
+        "sources": [
+          "telemetry",
+          "itsm",
+          "calendar"
+        ],
+        "statement": "9 nodes hold a staged build in gross; the 3 arm builds come from the withdrawn revision, so 6 nodes are covered and 3 depend on the vendor; eligibility requires netting the exclusions rather than trusting a headline total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-04-17 early-access readiness input for expedite_arm_package, then separately derived its 2026-04-20 operating outcome under the current advisory revision and the data-lane calendar before the SLA instead of treating a vendor date as authorization or a completion date.",
+        "sources": [
+          "vendor",
+          "messages"
+        ],
+        "statement": "Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052: Orrinwave OWA-2026-052 confirms the arm64 package 2026-04-22 standard (eligible 2026-04-23) or 2026-04-16 early access (eligible 2026-04-17, +USD 750); a vendor release date alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied free LANE-DATA sessions outside the reconciliation block and the reindex hold to derive the three option outcomes without using protected, frozen, blocked, or uncovered sessions.",
+        "sources": [
+          "calendar",
+          "oncall",
+          "drive"
+        ],
+        "statement": "free LANE-DATA sessions outside the reconciliation block and the reindex hold: LANE-DATA is blocked on 2026-04-17 by the reconciliation batch and held 2026-04-18 to 2026-04-19 by the reindex, so the first free session after 2026-04-17 is Monday 2026-04-20 NIGHT and after 2026-04-23 it is 2026-04-23 NIGHT; protected, frozen, and uncovered sessions cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-SO-0104 only to expedite_arm_package and ADV-OW-2026-052; kept business_hours_change_with_board_exception outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-SO-0104 covers LANE-DATA sessions with an early-access allowance up to USD 800; an emergency daytime change needs the change board chair and a deferral needs the security lead. The approval does not select an option in advance and does not authorize business_hours_change_with_board_exception."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected expedite_arm_package: it is the best currently authorized response that satisfies the current advisory revision and the data-lane calendar before the SLA.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "the arm pool must be patched by the 2026-04-21 SLA without deploying the superseded build; a faster or broader action has value only if it remains inside the current advisory revision and the data-lane calendar before the SLA."
+      }
+    ],
+    "mode": "plan",
+    "options": [
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-04-23",
+        "consequence": "standard arm package first window waits for the 2026-04-22 release (eligible 2026-04-23) and takes LANE-DATA's free 2026-04-23 NIGHT session; it costs nothing but lands two days after the 2026-04-21 SLA and would need a deferral from the security lead.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "standard_arm_package_first_window",
+        "incremental_cost": 0,
+        "label": "standard_arm_package_first_window: outcome 2026-04-23, incremental cost USD 0, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "APPROVED",
+        "completion": "2026-04-20",
+        "consequence": "expedite arm package brings the arm64 build on 2026-04-16 (eligible 2026-04-17) for USD 750 inside AP-SO-0104's allowance, and the first free LANE-DATA session after the reconciliation block and the reindex hold is Monday 2026-04-20 NIGHT, one day inside the SLA.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "expedite_arm_package",
+        "incremental_cost": 750,
+        "label": "expedite_arm_package: outcome 2026-04-20, incremental cost USD 750, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-04-17",
+        "consequence": "business-hours change with board exception would patch the arm pool at 10:00 on Friday 2026-04-17, three days earlier, for the USD 750 fee plus USD 300 of emergency-board convening, but a change outside the sessions is an emergency change that needs the change board chair, which AP-SO-0104 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "business_hours_change_with_board_exception",
+        "incremental_cost": 1050,
+        "label": "business_hours_change_with_board_exception: outcome 2026-04-17, incremental cost USD 1050, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "expedite_arm_package is the best currently authorized response that satisfies the current advisory revision and the data-lane calendar before the SLA and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-04-20",
+    "selected_cost": 750,
+    "selected_option": "expedite_arm_package"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "accelerated_completion": "2026-04-20",
+      "arm_downtime_minutes": 11,
+      "arm_nodes_superseded_build": 3,
+      "baseline_completion": "2026-04-23",
+      "business_need_date": "2026-04-21",
+      "coverage_item_or_resource": "ADV-OW-2026-052",
+      "decision_timing_status": "ON_TIME",
+      "earliest_qualified_base_window": "2026-04-23",
+      "escalated_completion": "2026-04-17",
+      "escalation_approval_required": 1,
+      "expedite_completion_days_saved": 3,
+      "expedited_external_readiness": "2026-04-17",
+      "external_recovery_quantity": 3,
+      "ineligible_coverage_quantity": 3,
+      "nodes_on_fixed_version": 2,
+      "nodes_total": 11,
+      "observed_coverage_quantity": 9,
+      "outcome_vs_control_days": -1,
+      "quantity_unit": "NODE",
+      "recommended_incremental_cost_usd": 750,
+      "recommended_option": "expedite_arm_package",
+      "recommended_outcome_date": "2026-04-20",
+      "required_quantity": 9,
+      "selected_lane_window": "LANE-DATA/2026-04-20/NIGHT",
+      "shortage_quantity": 3,
+      "standard_external_readiness": "2026-04-23",
+      "usable_coverage_quantity": 6,
+      "x86_nodes_validated": 6
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'expedite_arm_package', tied to ADV-OW-2026-052, revision v1, and the selected expedite_arm_package outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-04-20', tied to ADV-OW-2026-052, revision v1, and the selected expedite_arm_package outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported coverage item or resource as 'ADV-OW-2026-052', tied to ADV-OW-2026-052, revision v1, and the selected expedite_arm_package outcome.",
+        "field": "coverage_item_or_resource",
+        "id": "answer_coverage_item_or_resource",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported shortage quantity as 3, tied to ADV-OW-2026-052, revision v1, and the selected expedite_arm_package outcome.",
+        "field": "shortage_quantity",
+        "id": "answer_shortage_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to ADV-OW-2026-052, revision v1, and the selected expedite_arm_package outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required ADV-OW-2026-052 to reach business outcome 'Arm pool patch scheduled on the expedited package' through itsm.changes.update with exact provider-critical values change_id='CHG-40340', lane_id='LANE-DATA', start_time='2026-04-20T01:00:00', end_time='2026-04-20T01:36:00', state='scheduled'. The audited change binds selected option expedite_arm_package, approval AP-SO-0104, and constraint the current advisory revision and the data-lane calendar before the SLA; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "change_id",
+          "lane_id",
+          "start_time",
+          "end_time",
+          "state"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "change_id": "CHG-40340",
+            "end_time": "2026-04-20T01:36:00",
+            "lane_id": "LANE-DATA",
+            "start_time": "2026-04-20T01:00:00",
+            "state": "scheduled"
+          },
+          "tool": "itsm.changes.update"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "CHG-40340",
+          "status": "scheduled",
+          "table_name": "change_requests",
+          "tool": "itsm.changes.update"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "itsmdesk-004-mutation-01",
+          "task_id": "itsmdesk-004"
+        }
+      },
+      {
+        "description": "Persisted CHG-40340 in change_requests with the supported values (service_id='SVC-31302', state='scheduled', lane_id='LANE-DATA', window_id='MW-DATA-20260420-NIGHT', planned_start='2026-04-20T01:00:00', planned_end='2026-04-20T01:36:00', downtime_minutes=11, revision=2) so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "change_requests",
+        "values": {
+          "downtime_minutes": 11,
+          "lane_id": "LANE-DATA",
+          "planned_end": "2026-04-20T01:36:00",
+          "planned_start": "2026-04-20T01:00:00",
+          "revision": 2,
+          "service_id": "SVC-31302",
+          "state": "scheduled",
+          "window_id": "MW-DATA-20260420-NIGHT"
+        },
+        "weight": 2.0,
+        "where": {
+          "change_id": "CHG-40340"
+        }
+      },
+      {
+        "description": "Held LANE-DATA's 2026-04-20 NIGHT session for CHG-40340 and left the reconciliation block and the reindex hold untouched.",
+        "id": "state_02",
+        "milestone_id": "state.primary",
+        "table": "maintenance_windows",
+        "values": {
+          "change_id": "CHG-40340",
+          "status": "busy"
+        },
+        "weight": 1.0,
+        "where": {
+          "window_id": "MW-DATA-20260420-NIGHT"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying expedite_arm_package, the 2026-04-20 outcome, the binding constraint, and the SVCOPS-0004 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "adaeze.nkemelu@brightmoor.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "SVCOPS-0004",
+            "ledger-sync",
+            "CHG-40340"
+          ]
+        ],
+        "payload_text_contains": [
+          "expedite_arm_package",
+          "2026-04-20"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "itsmdesk-004-mutation-02",
+          "task_id": "itsmdesk-004"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for SVCOPS-0004: the primary change and the stakeholder draft; no additional change, task, notice, or override.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "itsmdesk-004"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-04-21 as the documented control date for the ledger-sync arm64 pool patch; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 9 NODE for ledger-sync nodes still on an affected orrinwave-db version that OWA-2026-052 must reach at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 9 NODE of gross observed affected nodes holding a staged 12.6.4 build.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 3 NODE for nodes whose staged build was cut from the withdrawn revision.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 3 ineligible = 6 usable NODE.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 9 required − 6 usable = 3 NODE uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in NODE.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_arm_package_first_window outcome as 2026-04-23 under free LANE-DATA sessions outside the reconciliation block and the reindex hold.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_arm_package outcome as 2026-04-20 using Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated business_hours_change_with_board_exception outcome as 2026-04-17 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-23 as the independently confirmed standard readiness date for Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-17 as the independently confirmed expedited readiness date for Orrinwave's confirmed standard and early-access arm64 release dates on OWA-2026-052.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 3 NODE uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 11 active ledger-sync nodes: 8 in sync-x86 and 3 in sync-arm.",
+        "field": "nodes_total",
+        "id": "count_fleet_nodes",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Excluded NODE-LDG-10 and NODE-LDG-11 (already 12.6.4): 9 nodes still need the fix.",
+        "field": "nodes_on_fixed_version",
+        "id": "exclude_fixed_version_nodes",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted the 6 x86 nodes covered by B-12.6.4-x86-r2, validated 2026-04-12.",
+        "field": "x86_nodes_validated",
+        "id": "count_validated_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Rejected B-12.6.3-arm-r1 for the 3 arm nodes: it was cut from the withdrawn revision, so those nodes depend on the vendor's arm64 package.",
+        "field": "arm_nodes_superseded_build",
+        "id": "reject_superseded_build",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 1 x 6 + 5 = 11 minutes for the arm pool restart and confirmed it fits the 36 spendable minutes (64 - 20 charged - 8 reserve).",
+        "field": "arm_downtime_minutes",
+        "id": "test_arm_downtime_against_budget",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-04-23 NIGHT as the first free LANE-DATA session on or after the 2026-04-23 standard readiness.",
+        "field": "earliest_qualified_base_window",
+        "id": "identify_first_eligible_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the change to LANE-DATA/2026-04-20/NIGHT, the first free session on or after the 2026-04-17 early-access readiness once the reconciliation block and the reindex hold are skipped.",
+        "field": "selected_lane_window",
+        "id": "bind_selected_lane_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared 2026-04-20 with 2026-04-23: the early-access package saves 3 days and is the only authorized path inside the 2026-04-21 SLA.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_expedite_against_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 750 as the documented incremental cost for expedite_arm_package; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that business_hours_change_with_board_exception remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_arm_package_first_window, expedite_arm_package, business_hours_change_with_board_exception; selected expedite_arm_package because it alone gives the best currently authorized result under the current advisory revision and the data-lane calendar before the SLA.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-04-20 as the supported outcome date for expedite_arm_package.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-04-20 with the independent control date 2026-04-21 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "SVCOPS-0004"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated SVCOPS-0004 scope, immutable handles, mounted systems, and evidence index before investigating ADV-OW-2026-052.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SVCOPS-0004"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-2004-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for SVCOPS-0004 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "ledger-sync"
+            },
+            "expected_result_contains": {
+              "services": [
+                {
+                  "service_id": "SVC-31302"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.cis.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved service code ledger-sync to the immutable CI record through an identifier search rather than a name match against a similarly named service.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SVCOPS-0004"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-004-15"
+                },
+                {
+                  "id": "DRV-004-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the SVCOPS-0004 case folder on the shared drive and identified the approval record and the change export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "policy"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-004-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the policy folder and distinguished the effective v3 change and error-budget policy from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_id": "CHG-40340"
+            },
+            "expected_result_contains": {
+              "change_id": "CHG-40340",
+              "state": "authorize"
+            },
+            "match": "result_contains",
+            "tool": "itsm.changes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read change CHG-40340: state, lane, planned interval, downtime, restarts, and revision.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "metric": "RESTART-MIN",
+              "service_id": "SVC-31302"
+            },
+            "expected_result_contains": {
+              "meterings": [
+                {
+                  "metering_id": "MTR-31302"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.meterings.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current final RESTART-MIN metering for SVC-31302 and ignored the stale historical metering.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v3 policy for the sizing, error-budget, session, freeze, coverage, vendor-package, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "slo_id": "SLO-LDG-AVAIL"
+            },
+            "expected_result_contains": {
+              "reserve_minutes": 8,
+              "slo_id": "SLO-LDG-AVAIL"
+            },
+            "match": "result_contains",
+            "tool": "telemetry.slos.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the SLO definition SLO-LDG-AVAIL: objective, rolling window, whole-minute budget, and reserve floor.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "service_id": "SVC-31302"
+            },
+            "expected_result_contains": {
+              "changes": [
+                {
+                  "change_id": "CHG-40340"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.changes.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the change requests for SVC-31302 and separated CHG-40340 from cancelled duplicates and other CIs' changes.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-14",
+              "service_id": "SVC-31302",
+              "start_date": "2026-03-15"
+            },
+            "expected_result_contains": {
+              "incidents": [
+                {
+                  "incident_id": "INC-70850"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.incidents.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the incident ledger for SVC-31302 inside the SLO window to ground which incidents are charged, which were reclassified, and which fall outside the window.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "slo_id": "SLO-LDG-AVAIL"
+            },
+            "expected_result_contains": {
+              "budget_minutes": 64,
+              "slo_id": "SLO-LDG-AVAIL"
+            },
+            "match": "result_contains",
+            "tool": "telemetry.budget.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the error-budget view of SLO-LDG-AVAIL: window bounds, budget, reserve, and the informational raw burn, before netting the charged minutes.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "service_id": "SVC-31302"
+            },
+            "expected_result_contains": {
+              "nodes": [
+                {
+                  "node_id": "NODE-LDG-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.nodes.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the ledger-sync nodes with pool, lane, version, staged build, and canary pins before counting what a change reaches.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-04",
+              "start_date": "2026-04-14"
+            },
+            "expected_result_contains": {
+              "freezes": [
+                {
+                  "freeze_id": "FRZ-2026-15"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.freezes.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the freeze register from 2026-04-14 to 2026-05-04 for the freeze windows and the authority each names.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-27",
+              "lane_id": "LANE-DATA",
+              "start_date": "2026-04-15"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "MW-DATA-20260420-NIGHT"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the change-window calendar for 2026-04-15 onward to find the first free session that displaces no embargoed, frozen, or blocked window.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "advisory_id": "ADV-OW-2026-052"
+            },
+            "expected_result_contains": {
+              "advisory_id": "ADV-OW-2026-052",
+              "standard_release_date": "2026-04-22"
+            },
+            "match": "result_contains",
+            "tool": "vendor.advisories.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the vendor advisory ADV-OW-2026-052 for the independently confirmed standard and early-access release dates, restarts required, fee, and SLA.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-SO-0104"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-SO-0104"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-SO-0104 for its exact scope: record, lane, windows, quantity, fee allowance, and what it does not cover.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-15"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-15"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-2004-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-2004-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-2004-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-2004"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-2004"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-2004 for budget, calendar, roster, and authority remarks that qualify the system records.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-20",
+              "schedule_id": "SCHED-LDG-SEC",
+              "start_date": "2026-04-20"
+            },
+            "expected_result_contains": {
+              "shifts": [
+                {
+                  "shift_id": "SHIFT-LDG-SEC-20260420-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "oncall.shifts.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the secondary on-call shifts on SCHED-LDG-SEC by immutable shift id and responder certification for the sessions under consideration.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for SVCOPS-0004 and confirmed that ADV-OW-2026-052 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for SVCOPS-0004 and joined ADV-OW-2026-052 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for SVCOPS-0004; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for SVCOPS-0004 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-30"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-30"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for ADV-OW-2026-052 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for SVCOPS-0004 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for SVCOPS-0004, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for SVCOPS-0004: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "itsm.changes.update",
+        "any_of": [
+          {
+            "arguments": {
+              "change_id": "CHG-40340"
+            },
+            "expected_result_contains": {
+              "change_id": "CHG-40340",
+              "lane": "LANE-DATA",
+              "meta": {
+                "versionId": "2"
+              },
+              "planned_end": "2026-04-20T01:36:00",
+              "planned_start": "2026-04-20T01:00:00",
+              "state": "scheduled",
+              "window": "MW-DATA-20260420-NIGHT"
+            },
+            "match": "result_contains",
+            "tool": "itsm.changes.get"
+          }
+        ],
+        "description": "Read CHG-40340 back through itsm.changes.get after the change and confirmed the persisted provider values (change_id='CHG-40340', state='scheduled', lane='LANE-DATA', window='MW-DATA-20260420-NIGHT', planned_start='2026-04-20T01:00:00', planned_end='2026-04-20T01:36:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "change_id": "CHG-40340",
+          "lane": "LANE-DATA",
+          "meta": {
+            "versionId": "2"
+          },
+          "planned_end": "2026-04-20T01:36:00",
+          "planned_start": "2026-04-20T01:00:00",
+          "state": "scheduled",
+          "window": "MW-DATA-20260420-NIGHT"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": false,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "change_id": "CHG-40340"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "itsmdesk",
+  "instruction": "Orrinwave's high-severity database advisory is due next Tuesday and the ledger-sync fleet is only partly covered: the x86 pool has a validated build, but the arm pool's staged build came from the revision the vendor withdrew. I need to know how many nodes still need the fix, how many of those the staged builds genuinely cover, how many depend on the vendor's arm64 package, and whether the standard or early-access release lets us patch inside the SLA given the reconciliation block and the reindex hold on the data lane. Schedule the arm change on the date that holds up and draft Adaeze's update, flagging anything that would need Tunde or Inês.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "change_id": "CHG-40340",
+        "end_time": "2026-04-17T10:36:00",
+        "lane_id": "LANE-DATA",
+        "start_time": "2026-04-17T10:00:00",
+        "state": "scheduled"
+      },
+      "tool": "itsm.changes.update"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-004-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "itsm.changes.update",
+      "any_of": [
+        {
+          "arguments": {
+            "change_id": "CHG-40340"
+          },
+          "expected_result_contains": {
+            "change_id": "CHG-40340",
+            "lane": "LANE-DATA",
+            "meta": {
+              "versionId": "2"
+            },
+            "planned_end": "2026-04-20T01:36:00",
+            "planned_start": "2026-04-20T01:00:00",
+            "state": "scheduled",
+            "window": "MW-DATA-20260420-NIGHT"
+          },
+          "match": "result_contains",
+          "tool": "itsm.changes.get"
+        }
+      ],
+      "description": "Read CHG-40340 back through itsm.changes.get after the change and confirmed the persisted provider values (change_id='CHG-40340', state='scheduled', lane='LANE-DATA', window='MW-DATA-20260420-NIGHT', planned_start='2026-04-20T01:00:00', planned_end='2026-04-20T01:36:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "change_id": "CHG-40340",
+        "lane": "LANE-DATA",
+        "meta": {
+          "versionId": "2"
+        },
+        "planned_end": "2026-04-20T01:36:00",
+        "planned_start": "2026-04-20T01:00:00",
+        "state": "scheduled",
+        "window": "MW-DATA-20260420-NIGHT"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": false,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "change_id": "CHG-40340"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-SO-0104"
+    },
+    "calendar": {
+      "calendar_window": {
+        "end_date": "2026-04-27",
+        "lane_id": "LANE-DATA",
+        "start_date": "2026-04-15"
+      },
+      "lanes": [
+        "LANE-DATA",
+        "LANE-CORE"
+      ]
+    },
+    "case_reference": "SVCOPS-0004",
+    "chat": {
+      "thread_id": "CHAT-2004"
+    },
+    "drive": {
+      "case_folder_query": "SVCOPS-0004",
+      "policy_query": "policy"
+    },
+    "itsm": {
+      "change_id": "CHG-40340",
+      "service_code": "ledger-sync",
+      "service_search": {
+        "arguments": {
+          "identifier": "ledger-sync"
+        },
+        "tool": "itsm.cis.search"
+      }
+    },
+    "messages": {
+      "search_query": "SVCOPS-0004"
+    },
+    "oncall": {
+      "secondary_schedule": "SCHED-LDG-SEC"
+    },
+    "telemetry": {
+      "slo_id": "SLO-LDG-AVAIL"
+    },
+    "vendor": {
+      "advisory_id": "ADV-OW-2026-052"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "SVCOPS-0004"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated SVCOPS-0004 scope, immutable handles, mounted systems, and evidence index before investigating ADV-OW-2026-052.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "SVCOPS-0004"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-2004-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for SVCOPS-0004 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "ledger-sync"
+          },
+          "expected_result_contains": {
+            "services": [
+              {
+                "service_id": "SVC-31302"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "itsm.cis.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved service code ledger-sync to the immutable CI record through an identifier search rather than a name match against a similarly named service.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "SVCOPS-0004"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-004-15"
+              },
+              {
+                "id": "DRV-004-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the SVCOPS-0004 case folder on the shared drive and identified the approval record and the change export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "policy"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-004-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the policy folder and distinguished the effective v3 change and error-budget policy from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_id": "CHG-40340"
+          },
+          "expected_result_contains": {
+            "change_id": "CHG-40340",
+            "state": "authorize"
+          },
+          "match": "result_contains",
+          "tool": "itsm.changes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read change CHG-40340: state, lane, planned interval, downtime, restarts, and revision.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "metric": "RESTART-MIN",
+            "service_id": "SVC-31302"
+          },
+          "expected_result_contains": {
+            "meterings": [
+              {
+                "metering_id": "MTR-31302"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "itsm.meterings.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current final RESTART-MIN metering for SVC-31302 and ignored the stale historical metering.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v3 policy for the sizing, error-budget, session, freeze, coverage, vendor-package, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "slo_id": "SLO-LDG-AVAIL"
+          },
+          "expected_result_contains": {
+            "reserve_minutes": 8,
+            "slo_id": "SLO-LDG-AVAIL"
+          },
+          "match": "result_contains",
+          "tool": "telemetry.slos.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the SLO definition SLO-LDG-AVAIL: objective, rolling window, whole-minute budget, and reserve floor.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "service_id": "SVC-31302"
+          },
+          "expected_result_contains": {
+            "changes": [
+              {
+                "change_id": "CHG-40340"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "itsm.changes.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the change requests for SVC-31302 and separated CHG-40340 from cancelled duplicates and other CIs' changes.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-14",
+            "service_id": "SVC-31302",
+            "start_date": "2026-03-15"
+          },
+          "expected_result_contains": {
+            "incidents": [
+              {
+                "incident_id": "INC-70850"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "itsm.incidents.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the incident ledger for SVC-31302 inside the SLO window to ground which incidents are charged, which were reclassified, and which fall outside the window.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "slo_id": "SLO-LDG-AVAIL"
+          },
+          "expected_result_contains": {
+            "budget_minutes": 64,
+            "slo_id": "SLO-LDG-AVAIL"
+          },
+          "match": "result_contains",
+          "tool": "telemetry.budget.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the error-budget view of SLO-LDG-AVAIL: window bounds, budget, reserve, and the informational raw burn, before netting the charged minutes.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "service_id": "SVC-31302"
+          },
+          "expected_result_contains": {
+            "nodes": [
+              {
+                "node_id": "NODE-LDG-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "itsm.nodes.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the ledger-sync nodes with pool, lane, version, staged build, and canary pins before counting what a change reaches.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-04",
+            "start_date": "2026-04-14"
+          },
+          "expected_result_contains": {
+            "freezes": [
+              {
+                "freeze_id": "FRZ-2026-15"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.freezes.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the freeze register from 2026-04-14 to 2026-05-04 for the freeze windows and the authority each names.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-27",
+            "lane_id": "LANE-DATA",
+            "start_date": "2026-04-15"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "MW-DATA-20260420-NIGHT"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the change-window calendar for 2026-04-15 onward to find the first free session that displaces no embargoed, frozen, or blocked window.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "advisory_id": "ADV-OW-2026-052"
+          },
+          "expected_result_contains": {
+            "advisory_id": "ADV-OW-2026-052",
+            "standard_release_date": "2026-04-22"
+          },
+          "match": "result_contains",
+          "tool": "vendor.advisories.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the vendor advisory ADV-OW-2026-052 for the independently confirmed standard and early-access release dates, restarts required, fee, and SLA.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-SO-0104"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-SO-0104"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-SO-0104 for its exact scope: record, lane, windows, quantity, fee allowance, and what it does not cover.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-15"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-15"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-2004-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-2004-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-2004-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-2004"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-2004"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-2004 for budget, calendar, roster, and authority remarks that qualify the system records.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-04-20",
+            "schedule_id": "SCHED-LDG-SEC",
+            "start_date": "2026-04-20"
+          },
+          "expected_result_contains": {
+            "shifts": [
+              {
+                "shift_id": "SHIFT-LDG-SEC-20260420-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "oncall.shifts.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the secondary on-call shifts on SCHED-LDG-SEC by immutable shift id and responder certification for the sessions under consideration.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for SVCOPS-0004 and confirmed that ADV-OW-2026-052 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for SVCOPS-0004 and joined ADV-OW-2026-052 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-21"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-21"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for SVCOPS-0004; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for SVCOPS-0004 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-30"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-30"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for ADV-OW-2026-052 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for SVCOPS-0004 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for SVCOPS-0004, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for SVCOPS-0004: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "SVCOPS-0004"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "SVCOPS-0004"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-2004-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "ledger-sync"
+      },
+      "expected_result_contains": {
+        "services": [
+          {
+            "service_id": "SVC-31302"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "itsm.cis.search"
+    },
+    {
+      "arguments": {
+        "q": "SVCOPS-0004"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-004-15"
+          },
+          {
+            "id": "DRV-004-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "policy"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-004-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "change_id": "CHG-40340"
+      },
+      "expected_result_contains": {
+        "change_id": "CHG-40340",
+        "state": "authorize"
+      },
+      "match": "result_contains",
+      "tool": "itsm.changes.get"
+    },
+    {
+      "arguments": {
+        "metric": "RESTART-MIN",
+        "service_id": "SVC-31302"
+      },
+      "expected_result_contains": {
+        "meterings": [
+          {
+            "metering_id": "MTR-31302"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "itsm.meterings.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "slo_id": "SLO-LDG-AVAIL"
+      },
+      "expected_result_contains": {
+        "reserve_minutes": 8,
+        "slo_id": "SLO-LDG-AVAIL"
+      },
+      "match": "result_contains",
+      "tool": "telemetry.slos.get"
+    },
+    {
+      "arguments": {
+        "service_id": "SVC-31302"
+      },
+      "expected_result_contains": {
+        "changes": [
+          {
+            "change_id": "CHG-40340"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "itsm.changes.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-14",
+        "service_id": "SVC-31302",
+        "start_date": "2026-03-15"
+      },
+      "expected_result_contains": {
+        "incidents": [
+          {
+            "incident_id": "INC-70850"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "itsm.incidents.list"
+    },
+    {
+      "arguments": {
+        "slo_id": "SLO-LDG-AVAIL"
+      },
+      "expected_result_contains": {
+        "budget_minutes": 64,
+        "slo_id": "SLO-LDG-AVAIL"
+      },
+      "match": "result_contains",
+      "tool": "telemetry.budget.get"
+    },
+    {
+      "arguments": {
+        "service_id": "SVC-31302"
+      },
+      "expected_result_contains": {
+        "nodes": [
+          {
+            "node_id": "NODE-LDG-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "itsm.nodes.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-04",
+        "start_date": "2026-04-14"
+      },
+      "expected_result_contains": {
+        "freezes": [
+          {
+            "freeze_id": "FRZ-2026-15"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.freezes.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-27",
+        "lane_id": "LANE-DATA",
+        "start_date": "2026-04-15"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "MW-DATA-20260420-NIGHT"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.windows.list"
+    },
+    {
+      "arguments": {
+        "advisory_id": "ADV-OW-2026-052"
+      },
+      "expected_result_contains": {
+        "advisory_id": "ADV-OW-2026-052",
+        "standard_release_date": "2026-04-22"
+      },
+      "match": "result_contains",
+      "tool": "vendor.advisories.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-SO-0104"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-SO-0104"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-15"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-15"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-2004-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-2004-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-2004"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-2004"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-04-20",
+        "schedule_id": "SCHED-LDG-SEC",
+        "start_date": "2026-04-20"
+      },
+      "expected_result_contains": {
+        "shifts": [
+          {
+            "shift_id": "SHIFT-LDG-SEC-20260420-1"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "oncall.shifts.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-29"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-29"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-21"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-21"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-30"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-30"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "itsm.cis.search",
+    "itsm.changes.list",
+    "itsm.changes.get",
+    "itsm.meterings.list",
+    "itsm.incidents.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "telemetry.slos.get",
+    "telemetry.budget.get",
+    "itsm.nodes.list",
+    "oncall.shifts.list",
+    "calendar.freezes.list",
+    "calendar.windows.list",
+    "vendor.advisories.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "service_operations_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_22",
+        "investigation_23"
+      ],
+      "description": "Establish the isolated SVCOPS-0004 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 7.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_24"
+      ],
+      "description": "Determine the operative v1 requirement for ADV-OW-2026-052 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 8.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_15",
+        "investigation_16",
+        "investigation_25",
+        "investigation_26",
+        "investigation_28"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 9 observed less 3 excluded to 6 supported NODE for affected nodes holding a staged 12.6.4 build. Applied free LANE-DATA sessions outside the reconciliation block and the reindex hold to derive the three option outcomes without using protected, frozen, blocked, or uncovered sessions. Used the independently confirmed 2026-04-17 early-access readiness input for expedite_arm_package, then separately derived its 2026-04-20 operating outcome under the current advisory revision and the data-lane calendar before the SLA instead of treating a vendor date as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_17",
+        "investigation_18",
+        "investigation_27"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-SO-0104 only to expedite_arm_package and ADV-OW-2026-052; kept business_hours_change_with_board_exception outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_19",
+        "investigation_20",
+        "investigation_21",
+        "investigation_29"
+      ],
+      "description": "Correlate ADV-OW-2026-052 by immutable identifiers across the systems of record (itsm, telemetry, calendar, oncall, vendor, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 24.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "derive_plan_requirement",
+        "read_gross_coverage",
+        "remove_ineligible_coverage",
+        "calculate_usable_coverage",
+        "calculate_plan_gap",
+        "preserve_plan_unit",
+        "compare_baseline_plan",
+        "compare_accelerated_plan",
+        "compare_escalated_plan",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "bound_external_recovery_quantity",
+        "count_fleet_nodes",
+        "exclude_fixed_version_nodes",
+        "count_validated_coverage",
+        "reject_superseded_build",
+        "test_arm_downtime_against_budget",
+        "identify_first_eligible_window",
+        "bind_selected_lane_window",
+        "test_expedite_against_calendar"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for the ledger-sync arm64 pool patch.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for expedite_arm_package under the actual operating window and report whether the 2026-04-20 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select expedite_arm_package only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01",
+        "state_02"
+      ],
+      "description": "Persist exactly the supported 'Arm pool patch scheduled on the expedited package' change for ADV-OW-2026-052 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read ADV-OW-2026-052 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_coverage_item_or_resource",
+        "answer_shortage_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for the ledger-sync arm64 pool patch.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside SVCOPS-0004's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "1bf914be4b0b069e9857d92c1dc5fadcbf8db139a1bb870c7b0825248eaa637d",
+  "starting_records": [
+    {
+      "resource_id": "CHG-40340",
+      "resource_type": "ChangeRequest",
+      "status": "authorize",
+      "system": "itsm"
+    },
+    {
+      "resource_id": "CHG-40339",
+      "resource_type": "ChangeRequest",
+      "status": "scheduled",
+      "system": "itsm"
+    },
+    {
+      "resource_id": "CHG-40336",
+      "resource_type": "ChangeRequest",
+      "status": "scheduled",
+      "system": "itsm"
+    }
+  ],
+  "task_id": "itsmdesk-004",
+  "title": "Patch the ledger-sync arm pool before the advisory SLA",
+  "workflow": {
+    "answer_fields": 28,
+    "readbacks": 1,
+    "reads": 30,
+    "writes": 2
+  },
+  "world": {
+    "id": "brightmoor-serviceops-v1",
+    "name": "Brightmoor Commerce — Service Operations",
+    "organization_id": "ORG-BRIGHTMOOR",
+    "primary_site": "DC-HALDEN",
+    "systems": [
+      "itsm",
+      "telemetry",
+      "calendar",
+      "oncall",
+      "vendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

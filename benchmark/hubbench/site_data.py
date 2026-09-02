@@ -505,6 +505,112 @@ def model_run_summaries() -> list[dict[str, Any]]:
     return summaries
 
 
+COVERAGE_REPORT = BENCHMARK_ROOT / "reports" / "harbor-hub-coverage.json"
+HF_CENSUS = BENCHMARK_ROOT / "reports" / "hf-dataset-census.json"
+
+
+def methodology_sections(entries: list[dict[str, Any]], pub: dict[str, Any], receipt: dict[str, Any]) -> list[dict[str, str]]:
+    """The explorer's methodology: admission gate, families, hub + Hugging Face census, surfaces, ranking rules — all computed."""
+
+    all_tasks = [task for entry in entries for task in entry["tasks"]]
+    quals = [entry["qualification"] for entry in entries]
+    executions = sum(q["executions"] for q in quals)
+    oracle = sum(q["oracle"]["passes"] for q in quals)
+    controls = sum(sum(policy["task_count"] for policy in q["policies"] if policy["policy"] != "oracle") for q in quals)
+    omissions = sum(q["mutation_omissions"]["detected"] for q in quals)
+    omissions_total = sum(q["mutation_omissions"]["total"] for q in quals)
+    chain_pass = sum(entry["chain"]["passingTasks"] for entry in entries)
+    families_text = " ".join(
+        f"{entry['family'].name} ({entry['family'].cluster}; {len(entry['tasks'])} tasks, {len(entry['family'].servers) + 1} mock servers, {len(entry['tools'])} tools, {entry['tables']} tables): {next((f['employeeQuestion'] for f in _coverage_families() if f['family'] == entry['slug']), '')}"
+        for entry in entries
+    )
+    sections = [
+        {
+            "title": "Admission gate",
+            "body": (
+                f"Every released task passed the same gate before it counted: the reasoning-chain audit graded the full dependent chain "
+                f"(hop classes H1–H13, depth 8), the packaged oracle scored a HubScore of exactly 100, a second execution reproduced that episode "
+                f"byte for byte, and ten negative-control policies were rejected. Across {len(entries)} families the harness executed {executions:,} isolated "
+                f"episodes: {oracle}/{len(all_tasks)} oracle strict passes, {controls:,} negative-control episodes with 0 false accepts, "
+                f"{omissions}/{omissions_total} mutation omissions detected, chain audit {chain_pass}/{len(all_tasks)}. Numbers are recomputed from "
+                f"the committed reports by the tests; nothing is typed by hand."
+            ),
+        },
+        {
+            "title": "HubScore",
+            "body": (
+                "A task's rubric is a set of milestones (identity, investigation, authority, correlation, procedure, decision, alternatives, state change, "
+                "answer, containment), each made of atomic checks with fixed weights that sum to 100. Required investigations must precede the primary "
+                "write and the readback must follow it; the graded answer covers every intermediate derivation, and writes outside the task's allowed "
+                "tables cost containment. A strict pass means every milestone passes. There is no LLM judge and no prescribed call order."
+            ),
+        },
+        {"title": f"The {len(entries)} released families", "body": families_text},
+        {"title": "Harbor Hub census", "body": _hub_census_text()},
+        {"title": "Hugging Face census", "body": _hf_census_text()},
+        {
+            "title": "Surfaces",
+            "body": (
+                "Every family world is one isolated SQLite database behind provider-shaped tools. The same world is reachable as MCP servers over stdio "
+                "and over streamable HTTP (one endpoint per mock provider, the shape Harbor task packages mount), as a REST API, as a server-rendered web "
+                "console with forms for every write tool, and as a terminal `tool` CLI — state written on one surface is visible on every other, and one "
+                "session spread across surfaces grades as one episode. The sealed verifier contract, the expected answer, and the call trace are never "
+                "readable on any surface."
+            ),
+        },
+        {
+            "title": "Ranking and disclosure",
+            "body": (
+                "A leaderboard row is admitted only when one Harbor job completes every published task of the tagged release exactly once with zero errors and "
+                "zero retries; every trial is bound to the published dataset and task, its verdict must equal the Harbor reward, and its cost and token receipt "
+                "is kept. Anything else is a disclosed partial run: its trajectories are published, its scores are never ranked. Qualification controls are "
+                "shown below the ranked table and never receive ranks."
+                + (
+                    f" Published so far: {len(pub['publishedTasks'])} tasks in v{pub['version']} ({', '.join(pub['publishedFamilies'])}); newer families are queued for the next tagged release."
+                    if pub.get("publishedTasks")
+                    else ""
+                )
+            ),
+        },
+    ]
+    return sections
+
+
+def _coverage_families() -> list[dict[str, Any]]:
+    if not COVERAGE_REPORT.is_file():
+        return []
+    return read_json(COVERAGE_REPORT).get("hubbench", {}).get("families", [])
+
+
+def _hub_census_text() -> str:
+    if not COVERAGE_REPORT.is_file():
+        return "Coverage report not built."
+    coverage = read_json(COVERAGE_REPORT)
+    totals = coverage["totals"]
+    filt = coverage.get("filter", {}).get("totals", coverage.get("filter", {}))
+    return (
+        f"On {coverage['observedAt']} the Harbor Hub listed {totals['datasets']} public datasets ({totals['tasks']:,} upstream tasks) in {totals['domainClusters']} professional-domain clusters. "
+        f"Each dataset is classified by interface and domain: {filt.get('mcp', 0)} expose MCP or tool-calling surfaces, {filt.get('domainSpecific', 0)} sit in a professional domain, "
+        f"{filt.get('selected', 0)} are selected (either), {filt.get('selectedAnd', 0)} both. Every selected dataset maps to exactly one Blobfish counterpart — a first-party benchmark, a companion world, "
+        f"or a HubBench family — {filt.get('coverage', {}).get('released', 0)} already released, {filt.get('coverage', {}).get('planned', 0)} planned. "
+        "HubBench is one family per cluster, so every open-source benchmark domain on the hub gets an executable, oracle-proven counterpart; seed shapes are named per family for provenance and no upstream task is copied."
+    )
+
+
+def _hf_census_text() -> str:
+    if not HF_CENSUS.is_file():
+        return "Hugging Face census not built."
+    census = read_json(HF_CENSUS)
+    total = census["platform"]["totalDatasets"]["value"]
+    filt = census["filter"].get("totals", census["filter"])
+    rows = census.get("datasets", [])
+    return (
+        f"The same filter applied to Hugging Face ({total:,} datasets on the platform): {len(rows)} agent-benchmark candidates surfaced by {len(census.get('queries', []))} fixed searches, "
+        f"{filt.get('selected', 0)} selected ({filt.get('mcp', 0)} MCP or tool-calling, {filt.get('domainSpecific', 0)} domain-specific), {filt.get('coverage', {}).get('released', 0)} with a released counterpart, "
+        f"{filt.get('coverage', {}).get('planned', 0)} planned. Recall is search-based, not an exhaustive scan; Blobfish's own datasets are counterparts, not candidates."
+    )
+
+
 def build() -> dict[str, Any]:
     pub = publication()
     entries = load_families()
@@ -578,7 +684,7 @@ def build() -> dict[str, Any]:
         "samples": samples,
         "tools": tools,
         "trajectories": trajectories,
-        "methodology": [],
+        "methodology": methodology_sections(entries, pub, receipt),
         "_meta": {
             "families": [
                 {

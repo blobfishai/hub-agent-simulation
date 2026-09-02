@@ -1,6 +1,6 @@
 # hubbench-hostops-006 — Re-home the patch verifications stranded by the RUNNER-1 outage
 
-HubBench 1.1.0 · family **HostOps** (`hostops`, cluster `terminal-operations`) · decision mode `schedule` · role `platform_operations_coordinator` · as of 2026-04-13.
+HubBench 1.2.0 · family **HostOps** (`hostops`, cluster `terminal-operations`) · decision mode `schedule` · role `platform_operations_coordinator` · as of 2026-04-13.
 
 Host-operations recovery decisions against a Linux service inventory, cron/CI scheduler, backup catalog with retention and vendor retrievals, release build farm, and approval records.
 

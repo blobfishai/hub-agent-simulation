@@ -170,12 +170,18 @@ def test_harbor_dataset_manifest_is_already_in_publisher_canonical_form():
     assert manifest.endswith("\n\n")
 
 
-def test_hugging_face_payload_has_strict_reference_samples_for_every_family():
+def test_hugging_face_payload_has_strict_reference_samples_for_published_and_candidate_families():
     index = json.loads((RELEASE / "huggingface" / "trajectories" / "index.json").read_text(encoding="utf-8"))
+    publication = json.loads((HUBBENCH_ROOT / "reports" / "publication.json").read_text(encoding="utf-8"))
     assert index["schema_version"] == "hubbench.trajectory-index.v1"
     assert index["version"] == _release_receipt()["version"]
     samples = index["reference"]
-    assert {sample["family"] for sample in samples} == set(dist.discover_families())
+    sample_families = {sample["family"] for sample in samples}
+    published_families = set(publication["publishedFamilies"])
+    discovered_families = set(dist.discover_families())
+    assert published_families <= sample_families <= discovered_families
+    if publication["version"] == index["version"]:
+        assert sample_families == published_families
     for sample in samples:
         path = RELEASE / "huggingface" / "trajectories" / sample["path"]
         public = json.loads(path.read_text(encoding="utf-8"))

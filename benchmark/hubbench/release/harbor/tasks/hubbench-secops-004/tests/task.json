@@ -1,0 +1,2996 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "invalidation_orders",
+    "mutations",
+    "note_drafts"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for expedite_vendor_invalidation.",
+        "type": "string"
+      },
+      "anomalous_sessions": {
+        "description": "Collector sessions flagged high risk because they were replayed from the unregistered egress.",
+        "type": "integer"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for standard_invalidation_plan.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "earliest_qualified_window": {
+        "description": "First non-displacing responder window on or after standard invalidation readiness (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for provider_emergency_signout.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_days_saved": {
+        "description": "Days the expedited invalidation job saves after the window calendar is reapplied.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Halyard's confirmed standard and expedited invalidation-job dates on IR-66207.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered CREDENTIAL_OBJECT that the external recovery must cover.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "grant 5488 provider-issued tokens the tenant cannot revoke",
+        "type": "integer"
+      },
+      "metered_live_objects": {
+        "description": "Live federated sessions per gateway taken from the current final inventory snapshot, not the March incident spike.",
+        "type": "integer"
+      },
+      "object_unit": {
+        "description": "Unit of the metered session count (CREDENTIAL_OBJECT).",
+        "type": "string"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for tenant-revocable SESSION-FED objects in the IAM register before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "principals_in_scope": {
+        "description": "Field gateways in the alert window whose collector sessions must be invalidated.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: CREDENTIAL_OBJECT.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing standard_invalidation_plan, expedite_vendor_invalidation, provider_emergency_signout.",
+        "enum": [
+          "standard_invalidation_plan",
+          "expedite_vendor_invalidation",
+          "provider_emergency_signout"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_quantity": {
+        "description": "federated session objects required for the seven field gateways at the current 1-session-per-device snapshot",
+        "type": "integer"
+      },
+      "selected_responder_window": {
+        "description": "Responder and window used by the selected option, as RESPONDER/YYYY-MM-DD/SESSION.",
+        "type": "string"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered CREDENTIAL_OBJECT after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Halyard's confirmed standard and expedited invalidation-job dates on IR-66207.",
+        "type": "string"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing grant 5488 provider-issued tokens the tenant cannot revoke.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "anomalous_sessions",
+      "baseline_completion",
+      "business_need_date",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "earliest_qualified_window",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "ineligible_coverage_quantity",
+      "metered_live_objects",
+      "object_unit",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "principals_in_scope",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_quantity",
+      "selected_responder_window",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "usable_coverage_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-06-08",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "containment readiness versus the non-displacing responder window calendar before the session; grant 5488 provider-issued tokens the tenant cannot revoke = 4 CREDENTIAL_OBJECT; uncovered scope = 2 CREDENTIAL_OBJECT",
+    "calculations": [
+      {
+        "description": "Preserved 2026-06-15 as the documented control date for the field-gateway session containment for the regulator session; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 7 CREDENTIAL_OBJECT for federated session objects required for the seven field gateways at the current 1-session-per-device snapshot at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 9 CREDENTIAL_OBJECT of gross observed tenant-revocable SESSION-FED objects in the IAM register.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 4 CREDENTIAL_OBJECT for grant 5488 provider-issued tokens the tenant cannot revoke.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 4 ineligible = 5 usable CREDENTIAL_OBJECT.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 7 required − 5 usable = 2 CREDENTIAL_OBJECT uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in CREDENTIAL_OBJECT.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_invalidation_plan outcome as 2026-06-19 under regular responder windows that do not displace protected blocks.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_vendor_invalidation outcome as 2026-06-12 using Halyard's confirmed standard and expedited invalidation-job dates on IR-66207.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated provider_emergency_signout outcome as 2026-06-10 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-19 as the independently confirmed standard readiness date for Halyard's confirmed standard and expedited invalidation-job dates on IR-66207.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-12 as the independently confirmed expedited readiness date for Halyard's confirmed standard and expedited invalidation-job dates on IR-66207.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 2 CREDENTIAL_OBJECT uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Used the 2026-06-05 snapshot of 1 live session per gateway; did not use the 2-session March incident spike.",
+        "field": "metered_live_objects",
+        "id": "calculate_metered_live_objects",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the metered session count in CREDENTIAL_OBJECT.",
+        "field": "object_unit",
+        "id": "preserve_object_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Kept the 7 field gateways that used the collector identity in the alert window in scope.",
+        "field": "principals_in_scope",
+        "id": "apply_device_scope_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted the 2 replayed collector sessions from the unregistered egress and separated them from the registered collector session.",
+        "field": "anomalous_sessions",
+        "id": "count_anomalous_sessions",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-06-19 (RESP-3 AM) as the first free window on or after the 2026-06-19 standard readiness.",
+        "field": "earliest_qualified_window",
+        "id": "identify_first_nondisplacing_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the expedited plan to RESP-1/2026-06-12/PM, the first free window on or after the 2026-06-12 expedited readiness.",
+        "field": "selected_responder_window",
+        "id": "bind_selected_responder_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the expedited 2026-06-12 window date with the standard 2026-06-19 date: expediting saves 7 days and is the only authorized path inside the control date.",
+        "field": "expedite_days_saved",
+        "id": "test_expedite_against_window_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 180 as the documented incremental cost for expedite_vendor_invalidation; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that provider_emergency_signout remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_invalidation_plan, expedite_vendor_invalidation, provider_emergency_signout; selected expedite_vendor_invalidation because it alone gives the best currently authorized result under containment readiness versus the non-displacing responder window calendar before the session.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-06-12 as the supported outcome date for expedite_vendor_invalidation.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-06-12 with the independent control date 2026-06-15 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located SESSION-FED using immutable identifiers and preserved effective revision v1: username svc-telemetry-ingest resolves to ID-41050 and open ticket SR-61272 under alert AL-77702 (rule RUL-TOKENREPLAY-3 v3, enabled); svc-telemetry-metrics' spot-check (SR-61268) is a different principal and AL-77719 is a suppressed duplicate from the retired v2 rule.",
+        "sources": [
+          "iam",
+          "siem",
+          "messages"
+        ],
+        "statement": "SEC-0004: username svc-telemetry-ingest resolves to ID-41050 and open ticket SR-61272 under alert AL-77702 (rule RUL-TOKENREPLAY-3 v3, enabled); svc-telemetry-metrics' spot-check (SR-61268) is a different principal and AL-77719 is a suppressed duplicate from the retired v2 rule; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective ticket and playbook to establish 7 CREDENTIAL_OBJECT for federated session objects required for the seven field gateways at the current 1-session-per-device snapshot, with control date 2026-06-15.",
+        "sources": [
+          "servicedesk",
+          "playbooks",
+          "drive"
+        ],
+        "statement": "The effective ticket and playbook establish federated session objects required for the seven field gateways at the current 1-session-per-device snapshot = 7 CREDENTIAL_OBJECT: the seven gateways are metered at 1 live session each, so 7 objects are required. The control date is 2026-06-15 (Solène Delacroix: the regulator session is Monday 2026-06-15 and the containment evidence must be ready before it)."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 9 observed less 4 excluded to 5 supported CREDENTIAL_OBJECT for tenant-revocable SESSION-FED objects in the IAM register.",
+        "sources": [
+          "iam",
+          "oncall",
+          "drive"
+        ],
+        "statement": "the register workbook shows 9 SESSION-FED objects in gross; grant 5488 (4 objects) is provider-issued and register-flagged as not tenant-revocable, so 5 objects are tenant-revocable; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-06-12 expedited readiness input for expedite_vendor_invalidation, then separately derived its 2026-06-12 operating outcome under containment readiness versus the non-displacing responder window calendar before the session instead of treating a vendor promise as authorization or a completion date.",
+        "sources": [
+          "idpvendor",
+          "messages"
+        ],
+        "statement": "Halyard's confirmed standard and expedited invalidation-job dates on IR-66207: Halyard IR-66207 confirms the standard invalidation job 2026-06-18 and expedited 2026-06-11 (+USD 180); the register reflects it the next business day; a vendor confirmation alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied regular responder windows that do not displace protected blocks to derive the three option outcomes without using protected or blocked windows.",
+        "sources": [
+          "oncall",
+          "drive"
+        ],
+        "statement": "regular responder windows that do not displace protected blocks: the first free window on or after 2026-06-12 is RESP-1 PM on 2026-06-12; on or after 2026-06-19 it is RESP-3 AM on 2026-06-19; RESP-2 AM on 2026-06-15 is protected; protected and blocked windows cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-SO-0104 only to expedite_vendor_invalidation and SESSION-FED; kept provider_emergency_signout outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-SO-0104 covers one Halyard invalidation up to 3 objects with an expedite fee up to USD 200; a federation-wide emergency sign-out and direct revocation of grant 5488 need the CISO. The approval does not select an option in advance and does not authorize provider_emergency_signout."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected expedite_vendor_invalidation: it is the best currently authorized response that satisfies containment readiness versus the non-displacing responder window calendar before the session.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "GRC needs the invalidation evidenced by 2026-06-15 and will otherwise escalate; a faster or broader action has value only if it remains inside containment readiness versus the non-displacing responder window calendar before the session."
+      }
+    ],
+    "mode": "plan",
+    "options": [
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-06-19",
+        "consequence": "standard invalidation plan waits for Halyard's 2026-06-18 job, register 2026-06-19, first free window 2026-06-19 (RESP-3 AM); it costs nothing but lands 4 days after the regulator session.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "standard_invalidation_plan",
+        "incremental_cost": 0,
+        "label": "standard_invalidation_plan: outcome 2026-06-19, incremental cost USD 0, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "APPROVED",
+        "completion": "2026-06-12",
+        "consequence": "expedite vendor invalidation invalidates 2 provider-issued tokens by 2026-06-11, register 2026-06-12, and the free RESP-1 PM window on 2026-06-12 completes the evidence three days before the session for USD 180, inside AP-SO-0104.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "expedite_vendor_invalidation",
+        "incremental_cost": 180,
+        "label": "expedite_vendor_invalidation: outcome 2026-06-12, incremental cost USD 180, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-06-10",
+        "consequence": "provider emergency sign-out would complete on 2026-06-10 (RESP-2 PM) for a USD 60 emergency-job charge, 2 days earlier, but a federation-wide emergency sign-out needs the CISO, which AP-SO-0104 does not carry.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "provider_emergency_signout",
+        "incremental_cost": 60,
+        "label": "provider_emergency_signout: outcome 2026-06-10, incremental cost USD 60, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "expedite_vendor_invalidation is the best currently authorized response that satisfies containment readiness versus the non-displacing responder window calendar before the session and lands 3 day(s) on or before the control date.",
+    "selected_completion": "2026-06-12",
+    "selected_cost": 180,
+    "selected_option": "expedite_vendor_invalidation"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "accelerated_completion": "2026-06-12",
+      "anomalous_sessions": 2,
+      "baseline_completion": "2026-06-19",
+      "business_need_date": "2026-06-15",
+      "coverage_item_or_resource": "SESSION-FED",
+      "decision_timing_status": "ON_TIME",
+      "earliest_qualified_window": "2026-06-19",
+      "escalated_completion": "2026-06-10",
+      "escalation_approval_required": 1,
+      "expedite_days_saved": 7,
+      "expedited_external_readiness": "2026-06-12",
+      "external_recovery_quantity": 2,
+      "ineligible_coverage_quantity": 4,
+      "metered_live_objects": 1,
+      "object_unit": "CREDENTIAL_OBJECT",
+      "observed_coverage_quantity": 9,
+      "outcome_vs_control_days": -3,
+      "principals_in_scope": 7,
+      "quantity_unit": "CREDENTIAL_OBJECT",
+      "recommended_incremental_cost_usd": 180,
+      "recommended_option": "expedite_vendor_invalidation",
+      "recommended_outcome_date": "2026-06-12",
+      "required_quantity": 7,
+      "selected_responder_window": "RESP-1/2026-06-12/PM",
+      "shortage_quantity": 2,
+      "standard_external_readiness": "2026-06-19",
+      "usable_coverage_quantity": 5
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'expedite_vendor_invalidation', tied to SESSION-FED, revision v1, and the selected expedite_vendor_invalidation outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-06-12', tied to SESSION-FED, revision v1, and the selected expedite_vendor_invalidation outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported coverage item or resource as 'SESSION-FED', tied to SESSION-FED, revision v1, and the selected expedite_vendor_invalidation outcome.",
+        "field": "coverage_item_or_resource",
+        "id": "answer_coverage_item_or_resource",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported shortage quantity as 2, tied to SESSION-FED, revision v1, and the selected expedite_vendor_invalidation outcome.",
+        "field": "shortage_quantity",
+        "id": "answer_shortage_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to SESSION-FED, revision v1, and the selected expedite_vendor_invalidation outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required SESSION-FED to reach business outcome 'Expedited invalidation order submitted' through idpvendor.orders.create with exact provider-critical values vendor_id='VND-HALYARD', confirmation_id='CONF-HAL-66207', credential_class='SESSION-FED', object_count=2, service_option='expedited'. The audited change binds selected option expedite_vendor_invalidation, approval AP-SO-0104, and constraint containment readiness versus the non-displacing responder window calendar before the session; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "vendor_id",
+          "confirmation_id",
+          "credential_class",
+          "object_count",
+          "service_option"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "confirmation_id": "CONF-HAL-66207",
+            "credential_class": "SESSION-FED",
+            "object_count": 2,
+            "service_option": "expedited",
+            "vendor_id": "VND-HALYARD"
+          },
+          "tool": "idpvendor.orders.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "IVO-3401",
+          "status": "SUBMITTED",
+          "table_name": "invalidation_orders",
+          "tool": "idpvendor.orders.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "secops-004-mutation-01",
+          "task_id": "secops-004"
+        }
+      },
+      {
+        "description": "Persisted IVO-3401 in invalidation_orders with the supported values (vendor_id='VND-HALYARD', confirmation_id='CONF-HAL-66207', credential_class='SESSION-FED', object_count=2, service_option='expedited', expected_ready_date='2026-06-11', status='SUBMITTED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "invalidation_orders",
+        "values": {
+          "confirmation_id": "CONF-HAL-66207",
+          "credential_class": "SESSION-FED",
+          "expected_ready_date": "2026-06-11",
+          "object_count": 2,
+          "service_option": "expedited",
+          "status": "SUBMITTED",
+          "vendor_id": "VND-HALYARD"
+        },
+        "weight": 2.0,
+        "where": {
+          "order_id": "IVO-3401"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying expedite_vendor_invalidation, the 2026-06-12 outcome, the binding constraint, and the SEC-0004 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "solene.delacroix@kestrelgrid.example; soc-oncall@kestrelgrid.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "SEC-0004",
+            "svc-telemetry-ingest",
+            "SR-61272"
+          ]
+        ],
+        "payload_text_contains": [
+          "expedite_vendor_invalidation",
+          "2026-06-12"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "secops-004-mutation-02",
+          "task_id": "secops-004"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for SEC-0004: the primary change and the stakeholder draft; no additional invalidation order, revocation, or bridge.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "secops-004"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-06-15 as the documented control date for the field-gateway session containment for the regulator session; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 7 CREDENTIAL_OBJECT for federated session objects required for the seven field gateways at the current 1-session-per-device snapshot at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 9 CREDENTIAL_OBJECT of gross observed tenant-revocable SESSION-FED objects in the IAM register.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 4 CREDENTIAL_OBJECT for grant 5488 provider-issued tokens the tenant cannot revoke.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 9 observed − 4 ineligible = 5 usable CREDENTIAL_OBJECT.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 7 required − 5 usable = 2 CREDENTIAL_OBJECT uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in CREDENTIAL_OBJECT.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated standard_invalidation_plan outcome as 2026-06-19 under regular responder windows that do not displace protected blocks.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated expedite_vendor_invalidation outcome as 2026-06-12 using Halyard's confirmed standard and expedited invalidation-job dates on IR-66207.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated provider_emergency_signout outcome as 2026-06-10 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-19 as the independently confirmed standard readiness date for Halyard's confirmed standard and expedited invalidation-job dates on IR-66207.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-12 as the independently confirmed expedited readiness date for Halyard's confirmed standard and expedited invalidation-job dates on IR-66207.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 2 CREDENTIAL_OBJECT uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Used the 2026-06-05 snapshot of 1 live session per gateway; did not use the 2-session March incident spike.",
+        "field": "metered_live_objects",
+        "id": "calculate_metered_live_objects",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Kept the metered session count in CREDENTIAL_OBJECT.",
+        "field": "object_unit",
+        "id": "preserve_object_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Kept the 7 field gateways that used the collector identity in the alert window in scope.",
+        "field": "principals_in_scope",
+        "id": "apply_device_scope_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted the 2 replayed collector sessions from the unregistered egress and separated them from the registered collector session.",
+        "field": "anomalous_sessions",
+        "id": "count_anomalous_sessions",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2026-06-19 (RESP-3 AM) as the first free window on or after the 2026-06-19 standard readiness.",
+        "field": "earliest_qualified_window",
+        "id": "identify_first_nondisplacing_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the expedited plan to RESP-1/2026-06-12/PM, the first free window on or after the 2026-06-12 expedited readiness.",
+        "field": "selected_responder_window",
+        "id": "bind_selected_responder_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the expedited 2026-06-12 window date with the standard 2026-06-19 date: expediting saves 7 days and is the only authorized path inside the control date.",
+        "field": "expedite_days_saved",
+        "id": "test_expedite_against_window_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 180 as the documented incremental cost for expedite_vendor_invalidation; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that provider_emergency_signout remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of standard_invalidation_plan, expedite_vendor_invalidation, provider_emergency_signout; selected expedite_vendor_invalidation because it alone gives the best currently authorized result under containment readiness versus the non-displacing responder window calendar before the session.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-06-12 as the supported outcome date for expedite_vendor_invalidation.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-06-12 with the independent control date 2026-06-15 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "SEC-0004"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated SEC-0004 scope, immutable handles, mounted systems, and evidence index before investigating SESSION-FED.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SEC-0004"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1004-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for SEC-0004 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "svc-telemetry-ingest"
+            },
+            "expected_result_contains": {
+              "identities": [
+                {
+                  "identity_id": "ID-41050"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.identities.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved username svc-telemetry-ingest to the immutable identity record through an identifier search rather than a name match against a similarly named identity.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SEC-0004"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-004-15"
+                },
+                {
+                  "id": "DRV-004-03"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the SEC-0004 case folder on the shared drive and identified the approval record and the ticket export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "playbook"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-004-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the playbook folder and distinguished the effective v5 containment playbook from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "ticket_id": "SR-61272"
+            },
+            "expected_result_contains": {
+              "status": "open",
+              "ticket_id": "SR-61272"
+            },
+            "match": "result_contains",
+            "tool": "servicedesk.tickets.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active ticket SR-61272: object basis, principals in scope, tier, and review durations.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-41050",
+              "metric": "LIVE-SESSIONS"
+            },
+            "expected_result_contains": {
+              "inventory": [
+                {
+                  "inventory_id": "INV-41050"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.inventory.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current final credential-inventory snapshot for ID-41050 (LIVE-SESSIONS) and ignored the stale historical snapshot.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v5 playbook for the sizing, revocable-object, vendor-invalidation, window, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "tier_code": "T2-CONFIRMED"
+            },
+            "expected_result_contains": {
+              "tier_code": "T2-CONFIRMED"
+            },
+            "match": "result_contains",
+            "tool": "playbooks.tiers.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the containment tier record T2-CONFIRMED: immediate-revocation rule, owner-confirmation rule, authority level, and SLA.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-41050"
+            },
+            "expected_result_contains": {
+              "tickets": [
+                {
+                  "ticket_id": "SR-61272"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "servicedesk.tickets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the tickets that define the requirement (SR-61272) and excluded superseded or out-of-scope tickets.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "alert_id": "AL-77702",
+              "kind": "token_replay"
+            },
+            "expected_result_contains": {
+              "events": [
+                {
+                  "event_id": "EV-77702-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "siem.events.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the correlated events behind AL-77702 to ground what actually happened, from which source, and in which window.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "credential_class": "SESSION-FED"
+            },
+            "expected_result_contains": {
+              "grants": [
+                {
+                  "grant_id": "GS-FED-5501"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.grants.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every SESSION-FED grant with object count, expiry, status, and owner deferrals before netting the revocable coverage.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-06-23",
+              "start_date": "2026-06-10"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "OCW-1-20260612-PM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "oncall.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the responder window calendar for 2026-06-10 onward to find the first free window that displaces no protected or blocked block.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-HAL-66207"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-HAL-66207",
+              "standard_ready_date": "2026-06-18"
+            },
+            "match": "result_contains",
+            "tool": "idpvendor.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the vendor invalidation confirmation CONF-HAL-66207 for the independently confirmed standard and expedited job dates and the expedite fee.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-SO-0104"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-SO-0104"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-SO-0104 for its exact scope: record, object count, vendor, fee allowance, and what it does not cover.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-15"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-15"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1004-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1004-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1004-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1004"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1004"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the SOC chat thread CHAT-1004 for grant, window, and authority remarks that qualify the system records.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-41050"
+            },
+            "expected_result_contains": {
+              "total": 0
+            },
+            "match": "result_contains",
+            "tool": "oncall.bridges.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the incident bridges that fix the review scope by immutable id.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "alert_id": "AL-77702"
+            },
+            "expected_result_contains": {
+              "alert_id": "AL-77702",
+              "status": "open"
+            },
+            "match": "result_contains",
+            "tool": "siem.alerts.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read alert AL-77702 with its detection rule version and status, and distinguished it from the duplicate or retired-rule alert on the same identity.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "rule_id": "RUL-TOKENREPLAY-3"
+            },
+            "expected_result_contains": {
+              "rule_id": "RUL-TOKENREPLAY-3"
+            },
+            "match": "result_contains",
+            "tool": "siem.rules.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read detection rule RUL-TOKENREPLAY-3 and confirmed its version was enabled at the alert time, the corroboration the tier rule requires.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-41050"
+            },
+            "expected_result_contains": {
+              "sessions": [
+                {
+                  "session_id": "SES-004-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.sessions.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the sessions of ID-41050 with source, geo, device, and risk to separate the anomalous session from the owner's own.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-41050"
+            },
+            "expected_result_contains": {
+              "factors": [
+                {
+                  "factor_id": "FAC-004-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "iam.factors.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the MFA factors enrolled for ID-41050 to establish which factor was used or bypassed.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identity_id": "ID-41050"
+            },
+            "expected_result_contains": {
+              "hosts": [
+                {
+                  "host_id": "H-004-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "edr.hosts.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the EDR hosts used by ID-41050 with their isolation state and detections.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "credential_class": "SESSION-FED"
+            },
+            "expected_result_contains": {
+              "credential_class": "SESSION-FED"
+            },
+            "match": "result_contains",
+            "tool": "iam.classes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the credential class record for SESSION-FED: object kind, revocation channel, and privilege.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for SEC-0004 and confirmed that SESSION-FED is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-19"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-19"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for SEC-0004 and joined SESSION-FED to the current authority and evidence records by immutable identity.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for SEC-0004; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for SEC-0004 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for SESSION-FED and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_30",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for SEC-0004 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_31",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for SEC-0004, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_32",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-004-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-004-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for SEC-0004: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_33",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "idpvendor.orders.create",
+        "any_of": [
+          {
+            "arguments": {
+              "order_id": "IVO-3401"
+            },
+            "expected_result_contains": {
+              "expected_ready_date": "2026-06-11",
+              "object_count": 2,
+              "order_id": "IVO-3401",
+              "service_option": "expedited",
+              "status": "SUBMITTED"
+            },
+            "match": "result_contains",
+            "tool": "idpvendor.orders.get"
+          }
+        ],
+        "description": "Read IVO-3401 back through idpvendor.orders.get after the change and confirmed the persisted provider values (order_id='IVO-3401', object_count=2, service_option='expedited', expected_ready_date='2026-06-11', status='SUBMITTED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "expected_ready_date": "2026-06-11",
+          "object_count": 2,
+          "order_id": "IVO-3401",
+          "service_option": "expedited",
+          "status": "SUBMITTED"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "order_id": "IVO-3401"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "secops",
+  "instruction": "GRC is pushing to get the telemetry collector's federated sessions invalidated and evidenced quickly because the regulator session is Monday. The requirement is sized per gateway and part of what the register lists is provider-issued, so we cannot revoke it ourselves. I need to know how many session objects the seven gateways really need at the current snapshot, how much of the register we can actually revoke, whether Halyard's standard or expedited job gets us there in time for the date GRC gave, and what a federation-wide emergency sign-out would involve. Place the invalidation order that is actually approved, then draft the update for Solène and the on-call channel.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "confirmation_id": "CONF-HAL-66207",
+        "credential_class": "SESSION-FED",
+        "object_count": 6,
+        "service_option": "expedited",
+        "vendor_id": "VND-HALYARD"
+      },
+      "tool": "idpvendor.orders.create"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-004-02"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "idpvendor.orders.create",
+      "any_of": [
+        {
+          "arguments": {
+            "order_id": "IVO-3401"
+          },
+          "expected_result_contains": {
+            "expected_ready_date": "2026-06-11",
+            "object_count": 2,
+            "order_id": "IVO-3401",
+            "service_option": "expedited",
+            "status": "SUBMITTED"
+          },
+          "match": "result_contains",
+          "tool": "idpvendor.orders.get"
+        }
+      ],
+      "description": "Read IVO-3401 back through idpvendor.orders.get after the change and confirmed the persisted provider values (order_id='IVO-3401', object_count=2, service_option='expedited', expected_ready_date='2026-06-11', status='SUBMITTED') rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "expected_ready_date": "2026-06-11",
+        "object_count": 2,
+        "order_id": "IVO-3401",
+        "service_option": "expedited",
+        "status": "SUBMITTED"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "order_id": "IVO-3401"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-SO-0104"
+    },
+    "case_reference": "SEC-0004",
+    "chat": {
+      "thread_id": "CHAT-1004"
+    },
+    "drive": {
+      "case_folder_query": "SEC-0004",
+      "playbook_query": "playbook"
+    },
+    "iam": {
+      "credential_class": "SESSION-FED",
+      "identity_search": {
+        "arguments": {
+          "identifier": "svc-telemetry-ingest"
+        },
+        "tool": "iam.identities.search"
+      },
+      "systems": [
+        "iam"
+      ],
+      "username": "svc-telemetry-ingest"
+    },
+    "idpvendor": {
+      "confirmation_id": "CONF-HAL-66207"
+    },
+    "messages": {
+      "search_query": "SEC-0004"
+    },
+    "oncall": {
+      "calendar_window": {
+        "end_date": "2026-06-23",
+        "start_date": "2026-06-10"
+      },
+      "pool": "soc-tier2"
+    },
+    "siem": {
+      "alert_id": "AL-77702",
+      "rule_id": "RUL-TOKENREPLAY-3"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "SEC-0004"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated SEC-0004 scope, immutable handles, mounted systems, and evidence index before investigating SESSION-FED.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "SEC-0004"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1004-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for SEC-0004 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identifier": "svc-telemetry-ingest"
+          },
+          "expected_result_contains": {
+            "identities": [
+              {
+                "identity_id": "ID-41050"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.identities.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved username svc-telemetry-ingest to the immutable identity record through an identifier search rather than a name match against a similarly named identity.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "SEC-0004"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-004-15"
+              },
+              {
+                "id": "DRV-004-03"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the SEC-0004 case folder on the shared drive and identified the approval record and the ticket export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "playbook"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-004-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the playbook folder and distinguished the effective v5 containment playbook from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "ticket_id": "SR-61272"
+          },
+          "expected_result_contains": {
+            "status": "open",
+            "ticket_id": "SR-61272"
+          },
+          "match": "result_contains",
+          "tool": "servicedesk.tickets.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active ticket SR-61272: object basis, principals in scope, tier, and review durations.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-41050",
+            "metric": "LIVE-SESSIONS"
+          },
+          "expected_result_contains": {
+            "inventory": [
+              {
+                "inventory_id": "INV-41050"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.inventory.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current final credential-inventory snapshot for ID-41050 (LIVE-SESSIONS) and ignored the stale historical snapshot.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v5 playbook for the sizing, revocable-object, vendor-invalidation, window, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "tier_code": "T2-CONFIRMED"
+          },
+          "expected_result_contains": {
+            "tier_code": "T2-CONFIRMED"
+          },
+          "match": "result_contains",
+          "tool": "playbooks.tiers.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the containment tier record T2-CONFIRMED: immediate-revocation rule, owner-confirmation rule, authority level, and SLA.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-41050"
+          },
+          "expected_result_contains": {
+            "tickets": [
+              {
+                "ticket_id": "SR-61272"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "servicedesk.tickets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the tickets that define the requirement (SR-61272) and excluded superseded or out-of-scope tickets.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "alert_id": "AL-77702",
+            "kind": "token_replay"
+          },
+          "expected_result_contains": {
+            "events": [
+              {
+                "event_id": "EV-77702-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "siem.events.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the correlated events behind AL-77702 to ground what actually happened, from which source, and in which window.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "credential_class": "SESSION-FED"
+          },
+          "expected_result_contains": {
+            "grants": [
+              {
+                "grant_id": "GS-FED-5501"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.grants.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every SESSION-FED grant with object count, expiry, status, and owner deferrals before netting the revocable coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-06-23",
+            "start_date": "2026-06-10"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "OCW-1-20260612-PM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "oncall.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the responder window calendar for 2026-06-10 onward to find the first free window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-HAL-66207"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-HAL-66207",
+            "standard_ready_date": "2026-06-18"
+          },
+          "match": "result_contains",
+          "tool": "idpvendor.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the vendor invalidation confirmation CONF-HAL-66207 for the independently confirmed standard and expedited job dates and the expedite fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-SO-0104"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-SO-0104"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-SO-0104 for its exact scope: record, object count, vendor, fee allowance, and what it does not cover.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-15"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-15"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1004-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1004-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1004-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1004"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1004"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the SOC chat thread CHAT-1004 for grant, window, and authority remarks that qualify the system records.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-41050"
+          },
+          "expected_result_contains": {
+            "total": 0
+          },
+          "match": "result_contains",
+          "tool": "oncall.bridges.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the incident bridges that fix the review scope by immutable id.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "alert_id": "AL-77702"
+          },
+          "expected_result_contains": {
+            "alert_id": "AL-77702",
+            "status": "open"
+          },
+          "match": "result_contains",
+          "tool": "siem.alerts.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read alert AL-77702 with its detection rule version and status, and distinguished it from the duplicate or retired-rule alert on the same identity.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "rule_id": "RUL-TOKENREPLAY-3"
+          },
+          "expected_result_contains": {
+            "rule_id": "RUL-TOKENREPLAY-3"
+          },
+          "match": "result_contains",
+          "tool": "siem.rules.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read detection rule RUL-TOKENREPLAY-3 and confirmed its version was enabled at the alert time, the corroboration the tier rule requires.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-41050"
+          },
+          "expected_result_contains": {
+            "sessions": [
+              {
+                "session_id": "SES-004-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.sessions.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the sessions of ID-41050 with source, geo, device, and risk to separate the anomalous session from the owner's own.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-41050"
+          },
+          "expected_result_contains": {
+            "factors": [
+              {
+                "factor_id": "FAC-004-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "iam.factors.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the MFA factors enrolled for ID-41050 to establish which factor was used or bypassed.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "identity_id": "ID-41050"
+          },
+          "expected_result_contains": {
+            "hosts": [
+              {
+                "host_id": "H-004-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "edr.hosts.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the EDR hosts used by ID-41050 with their isolation state and detections.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "credential_class": "SESSION-FED"
+          },
+          "expected_result_contains": {
+            "credential_class": "SESSION-FED"
+          },
+          "match": "result_contains",
+          "tool": "iam.classes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the credential class record for SESSION-FED: object kind, revocation channel, and privilege.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for SEC-0004 and confirmed that SESSION-FED is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-19"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-19"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for SEC-0004 and joined SESSION-FED to the current authority and evidence records by immutable identity.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-20"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-20"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for SEC-0004; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for SEC-0004 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for SESSION-FED and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_30",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for SEC-0004 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_31",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for SEC-0004, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_32",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-004-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-004-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for SEC-0004: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_33",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "SEC-0004"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "SEC-0004"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1004-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "identifier": "svc-telemetry-ingest"
+      },
+      "expected_result_contains": {
+        "identities": [
+          {
+            "identity_id": "ID-41050"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.identities.search"
+    },
+    {
+      "arguments": {
+        "q": "SEC-0004"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-004-15"
+          },
+          {
+            "id": "DRV-004-03"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "playbook"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-004-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "ticket_id": "SR-61272"
+      },
+      "expected_result_contains": {
+        "status": "open",
+        "ticket_id": "SR-61272"
+      },
+      "match": "result_contains",
+      "tool": "servicedesk.tickets.get"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-41050",
+        "metric": "LIVE-SESSIONS"
+      },
+      "expected_result_contains": {
+        "inventory": [
+          {
+            "inventory_id": "INV-41050"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.inventory.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "tier_code": "T2-CONFIRMED"
+      },
+      "expected_result_contains": {
+        "tier_code": "T2-CONFIRMED"
+      },
+      "match": "result_contains",
+      "tool": "playbooks.tiers.get"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-41050"
+      },
+      "expected_result_contains": {
+        "tickets": [
+          {
+            "ticket_id": "SR-61272"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "servicedesk.tickets.list"
+    },
+    {
+      "arguments": {
+        "alert_id": "AL-77702",
+        "kind": "token_replay"
+      },
+      "expected_result_contains": {
+        "events": [
+          {
+            "event_id": "EV-77702-1"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "siem.events.list"
+    },
+    {
+      "arguments": {
+        "credential_class": "SESSION-FED"
+      },
+      "expected_result_contains": {
+        "grants": [
+          {
+            "grant_id": "GS-FED-5501"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.grants.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-06-23",
+        "start_date": "2026-06-10"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "OCW-1-20260612-PM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "oncall.windows.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-HAL-66207"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-HAL-66207",
+        "standard_ready_date": "2026-06-18"
+      },
+      "match": "result_contains",
+      "tool": "idpvendor.confirmations.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-SO-0104"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-SO-0104"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-15"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-15"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1004-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1004-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1004"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1004"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-41050"
+      },
+      "expected_result_contains": {
+        "total": 0
+      },
+      "match": "result_contains",
+      "tool": "oncall.bridges.list"
+    },
+    {
+      "arguments": {
+        "alert_id": "AL-77702"
+      },
+      "expected_result_contains": {
+        "alert_id": "AL-77702",
+        "status": "open"
+      },
+      "match": "result_contains",
+      "tool": "siem.alerts.get"
+    },
+    {
+      "arguments": {
+        "rule_id": "RUL-TOKENREPLAY-3"
+      },
+      "expected_result_contains": {
+        "rule_id": "RUL-TOKENREPLAY-3"
+      },
+      "match": "result_contains",
+      "tool": "siem.rules.get"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-41050"
+      },
+      "expected_result_contains": {
+        "sessions": [
+          {
+            "session_id": "SES-004-1"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.sessions.list"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-41050"
+      },
+      "expected_result_contains": {
+        "factors": [
+          {
+            "factor_id": "FAC-004-1"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "iam.factors.list"
+    },
+    {
+      "arguments": {
+        "identity_id": "ID-41050"
+      },
+      "expected_result_contains": {
+        "hosts": [
+          {
+            "host_id": "H-004-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "edr.hosts.list"
+    },
+    {
+      "arguments": {
+        "credential_class": "SESSION-FED"
+      },
+      "expected_result_contains": {
+        "credential_class": "SESSION-FED"
+      },
+      "match": "result_contains",
+      "tool": "iam.classes.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-28"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-28"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-19"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-19"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-20"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-20"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-29"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-29"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-004-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-004-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "iam.identities.search",
+    "siem.alerts.get",
+    "siem.rules.get",
+    "siem.events.list",
+    "servicedesk.tickets.list",
+    "servicedesk.tickets.get",
+    "iam.inventory.list",
+    "iam.classes.get",
+    "iam.sessions.list",
+    "iam.factors.list",
+    "edr.hosts.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "playbooks.tiers.get",
+    "iam.grants.list",
+    "oncall.bridges.list",
+    "oncall.windows.list",
+    "idpvendor.confirmations.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "security_operations_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_26",
+        "investigation_27"
+      ],
+      "description": "Establish the isolated SEC-0004 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 10.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_20",
+        "investigation_21",
+        "investigation_25",
+        "investigation_28"
+      ],
+      "description": "Determine the operative v1 requirement for SESSION-FED from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 8.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_22",
+        "investigation_23",
+        "investigation_29",
+        "investigation_30",
+        "investigation_32"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 9 observed less 4 excluded to 5 supported CREDENTIAL_OBJECT for tenant-revocable SESSION-FED objects in the IAM register. Applied regular responder windows that do not displace protected blocks to derive the three option outcomes without using protected or blocked windows. Used the independently confirmed 2026-06-12 expedited readiness input for expedite_vendor_invalidation, then separately derived its 2026-06-12 operating outcome under containment readiness versus the non-displacing responder window calendar before the session instead of treating a vendor promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_15",
+        "investigation_16",
+        "investigation_31"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-SO-0104 only to expedite_vendor_invalidation and SESSION-FED; kept provider_emergency_signout outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_17",
+        "investigation_18",
+        "investigation_19",
+        "investigation_24",
+        "investigation_33"
+      ],
+      "description": "Correlate SESSION-FED by immutable identifiers across the systems of record (siem, edr, iam, servicedesk, oncall, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 23.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "derive_plan_requirement",
+        "read_gross_coverage",
+        "remove_ineligible_coverage",
+        "calculate_usable_coverage",
+        "calculate_plan_gap",
+        "preserve_plan_unit",
+        "compare_baseline_plan",
+        "compare_accelerated_plan",
+        "compare_escalated_plan",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "bound_external_recovery_quantity",
+        "calculate_metered_live_objects",
+        "preserve_object_unit",
+        "apply_device_scope_rule",
+        "count_anomalous_sessions",
+        "identify_first_nondisplacing_window",
+        "bind_selected_responder_window",
+        "test_expedite_against_window_calendar"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for the field-gateway session containment for the regulator session.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for expedite_vendor_invalidation under the actual operating window and report whether the 2026-06-12 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select expedite_vendor_invalidation only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported 'Expedited invalidation order submitted' change for SESSION-FED through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read SESSION-FED back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_coverage_item_or_resource",
+        "answer_shortage_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for the field-gateway session containment for the regulator session.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside SEC-0004's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "a28499ac5eb477b4b9cee76d0003071b1dac60255c5fc46174d86dbc1227379b",
+  "starting_records": [
+    {
+      "resource_id": "BRG-70905",
+      "resource_type": "Bridge",
+      "status": "pending",
+      "system": "oncall"
+    },
+    {
+      "resource_id": "IVO-3400",
+      "resource_type": "InvalidationOrder",
+      "status": "RECEIVED",
+      "system": "idpvendor"
+    },
+    {
+      "resource_id": "RVK-3400",
+      "resource_type": "Revocation",
+      "status": "COMPLETED",
+      "system": "iam"
+    }
+  ],
+  "task_id": "secops-004",
+  "title": "Invalidate the field-gateway sessions before the regulator session",
+  "workflow": {
+    "answer_fields": 27,
+    "readbacks": 1,
+    "reads": 34,
+    "writes": 2
+  },
+  "world": {
+    "id": "kestrel-secops-v1",
+    "name": "Kestrel Grid Utilities — Security Operations Center",
+    "organization_id": "ORG-KESTREL",
+    "primary_site": "TENANT-PRIMARY",
+    "systems": [
+      "siem",
+      "edr",
+      "iam",
+      "cloudiam",
+      "servicedesk",
+      "playbooks",
+      "oncall",
+      "idpvendor",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}

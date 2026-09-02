@@ -1,0 +1,1013 @@
+{
+  "contract": {
+    "answer": {
+      "baseline_resolution_date": "2026-04-25",
+      "budget_consumed_minutes": 37,
+      "budget_reserve_minutes": 8,
+      "budget_roll_date": "2026-04-25",
+      "business_need_date": "2026-04-30",
+      "controlled_item_or_record": "CHG-40352",
+      "controlled_resolution_date": "2026-04-25",
+      "decision_timing_status": "ON_TIME",
+      "escalated_resolution_date": "2026-04-17",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 45,
+      "expedited_external_readiness": "2026-04-17",
+      "notice_window": "LANE-DATA/2026-04-25/NIGHT",
+      "observed_quantity": 64,
+      "outcome_vs_control_days": -5,
+      "quantity_unit": "BUDGET_MINUTE",
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "book_notice_after_budget_roll",
+      "recommended_outcome_date": "2026-04-25",
+      "restart_minutes": 8,
+      "restarts_required": 3,
+      "rollback_reserve_minutes": 15,
+      "source_quantity": 30,
+      "standard_external_readiness": "2026-04-21",
+      "supported_quantity": 19,
+      "transaction_quantity": 45,
+      "validation_minutes": 6,
+      "vendor_estimate_minutes": 20
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'book_notice_after_budget_roll', tied to CHG-40352, revision v1, and the selected book_notice_after_budget_roll outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-04-25', tied to CHG-40352, revision v1, and the selected book_notice_after_budget_roll outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'CHG-40352', tied to CHG-40352, revision v1, and the selected book_notice_after_budget_roll outcome.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 45, tied to CHG-40352, revision v1, and the selected book_notice_after_budget_roll outcome.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to CHG-40352, revision v1, and the selected book_notice_after_budget_roll outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required CHG-40352 to reach business outcome 'Planned-outage notice created' through itsm.outages.create with exact provider-critical values service_id='SVC-31410', change_id='CHG-40352', start_time='2026-04-25T01:00:00', end_time='2026-04-25T01:45:00', downtime_minutes=30. The audited change binds selected option book_notice_after_budget_roll, approval AP-SO-0105, and constraint the error-budget policy applied to the full notice length (downtime plus rollback reserve); no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "service_id",
+          "change_id",
+          "start_time",
+          "end_time",
+          "downtime_minutes"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "change_id": "CHG-40352",
+            "downtime_minutes": 30,
+            "end_time": "2026-04-25T01:45:00",
+            "service_id": "SVC-31410",
+            "start_time": "2026-04-25T01:00:00"
+          },
+          "tool": "itsm.outages.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "OUT-6101",
+          "status": "planned",
+          "table_name": "planned_outages",
+          "tool": "itsm.outages.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "itsmdesk-005-mutation-01",
+          "task_id": "itsmdesk-005"
+        }
+      },
+      {
+        "description": "Persisted OUT-6101 in planned_outages with the supported values (service_id='SVC-31410', change_id='CHG-40352', window_id='MW-DATA-20260425-NIGHT', start_time='2026-04-25T01:00:00', end_time='2026-04-25T01:45:00', duration_minutes=45, downtime_minutes=30, status='planned') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "planned_outages",
+        "values": {
+          "change_id": "CHG-40352",
+          "downtime_minutes": 30,
+          "duration_minutes": 45,
+          "end_time": "2026-04-25T01:45:00",
+          "service_id": "SVC-31410",
+          "start_time": "2026-04-25T01:00:00",
+          "status": "planned",
+          "window_id": "MW-DATA-20260425-NIGHT"
+        },
+        "weight": 2.0,
+        "where": {
+          "outage_id": "OUT-6101"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying book_notice_after_budget_roll, the 2026-04-25 outcome, the binding constraint, and the SVCOPS-0005 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "adaeze.nkemelu@brightmoor.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "SVCOPS-0005",
+            "notify-svc",
+            "CHG-40352"
+          ]
+        ],
+        "payload_text_contains": [
+          "book_notice_after_budget_roll",
+          "2026-04-25"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "itsmdesk-005-mutation-02",
+          "task_id": "itsmdesk-005"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for SVCOPS-0005: the primary change and the stakeholder draft; no additional change, task, notice, or override.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "itsmdesk-005"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-04-30 as the documented control date for the notify-svc broker upgrade outage notice; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 30 BUDGET_MINUTE for planned downtime minutes the coordinated three-broker restart needs at the current 8-minute restart metering plus 6 minutes of validation.",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 64 observed BUDGET_MINUTE.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 45 BUDGET_MINUTE for charged incident minutes plus the 8-minute reserve floor.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 64 observed − 45 excluded = 19 supported BUDGET_MINUTE.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 45 BUDGET_MINUTE, the measure required by the chosen disposition under the error-budget policy applied to the full notice length (downtime plus rollback reserve); did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in BUDGET_MINUTE.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-04-25 for book_notice_after_budget_roll.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-04-25 for expedite_package_same_date.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-04-17 for friday_with_budget_exception and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-21 as the independently confirmed standard readiness date for Orrinwave's confirmed standard and early-access package dates on OWA-2026-058.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-04-17 as the independently confirmed expedited readiness date for Orrinwave's confirmed standard and early-access package dates on OWA-2026-058.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 3 coordinated restarts from OWA-2026-058 (mixed-version clusters unsupported).",
+        "field": "restarts_required",
+        "id": "count_required_restarts",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Used the 2026-04-10 RESTART-MIN metering of 8 minutes, not the 5-minute January metering.",
+        "field": "restart_minutes",
+        "id": "calculate_restart_metering",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Added the runbook's 6 validation minutes: 3 x 8 + 6 = 30 minutes of planned downtime.",
+        "field": "validation_minutes",
+        "id": "apply_validation_minutes",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Added the 15-minute rollback reserve to reach the 45-minute notice length that customer communications publish.",
+        "field": "rollback_reserve_minutes",
+        "id": "apply_rollback_reserve",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Summed the charged incidents in the (2026-03-15, 2026-04-14] window: INC-70790 (26) + INC-70840 (11) = 37; excluded INC-70866 (reclassified).",
+        "field": "budget_consumed_minutes",
+        "id": "sum_charged_budget",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the 8-minute reserve floor: 64 - 37 - 8 = 19 spendable minutes today, 26 short of the 45-minute notice.",
+        "field": "budget_reserve_minutes",
+        "id": "apply_reserve_floor",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-04-25 as the first day INC-70790 leaves the rolling window (64 - 11 - 8 = 45 spendable), exactly covering the notice.",
+        "field": "budget_roll_date",
+        "id": "derive_budget_roll_date",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Recorded the vendor's 20-minute estimate and did not substitute it for the metered 30 minutes.",
+        "field": "vendor_estimate_minutes",
+        "id": "record_vendor_estimate",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Bound the notice to LANE-DATA/2026-04-25/NIGHT, the session CHG-40352 already holds.",
+        "field": "notice_window",
+        "id": "bind_notice_window",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental spend for book_notice_after_budget_roll; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that friday_with_budget_exception remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of book_notice_after_budget_roll, expedite_package_same_date, friday_with_budget_exception; selected book_notice_after_budget_roll because it alone gives the best currently authorized result under the error-budget policy applied to the full notice length (downtime plus rollback reserve).",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-04-25 as the supported outcome date for book_notice_after_budget_roll.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-04-25 with the independent control date 2026-04-30 and calculated a signed variance of -5 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "SVCOPS-0005"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated SVCOPS-0005 scope, immutable handles, mounted systems, and evidence index before investigating CHG-40352.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SVCOPS-0005"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-2005-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for SVCOPS-0005 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "identifier": "notify-svc"
+            },
+            "expected_result_contains": {
+              "services": [
+                {
+                  "service_id": "SVC-31410"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.cis.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved service code notify-svc to the immutable CI record through an identifier search rather than a name match against a similarly named service.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "SVCOPS-0005"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-005-15"
+                },
+                {
+                  "id": "DRV-005-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the SVCOPS-0005 case folder on the shared drive and identified the approval record and the change export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "policy"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-005-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the policy folder and distinguished the effective v3 change and error-budget policy from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_id": "CHG-40352"
+            },
+            "expected_result_contains": {
+              "change_id": "CHG-40352",
+              "state": "scheduled"
+            },
+            "match": "result_contains",
+            "tool": "itsm.changes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read change CHG-40352: state, lane, planned interval, downtime, restarts, and revision.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "metric": "RESTART-MIN",
+              "service_id": "SVC-31410"
+            },
+            "expected_result_contains": {
+              "meterings": [
+                {
+                  "metering_id": "MTR-31410"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.meterings.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current final RESTART-MIN metering for SVC-31410 and ignored the stale historical metering.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v3 policy for the sizing, error-budget, session, freeze, coverage, vendor-package, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "slo_id": "SLO-NTF-AVAIL"
+            },
+            "expected_result_contains": {
+              "reserve_minutes": 8,
+              "slo_id": "SLO-NTF-AVAIL"
+            },
+            "match": "result_contains",
+            "tool": "telemetry.slos.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the SLO definition SLO-NTF-AVAIL: objective, rolling window, whole-minute budget, and reserve floor.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "service_id": "SVC-31410"
+            },
+            "expected_result_contains": {
+              "changes": [
+                {
+                  "change_id": "CHG-40352"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.changes.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the change requests for SVC-31410 and separated CHG-40352 from cancelled duplicates and other CIs' changes.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-14",
+              "service_id": "SVC-31410",
+              "start_date": "2026-03-15"
+            },
+            "expected_result_contains": {
+              "incidents": [
+                {
+                  "incident_id": "INC-70840"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.incidents.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the incident ledger for SVC-31410 inside the SLO window to ground which incidents are charged, which were reclassified, and which fall outside the window.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "slo_id": "SLO-NTF-AVAIL"
+            },
+            "expected_result_contains": {
+              "budget_minutes": 64,
+              "slo_id": "SLO-NTF-AVAIL"
+            },
+            "match": "result_contains",
+            "tool": "telemetry.budget.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the error-budget view of SLO-NTF-AVAIL: window bounds, budget, reserve, and the informational raw burn, before netting the charged minutes.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "service_id": "SVC-31410"
+            },
+            "expected_result_contains": {
+              "nodes": [
+                {
+                  "node_id": "NODE-NTF-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "itsm.nodes.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the notify-svc nodes with pool, lane, version, staged build, and canary pins before counting what a change reaches.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-04",
+              "start_date": "2026-04-14"
+            },
+            "expected_result_contains": {
+              "freezes": [
+                {
+                  "freeze_id": "FRZ-2026-15"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.freezes.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the freeze register from 2026-04-14 to 2026-05-04 for the freeze windows and the authority each names.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-27",
+              "lane_id": "LANE-DATA",
+              "start_date": "2026-04-17"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "MW-DATA-20260425-NIGHT"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the change-window calendar for 2026-04-17 onward to find the first free session that displaces no embargoed, frozen, or blocked window.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "advisory_id": "ADV-OW-2026-058"
+            },
+            "expected_result_contains": {
+              "advisory_id": "ADV-OW-2026-058",
+              "standard_release_date": "2026-04-20"
+            },
+            "match": "result_contains",
+            "tool": "vendor.advisories.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the vendor advisory ADV-OW-2026-058 for the independently confirmed standard and early-access release dates, restarts required, fee, and SLA.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-SO-0105"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-SO-0105"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-SO-0105 for its exact scope: record, lane, windows, quantity, fee allowance, and what it does not cover.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-15"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-15"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-2005-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-2005-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-2005-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-2005"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-2005"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-2005 for budget, calendar, roster, and authority remarks that qualify the system records.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-04-25",
+              "schedule_id": "SCHED-NTF-SEC",
+              "start_date": "2026-04-25"
+            },
+            "expected_result_contains": {
+              "shifts": [
+                {
+                  "shift_id": "SHIFT-NTF-SEC-20260425-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "oncall.shifts.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the secondary on-call shifts on SCHED-NTF-SEC by immutable shift id and responder certification for the sessions under consideration.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for SVCOPS-0005 and confirmed that CHG-40352 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-20"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-20"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for SVCOPS-0005 and joined CHG-40352 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-21"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-21"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for SVCOPS-0005; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for SVCOPS-0005 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-30"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-30"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for CHG-40352 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for SVCOPS-0005 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for SVCOPS-0005, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-005-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-005-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for SVCOPS-0005: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "itsm.outages.create",
+        "any_of": [
+          {
+            "arguments": {
+              "outage_id": "OUT-6101"
+            },
+            "expected_result_contains": {
+              "change_id": "CHG-40352",
+              "downtime_minutes": 30,
+              "duration_minutes": 45,
+              "outage_id": "OUT-6101",
+              "status": "planned"
+            },
+            "match": "result_contains",
+            "tool": "itsm.outages.get"
+          }
+        ],
+        "description": "Read OUT-6101 back through itsm.outages.get after the change and confirmed the persisted provider values (outage_id='OUT-6101', change_id='CHG-40352', duration_minutes=45, downtime_minutes=30, status='planned') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "change_id": "CHG-40352",
+          "downtime_minutes": 30,
+          "duration_minutes": 45,
+          "outage_id": "OUT-6101",
+          "status": "planned"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "outage_id": "OUT-6101"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family_task_id": "itsmdesk-005",
+  "metric": "HubScore",
+  "task_id": "hubbench-itsmdesk-005"
+}

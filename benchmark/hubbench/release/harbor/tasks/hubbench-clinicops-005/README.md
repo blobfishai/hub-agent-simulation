@@ -1,6 +1,6 @@
 # hubbench-clinicops-005 — Transfer ocrelizumab from Eastgate for this week's doses
 
-HubBench 1.1.0 · family **ClinicOps** (`clinicops`, cluster `healthcare`) · decision mode `quantity` · role `infusion_pharmacy_buyer` · as of 2026-03-09.
+HubBench 1.2.0 · family **ClinicOps** (`clinicops`, cluster `healthcare`) · decision mode `quantity` · role `infusion_pharmacy_buyer` · as of 2026-03-09.
 
 Infusion operations decisions against a FHIR-shaped EHR, chair scheduling, pharmacy inventory, supplier confirmations, and approval records.
 

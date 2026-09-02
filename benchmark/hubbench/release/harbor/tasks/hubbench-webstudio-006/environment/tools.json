@@ -1,0 +1,1723 @@
+{
+  "benchmark": "HubBench",
+  "family": "webstudio",
+  "schema_version": "hubbench.tool-contract.v1",
+  "servers": {
+    "approvals": {
+      "description": "Approval workflow records with exact scope.",
+      "tools": [
+        "approvals.get",
+        "approvals.list"
+      ]
+    },
+    "cdn": {
+      "description": "CDN deploy scheduler: deploy lanes with rollback capability and the deploy-window calendar.",
+      "tools": [
+        "cdn.lanes.list",
+        "cdn.windows.list"
+      ]
+    },
+    "chat": {
+      "description": "Web-release chat threads.",
+      "tools": [
+        "chat.threads.get",
+        "chat.threads.list"
+      ]
+    },
+    "checklist": {
+      "description": "Release checklist: QA, accessibility, legal, and performance gates with measured values, plus gate waivers.",
+      "tools": [
+        "checklist.budgets.list",
+        "checklist.gates.list",
+        "checklist.waivers.create"
+      ]
+    },
+    "cms": {
+      "description": "Headless CMS: pages, entries with token / component / asset bindings, change requests, and scheduled releases.",
+      "tools": [
+        "cms.change_requests.get",
+        "cms.change_requests.list",
+        "cms.entries.get",
+        "cms.entries.list",
+        "cms.pages.get",
+        "cms.pages.search",
+        "cms.releases.create",
+        "cms.releases.get",
+        "cms.releases.list",
+        "cms.releases.update"
+      ]
+    },
+    "dam": {
+      "description": "Digital asset library: assets, licence grants with territories and expiry, and vendor licence requests.",
+      "tools": [
+        "dam.assets.get",
+        "dam.assets.list",
+        "dam.licence_requests.create",
+        "dam.licence_requests.get",
+        "dam.licences.list"
+      ]
+    },
+    "design": {
+      "description": "Design-file index: files per page with current / superseded status and frame review states.",
+      "tools": [
+        "design.files.get",
+        "design.files.list",
+        "design.frames.list"
+      ]
+    },
+    "drive": {
+      "description": "Shared drive holding the playbook, registers, calendars, and exports.",
+      "tools": [
+        "drive.files.export",
+        "drive.files.get",
+        "drive.files.list"
+      ]
+    },
+    "hubbench": {
+      "description": "Benchmark-only discovery and structured answer submission controls.",
+      "tools": [
+        "hubbench.context.get",
+        "hubbench.submit_answer"
+      ]
+    },
+    "messages": {
+      "description": "Web-studio mailbox for the release team.",
+      "tools": [
+        "messages.get",
+        "messages.list"
+      ]
+    },
+    "notes": {
+      "description": "Stakeholder draft notes (never sent by the benchmark).",
+      "tools": [
+        "notes.drafts.create"
+      ]
+    },
+    "tokens": {
+      "description": "Design-token and component registry: token versions with breaking flags, components with allowed variants and deprecations, consumer registry, and version pins.",
+      "tools": [
+        "tokens.components.get",
+        "tokens.components.list",
+        "tokens.consumers.list",
+        "tokens.pins.create",
+        "tokens.pins.get",
+        "tokens.tokens.get",
+        "tokens.versions.list"
+      ]
+    },
+    "vendors": {
+      "description": "Vendor desk: foundry and stock-imagery licence quotes, agency delivery quotes, and edge-provider lane re-certification quotes.",
+      "tools": [
+        "vendors.quotes.get",
+        "vendors.quotes.list"
+      ]
+    }
+  },
+  "task_id": "hubbench-webstudio-006",
+  "tools": [
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cms",
+          "shape": "CMS page search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cms.pages.search"
+      },
+      "description": "Search CMS pages by immutable slug or by title fragment.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "title fragment",
+            "type": "string"
+          },
+          "slug": {
+            "description": "page slug",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "cms.pages.search"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cms",
+          "shape": "CMS page record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cms.pages.get"
+      },
+      "description": "Read one CMS page record with its market list and owner.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "page_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "page_id"
+        ],
+        "type": "object"
+      },
+      "name": "cms.pages.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cms",
+          "shape": "CMS entry list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cms.entries.list"
+      },
+      "description": "List CMS entries by page, change request, or status, with token / component / asset bindings and blocking reasons.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_request_id": {
+            "type": "string"
+          },
+          "page_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "cms.entries.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cms",
+          "shape": "CMS entry record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cms.entries.get"
+      },
+      "description": "Read one CMS entry.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "entry_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "entry_id"
+        ],
+        "type": "object"
+      },
+      "name": "cms.entries.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cms",
+          "shape": "CMS change request search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cms.change_requests.list"
+      },
+      "description": "List change requests by page, status, or kind; duplicates and superseded requests are listed with their state.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "page_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "cms.change_requests.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cms",
+          "shape": "CMS change request record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cms.change_requests.get"
+      },
+      "description": "Read one change request: launch territories, entries in scope, deploy and verification durations, and impact notes.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_request_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "change_request_id"
+        ],
+        "type": "object"
+      },
+      "name": "cms.change_requests.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cms",
+          "shape": "CMS scheduled release search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cms.releases.list"
+      },
+      "description": "List scheduled releases by page, change request, lane, status, or start-date window.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_request_id": {
+            "type": "string"
+          },
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "lane_id": {
+            "type": "string"
+          },
+          "page_id": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "cms.releases.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cms",
+          "shape": "CMS scheduled release record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cms.releases.get"
+      },
+      "description": "Read one scheduled release.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "release_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "release_id"
+        ],
+        "type": "object"
+      },
+      "name": "cms.releases.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "cms",
+          "shape": "CMS scheduled release create"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "cms.releases.create"
+      },
+      "description": "Schedule a release for a change request on a deploy lane. Every window the interval touches must be free; protected and blocked windows are never displaced. A subset release declares entry_count, which cannot exceed the change request's shippable entries.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_request_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "end_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "entry_count": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "lane_id": {
+            "type": "string"
+          },
+          "start_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          }
+        },
+        "required": [
+          "change_request_id",
+          "lane_id",
+          "start_time",
+          "end_time"
+        ],
+        "type": "object"
+      },
+      "name": "cms.releases.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "cms",
+          "shape": "CMS scheduled release update"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "cms.releases.update"
+      },
+      "description": "Move, schedule, or cancel an existing release. Moving re-validates the target lane and windows; the record revision increments.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "end_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "lane_id": {
+            "type": "string"
+          },
+          "release_id": {
+            "type": "string"
+          },
+          "start_time": {
+            "description": "ISO local date-time, YYYY-MM-DDTHH:MM:SS",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "scheduled",
+              "pending",
+              "cancelled"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "release_id"
+        ],
+        "type": "object"
+      },
+      "name": "cms.releases.update"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tokens",
+          "shape": "design token record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tokens.tokens.get"
+      },
+      "description": "Read one design token with its set and every version (current, proposed, deprecated) and breaking flags.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "token_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token_id"
+        ],
+        "type": "object"
+      },
+      "name": "tokens.tokens.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tokens",
+          "shape": "design token version list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tokens.versions.list"
+      },
+      "description": "List the versions of one design token with value, status, and breaking flag.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "token_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token_id"
+        ],
+        "type": "object"
+      },
+      "name": "tokens.versions.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tokens",
+          "shape": "component registry list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tokens.components.list"
+      },
+      "description": "List component-library components with allowed variants, deprecation, and pending breaking changes.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "library": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "tokens.components.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tokens",
+          "shape": "component registry record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tokens.components.get"
+      },
+      "description": "Read one component record.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "component_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "component_id"
+        ],
+        "type": "object"
+      },
+      "name": "tokens.components.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tokens",
+          "shape": "token consumer registry"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tokens.consumers.list"
+      },
+      "description": "List registry consumers of a token or component (gross: ACTIVE, DEPRECATED, and MIGRATED rows), optionally by status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "component_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "token_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "tokens.consumers.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "tokens",
+          "shape": "token version pin"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "tokens.pins.get"
+      },
+      "description": "Read one token version pin.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "pin_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pin_id"
+        ],
+        "type": "object"
+      },
+      "name": "tokens.pins.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "tokens",
+          "shape": "token version pin"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "tokens.pins.create"
+      },
+      "description": "Pin a token version for the active consumers outside a change request's page. The count cannot exceed the registry's active consumers outside that page; deprecated, migrated, and on-page consumers are never pinned.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_request_id": {
+            "type": "string"
+          },
+          "consumer_count": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "token_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token_id",
+          "version",
+          "change_request_id",
+          "consumer_count"
+        ],
+        "type": "object"
+      },
+      "name": "tokens.pins.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "design",
+          "shape": "design file index"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "design.files.list"
+      },
+      "description": "List design files by page or name fragment, with current / superseded status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "page_id": {
+            "type": "string"
+          },
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "design.files.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "design",
+          "shape": "design file record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "design.files.get"
+      },
+      "description": "Read one design file record.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "design.files.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "design",
+          "shape": "design frame list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "design.frames.list"
+      },
+      "description": "List the frames of a design file with review status (APPROVED / IN_REVIEW / SUPERSEDED) and component usage.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "design.frames.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "dam",
+          "shape": "asset library list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "dam.assets.list"
+      },
+      "description": "List library assets, optionally by page or kind.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "page_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "dam.assets.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "dam",
+          "shape": "asset library record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "dam.assets.get"
+      },
+      "description": "Read one library asset with vendor and licence requirement.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "asset_id"
+        ],
+        "type": "object"
+      },
+      "name": "dam.assets.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "dam",
+          "shape": "licence grant register"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "dam.licences.list"
+      },
+      "description": "List licence grants for an asset with territories, usage scope, expiry, status, and reservations.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "asset_id"
+        ],
+        "type": "object"
+      },
+      "name": "dam.licences.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "dam",
+          "shape": "vendor licence request"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "dam.licence_requests.get"
+      },
+      "description": "Read one vendor licence request.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id"
+        ],
+        "type": "object"
+      },
+      "name": "dam.licence_requests.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "dam",
+          "shape": "vendor licence request"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "dam.licence_requests.create"
+      },
+      "description": "Place a licence request against an open vendor licence quote. The expected licence date is taken from the quote for the chosen issuance option.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "issuance_option": {
+            "enum": [
+              "standard",
+              "expedited"
+            ],
+            "type": "string"
+          },
+          "quote_id": {
+            "type": "string"
+          },
+          "territory_count": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "vendor_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vendor_id",
+          "quote_id",
+          "asset_id",
+          "territory_count",
+          "issuance_option"
+        ],
+        "type": "object"
+      },
+      "name": "dam.licence_requests.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "checklist",
+          "shape": "release checklist gate list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "checklist.gates.list"
+      },
+      "description": "List release-checklist gates for a change request (QA, accessibility, legal, performance) with status, measured value, budget, and waiver authority.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "change_request_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "change_request_id"
+        ],
+        "type": "object"
+      },
+      "name": "checklist.gates.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "checklist",
+          "shape": "performance budget list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "checklist.budgets.list"
+      },
+      "description": "List performance budgets for a page with the latest measured value and headroom.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "page_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "page_id"
+        ],
+        "type": "object"
+      },
+      "name": "checklist.budgets.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "checklist",
+          "shape": "checklist gate waiver"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "checklist.waivers.create"
+      },
+      "description": "Record a waiver for a checklist gate. Legal gates are never waived; other gates need a signed approval by the gate's authority that names the gate.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_id": {
+            "type": "string"
+          },
+          "change_request_id": {
+            "type": "string"
+          },
+          "gate_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "gate_id",
+          "change_request_id",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "name": "checklist.waivers.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cdn",
+          "shape": "deploy lane roster"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cdn.lanes.list"
+      },
+      "description": "List deploy lanes with status and instant-rollback capability.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "pool": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "cdn.lanes.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "cdn",
+          "shape": "deploy window calendar"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "cdn.windows.list"
+      },
+      "description": "List deploy windows between two dates with free / busy / protected / blocked status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "lane_id": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date"
+        ],
+        "type": "object"
+      },
+      "name": "cdn.windows.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "vendors",
+          "shape": "vendor quote"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "vendors.quotes.list"
+      },
+      "description": "List vendor quotes (licence, agency delivery, lane re-certification).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "vendor_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "vendors.quotes.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "vendors",
+          "shape": "vendor quote"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "vendors.quotes.get"
+      },
+      "description": "Read one vendor quote: units available, standard and expedited issue dates, rush fee, validity.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "quote_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "quote_id"
+        ],
+        "type": "object"
+      },
+      "name": "vendors.quotes.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.list"
+      },
+      "description": "List approval records, optionally by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "approvals.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.get"
+      },
+      "description": "Read one approval record with its exact scope and approver.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "approval_id"
+        ],
+        "type": "object"
+      },
+      "name": "approvals.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "messages",
+          "shape": "mailbox search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "messages.list"
+      },
+      "description": "Search the web-studio mailbox by keyword (subject, body, labels).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_results": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "messages.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "messages",
+          "shape": "mailbox message"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "messages.get"
+      },
+      "description": "Read one message with body and attachment list.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "message_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message_id"
+        ],
+        "type": "object"
+      },
+      "name": "messages.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.list"
+      },
+      "description": "Search team chat threads by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat thread"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.get"
+      },
+      "description": "Read one team chat thread.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "thread_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "thread_id"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.list"
+      },
+      "description": "Search shared-drive files by keyword (name, folder, content).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive file"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.get"
+      },
+      "description": "Read shared-drive file metadata.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive export"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.export"
+      },
+      "description": "Export a shared-drive file as text (spreadsheets as CSV, PDFs as extracted text).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.export"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "notes",
+          "shape": "collaboration draft"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "notes.drafts.create"
+      },
+      "description": "Create, but do not send, a stakeholder draft note.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "related_change_request_id": {
+            "type": "string"
+          },
+          "related_page_id": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipient",
+          "subject",
+          "body"
+        ],
+        "type": "object"
+      },
+      "name": "notes.drafts.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "hubbench.context.get"
+      },
+      "description": "Return the isolated task scope: case reference, immutable record handles, mounted servers, identity, and the evidence index.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "hubbench.context.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "hubbench.submit_answer"
+      },
+      "description": "Record the structured decision for the current task. Every field of the task's answer contract is required; resubmission replaces earlier values.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "affected_releases": {
+            "description": "Releases stranded on the fenced lane inside the privacy windows.",
+            "type": "integer"
+          },
+          "affected_resource_or_operation": {
+            "description": "Immutable appointment, order, or resource record in the recovery scope.",
+            "type": "string"
+          },
+          "base_completion": {
+            "description": "Completion under rehome_series_to_open_windows.",
+            "type": "string"
+          },
+          "business_need_date": {
+            "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+            "type": "string"
+          },
+          "candidate_capacity": {
+            "description": "Gross candidate capacity associated with lane-hours on LANE-WEB-2 and LANE-EDGE-3 between 2026-05-12 and 2026-05-15 before protected or unavailable load is removed.",
+            "type": "integer"
+          },
+          "capacity_gap": {
+            "description": "Uncovered LANE_HOUR after applying finite availability inside the requested window.",
+            "type": "integer"
+          },
+          "capacity_unit": {
+            "description": "Capacity unit used throughout the schedule comparison: LANE_HOUR.",
+            "type": "string"
+          },
+          "decision_timing_status": {
+            "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+            "enum": [
+              "ON_TIME",
+              "LATE"
+            ],
+            "type": "string"
+          },
+          "escalated_completion": {
+            "description": "Completion under displace_blackout_window.",
+            "type": "string"
+          },
+          "escalation_approval_required": {
+            "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+            "type": "integer"
+          },
+          "expedited_external_readiness": {
+            "description": "Expedited readiness date independently confirmed for Meridian Edge's confirmed standard and priority re-certification dates on MEQ-7701.",
+            "type": "string"
+          },
+          "net_usable_capacity": {
+            "description": "Candidate capacity remaining after removing lane-hours already booked, held as protected blackout or freeze blocks, or blocked for maintenance.",
+            "type": "integer"
+          },
+          "outcome_vs_control_days": {
+            "description": "Selected outcome date minus the documented control date; positive means late.",
+            "type": "integer"
+          },
+          "protected_windows_in_week": {
+            "description": "Protected (blackout or freeze) windows on the active lanes between 2026-05-12 and 2026-05-15.",
+            "type": "integer"
+          },
+          "qualified_alternative_completion": {
+            "description": "Completion under wait_for_lane_1_return.",
+            "type": "string"
+          },
+          "recommended_incremental_cost_usd": {
+            "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+            "type": "integer"
+          },
+          "recommended_option": {
+            "description": "Best authorized option identifier after comparing rehome_series_to_open_windows, wait_for_lane_1_return, displace_blackout_window.",
+            "enum": [
+              "rehome_series_to_open_windows",
+              "wait_for_lane_1_return",
+              "displace_blackout_window"
+            ],
+            "type": "string"
+          },
+          "recommended_outcome_date": {
+            "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+            "type": "string"
+          },
+          "releases_per_window": {
+            "description": "Content releases the playbook allows back to back in one 4-hour window.",
+            "type": "integer"
+          },
+          "required_capacity": {
+            "description": "lane-hours for four 2-hour content releases (60 min deploy + 60 min verification each)",
+            "type": "integer"
+          },
+          "selected_resource_or_control": {
+            "description": "Provider identifier of the qualified resource and session used by the selected recovery.",
+            "type": "string"
+          },
+          "standard_external_readiness": {
+            "description": "Standard readiness date independently confirmed for Meridian Edge's confirmed standard and priority re-certification dates on MEQ-7701.",
+            "type": "string"
+          },
+          "stranded_lane": {
+            "description": "Lane identifier fenced by the failed edge-config validation.",
+            "type": "string"
+          },
+          "unavailable_or_protected_capacity": {
+            "description": "lane-hours already booked, held as protected blackout or freeze blocks, or blocked for maintenance",
+            "type": "integer"
+          },
+          "windows_required": {
+            "description": "Free windows the four releases need when two are sequenced per window.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "affected_releases",
+          "affected_resource_or_operation",
+          "base_completion",
+          "business_need_date",
+          "candidate_capacity",
+          "capacity_gap",
+          "capacity_unit",
+          "decision_timing_status",
+          "escalated_completion",
+          "escalation_approval_required",
+          "expedited_external_readiness",
+          "net_usable_capacity",
+          "outcome_vs_control_days",
+          "protected_windows_in_week",
+          "qualified_alternative_completion",
+          "recommended_incremental_cost_usd",
+          "recommended_option",
+          "recommended_outcome_date",
+          "releases_per_window",
+          "required_capacity",
+          "selected_resource_or_control",
+          "standard_external_readiness",
+          "stranded_lane",
+          "unavailable_or_protected_capacity",
+          "windows_required"
+        ],
+        "type": "object"
+      },
+      "name": "hubbench.submit_answer"
+    }
+  ]
+}

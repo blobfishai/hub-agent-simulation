@@ -1,0 +1,2907 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "deploy_windows",
+    "mutations",
+    "note_drafts",
+    "releases"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "affected_releases": {
+        "description": "Releases stranded on the fenced lane inside the privacy windows.",
+        "type": "integer"
+      },
+      "affected_resource_or_operation": {
+        "description": "Immutable appointment, order, or resource record in the recovery scope.",
+        "type": "string"
+      },
+      "base_completion": {
+        "description": "Completion under rehome_series_to_open_windows.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "candidate_capacity": {
+        "description": "Gross candidate capacity associated with lane-hours on LANE-WEB-2 and LANE-EDGE-3 between 2026-05-12 and 2026-05-15 before protected or unavailable load is removed.",
+        "type": "integer"
+      },
+      "capacity_gap": {
+        "description": "Uncovered LANE_HOUR after applying finite availability inside the requested window.",
+        "type": "integer"
+      },
+      "capacity_unit": {
+        "description": "Capacity unit used throughout the schedule comparison: LANE_HOUR.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Completion under displace_blackout_window.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Meridian Edge's confirmed standard and priority re-certification dates on MEQ-7701.",
+        "type": "string"
+      },
+      "net_usable_capacity": {
+        "description": "Candidate capacity remaining after removing lane-hours already booked, held as protected blackout or freeze blocks, or blocked for maintenance.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "protected_windows_in_week": {
+        "description": "Protected (blackout or freeze) windows on the active lanes between 2026-05-12 and 2026-05-15.",
+        "type": "integer"
+      },
+      "qualified_alternative_completion": {
+        "description": "Completion under wait_for_lane_1_return.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing rehome_series_to_open_windows, wait_for_lane_1_return, displace_blackout_window.",
+        "enum": [
+          "rehome_series_to_open_windows",
+          "wait_for_lane_1_return",
+          "displace_blackout_window"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "releases_per_window": {
+        "description": "Content releases the playbook allows back to back in one 4-hour window.",
+        "type": "integer"
+      },
+      "required_capacity": {
+        "description": "lane-hours for four 2-hour content releases (60 min deploy + 60 min verification each)",
+        "type": "integer"
+      },
+      "selected_resource_or_control": {
+        "description": "Provider identifier of the qualified resource and session used by the selected recovery.",
+        "type": "string"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Meridian Edge's confirmed standard and priority re-certification dates on MEQ-7701.",
+        "type": "string"
+      },
+      "stranded_lane": {
+        "description": "Lane identifier fenced by the failed edge-config validation.",
+        "type": "string"
+      },
+      "unavailable_or_protected_capacity": {
+        "description": "lane-hours already booked, held as protected blackout or freeze blocks, or blocked for maintenance",
+        "type": "integer"
+      },
+      "windows_required": {
+        "description": "Free windows the four releases need when two are sequenced per window.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "affected_releases",
+      "affected_resource_or_operation",
+      "base_completion",
+      "business_need_date",
+      "candidate_capacity",
+      "capacity_gap",
+      "capacity_unit",
+      "decision_timing_status",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedited_external_readiness",
+      "net_usable_capacity",
+      "outcome_vs_control_days",
+      "protected_windows_in_week",
+      "qualified_alternative_completion",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "releases_per_window",
+      "required_capacity",
+      "selected_resource_or_control",
+      "standard_external_readiness",
+      "stranded_lane",
+      "unavailable_or_protected_capacity",
+      "windows_required"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-05-11",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "free regular windows on the active lanes without displacing protected blocks; lane-hours already booked, held as protected blackout or freeze blocks, or blocked for maintenance = 60 LANE_HOUR; uncovered scope = 4 LANE_HOUR",
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-19 as the documented control date for the four privacy-notice releases stranded by the lane 1 outage; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 8 LANE_HOUR for lane-hours for four 2-hour content releases (60 min deploy + 60 min verification each).",
+        "field": "required_capacity",
+        "id": "calculate_required_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Established 64 gross candidate LANE_HOUR associated with lane-hours on LANE-WEB-2 and LANE-EDGE-3 between 2026-05-12 and 2026-05-15; did not call it usable before applying protected load.",
+        "field": "candidate_capacity",
+        "id": "establish_candidate_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Excluded 60 LANE_HOUR for lane-hours already booked, held as protected blackout or freeze blocks, or blocked for maintenance.",
+        "field": "unavailable_or_protected_capacity",
+        "id": "remove_protected_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 64 candidate − 60 unavailable/protected = 4 net usable LANE_HOUR.",
+        "field": "net_usable_capacity",
+        "id": "calculate_net_usable_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 8 required − 4 net usable = 4 LANE_HOUR uncovered inside the requested window.",
+        "field": "capacity_gap",
+        "id": "calculate_capacity_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept load and availability in LANE_HOUR.",
+        "field": "capacity_unit",
+        "id": "preserve_capacity_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Bound the recovery to provider identifier LANE-EDGE-3/2026-05-13/PM only after confirming free regular windows on the active lanes without displacing protected blocks.",
+        "field": "selected_resource_or_control",
+        "id": "identify_selected_resource_or_control",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 2026-05-18 for rehome_series_to_open_windows.",
+        "field": "base_completion",
+        "id": "compare_base_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 2026-05-25 for wait_for_lane_1_return using free windows on LANE-WEB-2 and LANE-EDGE-3, two content releases per window.",
+        "field": "qualified_alternative_completion",
+        "id": "compare_qualified_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 2026-05-14 for displace_blackout_window and retained its authority constraint.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-22 as the independently confirmed standard readiness date for Meridian Edge's confirmed standard and priority re-certification dates on MEQ-7701.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-15 as the independently confirmed expedited readiness date for Meridian Edge's confirmed standard and priority re-certification dates on MEQ-7701.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 4 releases stranded on LANE-WEB-1 between 2026-05-12 and 2026-05-14.",
+        "field": "affected_releases",
+        "id": "count_affected_releases",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Converted 8 lane-hours into 2 windows by sequencing two 2-hour notices per window.",
+        "field": "windows_required",
+        "id": "convert_duration_to_windows",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the playbook rule allowing two content releases back to back in one window.",
+        "field": "releases_per_window",
+        "id": "apply_sequencing_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified LANE-WEB-1 as the fenced lane from the roster, not from the release descriptions alone.",
+        "field": "stranded_lane",
+        "id": "identify_stranded_lane",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 3 protected windows on the active lanes this week (edge 3 PM 05-12, lane 2 PM 05-13, lane 2 AM 05-14); the 05-15 edge maintenance is blocked, not protected.",
+        "field": "protected_windows_in_week",
+        "id": "count_protected_windows",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental cost for rehome_series_to_open_windows; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that displace_blackout_window remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of rehome_series_to_open_windows, wait_for_lane_1_return, displace_blackout_window; selected rehome_series_to_open_windows because it alone gives the best currently authorized result under free regular windows on the active lanes without displacing protected blocks.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-18 as the supported outcome date for rehome_series_to_open_windows.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-18 with the independent control date 2026-05-19 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located REL-88940 using immutable identifiers and preserved effective revision v1: the stranded releases are REL-88940 to REL-88943 for careers, partner portal, help center, and product tour; the earliest is REL-88940 (CR-4460).",
+        "sources": [
+          "cms",
+          "messages"
+        ],
+        "statement": "WEB-0006: the stranded releases are REL-88940 to REL-88943 for careers, partner portal, help center, and product tour; the earliest is REL-88940 (CR-4460); the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the effective change request and playbook to establish 8 LANE_HOUR for lane-hours for four 2-hour content releases (60 min deploy + 60 min verification each), with control date 2026-05-19.",
+        "sources": [
+          "cms",
+          "drive"
+        ],
+        "statement": "The effective change request and playbook establish lane-hours for four 2-hour content releases (60 min deploy + 60 min verification each) = 8 LANE_HOUR: four 60 + 60 minute notices need 8 lane-hours, or 2 windows when two releases are sequenced per window. The control date is 2026-05-19 (latest acceptable date for the earliest pair (due 2026-05-12 + 7 days))."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 64 observed less 60 excluded to 4 supported LANE_HOUR for lane-hours on LANE-WEB-2 and LANE-EDGE-3 between 2026-05-12 and 2026-05-15.",
+        "sources": [
+          "dam",
+          "tokens",
+          "checklist",
+          "drive"
+        ],
+        "statement": "lane 2 and edge lane 3 offer 64 lane-hours this week in gross; 60 are booked, protected, or blocked, leaving one free window (4 h) on 2026-05-13, 4 hours short; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-05-15 expedited readiness input for wait_for_lane_1_return, then separately derived its 2026-05-25 operating outcome under free regular windows on the active lanes without displacing protected blocks instead of treating a vendor promise as authorization or a completion date.",
+        "sources": [
+          "vendors",
+          "messages"
+        ],
+        "statement": "Meridian Edge's confirmed standard and priority re-certification dates on MEQ-7701: Meridian Edge MEQ-7701 confirms standard attestation 2026-05-21 (lane back 2026-05-22) and priority attestation 2026-05-14 (+USD 900); a vendor quote alone proves neither eligibility nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied free windows on LANE-WEB-2 and LANE-EDGE-3, two content releases per window to derive the three option outcomes without using protected or blocked windows.",
+        "sources": [
+          "cdn",
+          "drive"
+        ],
+        "statement": "free windows on LANE-WEB-2 and LANE-EDGE-3, two content releases per window: the free windows are edge lane 3 PM 2026-05-13 and lane 2 AM 2026-05-18; lane 1 returns 2026-05-22 with its first free window 2026-05-25; protected and blocked windows cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-WS-0106 only to rehome_series_to_open_windows and REL-88940; kept displace_blackout_window outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-WS-0106 authorizes free regular windows on lane 2 and edge lane 3 with two releases per window; protected blocks need the marketing director and the maintenance window is off limits. The approval does not select an option in advance and does not authorize displace_blackout_window."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected rehome_series_to_open_windows: it is the best currently authorized response that satisfies free regular windows on the active lanes without displacing protected blocks.",
+        "sources": [
+          "messages",
+          "chat"
+        ],
+        "statement": "the earliest pair must be live by 2026-05-19 and the last by 2026-05-21; a faster or broader action has value only if it remains inside free regular windows on the active lanes without displacing protected blocks."
+      }
+    ],
+    "mode": "schedule",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-05-18",
+        "consequence": "rehome series to open windows pairs two notices in edge lane 3's free PM window on 2026-05-13 and the other two in lane 2's free AM window on 2026-05-18, so the last notice lands 2026-05-18, inside every privacy deadline, at no incremental cost.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "rehome_series_to_open_windows",
+        "incremental_cost": 0,
+        "label": "rehome_series_to_open_windows: outcome 2026-05-18, incremental cost USD 0, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-05-25",
+        "consequence": "wait for lane 1 return uses its first free window on 2026-05-25 after the 2026-05-22 return to the pool; it costs nothing but lands 6 days after the control date and pushes every notice past its 7-day window.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "wait_for_lane_1_return",
+        "incremental_cost": 0,
+        "label": "wait_for_lane_1_return: outcome 2026-05-25, incremental cost USD 0, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-05-14",
+        "consequence": "displace blackout window would finish all four by 2026-05-14 using lane 2's protected AM blackout block, 4 days earlier, but displacing a protected window needs the marketing director, which AP-WS-0106 explicitly withholds.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "displace_blackout_window",
+        "incremental_cost": 0,
+        "label": "displace_blackout_window: outcome 2026-05-14, incremental cost USD 0, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "rehome_series_to_open_windows is the best currently authorized response that satisfies free regular windows on the active lanes without displacing protected blocks and lands 1 day(s) on or before the control date.",
+    "selected_completion": "2026-05-18",
+    "selected_cost": 0,
+    "selected_option": "rehome_series_to_open_windows"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "affected_releases": 4,
+      "affected_resource_or_operation": "REL-88940",
+      "base_completion": "2026-05-18",
+      "business_need_date": "2026-05-19",
+      "candidate_capacity": 64,
+      "capacity_gap": 4,
+      "capacity_unit": "LANE_HOUR",
+      "decision_timing_status": "ON_TIME",
+      "escalated_completion": "2026-05-14",
+      "escalation_approval_required": 1,
+      "expedited_external_readiness": "2026-05-15",
+      "net_usable_capacity": 4,
+      "outcome_vs_control_days": -1,
+      "protected_windows_in_week": 3,
+      "qualified_alternative_completion": "2026-05-25",
+      "recommended_incremental_cost_usd": 0,
+      "recommended_option": "rehome_series_to_open_windows",
+      "recommended_outcome_date": "2026-05-18",
+      "releases_per_window": 2,
+      "required_capacity": 8,
+      "selected_resource_or_control": "LANE-EDGE-3/2026-05-13/PM",
+      "standard_external_readiness": "2026-05-22",
+      "stranded_lane": "LANE-WEB-1",
+      "unavailable_or_protected_capacity": 60,
+      "windows_required": 2
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'rehome_series_to_open_windows', tied to REL-88940, revision v1, and the selected rehome_series_to_open_windows outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-05-18', tied to REL-88940, revision v1, and the selected rehome_series_to_open_windows outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported affected resource or operation as 'REL-88940', tied to REL-88940, revision v1, and the selected rehome_series_to_open_windows outcome.",
+        "field": "affected_resource_or_operation",
+        "id": "answer_affected_resource_or_operation",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported capacity gap as 4, tied to REL-88940, revision v1, and the selected rehome_series_to_open_windows outcome.",
+        "field": "capacity_gap",
+        "id": "answer_capacity_gap",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to REL-88940, revision v1, and the selected rehome_series_to_open_windows outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required REL-88940 to reach business outcome 'Stranded release re-homed' through cms.releases.update with exact provider-critical values release_id='REL-88940', lane_id='LANE-EDGE-3', start_time='2026-05-13T13:30:00', end_time='2026-05-13T15:30:00', status='scheduled'. The audited change binds selected option rehome_series_to_open_windows, approval AP-WS-0106, and constraint free regular windows on the active lanes without displacing protected blocks; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "release_id",
+          "lane_id",
+          "start_time",
+          "end_time",
+          "status"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "end_time": "2026-05-13T15:30:00",
+            "lane_id": "LANE-EDGE-3",
+            "release_id": "REL-88940",
+            "start_time": "2026-05-13T13:30:00",
+            "status": "scheduled"
+          },
+          "tool": "cms.releases.update"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "REL-88940",
+          "status": "scheduled",
+          "table_name": "releases",
+          "tool": "cms.releases.update"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "webstudio-006-mutation-01",
+          "task_id": "webstudio-006"
+        }
+      },
+      {
+        "description": "Persisted REL-88940 in releases with the supported values (page_id='PAGE-3450', cr_id='CR-4460', lane_id='LANE-EDGE-3', start_time='2026-05-13T13:30:00', end_time='2026-05-13T15:30:00', status='scheduled', revision=2) so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "releases",
+        "values": {
+          "cr_id": "CR-4460",
+          "end_time": "2026-05-13T15:30:00",
+          "lane_id": "LANE-EDGE-3",
+          "page_id": "PAGE-3450",
+          "revision": 2,
+          "start_time": "2026-05-13T13:30:00",
+          "status": "scheduled"
+        },
+        "weight": 2.0,
+        "where": {
+          "release_id": "REL-88940"
+        }
+      },
+      {
+        "description": "Held edge lane 3's 2026-05-13 PM window for REL-88940 and left the protected and blocked windows untouched.",
+        "id": "state_02",
+        "milestone_id": "state.primary",
+        "table": "deploy_windows",
+        "values": {
+          "release_id": "REL-88940",
+          "status": "busy"
+        },
+        "weight": 1.0,
+        "where": {
+          "window_id": "DW-3-20260513-PM"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying rehome_series_to_open_windows, the 2026-05-18 outcome, the binding constraint, and the WEB-0006 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "nora.haviland@larkspur.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "WEB-0006",
+            "careers",
+            "CR-4460"
+          ]
+        ],
+        "payload_text_contains": [
+          "rehome_series_to_open_windows",
+          "2026-05-18"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "webstudio-006-mutation-02",
+          "task_id": "webstudio-006"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for WEB-0006: the primary change and the stakeholder draft; no additional release, pin, licence request, or waiver.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "webstudio-006"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-05-19 as the documented control date for the four privacy-notice releases stranded by the lane 1 outage; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 8 LANE_HOUR for lane-hours for four 2-hour content releases (60 min deploy + 60 min verification each).",
+        "field": "required_capacity",
+        "id": "calculate_required_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Established 64 gross candidate LANE_HOUR associated with lane-hours on LANE-WEB-2 and LANE-EDGE-3 between 2026-05-12 and 2026-05-15; did not call it usable before applying protected load.",
+        "field": "candidate_capacity",
+        "id": "establish_candidate_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Excluded 60 LANE_HOUR for lane-hours already booked, held as protected blackout or freeze blocks, or blocked for maintenance.",
+        "field": "unavailable_or_protected_capacity",
+        "id": "remove_protected_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 64 candidate − 60 unavailable/protected = 4 net usable LANE_HOUR.",
+        "field": "net_usable_capacity",
+        "id": "calculate_net_usable_capacity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 8 required − 4 net usable = 4 LANE_HOUR uncovered inside the requested window.",
+        "field": "capacity_gap",
+        "id": "calculate_capacity_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept load and availability in LANE_HOUR.",
+        "field": "capacity_unit",
+        "id": "preserve_capacity_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Bound the recovery to provider identifier LANE-EDGE-3/2026-05-13/PM only after confirming free regular windows on the active lanes without displacing protected blocks.",
+        "field": "selected_resource_or_control",
+        "id": "identify_selected_resource_or_control",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 2026-05-18 for rehome_series_to_open_windows.",
+        "field": "base_completion",
+        "id": "compare_base_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 2026-05-25 for wait_for_lane_1_return using free windows on LANE-WEB-2 and LANE-EDGE-3, two content releases per window.",
+        "field": "qualified_alternative_completion",
+        "id": "compare_qualified_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated 2026-05-14 for displace_blackout_window and retained its authority constraint.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_schedule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-22 as the independently confirmed standard readiness date for Meridian Edge's confirmed standard and priority re-certification dates on MEQ-7701.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-05-15 as the independently confirmed expedited readiness date for Meridian Edge's confirmed standard and priority re-certification dates on MEQ-7701.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 4 releases stranded on LANE-WEB-1 between 2026-05-12 and 2026-05-14.",
+        "field": "affected_releases",
+        "id": "count_affected_releases",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Converted 8 lane-hours into 2 windows by sequencing two 2-hour notices per window.",
+        "field": "windows_required",
+        "id": "convert_duration_to_windows",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the playbook rule allowing two content releases back to back in one window.",
+        "field": "releases_per_window",
+        "id": "apply_sequencing_rule",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified LANE-WEB-1 as the fenced lane from the roster, not from the release descriptions alone.",
+        "field": "stranded_lane",
+        "id": "identify_stranded_lane",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 3 protected windows on the active lanes this week (edge 3 PM 05-12, lane 2 PM 05-13, lane 2 AM 05-14); the 05-15 edge maintenance is blocked, not protected.",
+        "field": "protected_windows_in_week",
+        "id": "count_protected_windows",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied USD 0 as the documented incremental cost for rehome_series_to_open_windows; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that displace_blackout_window remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of rehome_series_to_open_windows, wait_for_lane_1_return, displace_blackout_window; selected rehome_series_to_open_windows because it alone gives the best currently authorized result under free regular windows on the active lanes without displacing protected blocks.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-05-18 as the supported outcome date for rehome_series_to_open_windows.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-05-18 with the independent control date 2026-05-19 and calculated a signed variance of -1 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "WEB-0006"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated WEB-0006 scope, immutable handles, mounted systems, and evidence index before investigating REL-88940.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "WEB-0006"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1006-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for WEB-0006 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "slug": "careers"
+            },
+            "expected_result_contains": {
+              "pages": [
+                {
+                  "page_id": "PAGE-3450"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cms.pages.search"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved slug careers to the immutable page record through a slug search rather than a title match against a similarly named page.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "WEB-0006"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-006-17"
+                },
+                {
+                  "id": "DRV-006-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the WEB-0006 case folder on the shared drive and identified the approval record and the change-request export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "playbook"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-006-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the playbook folder and distinguished the effective v3 playbook from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_request_id": "CR-4460"
+            },
+            "expected_result_contains": {
+              "change_request_id": "CR-4460",
+              "status": "open"
+            },
+            "match": "result_contains",
+            "tool": "cms.change_requests.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the active change request CR-4460: launch territories, entries in scope, durations, and impact notes.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_request_id": "CR-4460"
+            },
+            "expected_result_contains": {
+              "entries": [
+                {
+                  "entry_id": "E-3450-401"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cms.entries.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the entries of CR-4460 with their token, component, and asset bindings and blocking reasons.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective v3 playbook for the scope, licence-eligibility, breaking-token, window, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "token_id": "TOK-TYPE-LEGAL-SMALL"
+            },
+            "expected_result_contains": {
+              "token_id": "TOK-TYPE-LEGAL-SMALL"
+            },
+            "match": "result_contains",
+            "tool": "tokens.tokens.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read design token TOK-TYPE-LEGAL-SMALL: its current version and any proposed version with its breaking flag.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "page_id": "PAGE-3450"
+            },
+            "expected_result_contains": {
+              "change_requests": [
+                {
+                  "change_request_id": "CR-4460"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cms.change_requests.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the change requests that define the requirement (CR-4460) and excluded duplicate, superseded, or out-of-scope requests.",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "change_request_id": "CR-4460"
+            },
+            "expected_result_contains": {
+              "gates": [
+                {
+                  "gate_id": "GATE-4460-QA"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "checklist.gates.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the release checklist for CR-4460 to ground which gates passed, which failed, and who can waive what.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "asset_id": "AST-ICON-7305"
+            },
+            "expected_result_contains": {
+              "licences": [
+                {
+                  "licence_id": "LIC-7305-A"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "dam.licences.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed every AST-ICON-7305 licence grant with territories, expiry, countersign status, scope, and reservations before netting the coverage.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-05-26",
+              "start_date": "2026-05-12"
+            },
+            "expected_result_contains": {
+              "windows": [
+                {
+                  "id": "DW-3-20260513-PM"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cdn.windows.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the deploy-window calendar for 2026-05-12 onward to find the first free window that displaces no protected or blocked block.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "quote_id": "QT-ME-7701"
+            },
+            "expected_result_contains": {
+              "quote_id": "QT-ME-7701",
+              "standard_issue_date": "2026-05-21"
+            },
+            "match": "result_contains",
+            "tool": "vendors.quotes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the vendor quote QT-ME-7701 for the independently confirmed standard and expedited issue dates and the rush fee.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "token_id": "TOK-TYPE-LEGAL-SMALL"
+            },
+            "expected_result_contains": {
+              "consumers": [
+                {
+                  "consumer_id": "CON-6160"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "tokens.consumers.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the gross registry consumers of TOK-TYPE-LEGAL-SMALL so deprecated, migrated, and on-page rows could be excluded from the impact count.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DF-3450-02"
+            },
+            "expected_result_contains": {
+              "frames": [
+                {
+                  "frame_id": "FR-3450-202"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "design.frames.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the frames of the current design file DF-3450-02 and distinguished the approved frame from superseded and in-review frames.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "page_id": "PAGE-3450"
+            },
+            "expected_result_contains": {
+              "budgets": [
+                {
+                  "budget_id": "BUD-3450-WEIGHT"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "checklist.budgets.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the performance budgets for PAGE-3450 with their measured values and headroom.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "lanes": [
+                {
+                  "lane_id": "LANE-WEB-1"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cdn.lanes.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the deploy-lane roster for lane status and instant-rollback capability before choosing a lane for the release window.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-WS-0106"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-WS-0106"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-WS-0106 for its exact scope: record, quantity, vendor, fee allowance, and what it does not cover.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-17"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-17"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1006-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1006-01"
+            },
+            "match": "result_contains",
+            "tool": "messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1006-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1006"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1006"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1006 for grant, token, window, and authority remarks that qualify the system records.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "page_id": "PAGE-3450"
+            },
+            "expected_result_contains": {
+              "releases": [
+                {
+                  "id": "REL-88940"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "cms.releases.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the scheduled releases that fix the deploy scope by immutable id.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-31"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-31"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for WEB-0006 and confirmed that REL-88940 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-22"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-22"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for WEB-0006 and joined REL-88940 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for WEB-0006; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-27"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-27"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for WEB-0006 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-32"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-32"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for REL-88940 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-25"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-25"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for WEB-0006 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for WEB-0006, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_30",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-006-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-006-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for WEB-0006: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_31",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "cms.releases.update",
+        "any_of": [
+          {
+            "arguments": {
+              "release_id": "REL-88940"
+            },
+            "expected_result_contains": {
+              "end": "2026-05-13T15:30:00",
+              "id": "REL-88940",
+              "lane": "LANE-EDGE-3",
+              "meta": {
+                "versionId": "2"
+              },
+              "start": "2026-05-13T13:30:00",
+              "status": "scheduled"
+            },
+            "match": "result_contains",
+            "tool": "cms.releases.get"
+          }
+        ],
+        "description": "Read REL-88940 back through cms.releases.get after the change and confirmed the persisted provider values (id='REL-88940', status='scheduled', lane='LANE-EDGE-3', start='2026-05-13T13:30:00', end='2026-05-13T15:30:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "end": "2026-05-13T15:30:00",
+          "id": "REL-88940",
+          "lane": "LANE-EDGE-3",
+          "meta": {
+            "versionId": "2"
+          },
+          "start": "2026-05-13T13:30:00",
+          "status": "scheduled"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": false,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "release_id": "REL-88940"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "webstudio",
+  "instruction": "Lane one failed this morning's edge-config validation and it is fenced until the twenty-second, which strands the cookie-consent and privacy notice releases booked on it this week. Privacy is firm that none of them can go live more than a week past its due date. Figure out how much lane time those releases need, what is honestly open on the other two lanes without touching the protected blocks or the maintenance window, and how far into next week the last of them lands. Move the first affected release to the window you settle on, and leave Nora a note that lays out the rest and any option that would need Idris or Chidi.",
+  "level": "employee-decision",
+  "mode": "schedule",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "end_time": "2026-05-14T11:00:00",
+        "lane_id": "LANE-WEB-2",
+        "release_id": "REL-88940",
+        "start_time": "2026-05-14T09:00:00",
+        "status": "scheduled"
+      },
+      "tool": "cms.releases.update"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-006-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "cms.releases.update",
+      "any_of": [
+        {
+          "arguments": {
+            "release_id": "REL-88940"
+          },
+          "expected_result_contains": {
+            "end": "2026-05-13T15:30:00",
+            "id": "REL-88940",
+            "lane": "LANE-EDGE-3",
+            "meta": {
+              "versionId": "2"
+            },
+            "start": "2026-05-13T13:30:00",
+            "status": "scheduled"
+          },
+          "match": "result_contains",
+          "tool": "cms.releases.get"
+        }
+      ],
+      "description": "Read REL-88940 back through cms.releases.get after the change and confirmed the persisted provider values (id='REL-88940', status='scheduled', lane='LANE-EDGE-3', start='2026-05-13T13:30:00', end='2026-05-13T15:30:00', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "end": "2026-05-13T15:30:00",
+        "id": "REL-88940",
+        "lane": "LANE-EDGE-3",
+        "meta": {
+          "versionId": "2"
+        },
+        "start": "2026-05-13T13:30:00",
+        "status": "scheduled"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": false,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "release_id": "REL-88940"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-WS-0106"
+    },
+    "case_reference": "WEB-0006",
+    "cdn": {
+      "calendar_window": {
+        "end_date": "2026-05-26",
+        "start_date": "2026-05-12"
+      },
+      "pool": "web-pool"
+    },
+    "chat": {
+      "thread_id": "CHAT-1006"
+    },
+    "checklist": {
+      "change_request_id": "CR-4460",
+      "page_id": "PAGE-3450"
+    },
+    "cms": {
+      "change_request_id": "CR-4460",
+      "page_search": {
+        "arguments": {
+          "slug": "careers"
+        },
+        "tool": "cms.pages.search"
+      },
+      "page_slug": "careers"
+    },
+    "dam": {
+      "asset_id": "AST-ICON-7305"
+    },
+    "design": {
+      "file_id": "DF-3450-02"
+    },
+    "drive": {
+      "case_folder_query": "WEB-0006",
+      "playbook_query": "playbook"
+    },
+    "messages": {
+      "search_query": "WEB-0006"
+    },
+    "tokens": {
+      "token_id": "TOK-TYPE-LEGAL-SMALL"
+    },
+    "vendors": {
+      "quote_id": "QT-ME-7701"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "WEB-0006"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated WEB-0006 scope, immutable handles, mounted systems, and evidence index before investigating REL-88940.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "WEB-0006"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1006-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for WEB-0006 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "slug": "careers"
+          },
+          "expected_result_contains": {
+            "pages": [
+              {
+                "page_id": "PAGE-3450"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cms.pages.search"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved slug careers to the immutable page record through a slug search rather than a title match against a similarly named page.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "WEB-0006"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-006-17"
+              },
+              {
+                "id": "DRV-006-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the WEB-0006 case folder on the shared drive and identified the approval record and the change-request export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "playbook"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-006-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the playbook folder and distinguished the effective v3 playbook from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_request_id": "CR-4460"
+          },
+          "expected_result_contains": {
+            "change_request_id": "CR-4460",
+            "status": "open"
+          },
+          "match": "result_contains",
+          "tool": "cms.change_requests.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the active change request CR-4460: launch territories, entries in scope, durations, and impact notes.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_request_id": "CR-4460"
+          },
+          "expected_result_contains": {
+            "entries": [
+              {
+                "entry_id": "E-3450-401"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cms.entries.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the entries of CR-4460 with their token, component, and asset bindings and blocking reasons.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective v3 playbook for the scope, licence-eligibility, breaking-token, window, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "token_id": "TOK-TYPE-LEGAL-SMALL"
+          },
+          "expected_result_contains": {
+            "token_id": "TOK-TYPE-LEGAL-SMALL"
+          },
+          "match": "result_contains",
+          "tool": "tokens.tokens.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read design token TOK-TYPE-LEGAL-SMALL: its current version and any proposed version with its breaking flag.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "page_id": "PAGE-3450"
+          },
+          "expected_result_contains": {
+            "change_requests": [
+              {
+                "change_request_id": "CR-4460"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cms.change_requests.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the change requests that define the requirement (CR-4460) and excluded duplicate, superseded, or out-of-scope requests.",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "change_request_id": "CR-4460"
+          },
+          "expected_result_contains": {
+            "gates": [
+              {
+                "gate_id": "GATE-4460-QA"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "checklist.gates.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the release checklist for CR-4460 to ground which gates passed, which failed, and who can waive what.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "asset_id": "AST-ICON-7305"
+          },
+          "expected_result_contains": {
+            "licences": [
+              {
+                "licence_id": "LIC-7305-A"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "dam.licences.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed every AST-ICON-7305 licence grant with territories, expiry, countersign status, scope, and reservations before netting the coverage.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-05-26",
+            "start_date": "2026-05-12"
+          },
+          "expected_result_contains": {
+            "windows": [
+              {
+                "id": "DW-3-20260513-PM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cdn.windows.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the deploy-window calendar for 2026-05-12 onward to find the first free window that displaces no protected or blocked block.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "quote_id": "QT-ME-7701"
+          },
+          "expected_result_contains": {
+            "quote_id": "QT-ME-7701",
+            "standard_issue_date": "2026-05-21"
+          },
+          "match": "result_contains",
+          "tool": "vendors.quotes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the vendor quote QT-ME-7701 for the independently confirmed standard and expedited issue dates and the rush fee.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "token_id": "TOK-TYPE-LEGAL-SMALL"
+          },
+          "expected_result_contains": {
+            "consumers": [
+              {
+                "consumer_id": "CON-6160"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "tokens.consumers.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the gross registry consumers of TOK-TYPE-LEGAL-SMALL so deprecated, migrated, and on-page rows could be excluded from the impact count.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DF-3450-02"
+          },
+          "expected_result_contains": {
+            "frames": [
+              {
+                "frame_id": "FR-3450-202"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "design.frames.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the frames of the current design file DF-3450-02 and distinguished the approved frame from superseded and in-review frames.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "page_id": "PAGE-3450"
+          },
+          "expected_result_contains": {
+            "budgets": [
+              {
+                "budget_id": "BUD-3450-WEIGHT"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "checklist.budgets.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the performance budgets for PAGE-3450 with their measured values and headroom.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "lanes": [
+              {
+                "lane_id": "LANE-WEB-1"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cdn.lanes.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the deploy-lane roster for lane status and instant-rollback capability before choosing a lane for the release window.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-WS-0106"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-WS-0106"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-WS-0106 for its exact scope: record, quantity, vendor, fee allowance, and what it does not cover.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1006-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1006-01"
+          },
+          "match": "result_contains",
+          "tool": "messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1006-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1006"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1006"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1006 for grant, token, window, and authority remarks that qualify the system records.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "page_id": "PAGE-3450"
+          },
+          "expected_result_contains": {
+            "releases": [
+              {
+                "id": "REL-88940"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "cms.releases.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the scheduled releases that fix the deploy scope by immutable id.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-31"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-31"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for WEB-0006 and confirmed that REL-88940 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-22"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-22"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for WEB-0006 and joined REL-88940 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for WEB-0006; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-27"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-27"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for WEB-0006 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-32"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-32"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for REL-88940 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-25"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-25"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for WEB-0006 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for WEB-0006, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_30",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-006-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-006-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for WEB-0006: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_31",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "WEB-0006"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "WEB-0006"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1006-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "messages.list"
+    },
+    {
+      "arguments": {
+        "slug": "careers"
+      },
+      "expected_result_contains": {
+        "pages": [
+          {
+            "page_id": "PAGE-3450"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cms.pages.search"
+    },
+    {
+      "arguments": {
+        "q": "WEB-0006"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-006-17"
+          },
+          {
+            "id": "DRV-006-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "playbook"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-006-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "change_request_id": "CR-4460"
+      },
+      "expected_result_contains": {
+        "change_request_id": "CR-4460",
+        "status": "open"
+      },
+      "match": "result_contains",
+      "tool": "cms.change_requests.get"
+    },
+    {
+      "arguments": {
+        "change_request_id": "CR-4460"
+      },
+      "expected_result_contains": {
+        "entries": [
+          {
+            "entry_id": "E-3450-401"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cms.entries.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "token_id": "TOK-TYPE-LEGAL-SMALL"
+      },
+      "expected_result_contains": {
+        "token_id": "TOK-TYPE-LEGAL-SMALL"
+      },
+      "match": "result_contains",
+      "tool": "tokens.tokens.get"
+    },
+    {
+      "arguments": {
+        "page_id": "PAGE-3450"
+      },
+      "expected_result_contains": {
+        "change_requests": [
+          {
+            "change_request_id": "CR-4460"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cms.change_requests.list"
+    },
+    {
+      "arguments": {
+        "change_request_id": "CR-4460"
+      },
+      "expected_result_contains": {
+        "gates": [
+          {
+            "gate_id": "GATE-4460-QA"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "checklist.gates.list"
+    },
+    {
+      "arguments": {
+        "asset_id": "AST-ICON-7305"
+      },
+      "expected_result_contains": {
+        "licences": [
+          {
+            "licence_id": "LIC-7305-A"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "dam.licences.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-05-26",
+        "start_date": "2026-05-12"
+      },
+      "expected_result_contains": {
+        "windows": [
+          {
+            "id": "DW-3-20260513-PM"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cdn.windows.list"
+    },
+    {
+      "arguments": {
+        "quote_id": "QT-ME-7701"
+      },
+      "expected_result_contains": {
+        "quote_id": "QT-ME-7701",
+        "standard_issue_date": "2026-05-21"
+      },
+      "match": "result_contains",
+      "tool": "vendors.quotes.get"
+    },
+    {
+      "arguments": {
+        "token_id": "TOK-TYPE-LEGAL-SMALL"
+      },
+      "expected_result_contains": {
+        "consumers": [
+          {
+            "consumer_id": "CON-6160"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "tokens.consumers.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DF-3450-02"
+      },
+      "expected_result_contains": {
+        "frames": [
+          {
+            "frame_id": "FR-3450-202"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "design.frames.list"
+    },
+    {
+      "arguments": {
+        "page_id": "PAGE-3450"
+      },
+      "expected_result_contains": {
+        "budgets": [
+          {
+            "budget_id": "BUD-3450-WEIGHT"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "checklist.budgets.list"
+    },
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "lanes": [
+          {
+            "lane_id": "LANE-WEB-1"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cdn.lanes.list"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-WS-0106"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-WS-0106"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-17"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-17"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1006-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1006-01"
+      },
+      "match": "result_contains",
+      "tool": "messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1006"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1006"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "page_id": "PAGE-3450"
+      },
+      "expected_result_contains": {
+        "releases": [
+          {
+            "id": "REL-88940"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "cms.releases.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-31"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-31"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-22"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-22"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-27"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-27"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-32"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-32"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-25"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-25"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-006-28"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-006-28"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "messages.list",
+    "messages.get",
+    "cms.pages.search",
+    "cms.change_requests.list",
+    "cms.change_requests.get",
+    "cms.entries.list",
+    "checklist.gates.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "tokens.tokens.get",
+    "dam.licences.list",
+    "tokens.consumers.list",
+    "design.frames.list",
+    "checklist.budgets.list",
+    "cms.releases.list",
+    "cdn.windows.list",
+    "cdn.lanes.list",
+    "vendors.quotes.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "web_release_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_24",
+        "investigation_25"
+      ],
+      "description": "Establish the isolated WEB-0006 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 7.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_26"
+      ],
+      "description": "Determine the operative v1 requirement for REL-88940 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 10.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_12",
+        "investigation_13",
+        "investigation_14",
+        "investigation_15",
+        "investigation_16",
+        "investigation_17",
+        "investigation_18",
+        "investigation_27",
+        "investigation_28",
+        "investigation_30"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 64 observed less 60 excluded to 4 supported LANE_HOUR for lane-hours on LANE-WEB-2 and LANE-EDGE-3 between 2026-05-12 and 2026-05-15. Applied free windows on LANE-WEB-2 and LANE-EDGE-3, two content releases per window to derive the three option outcomes without using protected or blocked windows. Used the independently confirmed 2026-05-15 expedited readiness input for wait_for_lane_1_return, then separately derived its 2026-05-25 operating outcome under free regular windows on the active lanes without displacing protected blocks instead of treating a vendor promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_19",
+        "investigation_20",
+        "investigation_29"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-WS-0106 only to rehome_series_to_open_windows and REL-88940; kept displace_blackout_window outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_21",
+        "investigation_22",
+        "investigation_23",
+        "investigation_31"
+      ],
+      "description": "Correlate REL-88940 by immutable identifiers across the systems of record (cms, tokens, dam, checklist, cdn, messages, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 21.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "calculate_required_capacity",
+        "establish_candidate_capacity",
+        "remove_protected_capacity",
+        "calculate_net_usable_capacity",
+        "calculate_capacity_gap",
+        "preserve_capacity_unit",
+        "identify_selected_resource_or_control",
+        "compare_base_schedule",
+        "compare_qualified_schedule",
+        "compare_escalated_schedule",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "count_affected_releases",
+        "convert_duration_to_windows",
+        "apply_sequencing_rule",
+        "identify_stranded_lane",
+        "count_protected_windows"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for the four privacy-notice releases stranded by the lane 1 outage.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for rehome_series_to_open_windows under the actual operating window and report whether the 2026-05-18 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select rehome_series_to_open_windows only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 6.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01",
+        "state_02"
+      ],
+      "description": "Persist exactly the supported 'Stranded release re-homed' change for REL-88940 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read REL-88940 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_affected_resource_or_operation",
+        "answer_capacity_gap",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for the four privacy-notice releases stranded by the lane 1 outage.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside WEB-0006's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "14ee7bdeebbff7e10745b29ec18b434a00508336f33415d3fae1164382e2a044",
+  "starting_records": [
+    {
+      "resource_id": "REL-88940",
+      "resource_type": "Release",
+      "status": "scheduled",
+      "system": "cms"
+    },
+    {
+      "resource_id": "REL-88941",
+      "resource_type": "Release",
+      "status": "scheduled",
+      "system": "cms"
+    },
+    {
+      "resource_id": "REL-88942",
+      "resource_type": "Release",
+      "status": "scheduled",
+      "system": "cms"
+    },
+    {
+      "resource_id": "REL-88943",
+      "resource_type": "Release",
+      "status": "scheduled",
+      "system": "cms"
+    },
+    {
+      "resource_id": "LR-6200",
+      "resource_type": "LicenceRequest",
+      "status": "ISSUED",
+      "system": "dam"
+    }
+  ],
+  "task_id": "webstudio-006",
+  "title": "Re-home the privacy-notice releases stranded by the lane 1 outage",
+  "workflow": {
+    "answer_fields": 25,
+    "readbacks": 1,
+    "reads": 32,
+    "writes": 2
+  },
+  "world": {
+    "id": "larkspur-webstudio-v1",
+    "name": "Larkspur Commerce — Web Platform Studio",
+    "organization_id": "ORG-LARKSPUR",
+    "primary_site": "ENV-PROD-WEB",
+    "systems": [
+      "cms",
+      "tokens",
+      "design",
+      "dam",
+      "checklist",
+      "cdn",
+      "vendors",
+      "approvals",
+      "messages",
+      "chat",
+      "drive",
+      "notes"
+    ]
+  }
+}
