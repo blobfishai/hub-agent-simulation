@@ -21,28 +21,35 @@ vendor or partner lead time → three costed alternatives with outcome, incremen
 cost, and authority status → a controlled state change, its readback, and a
 stakeholder draft → the exact graded answer with every intermediate derivation.
 
-## Release v1.0.0 (2026-09-01)
+## Releases
+
+**v1.0.0 (published 2026-09-01)** — 5 families / 40 tasks on Harbor and Hugging Face
+(clinicops, hostops, datadesk, researchdesk, scilab). **v1.1.0 tree (this repository)** —
+7 families / 56 tasks, 269 tools, 1,767 agent-visible evidence files, 3,649
+deterministic criteria; the compose healthcheck now probes the world service's private
+`/health` endpoint instead of the graded task endpoint.
 
 | Family | Hub cluster | Tasks | MCP servers | Tools |
 |---|---|---|---|---|
 | ClinicOps (`clinicops`) | healthcare | 8 | 10 | 34 |
-| HostOps (`hostops`) | terminal-operations | 8 | 12 | 39 |
 | DataDesk (`datadesk`) | data-engineering-analytics | 8 | 10 | 33 |
+| HostOps (`hostops`) | terminal-operations | 8 | 12 | 39 |
+| PolicyDesk (`policydesk`) | policy-compliance-instruction-following | 8 | 16 | 41 |
 | ResearchDesk (`researchdesk`) | reasoning-knowledge-qa | 8 | 12 | 32 |
 | SciLab (`scilab`) | scientific-research | 8 | 11 | 43 |
+| Workplace (`workplace`) | customer-workplace-agents | 8 | 13 | 47 |
 
-40 tasks, 181 tools, 1,243 agent-visible evidence files across seven native
-formats, 2,548 deterministic criteria. Qualification (560 executions): 40/40
-oracle strict passes at a mean HubScore of 100, 40/40 byte-identical replays,
-400 negative-control executions across ten attack policies with 0 false accepts,
-80/80 mutation omissions detected; reasoning-chain audit 40/40 at depth 8 with
-hop classes H1–H13 covered. Every number is recomputed from
+Qualification across the 56 released tasks (784 executions): 56/56 oracle strict
+passes at a mean HubScore of 100.0, 56/56 byte-identical replays,
+560 negative-control executions across 10 attack policies with 0 false
+accepts, 112/112 mutation omissions detected; reasoning-chain audit
+56/56 with hop classes H1–H13 covered. Every number is recomputed from
 `benchmark/hubbench/reports/` and `benchmark/hubbench/release/reports/release.json`
 by the tests — nothing here is typed by hand.
 
-Eight more families (deskops, webstudio, policydesk, itsmdesk, secops, workplace,
-designops, repodesk) complete the thirteen-cluster map and are released as they
-clear the same admission gate.
+6 more families (deskops, webstudio, itsmdesk, secops, designops, repodesk) complete the thirteen-cluster map and
+are released as they clear the same admission gate; each new tag republishes
+Harbor and Hugging Face and updates `benchmark/hubbench/reports/publication.json`.
 
 ## Distribution
 
@@ -59,7 +66,7 @@ clear the same admission gate.
 ## Quickstart
 
 ```bash
-python3 -m pytest benchmark/hubbench -q                     # 100 tests: engine, families, surfaces, distribution
+python3 -m pytest benchmark/hubbench -q                     # engine, families, surfaces, distribution, model runs
 
 # Serve one task: MCP over streamable HTTP + REST API + web console in one process
 python3 -m hubbench.engine.http --family clinicops --task clinicops-001 \
