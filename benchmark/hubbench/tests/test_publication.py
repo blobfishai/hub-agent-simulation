@@ -13,6 +13,7 @@ import pytest
 
 HUBBENCH_ROOT = Path(__file__).resolve().parents[1]
 PUBLICATION = HUBBENCH_ROOT / "reports" / "publication.json"
+PUBLICATIONS = HUBBENCH_ROOT / "reports" / "publications"
 RELEASE_RECEIPT = HUBBENCH_ROOT / "release" / "reports" / "release.json"
 DATASET_TOML = HUBBENCH_ROOT / "release" / "harbor" / "dataset.toml"
 
@@ -47,6 +48,8 @@ def test_publication_receipt_describes_the_published_release():
     assert round_trip["rewards"] and all(reward == 1.0 for reward in round_trip["rewards"])
     assert round_trip["errors"] == round_trip["retries"] == round_trip["cancelled"] == 0
     assert set(round_trip["tasks"]) <= set(publication["publishedTaskDigests"])
+    versioned = PUBLICATIONS / f"v{publication['version']}.json"
+    assert json.loads(versioned.read_text(encoding="utf-8")) == publication
 
 
 def test_every_published_package_is_still_in_the_committed_release_byte_for_byte():

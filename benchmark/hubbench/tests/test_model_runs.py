@@ -10,6 +10,7 @@ import pytest
 HUBBENCH_ROOT = Path(__file__).resolve().parents[1]
 MODEL_RUNS = HUBBENCH_ROOT / "model_runs"
 PUBLICATION = HUBBENCH_ROOT / "reports" / "publication.json"
+PUBLICATIONS = HUBBENCH_ROOT / "reports" / "publications"
 RUNS = sorted(path for path in MODEL_RUNS.iterdir() if (path / "run.json").is_file()) if MODEL_RUNS.is_dir() else []
 
 pytestmark = pytest.mark.skipif(not RUNS or not PUBLICATION.is_file(), reason="no imported model runs")
@@ -18,14 +19,20 @@ pytestmark = pytest.mark.skipif(not RUNS or not PUBLICATION.is_file(), reason="n
 @pytest.mark.parametrize("run_dir", RUNS, ids=[path.name for path in RUNS])
 def test_model_run_receipt_is_bound_and_honest(run_dir):
     run = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
-    publication = json.loads(PUBLICATION.read_text(encoding="utf-8"))
+    latest = json.loads(PUBLICATION.read_text(encoding="utf-8"))
+    publication = json.loads((PUBLICATIONS / f"v{run['version']}.json").read_text(encoding="utf-8"))
     assert run["schema_version"] == "hubbench.model-run.v1"
+    assert run["version"] == publication["version"]
+    assert run["harbor_tag"] == publication["harborTag"]
     assert run["dataset"] == publication["harborDataset"]
     assert run["published_tasks"] == publication["harborTaskCount"]
+    assert tuple(map(int, run["version"].split("."))) <= tuple(map(int, latest["version"].split(".")))
     assert run["trials_completed"] == len(run["trials"]) == len(list((run_dir / "trials").glob("*.json")))
     complete = run["trials_completed"] == run["published_tasks"] and run["errors"] == 0 and run["retries"] == 0
     assert run["ranked"] == complete
     assert run["kind"] == ("ranked" if complete else "disclosed-partial")
+    if run["version"] != latest["version"]:
+        assert not (run["ranked"] and run["published_tasks"] == latest["harborTaskCount"]), "historical runs cannot enter the current-release leaderboard"
     if not complete:
         assert "never ranked" in run["note"].lower()
     scores = []

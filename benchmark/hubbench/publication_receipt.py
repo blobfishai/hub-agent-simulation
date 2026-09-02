@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write ``reports/publication.json`` from the artifacts of an actual publication — nothing typed by hand.
+"""Write the latest and versioned publication receipts from actual artifacts — nothing typed by hand.
 
     python3 benchmark/hubbench/publication_receipt.py \
         --frozen ~/.cache/hubbench/v1.1.0/harbor \
@@ -37,6 +37,7 @@ sys.path.insert(0, str(BENCHMARK_ROOT))
 from huggingface_receipts import verify_hugging_face_publication  # noqa: E402
 
 PUBLICATION = HUBBENCH_ROOT / "reports" / "publication.json"
+PUBLICATIONS = HUBBENCH_ROOT / "reports" / "publications"
 HARBOR_HUB = "https://hub.harborframework.com/datasets"
 HF_DATASET = "SamuelChien821/hubbench"
 
@@ -204,8 +205,13 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=PUBLICATION)
     args = parser.parse_args()
     publication = build_receipt(args)
+    rendered = json.dumps(publication, indent=2, sort_keys=True) + "\n"
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(publication, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.output.write_text(rendered, encoding="utf-8")
+    if args.output.resolve() == PUBLICATION.resolve():
+        versioned = PUBLICATIONS / f"v{publication['version']}.json"
+        versioned.parent.mkdir(parents=True, exist_ok=True)
+        versioned.write_text(rendered, encoding="utf-8")
     print(f"wrote {args.output}: {publication['harborDataset']} v{publication['version']}, {publication['harborTaskCount']} tasks, HF {publication['huggingFaceRevision'][:12]}, source {publication['sourceRepositoryCommit'][:9]}")
     return 0
 
