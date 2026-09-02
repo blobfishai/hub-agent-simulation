@@ -1,6 +1,6 @@
 # hubbench-secops-001 — Contain the treasury identity after the impossible-travel consent alert
 
-HubBench 1.2.0 · family **SecOps** (`secops`, cluster `security`) · decision mode `plan` · role `security_operations_coordinator` · as of 2026-06-08.
+HubBench 1.3.0 · family **SecOps** (`secops`, cluster `security`) · decision mode `plan` · role `security_operations_coordinator` · as of 2026-06-08.
 
 Defensive credential-compromise triage and containment decisions against a SIEM with versioned detection rules, an EDR host inventory, an IAM identity register with sessions, factors, and credential-object grants, a cloud key registry, a security ticket queue, containment-tier playbooks, a responder on-call calendar, identity-provider vendor invalidation confirmations, and approval records.
 

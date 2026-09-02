@@ -1,0 +1,1097 @@
+{
+  "answer": {
+    "accelerated_completion": "2026-06-30",
+    "baseline_completion": "2026-07-28",
+    "business_need_date": "2026-07-10",
+    "change_fees_usd": 915,
+    "coverage_item_or_resource": "EVT-CAB",
+    "decision_timing_status": "ON_TIME",
+    "earliest_qualified_base_week": "2026-07-27",
+    "escalated_completion": "2026-07-28",
+    "escalation_approval_required": 1,
+    "expedite_completion_days_saved": 0,
+    "expedited_external_readiness": "2026-07-09",
+    "external_recovery_quantity": 3,
+    "group_fare_usd": 380,
+    "hold_deposit_usd": 2480,
+    "ineligible_coverage_quantity": 3,
+    "local_attendees": 5,
+    "move_incremental_cost_usd": 4255,
+    "observed_coverage_quantity": 7,
+    "outcome_vs_control_days": -10,
+    "quantity_unit": "ITINERARY",
+    "recommended_incremental_cost_usd": 0,
+    "recommended_option": "keep_date_at_quayside_assembly_rooms",
+    "recommended_outcome_date": "2026-06-30",
+    "required_attendees": 12,
+    "required_quantity": 7,
+    "selected_venue_week": "VEN-QUAYSIDE/2026-06-29",
+    "session_days": 3,
+    "shortage_quantity": 3,
+    "standard_external_readiness": "2026-07-20",
+    "usable_coverage_quantity": 4
+  },
+  "answer_checks": [
+    {
+      "description": "Reported recommended option as 'keep_date_at_quayside_assembly_rooms', tied to EVT-CAB, revision v1, and the selected keep_date_at_quayside_assembly_rooms outcome.",
+      "field": "recommended_option",
+      "id": "answer_recommended_option",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported recommended outcome date as '2026-06-30', tied to EVT-CAB, revision v1, and the selected keep_date_at_quayside_assembly_rooms outcome.",
+      "field": "recommended_outcome_date",
+      "id": "answer_recommended_outcome_date",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported coverage item or resource as 'EVT-CAB', tied to EVT-CAB, revision v1, and the selected keep_date_at_quayside_assembly_rooms outcome.",
+      "field": "coverage_item_or_resource",
+      "id": "answer_coverage_item_or_resource",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported shortage quantity as 3, tied to EVT-CAB, revision v1, and the selected keep_date_at_quayside_assembly_rooms outcome.",
+      "field": "shortage_quantity",
+      "id": "answer_shortage_quantity",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    },
+    {
+      "description": "Reported decision timing status as 'ON_TIME', tied to EVT-CAB, revision v1, and the selected keep_date_at_quayside_assembly_rooms outcome.",
+      "field": "decision_timing_status",
+      "id": "answer_decision_timing_status",
+      "milestone_id": "answer.insights",
+      "weight": 1.0
+    }
+  ],
+  "assertions": [
+    {
+      "description": "Required EVT-CAB to reach business outcome 'Quayside week held for the contracted date' through venues.holds.create with exact provider-critical values venue_id='VEN-QUAYSIDE', week_start='2026-06-29', quote_id='QT-QUA-6610', event_id='EVT-CAB'. The audited change binds selected option keep_date_at_quayside_assembly_rooms, approval AP-DK-0107, and constraint a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) that respects the charter-renewal date and the approval's spend limit; no other record satisfies this state criterion.",
+      "id": "mutation_01",
+      "milestone_id": "state.primary",
+      "payload_allowed_argument_paths": [
+        "venue_id",
+        "week_start",
+        "quote_id",
+        "event_id"
+      ],
+      "payload_contains": {
+        "arguments": {
+          "event_id": "EVT-CAB",
+          "quote_id": "QT-QUA-6610",
+          "venue_id": "VEN-QUAYSIDE",
+          "week_start": "2026-06-29"
+        },
+        "tool": "venues.holds.create"
+      },
+      "table": "mutations",
+      "values": {
+        "record_id": "HOLD-4401",
+        "status": "HELD",
+        "table_name": "venue_holds",
+        "tool": "venues.holds.create"
+      },
+      "weight": 3.0,
+      "where": {
+        "mutation_id": "deskops-007-mutation-01",
+        "task_id": "deskops-007"
+      }
+    },
+    {
+      "description": "Persisted HOLD-4401 in venue_holds with the supported values (venue_id='VEN-QUAYSIDE', event_id='EVT-CAB', quote_id='QT-QUA-6610', week_start='2026-06-29', deposit_usd=2480.0, expires_on='2026-06-15', status='HELD') so a later reader sees the change, not just the acknowledgement.",
+      "id": "state_01",
+      "milestone_id": "state.primary",
+      "table": "venue_holds",
+      "values": {
+        "deposit_usd": 2480.0,
+        "event_id": "EVT-CAB",
+        "expires_on": "2026-06-15",
+        "quote_id": "QT-QUA-6610",
+        "status": "HELD",
+        "venue_id": "VEN-QUAYSIDE",
+        "week_start": "2026-06-29"
+      },
+      "weight": 2.0,
+      "where": {
+        "hold_id": "HOLD-4401"
+      }
+    },
+    {
+      "description": "Marked Quayside's week of 2026-06-29 as held for HOLD-4401 and left Fennimore's booked week and the finance hold untouched.",
+      "id": "state_02",
+      "milestone_id": "state.primary",
+      "table": "venue_weeks",
+      "values": {
+        "hold_id": "HOLD-4401",
+        "status": "held"
+      },
+      "weight": 1.0,
+      "where": {
+        "week_id": "VW-QUAYSIDE-20260629"
+      }
+    },
+    {
+      "description": "Created — but did not send — the stakeholder draft carrying keep_date_at_quayside_assembly_rooms, the 2026-06-30 outcome, the binding constraint, and the DESK-0007 business reference.",
+      "id": "mutation_02",
+      "milestone_id": "state.collaboration",
+      "payload_contains": {
+        "arguments": {
+          "recipient": "siobhan.quinn@larkspur.example"
+        },
+        "tool": "notes.drafts.create"
+      },
+      "payload_text_any_of": [
+        [
+          "DESK-0007",
+          "EVT-CAB",
+          "VEN-QUAYSIDE"
+        ]
+      ],
+      "payload_text_contains": [
+        "keep_date_at_quayside_assembly_rooms",
+        "2026-06-30"
+      ],
+      "table": "mutations",
+      "values": {
+        "status": "DRAFT",
+        "table_name": "note_drafts",
+        "tool": "notes.drafts.create"
+      },
+      "weight": 1.5,
+      "where": {
+        "mutation_id": "deskops-007-mutation-02",
+        "task_id": "deskops-007"
+      }
+    },
+    {
+      "count": 2,
+      "description": "Made exactly two state changes for DESK-0007: the primary change and the stakeholder draft; no additional hold, booking change, adjustment, or calendar move.",
+      "id": "containment_01",
+      "milestone_id": "containment.scope",
+      "table": "mutations",
+      "weight": 1.0,
+      "where": {
+        "task_id": "deskops-007"
+      }
+    }
+  ],
+  "calculations": [
+    {
+      "description": "Preserved 2026-07-10 as the documented control date for the customer advisory board offsite venue decision; did not infer urgency from a title or a request tone.",
+      "field": "business_need_date",
+      "id": "identify_business_date",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    },
+    {
+      "description": "Derived 7 ITINERARY for ticketed itineraries required for the seven required attendees who travel to a Bristol-area venue (twelve required, five local to the Bristol hub) at revision v1.",
+      "field": "required_quantity",
+      "id": "derive_plan_requirement",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Read 7 ITINERARY of gross observed existing itineraries of the required travellers that could be re-issued if the board moved.",
+      "field": "observed_coverage_quantity",
+      "id": "read_gross_coverage",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Excluded 3 ITINERARY for basic-fare itineraries that cannot be changed and would be forfeited on a move.",
+      "field": "ineligible_coverage_quantity",
+      "id": "remove_ineligible_coverage",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Calculated 7 observed − 3 ineligible = 4 usable ITINERARY.",
+      "field": "usable_coverage_quantity",
+      "id": "calculate_usable_coverage",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 7 required − 4 usable = 3 ITINERARY uncovered.",
+      "field": "shortage_quantity",
+      "id": "calculate_plan_gap",
+      "milestone_id": "analysis.inputs",
+      "weight": 2.0
+    },
+    {
+      "description": "Kept every planning quantity in ITINERARY.",
+      "field": "quantity_unit",
+      "id": "preserve_plan_unit",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Calculated move_to_fennimore_open_week_absorbing_change_fees outcome as 2026-07-28 under Quayside's and Fennimore's open weeks netted against the required attendees' hard conflicts.",
+      "field": "baseline_completion",
+      "id": "compare_baseline_plan",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated keep_date_at_quayside_assembly_rooms outcome as 2026-06-30 using Northlane's confirmed standard and rush ticketing dates on NL-1215.",
+      "field": "accelerated_completion",
+      "id": "compare_accelerated_plan",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Calculated rebook_everyone_at_any_fare_for_the_open_week outcome as 2026-07-28 and kept its separate-approval condition.",
+      "field": "escalated_completion",
+      "id": "compare_escalated_plan",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-07-20 as the independently confirmed standard readiness date for Northlane's confirmed standard and rush ticketing dates on NL-1215.",
+      "field": "standard_external_readiness",
+      "id": "read_standard_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read 2026-07-09 as the independently confirmed expedited readiness date for Northlane's confirmed standard and rush ticketing dates on NL-1215.",
+      "field": "expedited_external_readiness",
+      "id": "read_expedited_external_readiness",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Bound external recovery to the 3 ITINERARY uncovered requirement rather than ordering the full header quantity.",
+      "field": "external_recovery_quantity",
+      "id": "bound_external_recovery_quantity",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Counted 12 required attendees on EVT-CAB at agenda rev 3; the two optional attendees were not counted.",
+      "field": "required_attendees",
+      "id": "count_required_attendees",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Netted the 5 Bristol-hub attendees who need no itinerary to a Bristol-area venue.",
+      "field": "local_attendees",
+      "id": "net_local_attendees",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Applied the current agenda's 3 session days.",
+      "field": "session_days",
+      "id": "apply_agenda_session_days",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Summed 95 + 250 + 250 + 320 = USD 915 of recorded change fees a move would incur on the four flex itineraries.",
+      "field": "change_fees_usd",
+      "id": "sum_change_fees",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Read the USD 380 group fare per new ticket from NL-1215.",
+      "field": "group_fare_usd",
+      "id": "read_group_fare",
+      "milestone_id": "analysis.inputs",
+      "weight": 0.5
+    },
+    {
+      "description": "Calculated 915 + 3 × 380 + (21,800 − 19,600) = USD 4,255 for the Fennimore move, above the USD 2,500 approval; did not use the duplicate FH-7788.",
+      "field": "move_incremental_cost_usd",
+      "id": "calculate_move_incremental_cost",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Identified 2026-07-27 as Fennimore Hall's first open week on or after the 2026-07-20 standard confirmation, after the charter renewal.",
+      "field": "earliest_qualified_base_week",
+      "id": "identify_first_clear_week",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Bound the board to VEN-QUAYSIDE/2026-06-29, the contracted date at the open Quayside week, sessions 2026-06-30 to 2026-07-02.",
+      "field": "selected_venue_week",
+      "id": "bind_selected_venue_week",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Reapplied Fennimore's calendar to the 2026-07-09 rush confirmation: the first open week is still 2026-07-27, so the rush queue saves 0 days.",
+      "field": "expedite_completion_days_saved",
+      "id": "test_rush_against_venue_calendar",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.5
+    },
+    {
+      "description": "Read the USD 2,480 (20%) deposit from the current Quayside quote QA-6610, within the USD 3,000 approval.",
+      "field": "hold_deposit_usd",
+      "id": "read_hold_deposit",
+      "milestone_id": "analysis.inputs",
+      "weight": 1.0
+    },
+    {
+      "description": "Applied USD 0 as the documented incremental cost for keep_date_at_quayside_assembly_rooms; did not invent a premium where spend is not a decision driver.",
+      "field": "recommended_incremental_cost_usd",
+      "id": "calculate_selected_cost",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Recognized that move_to_fennimore_open_week_absorbing_change_fees remains outside current authority and requires an additional approval.",
+      "field": "escalation_approval_required",
+      "id": "apply_escalation_authority",
+      "milestone_id": "decision.options",
+      "weight": 1.0
+    },
+    {
+      "description": "Compared the timing, cost, control status, and consequence of move_to_fennimore_open_week_absorbing_change_fees, keep_date_at_quayside_assembly_rooms, rebook_everyone_at_any_fare_for_the_open_week; selected keep_date_at_quayside_assembly_rooms because it alone gives the best currently authorized result under a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) that respects the charter-renewal date and the approval's spend limit.",
+      "field": "recommended_option",
+      "id": "choose_task_specific_option",
+      "milestone_id": "decision.options",
+      "weight": 2.0
+    },
+    {
+      "description": "Calculated 2026-06-30 as the supported outcome date for keep_date_at_quayside_assembly_rooms.",
+      "field": "recommended_outcome_date",
+      "id": "calculate_recommended_outcome",
+      "milestone_id": "analysis.timeline",
+      "weight": 2.0
+    },
+    {
+      "description": "Compared 2026-06-30 with the independent control date 2026-07-10 and calculated a signed variance of -10 day(s).",
+      "field": "outcome_vs_control_days",
+      "id": "calculate_outcome_variance",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.5
+    },
+    {
+      "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+      "field": "decision_timing_status",
+      "id": "state_honest_timing_status",
+      "milestone_id": "analysis.timeline",
+      "weight": 1.0
+    }
+  ],
+  "investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "DESK-0007"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated DESK-0007 scope, immutable handles, mounted systems, and evidence index before investigating EVT-CAB.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DESK-0007"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1007-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "mail.messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for DESK-0007 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DESK-0007"
+          },
+          "expected_result_contains": {
+            "events": [
+              {
+                "id": "EVT-CAB"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.events.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved DESK-0007 to the immutable calendar event through a search rather than a title match against a similarly named event.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DESK-0007"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-007-17"
+              },
+              {
+                "id": "DRV-007-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the DESK-0007 case folder on the shared drive and identified the approval record and the event export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "TE-07"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-007-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the policy folder and distinguished the effective TE-07 v5 policy from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "event_id": "EVT-CAB"
+          },
+          "expected_result_contains": {
+            "id": "EVT-CAB",
+            "status": "confirmed"
+          },
+          "match": "result_contains",
+          "tool": "calendar.events.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the calendar event EVT-CAB: dates, session days, venue, organizer, linked agenda and budget line, and revision.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "event_id": "EVT-CAB"
+          },
+          "expected_result_contains": {
+            "attendees": [
+              {
+                "person_id": "P-QUINN"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.attendees.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the attendees of EVT-CAB with their required flag and home office before sizing who travels.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "offices": [
+              {
+                "office_id": "OFF-BRS"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "directory.offices.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the office directory for home offices and timezones and identified OFF-BRS as the venue's local office whose attendees need no itinerary.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective TE-07 v5 policy for the attendance, booking-change, viability, budget, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "policy_id": "POL-TE07-V5"
+          },
+          "expected_result_contains": {
+            "policy_id": "POL-TE07-V5",
+            "status": "current"
+          },
+          "match": "result_contains",
+          "tool": "travel.policies.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current travel policy version POL-TE07-V5 from the travel desk for its structured parameters (per-diem, fare caps, contingency bands, thresholds, conflict kinds).",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "doc_id": "DOC-AGD-CAB"
+          },
+          "expected_result_contains": {
+            "revisions": [
+              {
+                "revision_id": "DOC-AGD-CAB-R3",
+                "status": "current"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "docs.revisions.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the revisions of agenda DOC-AGD-CAB and separated the current revision from the superseded one by status.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "revision_id": "DOC-AGD-CAB-R3"
+          },
+          "expected_result_contains": {
+            "revision_id": "DOC-AGD-CAB-R3",
+            "status": "current"
+          },
+          "match": "result_contains",
+          "tool": "docs.revisions.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current agenda revision DOC-AGD-CAB-R3 for the session days and the required attendee roles.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_week": "2026-08-31",
+            "start_week": "2026-06-15",
+            "venue_id": "VEN-QUAYSIDE"
+          },
+          "expected_result_contains": {
+            "weeks": [
+              {
+                "id": "VW-QUAYSIDE-20260629",
+                "status": "open"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "venues.availability.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read Quayside Assembly Rooms's availability calendar from 2026-06-15 to find the open weeks that displace no held, booked, or blackout week.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-08-30",
+            "event_id": "EVT-CAB",
+            "start_date": "2026-06-15"
+          },
+          "expected_result_contains": {
+            "calendars": [
+              {
+                "busy": [
+                  {
+                    "hard": true
+                  }
+                ],
+                "person_id": "P-LIM"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.freebusy.query"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Queried the required attendees' free/busy calendar from 2026-06-15 and separated hard conflicts from soft blocks before judging any week.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "event_id": "EVT-CAB"
+          },
+          "expected_result_contains": {
+            "bookings": [
+              {
+                "booking_id": "BK-7701"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "travel.bookings.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the bookings on EVT-CAB with fare class, changeability, change fee, and status before netting what can be re-issued.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-NRL-1215"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-NRL-1215",
+            "standard_ticketing_date": "2026-07-17"
+          },
+          "match": "result_contains",
+          "tool": "travel.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the external travel vendor's group-desk confirmation CONF-NRL-1215 (Northlane Travel Partners) for the independently confirmed standard and rush ticketing dates, seats, group fare, and rush fee.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "quote_id": "QT-QUA-6610"
+          },
+          "expected_result_contains": {
+            "quote_id": "QT-QUA-6610",
+            "status": "current"
+          },
+          "match": "result_contains",
+          "tool": "venues.quotes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current venue quote QT-QUA-6610 for its week, billed days, total, deposit, and validity; did not use a superseded or indicative quote.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "line_id": "BL-SALES-TRV-26H2"
+          },
+          "expected_result_contains": {
+            "line_id": "BL-SALES-TRV-26H2"
+          },
+          "match": "result_contains",
+          "tool": "expense.budget_lines.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read budget line BL-SALES-TRV-26H2 for approved, committed, reserved, and the adjustment ceiling before treating any balance as headroom.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-DK-0107"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-DK-0107"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-DK-0107 for its exact scope: event, venue, weeks, spend, queue, and what it does not cover.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1007-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1007-01"
+          },
+          "match": "result_contains",
+          "tool": "mail.messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1007-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1007"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1007"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1007 for venue, fare, and authority remarks that qualify the system records.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "spreadsheet_id": "SS-SALES-TRV-26H2",
+            "version": 3
+          },
+          "expected_result_contains": {
+            "spreadsheet_id": "SS-SALES-TRV-26H2",
+            "status": "current",
+            "version": 3
+          },
+          "match": "result_contains",
+          "tool": "sheets.values.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current version of budget workbook SS-SALES-TRV-26H2 and reconciled it to the budget system's line rather than a superseded snapshot.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "event_id": "EVT-CAB"
+          },
+          "expected_result_contains": {
+            "quotes": [
+              {
+                "quote_id": "QT-QUA-6610"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "venues.quotes.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the existing holds, changes, quotes, or adjustments that fix the starting state by immutable id.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-32"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-32"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for DESK-0007 and confirmed that EVT-CAB is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for DESK-0007 and joined EVT-CAB to the current authority and evidence records by immutable identity.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for DESK-0007; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for DESK-0007 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-33"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-33"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for EVT-CAB and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for DESK-0007 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_30",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-27"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-27"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for DESK-0007, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_31",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-007-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-007-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for DESK-0007: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_32",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "post_write_verifications": [
+    {
+      "after_tool": "venues.holds.create",
+      "any_of": [
+        {
+          "arguments": {
+            "hold_id": "HOLD-4401"
+          },
+          "expected_result_contains": {
+            "deposit_usd": 2480.0,
+            "id": "HOLD-4401",
+            "status": "HELD",
+            "venue": "VEN-QUAYSIDE",
+            "week_start": "2026-06-29"
+          },
+          "match": "result_contains",
+          "tool": "venues.holds.get"
+        }
+      ],
+      "description": "Read HOLD-4401 back through venues.holds.get after the change and confirmed the persisted provider values (id='HOLD-4401', status='HELD', venue='VEN-QUAYSIDE', week_start='2026-06-29', deposit_usd=2480.0) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "deposit_usd": 2480.0,
+        "id": "HOLD-4401",
+        "status": "HELD",
+        "venue": "VEN-QUAYSIDE",
+        "week_start": "2026-06-29"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": true,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "hold_id": "HOLD-4401"
+      },
+      "weight": 2.0
+    }
+  ]
+}

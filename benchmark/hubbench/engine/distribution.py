@@ -41,7 +41,7 @@ from .tasks import HUBBENCH_ROOT, load_release_contract, load_release_tasks, rel
 
 BENCHMARK = "HubBench"
 METRIC = "HubScore"
-DEFAULT_VERSION = "1.2.0"
+DEFAULT_VERSION = "1.3.0"
 HARBOR_ORG = "blobfishai"
 HARBOR_DATASET = f"{HARBOR_ORG}/hubbench"
 HARBOR_URL = f"https://hub.harborframework.com/datasets/{HARBOR_DATASET}/latest"

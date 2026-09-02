@@ -1,6 +1,6 @@
 # hubbench-scilab-001 — Re-run the IL-6 sponsor batch after the invalid plate-end control
 
-HubBench 1.2.0 · family **SciLab** (`scilab`, cluster `scientific-research`) · decision mode `plan` · role `assay_operations_coordinator` · as of 2026-05-11.
+HubBench 1.3.0 · family **SciLab** (`scilab`, cluster `scientific-research`) · decision mode `plan` · role `assay_operations_coordinator` · as of 2026-05-11.
 
 Assay-operations decisions against a LIMS with versioned protocols and QC results, an analyser schedule with calibration certificates, a reagent-lot inventory with expiry and quarantine state, supplier shipment confirmations, ELN method notes, and approval records.
 

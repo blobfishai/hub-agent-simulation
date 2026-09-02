@@ -1,0 +1,1941 @@
+{
+  "benchmark": "HubBench",
+  "family": "deskops",
+  "schema_version": "hubbench.tool-contract.v1",
+  "servers": {
+    "approvals": {
+      "description": "Approval workflow records with exact scope.",
+      "tools": [
+        "approvals.get",
+        "approvals.list"
+      ]
+    },
+    "calendar": {
+      "description": "Calendar service (Google Calendar shaped): events, attendees, free/busy with hard-conflict flags, rooms.",
+      "tools": [
+        "calendar.attendees.list",
+        "calendar.events.get",
+        "calendar.events.list",
+        "calendar.events.update",
+        "calendar.freebusy.query",
+        "calendar.rooms.list"
+      ]
+    },
+    "chat": {
+      "description": "Workplace-operations chat threads.",
+      "tools": [
+        "chat.threads.get",
+        "chat.threads.list"
+      ]
+    },
+    "directory": {
+      "description": "People directory: people, teams, home offices, and timezones.",
+      "tools": [
+        "directory.offices.list",
+        "directory.people.get",
+        "directory.people.search"
+      ]
+    },
+    "docs": {
+      "description": "Documents service (Docs shaped): agenda documents with revisions.",
+      "tools": [
+        "docs.documents.get",
+        "docs.documents.list",
+        "docs.revisions.get",
+        "docs.revisions.list"
+      ]
+    },
+    "drive": {
+      "description": "Shared drive (Drive shaped) holding policies, registers, calendars, quotes, and exports.",
+      "tools": [
+        "drive.files.export",
+        "drive.files.get",
+        "drive.files.list"
+      ]
+    },
+    "expense": {
+      "description": "Budget and expense system: budget lines and adjustments.",
+      "tools": [
+        "expense.adjustments.create",
+        "expense.adjustments.get",
+        "expense.adjustments.list",
+        "expense.budget_lines.get",
+        "expense.budget_lines.list"
+      ]
+    },
+    "hubbench": {
+      "description": "Benchmark-only discovery and structured answer submission controls.",
+      "tools": [
+        "hubbench.context.get",
+        "hubbench.submit_answer"
+      ]
+    },
+    "mail": {
+      "description": "Workplace-operations mailbox (Gmail / Outlook shaped): messages and threads.",
+      "tools": [
+        "mail.messages.get",
+        "mail.messages.list",
+        "mail.threads.get"
+      ]
+    },
+    "notes": {
+      "description": "Stakeholder draft notes (never sent by the benchmark).",
+      "tools": [
+        "notes.drafts.create"
+      ]
+    },
+    "sheets": {
+      "description": "Spreadsheet service (Sheets shaped): budget workbooks with versions.",
+      "tools": [
+        "sheets.spreadsheets.get",
+        "sheets.spreadsheets.list",
+        "sheets.values.get"
+      ]
+    },
+    "travel": {
+      "description": "Corporate travel desk: policy versions, bookings, group-ticketing confirmations, and booking changes.",
+      "tools": [
+        "travel.bookings.get",
+        "travel.bookings.list",
+        "travel.changes.create",
+        "travel.changes.get",
+        "travel.changes.list",
+        "travel.confirmations.get",
+        "travel.confirmations.list",
+        "travel.policies.get",
+        "travel.policies.list"
+      ]
+    },
+    "venues": {
+      "description": "Venue booking portal: venues, weekly availability, quotes, and holds.",
+      "tools": [
+        "venues.availability.list",
+        "venues.holds.create",
+        "venues.holds.get",
+        "venues.holds.list",
+        "venues.quotes.get",
+        "venues.quotes.list",
+        "venues.venues.get",
+        "venues.venues.search"
+      ]
+    }
+  },
+  "task_id": "hubbench-deskops-008",
+  "tools": [
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "mail",
+          "shape": "mailbox search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "mail.messages.list"
+      },
+      "description": "Search the workplace-operations mailbox by keyword (subject, body, labels).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "max_results": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "mail.messages.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "mail",
+          "shape": "mailbox message"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "mail.messages.get"
+      },
+      "description": "Read one message with body and attachment list.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "message_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message_id"
+        ],
+        "type": "object"
+      },
+      "name": "mail.messages.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "mail",
+          "shape": "mailbox thread"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "mail.threads.get"
+      },
+      "description": "Read every message in one mail thread.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "thread_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "thread_id"
+        ],
+        "type": "object"
+      },
+      "name": "mail.threads.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "calendar",
+          "shape": "calendar event search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "calendar.events.list"
+      },
+      "description": "Search calendar events by keyword (title, description, id), organizer, or date range.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "description": "ISO date, YYYY-MM-DD",
+            "type": "string"
+          },
+          "organizer_id": {
+            "type": "string"
+          },
+          "q": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date, YYYY-MM-DD",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "calendar.events.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "calendar",
+          "shape": "calendar event record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "calendar.events.get"
+      },
+      "description": "Read one calendar event: dates, session days, venue, organizer, linked agenda and budget line, revision.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id"
+        ],
+        "type": "object"
+      },
+      "name": "calendar.events.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "calendar",
+          "shape": "calendar attendee list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "calendar.attendees.list"
+      },
+      "description": "List an event's attendees with required flag, response, home office, and timezone.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "event_id"
+        ],
+        "type": "object"
+      },
+      "name": "calendar.attendees.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "calendar",
+          "shape": "calendar free/busy"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "calendar.freebusy.query"
+      },
+      "description": "Free/busy blocks for an event's attendees (or named people) inside a date range, with the hard-conflict flag per block.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "description": "ISO date, YYYY-MM-DD",
+            "type": "string"
+          },
+          "event_id": {
+            "type": "string"
+          },
+          "person_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "start_date": {
+            "description": "ISO date, YYYY-MM-DD",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date"
+        ],
+        "type": "object"
+      },
+      "name": "calendar.freebusy.query"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "calendar",
+          "shape": "calendar room directory"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "calendar.rooms.list"
+      },
+      "description": "List bookable in-house rooms with capacity, optionally for one office.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "office_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "calendar.rooms.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "calendar",
+          "shape": "calendar event update"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "calendar.events.update"
+      },
+      "description": "Move or re-locate an event. Required attendees with a protected hard conflict (board meeting, customer commitment, leave, conference) on the new dates block the move; the record revision increments.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "end_date": {
+            "description": "ISO date, YYYY-MM-DD",
+            "type": "string"
+          },
+          "event_id": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "start_date": {
+            "description": "ISO date, YYYY-MM-DD",
+            "type": "string"
+          },
+          "venue_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id"
+        ],
+        "type": "object"
+      },
+      "name": "calendar.events.update"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "directory",
+          "shape": "directory search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "directory.people.search"
+      },
+      "description": "Search the people directory by name, email, team, title, or office.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "office_id": {
+            "type": "string"
+          },
+          "q": {
+            "type": "string"
+          },
+          "team": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "directory.people.search"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "directory",
+          "shape": "directory person"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "directory.people.get"
+      },
+      "description": "Read one person: title, team, home office, timezone.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "person_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "person_id"
+        ],
+        "type": "object"
+      },
+      "name": "directory.people.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "directory",
+          "shape": "directory offices"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "directory.offices.list"
+      },
+      "description": "List offices with city, timezone, and region.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "directory.offices.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "docs",
+          "shape": "document search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "docs.documents.list"
+      },
+      "description": "Search documents by title, folder, or id.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "docs.documents.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "docs",
+          "shape": "document record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "docs.documents.get"
+      },
+      "description": "Read one document's metadata and current revision number.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "doc_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id"
+        ],
+        "type": "object"
+      },
+      "name": "docs.documents.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "docs",
+          "shape": "document revision list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "docs.revisions.list"
+      },
+      "description": "List a document's revisions with status (current / superseded / draft).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "doc_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id"
+        ],
+        "type": "object"
+      },
+      "name": "docs.revisions.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "docs",
+          "shape": "document revision"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "docs.revisions.get"
+      },
+      "description": "Read one document revision: body and structured metadata.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "revision_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "revision_id"
+        ],
+        "type": "object"
+      },
+      "name": "docs.revisions.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "sheets",
+          "shape": "spreadsheet search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "sheets.spreadsheets.list"
+      },
+      "description": "Search spreadsheets by title, folder, or id.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "sheets.spreadsheets.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "sheets",
+          "shape": "spreadsheet record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "sheets.spreadsheets.get"
+      },
+      "description": "Read a spreadsheet's metadata and version history.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "spreadsheet_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "spreadsheet_id"
+        ],
+        "type": "object"
+      },
+      "name": "sheets.spreadsheets.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "sheets",
+          "shape": "spreadsheet values"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "sheets.values.get"
+      },
+      "description": "Read the cell rows of a spreadsheet version (default: the current version).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "spreadsheet_id": {
+            "type": "string"
+          },
+          "version": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "spreadsheet_id"
+        ],
+        "type": "object"
+      },
+      "name": "sheets.values.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.list"
+      },
+      "description": "Search shared-drive files by keyword (name, folder, content).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive file"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.get"
+      },
+      "description": "Read shared-drive file metadata.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "drive",
+          "shape": "shared drive export"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "drive.files.export"
+      },
+      "description": "Export a shared-drive file as text (spreadsheets as CSV, PDFs as extracted text).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "file_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file_id"
+        ],
+        "type": "object"
+      },
+      "name": "drive.files.export"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "venues",
+          "shape": "venue portal search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "venues.venues.search"
+      },
+      "description": "Search venues on the booking portal by name or city.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "venues.venues.search"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "venues",
+          "shape": "venue portal record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "venues.venues.get"
+      },
+      "description": "Read one venue: capacity, local office, hold policy, deposit terms, events director.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "venue_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "venue_id"
+        ],
+        "type": "object"
+      },
+      "name": "venues.venues.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "venues",
+          "shape": "venue availability calendar"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "venues.availability.list"
+      },
+      "description": "Venue availability calendar by week (open / held / booked / blackout) between two Mondays.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "end_week": {
+            "description": "ISO date of a Monday (venue weeks run Monday to Sunday)",
+            "type": "string"
+          },
+          "start_week": {
+            "description": "ISO date of a Monday (venue weeks run Monday to Sunday)",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "venue_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "venue_id",
+          "start_week",
+          "end_week"
+        ],
+        "type": "object"
+      },
+      "name": "venues.availability.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "venues",
+          "shape": "venue quote search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "venues.quotes.list"
+      },
+      "description": "List venue quotes by venue, event, or status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "venue_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "venues.quotes.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "venues",
+          "shape": "venue quote"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "venues.quotes.get"
+      },
+      "description": "Read one venue quote: week, days, total, deposit, validity, status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "quote_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "quote_id"
+        ],
+        "type": "object"
+      },
+      "name": "venues.quotes.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "venues",
+          "shape": "venue hold search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "venues.holds.list"
+      },
+      "description": "List venue holds by event, venue, or status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "venue_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "venues.holds.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "venues",
+          "shape": "venue hold"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "venues.holds.get"
+      },
+      "description": "Read one venue hold.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "hold_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "hold_id"
+        ],
+        "type": "object"
+      },
+      "name": "venues.holds.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "venues",
+          "shape": "venue hold create"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "venues.holds.create"
+      },
+      "description": "Place a hold on an open venue week against a current quote. The deposit is taken from the quote; held, booked, and blackout weeks are never displaced.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "type": "string"
+          },
+          "quote_id": {
+            "type": "string"
+          },
+          "venue_id": {
+            "type": "string"
+          },
+          "week_start": {
+            "description": "ISO date of a Monday (venue weeks run Monday to Sunday)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "venue_id",
+          "week_start",
+          "quote_id",
+          "event_id"
+        ],
+        "type": "object"
+      },
+      "name": "venues.holds.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "travel",
+          "shape": "travel policy list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "travel.policies.list"
+      },
+      "description": "List travel and events policy versions.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "travel.policies.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "travel",
+          "shape": "travel policy record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "travel.policies.get"
+      },
+      "description": "Read one travel policy version with its structured parameters (per-diem, fare caps, thresholds, contingency).",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "policy_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_id"
+        ],
+        "type": "object"
+      },
+      "name": "travel.policies.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "travel",
+          "shape": "travel booking list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "travel.bookings.list"
+      },
+      "description": "List an event's bookings: traveller, fare class, changeability, change fee, refundability, status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "person_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id"
+        ],
+        "type": "object"
+      },
+      "name": "travel.bookings.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "travel",
+          "shape": "travel booking"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "travel.bookings.get"
+      },
+      "description": "Read one booking.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "booking_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "booking_id"
+        ],
+        "type": "object"
+      },
+      "name": "travel.bookings.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "travel",
+          "shape": "ticketing confirmation search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "travel.confirmations.list"
+      },
+      "description": "List group-desk ticketing confirmations by event or travel management company.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "event_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "tmc_id": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "travel.confirmations.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "travel",
+          "shape": "ticketing confirmation"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "travel.confirmations.get"
+      },
+      "description": "Read one ticketing confirmation: seats, group fare, standard and rush ticketing dates, rush fee, validity.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirmation_id"
+        ],
+        "type": "object"
+      },
+      "name": "travel.confirmations.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "travel",
+          "shape": "booking change search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "travel.changes.list"
+      },
+      "description": "List booking-change requests by event, status, or confirmation.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation_id": {
+            "type": "string"
+          },
+          "event_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "travel.changes.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "travel",
+          "shape": "booking change"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "travel.changes.get"
+      },
+      "description": "Read one booking-change request.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "change_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "change_id"
+        ],
+        "type": "object"
+      },
+      "name": "travel.changes.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "travel",
+          "shape": "booking change create"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "travel.changes.create"
+      },
+      "description": "Submit a booking-change request to the group desk: only ticketed, changeable bookings of the confirmation's event may move; the count is bounded by the confirmation's seats and the ticketing date is set by the chosen option.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "booking_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "confirmation_id": {
+            "type": "string"
+          },
+          "new_travel_date": {
+            "description": "ISO date, YYYY-MM-DD",
+            "type": "string"
+          },
+          "ticketing_option": {
+            "enum": [
+              "standard",
+              "rush"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirmation_id",
+          "booking_ids",
+          "new_travel_date",
+          "ticketing_option"
+        ],
+        "type": "object"
+      },
+      "name": "travel.changes.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "expense",
+          "shape": "budget line list"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "expense.budget_lines.list"
+      },
+      "description": "List budget lines by cost centre, fiscal period, or status.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "cost_center": {
+            "type": "string"
+          },
+          "fiscal_period": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "expense.budget_lines.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "expense",
+          "shape": "budget line record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "expense.budget_lines.get"
+      },
+      "description": "Read one budget line: approved, committed, reserved, gross remaining, adjustment ceiling, revision.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "line_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "line_id"
+        ],
+        "type": "object"
+      },
+      "name": "expense.budget_lines.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "expense",
+          "shape": "budget adjustment search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "expense.adjustments.list"
+      },
+      "description": "List budget-line adjustments by line, status, or related event.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "line_id": {
+            "type": "string"
+          },
+          "related_event_id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "expense.adjustments.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "expense",
+          "shape": "budget adjustment"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "expense.adjustments.get"
+      },
+      "description": "Read one budget-line adjustment.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "adjustment_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "adjustment_id"
+        ],
+        "type": "object"
+      },
+      "name": "expense.adjustments.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "expense",
+          "shape": "budget adjustment create"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "expense.adjustments.create"
+      },
+      "description": "Submit a budget-line adjustment. The amount must sit within the line's adjustment ceiling; the line's reserved balance and revision move with it.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "amount_usd": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "line_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "related_event_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "line_id",
+          "amount_usd",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "name": "expense.adjustments.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.list"
+      },
+      "description": "List approval records, optionally by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "approvals.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "approvals",
+          "shape": "approval workflow record"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "approvals.get"
+      },
+      "description": "Read one approval record with its exact scope and approver.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "approval_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "approval_id"
+        ],
+        "type": "object"
+      },
+      "name": "approvals.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat search"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.list"
+      },
+      "description": "Search team chat threads by keyword.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "q": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.list"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "chat",
+          "shape": "team chat thread"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "chat.threads.get"
+      },
+      "description": "Read one team chat thread.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "thread_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "thread_id"
+        ],
+        "type": "object"
+      },
+      "name": "chat.threads.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "notes",
+          "shape": "collaboration draft"
+        }
+      },
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "notes.drafts.create"
+      },
+      "description": "Create, but do not send, a stakeholder draft note.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "recipient": {
+            "type": "string"
+          },
+          "related_event_id": {
+            "type": "string"
+          },
+          "related_line_id": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipient",
+          "subject",
+          "body"
+        ],
+        "type": "object"
+      },
+      "name": "notes.drafts.create"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "read",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true,
+        "title": "hubbench.context.get"
+      },
+      "description": "Return the isolated task scope: case reference, immutable record handles, mounted servers, identity, and the evidence index.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "hubbench.context.get"
+    },
+    {
+      "_meta": {
+        "hubbench": {
+          "hint": "write",
+          "server": "hubbench",
+          "shape": "benchmark control"
+        }
+      },
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false,
+        "title": "hubbench.submit_answer"
+      },
+      "description": "Record the structured decision for the current task. Every field of the task's answer contract is required; resubmission replaces earlier values.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "attendee_count": {
+            "description": "Everyone on the event's attendee list, required and optional, which sets the contingency band and the venue capacity test.",
+            "type": "integer"
+          },
+          "baseline_resolution_date": {
+            "description": "Resolution date for post_adjustment_then_move_to_10_august.",
+            "type": "string"
+          },
+          "business_need_date": {
+            "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+            "type": "string"
+          },
+          "change_fees_usd": {
+            "description": "Sum of the recorded change fees on the changeable itineraries.",
+            "type": "integer"
+          },
+          "changeable_bookings": {
+            "description": "Traveller itineraries that can be re-issued for their recorded change fee.",
+            "type": "integer"
+          },
+          "contingency_usd": {
+            "description": "Events contingency from the policy table for the event's attendee band.",
+            "type": "integer"
+          },
+          "controlled_item_or_record": {
+            "description": "Immutable item, lot set, or transaction record in scope.",
+            "type": "string"
+          },
+          "controlled_resolution_date": {
+            "description": "Resolution date for move_on_gross_remaining_without_adjustment.",
+            "type": "string"
+          },
+          "decision_timing_status": {
+            "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+            "enum": [
+              "ON_TIME",
+              "LATE"
+            ],
+            "type": "string"
+          },
+          "escalated_resolution_date": {
+            "description": "Resolution date for displace_byrne_board_meeting_for_27_july.",
+            "type": "string"
+          },
+          "escalation_approval_required": {
+            "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+            "type": "integer"
+          },
+          "excluded_quantity": {
+            "description": "reserved balance held by open venue-hold deposits and pending adjustments",
+            "type": "integer"
+          },
+          "expedited_external_readiness": {
+            "description": "Expedited readiness date independently confirmed for Wayfinder's confirmed standard and rush ticketing dates on WF-40460.",
+            "type": "string"
+          },
+          "new_ticket_cost_usd": {
+            "description": "New tickets multiplied by the group fare on the ticketing confirmation.",
+            "type": "integer"
+          },
+          "new_tickets_required": {
+            "description": "Travellers whose basic fare is forfeited and who need a new ticket at the group fare.",
+            "type": "integer"
+          },
+          "observed_quantity": {
+            "description": "Gross observed quantity before applying the control for funding the engineering all-hands move.",
+            "type": "integer"
+          },
+          "outcome_vs_control_days": {
+            "description": "Selected outcome date minus the documented control date; positive means late.",
+            "type": "integer"
+          },
+          "per_diem_delta_usd": {
+            "description": "Extra billed days times travellers times the venue country's per-diem rate.",
+            "type": "integer"
+          },
+          "quantity_unit": {
+            "description": "Unit of measure for every controlled quantity: USD.",
+            "type": "string"
+          },
+          "recommended_incremental_cost_usd": {
+            "description": "Documented incremental spend of the selected option in USD; zero when spend is not a decision driver.",
+            "type": "integer"
+          },
+          "recommended_option": {
+            "description": "Best authorized option identifier after comparing post_adjustment_then_move_to_10_august, move_on_gross_remaining_without_adjustment, displace_byrne_board_meeting_for_27_july.",
+            "enum": [
+              "post_adjustment_then_move_to_10_august",
+              "move_on_gross_remaining_without_adjustment",
+              "displace_byrne_board_meeting_for_27_july"
+            ],
+            "type": "string"
+          },
+          "recommended_outcome_date": {
+            "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+            "type": "string"
+          },
+          "source_quantity": {
+            "description": "incremental cost of moving the engineering all-hands to Fennimore Hall's week of 2026-08-10 at agenda rev 3 (change fees, new tickets, venue difference, per-diem difference)",
+            "type": "integer"
+          },
+          "standard_external_readiness": {
+            "description": "Standard readiness date independently confirmed for Wayfinder's confirmed standard and rush ticketing dates on WF-40460.",
+            "type": "string"
+          },
+          "supported_quantity": {
+            "description": "usable headroom on the engineering events line after reserved deposits and pending adjustments",
+            "type": "integer"
+          },
+          "transaction_quantity": {
+            "description": "Exact quantity the primary state change may persist.",
+            "type": "integer"
+          },
+          "travellers": {
+            "description": "Required attendees whose home office is not the venue's local office (Bristol).",
+            "type": "integer"
+          },
+          "venue_delta_usd": {
+            "description": "Target quote total minus the contracted quote total.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "attendee_count",
+          "baseline_resolution_date",
+          "business_need_date",
+          "change_fees_usd",
+          "changeable_bookings",
+          "contingency_usd",
+          "controlled_item_or_record",
+          "controlled_resolution_date",
+          "decision_timing_status",
+          "escalated_resolution_date",
+          "escalation_approval_required",
+          "excluded_quantity",
+          "expedited_external_readiness",
+          "new_ticket_cost_usd",
+          "new_tickets_required",
+          "observed_quantity",
+          "outcome_vs_control_days",
+          "per_diem_delta_usd",
+          "quantity_unit",
+          "recommended_incremental_cost_usd",
+          "recommended_option",
+          "recommended_outcome_date",
+          "source_quantity",
+          "standard_external_readiness",
+          "supported_quantity",
+          "transaction_quantity",
+          "travellers",
+          "venue_delta_usd"
+        ],
+        "type": "object"
+      },
+      "name": "hubbench.submit_answer"
+    }
+  ]
+}

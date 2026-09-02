@@ -194,10 +194,13 @@ def test_hugging_face_payload_has_strict_reference_samples_for_published_and_can
         assert sample["sha256"] == dist.sha256_json(public)
 
 
-def _free_port() -> int:
-    with socket.socket() as sock:
-        sock.bind(("127.0.0.1", 0))
-        return sock.getsockname()[1]
+def _free_ports() -> tuple[int, int]:
+    """Choose distinct public/private ports before releasing either reservation."""
+
+    with socket.socket() as public, socket.socket() as private:
+        public.bind(("127.0.0.1", 0))
+        private.bind(("127.0.0.1", 0))
+        return public.getsockname()[1], private.getsockname()[1]
 
 
 def _wait_ready(url: str, attempts: int = 120) -> None:
@@ -215,7 +218,7 @@ def _wait_ready(url: str, attempts: int = 120) -> None:
 def test_oracle_scores_full_marks_through_the_public_surfaces(slug, tmp_path):
     task_dir = next(path for path in TASK_DIRS if path.name.startswith(f"hubbench-{slug}-"))
     environment = task_dir / "environment"
-    public_port, private_port = _free_port(), _free_port()
+    public_port, private_port = _free_ports()
     token_digest = (environment / "verifier-token.sha256").read_text(encoding="utf-8").strip()
     world = subprocess.Popen(
         [

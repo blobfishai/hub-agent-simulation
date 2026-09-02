@@ -1,0 +1,3022 @@
+{
+  "allowed_write_tables": [
+    "answers",
+    "audit_log",
+    "events",
+    "mutations",
+    "note_drafts"
+  ],
+  "answer_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "accelerated_completion": {
+        "description": "Outcome date for move_with_rush_ticketing.",
+        "type": "string"
+      },
+      "baseline_completion": {
+        "description": "Outcome date for move_to_open_week_standard_ticketing.",
+        "type": "string"
+      },
+      "business_need_date": {
+        "description": "Documented business or clinical control date that the decision must protect (ISO date).",
+        "type": "string"
+      },
+      "change_fees_usd": {
+        "description": "Sum of the recorded change fees on the changeable itineraries.",
+        "type": "integer"
+      },
+      "coverage_item_or_resource": {
+        "description": "Immutable item or resource whose requirement and eligible coverage were reconciled.",
+        "type": "string"
+      },
+      "decision_timing_status": {
+        "description": "ON_TIME when the selected outcome is on or before the control date; otherwise LATE.",
+        "enum": [
+          "ON_TIME",
+          "LATE"
+        ],
+        "type": "string"
+      },
+      "earliest_qualified_base_week": {
+        "description": "Monday of the first open, conflict-free venue week on or after standard ticket confirmation (ISO date).",
+        "type": "string"
+      },
+      "escalated_completion": {
+        "description": "Outcome date for release_held_week_via_venue_director.",
+        "type": "string"
+      },
+      "escalation_approval_required": {
+        "description": "Use 1 when an alternative is outside current authority and would need a separate approval; otherwise 0.",
+        "type": "integer"
+      },
+      "expedite_completion_days_saved": {
+        "description": "Days the rush queue saves after the venue calendar and attendee conflicts are reapplied.",
+        "type": "integer"
+      },
+      "expedited_external_readiness": {
+        "description": "Expedited readiness date independently confirmed for Wayfinder's confirmed standard and rush ticketing dates on WF-40211.",
+        "type": "string"
+      },
+      "external_recovery_quantity": {
+        "description": "Uncovered ITINERARY that the external recovery must cover.",
+        "type": "integer"
+      },
+      "group_fare_usd": {
+        "description": "Group fare per new ticket on the group desk's confirmation.",
+        "type": "integer"
+      },
+      "incremental_travel_cost_usd": {
+        "description": "Change fees plus new tickets at the group fare for the move.",
+        "type": "integer"
+      },
+      "ineligible_coverage_quantity": {
+        "description": "basic-fare itineraries that cannot be changed and are forfeited on a move",
+        "type": "integer"
+      },
+      "local_attendees": {
+        "description": "Required attendees whose home office is the venue's local office and who need no itinerary.",
+        "type": "integer"
+      },
+      "observed_coverage_quantity": {
+        "description": "Gross observed coverage for existing itineraries of the required travellers that can be re-issued to the new week before exclusions.",
+        "type": "integer"
+      },
+      "outcome_vs_control_days": {
+        "description": "Selected outcome date minus the documented control date; positive means late.",
+        "type": "integer"
+      },
+      "quantity_unit": {
+        "description": "Unit shared by the requirement and coverage calculations: ITINERARY.",
+        "type": "string"
+      },
+      "recommended_incremental_cost_usd": {
+        "description": "Documented incremental cost of the selected option in USD; zero when spend is not a decision driver.",
+        "type": "integer"
+      },
+      "recommended_option": {
+        "description": "Best authorized option identifier after comparing move_to_open_week_standard_ticketing, move_with_rush_ticketing, release_held_week_via_venue_director.",
+        "enum": [
+          "move_to_open_week_standard_ticketing",
+          "move_with_rush_ticketing",
+          "release_held_week_via_venue_director"
+        ],
+        "type": "string"
+      },
+      "recommended_outcome_date": {
+        "description": "Date produced by the selected option after applying every source constraint (ISO date).",
+        "type": "string"
+      },
+      "required_attendees": {
+        "description": "People flagged required on the event at the current agenda revision.",
+        "type": "integer"
+      },
+      "required_quantity": {
+        "description": "ticketed itineraries required for the eight required attendees who travel to Harrow Court (eleven required, three local to the Bristol hub)",
+        "type": "integer"
+      },
+      "selected_venue_week": {
+        "description": "Venue and week used by the selected option, as VENUE/YYYY-MM-DD.",
+        "type": "string"
+      },
+      "session_days": {
+        "description": "Session days named by the current agenda revision.",
+        "type": "integer"
+      },
+      "shortage_quantity": {
+        "description": "Uncovered ITINERARY after netting eligible coverage from the requirement.",
+        "type": "integer"
+      },
+      "standard_external_readiness": {
+        "description": "Standard readiness date independently confirmed for Wayfinder's confirmed standard and rush ticketing dates on WF-40211.",
+        "type": "string"
+      },
+      "usable_coverage_quantity": {
+        "description": "Net eligible coverage after removing basic-fare itineraries that cannot be changed and are forfeited on a move.",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "accelerated_completion",
+      "baseline_completion",
+      "business_need_date",
+      "change_fees_usd",
+      "coverage_item_or_resource",
+      "decision_timing_status",
+      "earliest_qualified_base_week",
+      "escalated_completion",
+      "escalation_approval_required",
+      "expedite_completion_days_saved",
+      "expedited_external_readiness",
+      "external_recovery_quantity",
+      "group_fare_usd",
+      "incremental_travel_cost_usd",
+      "ineligible_coverage_quantity",
+      "local_attendees",
+      "observed_coverage_quantity",
+      "outcome_vs_control_days",
+      "quantity_unit",
+      "recommended_incremental_cost_usd",
+      "recommended_option",
+      "recommended_outcome_date",
+      "required_attendees",
+      "required_quantity",
+      "selected_venue_week",
+      "session_days",
+      "shortage_quantity",
+      "standard_external_readiness",
+      "usable_coverage_quantity"
+    ],
+    "type": "object"
+  },
+  "as_of": "2026-06-08",
+  "benchmark": "HubBench",
+  "benchmark_version": "1.0.0",
+  "decision_model": {
+    "binding_constraint": "a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) reachable after ticket confirmation; basic-fare itineraries that cannot be changed and are forfeited on a move = 2 ITINERARY; uncovered scope = 3 ITINERARY",
+    "calculations": [
+      {
+        "description": "Preserved 2026-07-24 as the documented control date for the Product & Design Q3 offsite re-plan; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 8 ITINERARY for ticketed itineraries required for the eight required attendees who travel to Harrow Court (eleven required, three local to the Bristol hub) at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 7 ITINERARY of gross observed existing itineraries of the required travellers that can be re-issued to the new week.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 2 ITINERARY for basic-fare itineraries that cannot be changed and are forfeited on a move.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 7 observed − 2 ineligible = 5 usable ITINERARY.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 8 required − 5 usable = 3 ITINERARY uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in ITINERARY.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated move_to_open_week_standard_ticketing outcome as 2026-07-21 under Harrow Court's open weeks netted against the required attendees' hard conflicts.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated move_with_rush_ticketing outcome as 2026-07-21 using Wayfinder's confirmed standard and rush ticketing dates on WF-40211.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated release_held_week_via_venue_director outcome as 2026-06-30 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-22 as the independently confirmed standard readiness date for Wayfinder's confirmed standard and rush ticketing dates on WF-40211.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-12 as the independently confirmed expedited readiness date for Wayfinder's confirmed standard and rush ticketing dates on WF-40211.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 3 ITINERARY uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 11 required attendees on EVT-PRD-Q3 at agenda rev 3; the two optional attendees were not counted.",
+        "field": "required_attendees",
+        "id": "count_required_attendees",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Netted the 3 Bristol-hub attendees who drive to Bath and need no itinerary.",
+        "field": "local_attendees",
+        "id": "net_local_attendees",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied the current agenda's 3 session days (Tuesday to Thursday), not the superseded two-day rev 2.",
+        "field": "session_days",
+        "id": "apply_agenda_session_days",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Summed the recorded change fees 95 + 95 + 250 + 250 + 320 = USD 1,010 on the five changeable itineraries.",
+        "field": "change_fees_usd",
+        "id": "sum_change_fees",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read the USD 310 group fare per new ticket from WF-40211.",
+        "field": "group_fare_usd",
+        "id": "read_group_fare",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated 1,010 in change fees + 3 new tickets × 310 = USD 1,940, inside the USD 2,500 approval.",
+        "field": "incremental_travel_cost_usd",
+        "id": "calculate_incremental_travel_cost",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified 2026-07-20 as the first open Harrow Court week on or after the 2026-06-22 standard confirmation with no required-attendee hard conflict; 07-13 is open but blocked by the Northgate workshop.",
+        "field": "earliest_qualified_base_week",
+        "id": "identify_first_clear_week",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the move to VEN-HARROW/2026-07-20, sessions 2026-07-21 to 2026-07-23.",
+        "field": "selected_venue_week",
+        "id": "bind_selected_venue_week",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Reapplied the venue calendar to the 2026-06-12 rush confirmation and proved the first clear week is still 2026-07-20, so rush ticketing saves 0 days.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_rush_against_venue_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 1940 as the documented incremental cost for move_to_open_week_standard_ticketing; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that release_held_week_via_venue_director remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of move_to_open_week_standard_ticketing, move_with_rush_ticketing, release_held_week_via_venue_director; selected move_to_open_week_standard_ticketing because it alone gives the best currently authorized result under a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) reachable after ticket confirmation.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-07-21 as the supported outcome date for move_to_open_week_standard_ticketing.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-07-21 with the independent control date 2026-07-24 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "facts": [
+      {
+        "id": "authoritative_identity",
+        "rubric": "Located EVT-PRD-Q3 using immutable identifiers and preserved effective revision v1: the event is EVT-PRD-Q3 (organizer Anneli Kask) at agenda rev 3; the Finance Q3 offsite on the same drive is a different event.",
+        "sources": [
+          "calendar",
+          "mail"
+        ],
+        "statement": "DESK-0001: the event is EVT-PRD-Q3 (organizer Anneli Kask) at agenda rev 3; the Finance Q3 offsite on the same drive is a different event; the effective revision is v1."
+      },
+      {
+        "id": "effective_requirement",
+        "rubric": "Applied the event, the current agenda revision, and the policy to establish 8 ITINERARY for ticketed itineraries required for the eight required attendees who travel to Harrow Court (eleven required, three local to the Bristol hub), with control date 2026-07-24.",
+        "sources": [
+          "calendar",
+          "docs",
+          "drive"
+        ],
+        "statement": "The event, the current agenda revision, and the policy establish ticketed itineraries required for the eight required attendees who travel to Harrow Court (eleven required, three local to the Bristol hub) = 8 ITINERARY: 11 required attendees minus 3 Bristol locals leaves 8 travellers who each need one itinerary to Bath. The control date is 2026-07-24 (the H2 planning lock on 2026-07-24; the offsite must finish before it)."
+      },
+      {
+        "id": "eligible_coverage",
+        "rubric": "Reconciled 7 observed less 2 excluded to 5 supported ITINERARY for existing itineraries of the required travellers that can be re-issued to the new week.",
+        "sources": [
+          "travel",
+          "expense",
+          "calendar",
+          "venues"
+        ],
+        "statement": "7 itineraries exist for the 8 travellers; the basic fares of Marta Duarte and Sun-hee Park cannot be changed, so 5 can be re-issued and 3 travellers need new tickets; eligibility requires netting the exclusions rather than trusting a header total."
+      },
+      {
+        "id": "conditional_external_recovery",
+        "rubric": "Used the independently confirmed 2026-06-12 rush-queue confirmation input for move_with_rush_ticketing, then separately derived its 2026-07-21 operating outcome under a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) reachable after ticket confirmation instead of treating a travel vendor's promise as authorization or a completion date.",
+        "sources": [
+          "travel",
+          "mail"
+        ],
+        "statement": "Wayfinder's confirmed standard and rush ticketing dates on WF-40211: Wayfinder WF-40211 confirms standard ticketing 2026-06-19 and rush 2026-06-11 (+USD 240) at a USD 310 group fare; travellers are confirmed the next business day; a group-desk confirmation alone proves neither viability nor approval."
+      },
+      {
+        "id": "finite_capacity",
+        "rubric": "Applied Harrow Court's open weeks netted against the required attendees' hard conflicts to derive the three option outcomes without displacing a held, booked, or blackout week or a protected commitment.",
+        "sources": [
+          "venues",
+          "calendar"
+        ],
+        "statement": "Harrow Court's open weeks netted against the required attendees' hard conflicts: Harrow Court's open weeks are 07-13, 07-20, and 07-27; the 06-29 week is optioned to another client and 07-13 collides with Liam Okafor's customer workshop, so 07-20 is the first clear week; held, booked, and blackout weeks and protected commitments cannot be displaced."
+      },
+      {
+        "id": "approval_scope",
+        "rubric": "Applied AP-DK-0101 only to move_to_open_week_standard_ticketing and EVT-PRD-Q3; kept release_held_week_via_venue_director outside current authority.",
+        "sources": [
+          "approvals",
+          "chat"
+        ],
+        "statement": "AP-DK-0101 covers standard ticketing up to USD 2,500 of incremental travel with a rush fee up to USD 250; a held-week release needs the venue's events director with Maren. The approval does not select an option in advance and does not authorize release_held_week_via_venue_director."
+      },
+      {
+        "id": "business_impact",
+        "rubric": "Compared all three alternatives and selected move_to_open_week_standard_ticketing: it is the best currently authorized response that satisfies a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) reachable after ticket confirmation.",
+        "sources": [
+          "mail",
+          "chat"
+        ],
+        "statement": "the offsite must finish before the 2026-07-24 planning lock, and the team is waiting on one defensible date; a faster or broader action has value only if it remains inside a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) reachable after ticket confirmation."
+      }
+    ],
+    "mode": "plan",
+    "options": [
+      {
+        "approval": "APPROVED",
+        "completion": "2026-07-21",
+        "consequence": "move to open week with standard ticketing re-issues the five changeable itineraries and issues three new tickets at the group fare for Harrow Court's first clear open week, sessions 2026-07-21 to 2026-07-23, three days inside the planning lock, for USD 1,940 within AP-DK-0101.",
+        "control_status": "SUPPORTED_AND_APPROVED",
+        "id": "move_to_open_week_standard_ticketing",
+        "incremental_cost": 1940,
+        "label": "move_to_open_week_standard_ticketing: outcome 2026-07-21, incremental cost USD 1940, SUPPORTED_AND_APPROVED",
+        "recommended": true
+      },
+      {
+        "approval": "AVAILABLE_NOT_RECOMMENDED",
+        "completion": "2026-07-21",
+        "consequence": "move with rush ticketing confirms travellers by 2026-06-12 and adds USD 240, but the first clear open week is still 2026-07-20 (07-13 is blocked by Liam Okafor's customer workshop), so it saves 0 days.",
+        "control_status": "FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "id": "move_with_rush_ticketing",
+        "incremental_cost": 2180,
+        "label": "move_with_rush_ticketing: outcome 2026-07-21, incremental cost USD 2180, FEASIBLE_WITH_INFERIOR_TRADEOFF",
+        "recommended": false
+      },
+      {
+        "approval": "ADDITIONAL_APPROVAL_REQUIRED",
+        "completion": "2026-06-30",
+        "consequence": "release held week via venue director would run sessions 2026-06-30 to 2026-07-02, three weeks earlier, for USD 1,940 of travel plus a USD 1,500 release fee, but displacing another client's hold needs Harrow Court's events director and Maren acting together and spend above USD 2,500 needs Ifeoma; AP-DK-0101 carries neither.",
+        "control_status": "SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "id": "release_held_week_via_venue_director",
+        "incremental_cost": 3440,
+        "label": "release_held_week_via_venue_director: outcome 2026-06-30, incremental cost USD 3440, SEPARATE_APPROVAL_OR_POLICY_EXCEPTION_REQUIRED",
+        "recommended": false
+      }
+    ],
+    "recommendation_reason": "move_to_open_week_standard_ticketing is the best currently authorized response that satisfies a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) reachable after ticket confirmation and lands 3 day(s) on or before the control date.",
+    "selected_completion": "2026-07-21",
+    "selected_cost": 1940,
+    "selected_option": "move_to_open_week_standard_ticketing"
+  },
+  "evaluation": {
+    "llm_judge_calls": 0,
+    "metric": "HubScore",
+    "strict_pass": "every rubric milestone passes"
+  },
+  "expected": {
+    "answer": {
+      "accelerated_completion": "2026-07-21",
+      "baseline_completion": "2026-07-21",
+      "business_need_date": "2026-07-24",
+      "change_fees_usd": 1010,
+      "coverage_item_or_resource": "EVT-PRD-Q3",
+      "decision_timing_status": "ON_TIME",
+      "earliest_qualified_base_week": "2026-07-20",
+      "escalated_completion": "2026-06-30",
+      "escalation_approval_required": 1,
+      "expedite_completion_days_saved": 0,
+      "expedited_external_readiness": "2026-06-12",
+      "external_recovery_quantity": 3,
+      "group_fare_usd": 310,
+      "incremental_travel_cost_usd": 1940,
+      "ineligible_coverage_quantity": 2,
+      "local_attendees": 3,
+      "observed_coverage_quantity": 7,
+      "outcome_vs_control_days": -3,
+      "quantity_unit": "ITINERARY",
+      "recommended_incremental_cost_usd": 1940,
+      "recommended_option": "move_to_open_week_standard_ticketing",
+      "recommended_outcome_date": "2026-07-21",
+      "required_attendees": 11,
+      "required_quantity": 8,
+      "selected_venue_week": "VEN-HARROW/2026-07-20",
+      "session_days": 3,
+      "shortage_quantity": 3,
+      "standard_external_readiness": "2026-06-22",
+      "usable_coverage_quantity": 5
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'move_to_open_week_standard_ticketing', tied to EVT-PRD-Q3, revision v1, and the selected move_to_open_week_standard_ticketing outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-07-21', tied to EVT-PRD-Q3, revision v1, and the selected move_to_open_week_standard_ticketing outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported coverage item or resource as 'EVT-PRD-Q3', tied to EVT-PRD-Q3, revision v1, and the selected move_to_open_week_standard_ticketing outcome.",
+        "field": "coverage_item_or_resource",
+        "id": "answer_coverage_item_or_resource",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported shortage quantity as 3, tied to EVT-PRD-Q3, revision v1, and the selected move_to_open_week_standard_ticketing outcome.",
+        "field": "shortage_quantity",
+        "id": "answer_shortage_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to EVT-PRD-Q3, revision v1, and the selected move_to_open_week_standard_ticketing outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required EVT-PRD-Q3 to reach business outcome \"Offsite moved to Harrow Court's open week\" through calendar.events.update with exact provider-critical values event_id='EVT-PRD-Q3', start_date='2026-07-21', end_date='2026-07-23', venue_id='VEN-HARROW', location='Harrow Court Conference Estate, Bath (week of 2026-07-20)'. The audited change binds selected option move_to_open_week_standard_ticketing, approval AP-DK-0101, and constraint a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) reachable after ticket confirmation; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "event_id",
+          "start_date",
+          "end_date",
+          "venue_id",
+          "location"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "end_date": "2026-07-23",
+            "event_id": "EVT-PRD-Q3",
+            "location": "Harrow Court Conference Estate, Bath (week of 2026-07-20)",
+            "start_date": "2026-07-21",
+            "venue_id": "VEN-HARROW"
+          },
+          "tool": "calendar.events.update"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "EVT-PRD-Q3",
+          "status": "confirmed",
+          "table_name": "events",
+          "tool": "calendar.events.update"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "deskops-001-mutation-01",
+          "task_id": "deskops-001"
+        }
+      },
+      {
+        "description": "Persisted EVT-PRD-Q3 in events with the supported values (start_date='2026-07-21', end_date='2026-07-23', venue_id='VEN-HARROW', status='confirmed', revision=2) so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "events",
+        "values": {
+          "end_date": "2026-07-23",
+          "revision": 2,
+          "start_date": "2026-07-21",
+          "status": "confirmed",
+          "venue_id": "VEN-HARROW"
+        },
+        "weight": 2.0,
+        "where": {
+          "event_id": "EVT-PRD-Q3"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying move_to_open_week_standard_ticketing, the 2026-07-21 outcome, the binding constraint, and the DESK-0001 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "anneli.kask@larkspur.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "DESK-0001",
+            "EVT-PRD-Q3",
+            "VEN-HARROW"
+          ]
+        ],
+        "payload_text_contains": [
+          "move_to_open_week_standard_ticketing",
+          "2026-07-21"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "deskops-001-mutation-02",
+          "task_id": "deskops-001"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for DESK-0001: the primary change and the stakeholder draft; no additional hold, booking change, adjustment, or calendar move.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "deskops-001"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-07-24 as the documented control date for the Product & Design Q3 offsite re-plan; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 8 ITINERARY for ticketed itineraries required for the eight required attendees who travel to Harrow Court (eleven required, three local to the Bristol hub) at revision v1.",
+        "field": "required_quantity",
+        "id": "derive_plan_requirement",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Read 7 ITINERARY of gross observed existing itineraries of the required travellers that can be re-issued to the new week.",
+        "field": "observed_coverage_quantity",
+        "id": "read_gross_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Excluded 2 ITINERARY for basic-fare itineraries that cannot be changed and are forfeited on a move.",
+        "field": "ineligible_coverage_quantity",
+        "id": "remove_ineligible_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 7 observed − 2 ineligible = 5 usable ITINERARY.",
+        "field": "usable_coverage_quantity",
+        "id": "calculate_usable_coverage",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 8 required − 5 usable = 3 ITINERARY uncovered.",
+        "field": "shortage_quantity",
+        "id": "calculate_plan_gap",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept every planning quantity in ITINERARY.",
+        "field": "quantity_unit",
+        "id": "preserve_plan_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated move_to_open_week_standard_ticketing outcome as 2026-07-21 under Harrow Court's open weeks netted against the required attendees' hard conflicts.",
+        "field": "baseline_completion",
+        "id": "compare_baseline_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated move_with_rush_ticketing outcome as 2026-07-21 using Wayfinder's confirmed standard and rush ticketing dates on WF-40211.",
+        "field": "accelerated_completion",
+        "id": "compare_accelerated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated release_held_week_via_venue_director outcome as 2026-06-30 and kept its separate-approval condition.",
+        "field": "escalated_completion",
+        "id": "compare_escalated_plan",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-22 as the independently confirmed standard readiness date for Wayfinder's confirmed standard and rush ticketing dates on WF-40211.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-06-12 as the independently confirmed expedited readiness date for Wayfinder's confirmed standard and rush ticketing dates on WF-40211.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Bound external recovery to the 3 ITINERARY uncovered requirement rather than ordering the full header quantity.",
+        "field": "external_recovery_quantity",
+        "id": "bound_external_recovery_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 11 required attendees on EVT-PRD-Q3 at agenda rev 3; the two optional attendees were not counted.",
+        "field": "required_attendees",
+        "id": "count_required_attendees",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Netted the 3 Bristol-hub attendees who drive to Bath and need no itinerary.",
+        "field": "local_attendees",
+        "id": "net_local_attendees",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Applied the current agenda's 3 session days (Tuesday to Thursday), not the superseded two-day rev 2.",
+        "field": "session_days",
+        "id": "apply_agenda_session_days",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Summed the recorded change fees 95 + 95 + 250 + 250 + 320 = USD 1,010 on the five changeable itineraries.",
+        "field": "change_fees_usd",
+        "id": "sum_change_fees",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read the USD 310 group fare per new ticket from WF-40211.",
+        "field": "group_fare_usd",
+        "id": "read_group_fare",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Calculated 1,010 in change fees + 3 new tickets × 310 = USD 1,940, inside the USD 2,500 approval.",
+        "field": "incremental_travel_cost_usd",
+        "id": "calculate_incremental_travel_cost",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Identified 2026-07-20 as the first open Harrow Court week on or after the 2026-06-22 standard confirmation with no required-attendee hard conflict; 07-13 is open but blocked by the Northgate workshop.",
+        "field": "earliest_qualified_base_week",
+        "id": "identify_first_clear_week",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Bound the move to VEN-HARROW/2026-07-20, sessions 2026-07-21 to 2026-07-23.",
+        "field": "selected_venue_week",
+        "id": "bind_selected_venue_week",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Reapplied the venue calendar to the 2026-06-12 rush confirmation and proved the first clear week is still 2026-07-20, so rush ticketing saves 0 days.",
+        "field": "expedite_completion_days_saved",
+        "id": "test_rush_against_venue_calendar",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied USD 1940 as the documented incremental cost for move_to_open_week_standard_ticketing; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that release_held_week_via_venue_director remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of move_to_open_week_standard_ticketing, move_with_rush_ticketing, release_held_week_via_venue_director; selected move_to_open_week_standard_ticketing because it alone gives the best currently authorized result under a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) reachable after ticket confirmation.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-07-21 as the supported outcome date for move_to_open_week_standard_ticketing.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-07-21 with the independent control date 2026-07-24 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "DESK-0001"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated DESK-0001 scope, immutable handles, mounted systems, and evidence index before investigating EVT-PRD-Q3.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DESK-0001"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1001-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "mail.messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for DESK-0001 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DESK-0001"
+            },
+            "expected_result_contains": {
+              "events": [
+                {
+                  "id": "EVT-PRD-Q3"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.events.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved DESK-0001 to the immutable calendar event through a search rather than a title match against a similarly named event.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DESK-0001"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-001-17"
+                },
+                {
+                  "id": "DRV-001-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the DESK-0001 case folder on the shared drive and identified the approval record and the event export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "TE-07"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-001-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the policy folder and distinguished the effective TE-07 v5 policy from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "event_id": "EVT-PRD-Q3"
+            },
+            "expected_result_contains": {
+              "id": "EVT-PRD-Q3",
+              "status": "confirmed"
+            },
+            "match": "result_contains",
+            "tool": "calendar.events.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the calendar event EVT-PRD-Q3: dates, session days, venue, organizer, linked agenda and budget line, and revision.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "event_id": "EVT-PRD-Q3"
+            },
+            "expected_result_contains": {
+              "attendees": [
+                {
+                  "person_id": "P-KASK"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.attendees.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the attendees of EVT-PRD-Q3 with their required flag and home office before sizing who travels.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "offices": [
+                {
+                  "office_id": "OFF-BRS"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "directory.offices.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the office directory for home offices and timezones and identified OFF-BRS as the venue's local office whose attendees need no itinerary.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective TE-07 v5 policy for the attendance, booking-change, viability, budget, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "policy_id": "POL-TE07-V5"
+            },
+            "expected_result_contains": {
+              "policy_id": "POL-TE07-V5",
+              "status": "current"
+            },
+            "match": "result_contains",
+            "tool": "travel.policies.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current travel policy version POL-TE07-V5 from the travel desk for its structured parameters (per-diem, fare caps, contingency bands, thresholds, conflict kinds).",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "doc_id": "DOC-AGD-PRD"
+            },
+            "expected_result_contains": {
+              "revisions": [
+                {
+                  "revision_id": "DOC-AGD-PRD-R3",
+                  "status": "current"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "docs.revisions.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the revisions of agenda DOC-AGD-PRD and separated the current revision from the superseded one by status.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "revision_id": "DOC-AGD-PRD-R3"
+            },
+            "expected_result_contains": {
+              "revision_id": "DOC-AGD-PRD-R3",
+              "status": "current"
+            },
+            "match": "result_contains",
+            "tool": "docs.revisions.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current agenda revision DOC-AGD-PRD-R3 for the session days and the required attendee roles.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_week": "2026-08-31",
+              "start_week": "2026-06-15",
+              "venue_id": "VEN-HARROW"
+            },
+            "expected_result_contains": {
+              "weeks": [
+                {
+                  "id": "VW-HARROW-20260720",
+                  "status": "open"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "venues.availability.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read Harrow Court Conference Estate's availability calendar from 2026-06-15 to find the open weeks that displace no held, booked, or blackout week.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-08-30",
+              "event_id": "EVT-PRD-Q3",
+              "start_date": "2026-06-15"
+            },
+            "expected_result_contains": {
+              "calendars": [
+                {
+                  "busy": [
+                    {
+                      "hard": true
+                    }
+                  ],
+                  "person_id": "P-OKAFOR"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.freebusy.query"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Queried the required attendees' free/busy calendar from 2026-06-15 and separated hard conflicts from soft blocks before judging any week.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "event_id": "EVT-PRD-Q3"
+            },
+            "expected_result_contains": {
+              "bookings": [
+                {
+                  "booking_id": "BK-7101"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "travel.bookings.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the bookings on EVT-PRD-Q3 with fare class, changeability, change fee, and status before netting what can be re-issued.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-WAY-40211"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-WAY-40211",
+              "standard_ticketing_date": "2026-06-19"
+            },
+            "match": "result_contains",
+            "tool": "travel.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the external travel vendor's group-desk confirmation CONF-WAY-40211 (Wayfinder Corporate Travel) for the independently confirmed standard and rush ticketing dates, seats, group fare, and rush fee.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "quote_id": "QT-HAR-4402"
+            },
+            "expected_result_contains": {
+              "quote_id": "QT-HAR-4402",
+              "status": "current"
+            },
+            "match": "result_contains",
+            "tool": "venues.quotes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current venue quote QT-HAR-4402 for its week, billed days, total, deposit, and validity; did not use a superseded or indicative quote.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "line_id": "BL-PRD-TRV-26H2"
+            },
+            "expected_result_contains": {
+              "line_id": "BL-PRD-TRV-26H2"
+            },
+            "match": "result_contains",
+            "tool": "expense.budget_lines.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read budget line BL-PRD-TRV-26H2 for approved, committed, reserved, and the adjustment ceiling before treating any balance as headroom.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-DK-0101"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-DK-0101"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-DK-0101 for its exact scope: event, venue, weeks, spend, queue, and what it does not cover.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-17"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-17"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1001-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1001-01"
+            },
+            "match": "result_contains",
+            "tool": "mail.messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1001-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1001"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1001"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1001 for venue, fare, and authority remarks that qualify the system records.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "spreadsheet_id": "SS-PRD-TRV-26H2",
+              "version": 3
+            },
+            "expected_result_contains": {
+              "spreadsheet_id": "SS-PRD-TRV-26H2",
+              "status": "current",
+              "version": 3
+            },
+            "match": "result_contains",
+            "tool": "sheets.values.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current version of budget workbook SS-PRD-TRV-26H2 and reconciled it to the budget system's line rather than a superseded snapshot.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "venue_id": "VEN-QUAYSIDE"
+            },
+            "expected_result_contains": {
+              "holds": [
+                {
+                  "id": "HOLD-4400"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "venues.holds.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the existing holds, changes, quotes, or adjustments that fix the starting state by immutable id.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-32"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-32"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for DESK-0001 and confirmed that EVT-PRD-Q3 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for DESK-0001 and joined EVT-PRD-Q3 to the current authority and evidence records by immutable identity.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for DESK-0001; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for DESK-0001 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-33"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-33"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for EVT-PRD-Q3 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for DESK-0001 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_30",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-27"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-27"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for DESK-0001, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_31",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-001-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-001-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for DESK-0001: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_32",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "calendar.events.update",
+        "any_of": [
+          {
+            "arguments": {
+              "event_id": "EVT-PRD-Q3"
+            },
+            "expected_result_contains": {
+              "end": "2026-07-23",
+              "id": "EVT-PRD-Q3",
+              "meta": {
+                "versionId": "2"
+              },
+              "start": "2026-07-21",
+              "venue": "VEN-HARROW"
+            },
+            "match": "result_contains",
+            "tool": "calendar.events.get"
+          }
+        ],
+        "description": "Read EVT-PRD-Q3 back through calendar.events.get after the change and confirmed the persisted provider values (id='EVT-PRD-Q3', start='2026-07-21', end='2026-07-23', venue='VEN-HARROW', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "end": "2026-07-23",
+          "id": "EVT-PRD-Q3",
+          "meta": {
+            "versionId": "2"
+          },
+          "start": "2026-07-21",
+          "venue": "VEN-HARROW"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": false,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "event_id": "EVT-PRD-Q3"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family": "deskops",
+  "instruction": "Harrow Court has withdrawn the week we had for the Product and Design offsite and offered later weeks instead, and Anneli needs a date she can defend before the planning lock. Work out how many of the required attendees genuinely have to travel under the current agenda, how many of their existing tickets can be moved and how many are lost, which week the venue and everyone's calendars honestly allow, and whether paying Wayfinder for rush ticketing changes anything. Move the offsite to the week that works and leave Anneli a draft she can send the team. Anything that would need Delia, Ifeoma, or Petra should be flagged, not assumed.",
+  "level": "employee-decision",
+  "mode": "plan",
+  "negative_controls": {
+    "unauthorized_write": {
+      "arguments": {
+        "end_date": "2026-07-16",
+        "event_id": "EVT-PRD-Q3",
+        "location": "Harrow Court Conference Estate, Bath (week of 2026-07-13)",
+        "start_date": "2026-07-14",
+        "venue_id": "VEN-HARROW"
+      },
+      "tool": "calendar.events.update"
+    },
+    "wrong_evidence": {
+      "arguments": {
+        "file_id": "DRV-001-03"
+      },
+      "tool": "drive.files.export"
+    }
+  },
+  "post_write_verifications": [
+    {
+      "after_tool": "calendar.events.update",
+      "any_of": [
+        {
+          "arguments": {
+            "event_id": "EVT-PRD-Q3"
+          },
+          "expected_result_contains": {
+            "end": "2026-07-23",
+            "id": "EVT-PRD-Q3",
+            "meta": {
+              "versionId": "2"
+            },
+            "start": "2026-07-21",
+            "venue": "VEN-HARROW"
+          },
+          "match": "result_contains",
+          "tool": "calendar.events.get"
+        }
+      ],
+      "description": "Read EVT-PRD-Q3 back through calendar.events.get after the change and confirmed the persisted provider values (id='EVT-PRD-Q3', start='2026-07-21', end='2026-07-23', venue='VEN-HARROW', meta={'versionId': '2'}) rather than relying on the write acknowledgement.",
+      "expected_result_contains": {
+        "end": "2026-07-23",
+        "id": "EVT-PRD-Q3",
+        "meta": {
+          "versionId": "2"
+        },
+        "start": "2026-07-21",
+        "venue": "VEN-HARROW"
+      },
+      "id": "verify_primary_state",
+      "materializes_new_record": false,
+      "milestone_id": "verification.readback",
+      "target_identity": {
+        "event_id": "EVT-PRD-Q3"
+      },
+      "weight": 2.0
+    }
+  ],
+  "reference_records": {
+    "approvals": {
+      "approval_id": "AP-DK-0101"
+    },
+    "calendar": {
+      "event_id": "EVT-PRD-Q3",
+      "event_search": {
+        "arguments": {
+          "q": "DESK-0001"
+        },
+        "tool": "calendar.events.list"
+      },
+      "freebusy_window": {
+        "end_date": "2026-08-30",
+        "start_date": "2026-06-15"
+      }
+    },
+    "case_reference": "DESK-0001",
+    "chat": {
+      "thread_id": "CHAT-1001"
+    },
+    "docs": {
+      "agenda_doc_id": "DOC-AGD-PRD"
+    },
+    "drive": {
+      "case_folder_query": "DESK-0001",
+      "policy_query": "TE-07"
+    },
+    "expense": {
+      "line_id": "BL-PRD-TRV-26H2"
+    },
+    "mail": {
+      "search_query": "DESK-0001"
+    },
+    "sheets": {
+      "spreadsheet_id": "SS-PRD-TRV-26H2"
+    },
+    "travel": {
+      "confirmation_id": "CONF-WAY-40211",
+      "policy_id": "POL-TE07-V5"
+    },
+    "venues": {
+      "calendar_window": {
+        "end_week": "2026-08-31",
+        "start_week": "2026-06-15",
+        "venue_id": "VEN-HARROW"
+      },
+      "quote_id": "QT-HAR-4402",
+      "venue_id": "VEN-HARROW"
+    }
+  },
+  "required_investigations": [
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "reference_records": {
+              "case_reference": "DESK-0001"
+            }
+          },
+          "match": "result_contains",
+          "tool": "hubbench.context.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Established the isolated DESK-0001 scope, immutable handles, mounted systems, and evidence index before investigating EVT-PRD-Q3.",
+      "id": "investigation_01",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DESK-0001"
+          },
+          "expected_result_contains": {
+            "messages": [
+              {
+                "id": "MSG-1001-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "mail.messages.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Located the task-scoped correspondence for DESK-0001 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+      "id": "investigation_02",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DESK-0001"
+          },
+          "expected_result_contains": {
+            "events": [
+              {
+                "id": "EVT-PRD-Q3"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.events.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Resolved DESK-0001 to the immutable calendar event through a search rather than a title match against a similarly named event.",
+      "id": "investigation_03",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "DESK-0001"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-001-17"
+              },
+              {
+                "id": "DRV-001-04"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the DESK-0001 case folder on the shared drive and identified the approval record and the event export by immutable file id.",
+      "id": "investigation_04",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "q": "TE-07"
+          },
+          "expected_result_contains": {
+            "files": [
+              {
+                "id": "DRV-001-01"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "drive.files.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the policy folder and distinguished the effective TE-07 v5 policy from the superseded 2024 edition by file identity, not title.",
+      "id": "investigation_05",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "event_id": "EVT-PRD-Q3"
+          },
+          "expected_result_contains": {
+            "id": "EVT-PRD-Q3",
+            "status": "confirmed"
+          },
+          "match": "result_contains",
+          "tool": "calendar.events.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the calendar event EVT-PRD-Q3: dates, session days, venue, organizer, linked agenda and budget line, and revision.",
+      "id": "investigation_06",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "event_id": "EVT-PRD-Q3"
+          },
+          "expected_result_contains": {
+            "attendees": [
+              {
+                "person_id": "P-KASK"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.attendees.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the attendees of EVT-PRD-Q3 with their required flag and home office before sizing who travels.",
+      "id": "investigation_07",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {},
+          "expected_result_contains": {
+            "offices": [
+              {
+                "office_id": "OFF-BRS"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "directory.offices.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the office directory for home offices and timezones and identified OFF-BRS as the venue's local office whose attendees need no itinerary.",
+      "id": "investigation_08",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-01"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-01"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the effective TE-07 v5 policy for the attendance, booking-change, viability, budget, and authority rules; did not apply the superseded 2024 edition.",
+      "id": "investigation_09",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "policy_id": "POL-TE07-V5"
+          },
+          "expected_result_contains": {
+            "policy_id": "POL-TE07-V5",
+            "status": "current"
+          },
+          "match": "result_contains",
+          "tool": "travel.policies.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current travel policy version POL-TE07-V5 from the travel desk for its structured parameters (per-diem, fare caps, contingency bands, thresholds, conflict kinds).",
+      "id": "investigation_10",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "doc_id": "DOC-AGD-PRD"
+          },
+          "expected_result_contains": {
+            "revisions": [
+              {
+                "revision_id": "DOC-AGD-PRD-R3",
+                "status": "current"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "docs.revisions.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the revisions of agenda DOC-AGD-PRD and separated the current revision from the superseded one by status.",
+      "id": "investigation_11",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "revision_id": "DOC-AGD-PRD-R3"
+          },
+          "expected_result_contains": {
+            "revision_id": "DOC-AGD-PRD-R3",
+            "status": "current"
+          },
+          "match": "result_contains",
+          "tool": "docs.revisions.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current agenda revision DOC-AGD-PRD-R3 for the session days and the required attendee roles.",
+      "id": "investigation_12",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_week": "2026-08-31",
+            "start_week": "2026-06-15",
+            "venue_id": "VEN-HARROW"
+          },
+          "expected_result_contains": {
+            "weeks": [
+              {
+                "id": "VW-HARROW-20260720",
+                "status": "open"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "venues.availability.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read Harrow Court Conference Estate's availability calendar from 2026-06-15 to find the open weeks that displace no held, booked, or blackout week.",
+      "id": "investigation_13",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "end_date": "2026-08-30",
+            "event_id": "EVT-PRD-Q3",
+            "start_date": "2026-06-15"
+          },
+          "expected_result_contains": {
+            "calendars": [
+              {
+                "busy": [
+                  {
+                    "hard": true
+                  }
+                ],
+                "person_id": "P-OKAFOR"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "calendar.freebusy.query"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Queried the required attendees' free/busy calendar from 2026-06-15 and separated hard conflicts from soft blocks before judging any week.",
+      "id": "investigation_14",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "event_id": "EVT-PRD-Q3"
+          },
+          "expected_result_contains": {
+            "bookings": [
+              {
+                "booking_id": "BK-7101"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "travel.bookings.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Listed the bookings on EVT-PRD-Q3 with fare class, changeability, change fee, and status before netting what can be re-issued.",
+      "id": "investigation_15",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "confirmation_id": "CONF-WAY-40211"
+          },
+          "expected_result_contains": {
+            "confirmation_id": "CONF-WAY-40211",
+            "standard_ticketing_date": "2026-06-19"
+          },
+          "match": "result_contains",
+          "tool": "travel.confirmations.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the external travel vendor's group-desk confirmation CONF-WAY-40211 (Wayfinder Corporate Travel) for the independently confirmed standard and rush ticketing dates, seats, group fare, and rush fee.",
+      "id": "investigation_16",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "quote_id": "QT-HAR-4402"
+          },
+          "expected_result_contains": {
+            "quote_id": "QT-HAR-4402",
+            "status": "current"
+          },
+          "match": "result_contains",
+          "tool": "venues.quotes.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current venue quote QT-HAR-4402 for its week, billed days, total, deposit, and validity; did not use a superseded or indicative quote.",
+      "id": "investigation_17",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "line_id": "BL-PRD-TRV-26H2"
+          },
+          "expected_result_contains": {
+            "line_id": "BL-PRD-TRV-26H2"
+          },
+          "match": "result_contains",
+          "tool": "expense.budget_lines.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read budget line BL-PRD-TRV-26H2 for approved, committed, reserved, and the adjustment ceiling before treating any balance as headroom.",
+      "id": "investigation_18",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "approval_id": "AP-DK-0101"
+          },
+          "expected_result_contains": {
+            "approval_id": "AP-DK-0101"
+          },
+          "match": "result_contains",
+          "tool": "approvals.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read approval AP-DK-0101 for its exact scope: event, venue, weeks, spend, queue, and what it does not cover.",
+      "id": "investigation_19",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-17"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-17"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+      "id": "investigation_20",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "message_id": "MSG-1001-01"
+          },
+          "expected_result_contains": {
+            "id": "MSG-1001-01"
+          },
+          "match": "result_contains",
+          "tool": "mail.messages.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the request message MSG-1001-01 for the documented control date and the business need in the requester's words.",
+      "id": "investigation_21",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "thread_id": "CHAT-1001"
+          },
+          "expected_result_contains": {
+            "thread_id": "CHAT-1001"
+          },
+          "match": "result_contains",
+          "tool": "chat.threads.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the team chat thread CHAT-1001 for venue, fare, and authority remarks that qualify the system records.",
+      "id": "investigation_22",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "spreadsheet_id": "SS-PRD-TRV-26H2",
+            "version": 3
+          },
+          "expected_result_contains": {
+            "spreadsheet_id": "SS-PRD-TRV-26H2",
+            "status": "current",
+            "version": 3
+          },
+          "match": "result_contains",
+          "tool": "sheets.values.get"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current version of budget workbook SS-PRD-TRV-26H2 and reconciled it to the budget system's line rather than a superseded snapshot.",
+      "id": "investigation_23",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "venue_id": "VEN-QUAYSIDE"
+          },
+          "expected_result_contains": {
+            "holds": [
+              {
+                "id": "HOLD-4400"
+              }
+            ]
+          },
+          "match": "result_contains",
+          "tool": "venues.holds.list"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the existing holds, changes, quotes, or adjustments that fix the starting state by immutable id.",
+      "id": "investigation_24",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-32"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-32"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the task-scoped provider contract for DESK-0001 and confirmed that EVT-PRD-Q3 is backed by an isolated persistent world; did not infer upstream-provider parity.",
+      "id": "investigation_25",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-23"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-23"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the cross-system lineage for DESK-0001 and joined EVT-PRD-Q3 to the current authority and evidence records by immutable identity.",
+      "id": "investigation_26",
+      "milestone_id": "investigation.scope",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-24"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-24"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the current authority control for DESK-0001; distinguished task-scoped execution authority from the retired delegation in the same room.",
+      "id": "investigation_27",
+      "milestone_id": "investigation.requirements",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-28"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-28"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the signed source-integrity rule for DESK-0001 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+      "id": "investigation_28",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-33"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-33"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the live pre-action snapshot for EVT-PRD-Q3 and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+      "id": "investigation_29",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-26"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-26"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read the decision control record for DESK-0001 and confirmed that review remains required until the signed family approval and provider contract agree.",
+      "id": "investigation_30",
+      "milestone_id": "investigation.authority",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-27"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-27"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Read task-specific review capacity for DESK-0001, separating protected units from available units rather than treating gross capacity as usable.",
+      "id": "investigation_31",
+      "milestone_id": "investigation.constraints",
+      "weight": 1.0
+    },
+    {
+      "any_of": [
+        {
+          "arguments": {
+            "file_id": "DRV-001-29"
+          },
+          "expected_result_contains": {
+            "file_id": "DRV-001-29"
+          },
+          "match": "result_contains",
+          "tool": "drive.files.export"
+        }
+      ],
+      "before_primary_mutation": true,
+      "description": "Correlated the evidence-readiness record for DESK-0001: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+      "id": "investigation_32",
+      "milestone_id": "investigation.erp_correlation",
+      "weight": 1.0
+    }
+  ],
+  "required_read_calls": [
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "reference_records": {
+          "case_reference": "DESK-0001"
+        }
+      },
+      "match": "result_contains",
+      "tool": "hubbench.context.get"
+    },
+    {
+      "arguments": {
+        "q": "DESK-0001"
+      },
+      "expected_result_contains": {
+        "messages": [
+          {
+            "id": "MSG-1001-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "mail.messages.list"
+    },
+    {
+      "arguments": {
+        "q": "DESK-0001"
+      },
+      "expected_result_contains": {
+        "events": [
+          {
+            "id": "EVT-PRD-Q3"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.events.list"
+    },
+    {
+      "arguments": {
+        "q": "DESK-0001"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-001-17"
+          },
+          {
+            "id": "DRV-001-04"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "q": "TE-07"
+      },
+      "expected_result_contains": {
+        "files": [
+          {
+            "id": "DRV-001-01"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "drive.files.list"
+    },
+    {
+      "arguments": {
+        "event_id": "EVT-PRD-Q3"
+      },
+      "expected_result_contains": {
+        "id": "EVT-PRD-Q3",
+        "status": "confirmed"
+      },
+      "match": "result_contains",
+      "tool": "calendar.events.get"
+    },
+    {
+      "arguments": {
+        "event_id": "EVT-PRD-Q3"
+      },
+      "expected_result_contains": {
+        "attendees": [
+          {
+            "person_id": "P-KASK"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.attendees.list"
+    },
+    {
+      "arguments": {},
+      "expected_result_contains": {
+        "offices": [
+          {
+            "office_id": "OFF-BRS"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "directory.offices.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-01"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-01"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "policy_id": "POL-TE07-V5"
+      },
+      "expected_result_contains": {
+        "policy_id": "POL-TE07-V5",
+        "status": "current"
+      },
+      "match": "result_contains",
+      "tool": "travel.policies.get"
+    },
+    {
+      "arguments": {
+        "doc_id": "DOC-AGD-PRD"
+      },
+      "expected_result_contains": {
+        "revisions": [
+          {
+            "revision_id": "DOC-AGD-PRD-R3",
+            "status": "current"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "docs.revisions.list"
+    },
+    {
+      "arguments": {
+        "revision_id": "DOC-AGD-PRD-R3"
+      },
+      "expected_result_contains": {
+        "revision_id": "DOC-AGD-PRD-R3",
+        "status": "current"
+      },
+      "match": "result_contains",
+      "tool": "docs.revisions.get"
+    },
+    {
+      "arguments": {
+        "end_week": "2026-08-31",
+        "start_week": "2026-06-15",
+        "venue_id": "VEN-HARROW"
+      },
+      "expected_result_contains": {
+        "weeks": [
+          {
+            "id": "VW-HARROW-20260720",
+            "status": "open"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "venues.availability.list"
+    },
+    {
+      "arguments": {
+        "end_date": "2026-08-30",
+        "event_id": "EVT-PRD-Q3",
+        "start_date": "2026-06-15"
+      },
+      "expected_result_contains": {
+        "calendars": [
+          {
+            "busy": [
+              {
+                "hard": true
+              }
+            ],
+            "person_id": "P-OKAFOR"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "calendar.freebusy.query"
+    },
+    {
+      "arguments": {
+        "event_id": "EVT-PRD-Q3"
+      },
+      "expected_result_contains": {
+        "bookings": [
+          {
+            "booking_id": "BK-7101"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "travel.bookings.list"
+    },
+    {
+      "arguments": {
+        "confirmation_id": "CONF-WAY-40211"
+      },
+      "expected_result_contains": {
+        "confirmation_id": "CONF-WAY-40211",
+        "standard_ticketing_date": "2026-06-19"
+      },
+      "match": "result_contains",
+      "tool": "travel.confirmations.get"
+    },
+    {
+      "arguments": {
+        "quote_id": "QT-HAR-4402"
+      },
+      "expected_result_contains": {
+        "quote_id": "QT-HAR-4402",
+        "status": "current"
+      },
+      "match": "result_contains",
+      "tool": "venues.quotes.get"
+    },
+    {
+      "arguments": {
+        "line_id": "BL-PRD-TRV-26H2"
+      },
+      "expected_result_contains": {
+        "line_id": "BL-PRD-TRV-26H2"
+      },
+      "match": "result_contains",
+      "tool": "expense.budget_lines.get"
+    },
+    {
+      "arguments": {
+        "approval_id": "AP-DK-0101"
+      },
+      "expected_result_contains": {
+        "approval_id": "AP-DK-0101"
+      },
+      "match": "result_contains",
+      "tool": "approvals.get"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-17"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-17"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "message_id": "MSG-1001-01"
+      },
+      "expected_result_contains": {
+        "id": "MSG-1001-01"
+      },
+      "match": "result_contains",
+      "tool": "mail.messages.get"
+    },
+    {
+      "arguments": {
+        "thread_id": "CHAT-1001"
+      },
+      "expected_result_contains": {
+        "thread_id": "CHAT-1001"
+      },
+      "match": "result_contains",
+      "tool": "chat.threads.get"
+    },
+    {
+      "arguments": {
+        "spreadsheet_id": "SS-PRD-TRV-26H2",
+        "version": 3
+      },
+      "expected_result_contains": {
+        "spreadsheet_id": "SS-PRD-TRV-26H2",
+        "status": "current",
+        "version": 3
+      },
+      "match": "result_contains",
+      "tool": "sheets.values.get"
+    },
+    {
+      "arguments": {
+        "venue_id": "VEN-QUAYSIDE"
+      },
+      "expected_result_contains": {
+        "holds": [
+          {
+            "id": "HOLD-4400"
+          }
+        ]
+      },
+      "match": "result_contains",
+      "tool": "venues.holds.list"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-32"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-32"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-23"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-23"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-24"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-24"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-28"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-28"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-33"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-33"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-26"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-26"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-27"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-27"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    },
+    {
+      "arguments": {
+        "file_id": "DRV-001-29"
+      },
+      "expected_result_contains": {
+        "file_id": "DRV-001-29"
+      },
+      "match": "result_contains",
+      "tool": "drive.files.export"
+    }
+  ],
+  "required_reads": [
+    "hubbench.context.get",
+    "mail.messages.list",
+    "mail.messages.get",
+    "calendar.events.list",
+    "calendar.events.get",
+    "calendar.attendees.list",
+    "directory.offices.list",
+    "drive.files.list",
+    "drive.files.list",
+    "drive.files.export",
+    "travel.policies.get",
+    "docs.revisions.list",
+    "docs.revisions.get",
+    "sheets.values.get",
+    "venues.availability.list",
+    "calendar.freebusy.query",
+    "travel.bookings.list",
+    "travel.confirmations.get",
+    "venues.quotes.get",
+    "expense.budget_lines.get",
+    "approvals.get",
+    "drive.files.export",
+    "chat.threads.get",
+    "venues.holds.list",
+    "hubbench.context.get",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export",
+    "drive.files.export"
+  ],
+  "role": "workplace_operations_coordinator",
+  "rubric_milestones": [
+    {
+      "atomic_weight": 7.0,
+      "category": "identity",
+      "criterion_ids": [
+        "investigation_01",
+        "investigation_02",
+        "investigation_03",
+        "investigation_04",
+        "investigation_05",
+        "investigation_25",
+        "investigation_26"
+      ],
+      "description": "Establish the isolated DESK-0001 scope and immutable identities across the mailbox, document index, and mounted systems before relying on similarly named records.",
+      "id": "investigation.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 8.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_06",
+        "investigation_07",
+        "investigation_08",
+        "investigation_09",
+        "investigation_10",
+        "investigation_11",
+        "investigation_12",
+        "investigation_27"
+      ],
+      "description": "Determine the operative v1 requirement for EVT-PRD-Q3 from the order, the measured inputs, and the effective policy; distinguish current evidence from superseded or merely contextual records.",
+      "id": "investigation.requirements",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 9.0,
+      "category": "investigation",
+      "criterion_ids": [
+        "investigation_13",
+        "investigation_14",
+        "investigation_15",
+        "investigation_16",
+        "investigation_17",
+        "investigation_18",
+        "investigation_28",
+        "investigation_29",
+        "investigation_31"
+      ],
+      "description": "Reconcile the supported operating inputs: Reconciled 7 observed less 2 excluded to 5 supported ITINERARY for existing itineraries of the required travellers that can be re-issued to the new week. Applied Harrow Court's open weeks netted against the required attendees' hard conflicts to derive the three option outcomes without displacing a held, booked, or blackout week or a protected commitment. Used the independently confirmed 2026-06-12 rush-queue confirmation input for move_with_rush_ticketing, then separately derived its 2026-07-21 operating outcome under a viable venue week (open on the portal, every required attendee free of hard conflicts on session days) reachable after ticket confirmation instead of treating a travel vendor's promise as authorization or a completion date.",
+      "id": "investigation.constraints",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 3.0,
+      "category": "authority",
+      "criterion_ids": [
+        "investigation_19",
+        "investigation_20",
+        "investigation_30"
+      ],
+      "description": "Establish what is actually authorized and what remains conditional: Applied AP-DK-0101 only to move_to_open_week_standard_ticketing and EVT-PRD-Q3; kept release_held_week_via_venue_director outside current authority.",
+      "id": "investigation.authority",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "correlation",
+      "criterion_ids": [
+        "investigation_21",
+        "investigation_22",
+        "investigation_23",
+        "investigation_24",
+        "investigation_32"
+      ],
+      "description": "Correlate EVT-PRD-Q3 by immutable identifiers across the systems of record (calendar, venues, travel, expense, docs, sheets, mail, chat) and preserve the effective v1 state.",
+      "id": "investigation.erp_correlation",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 24.5,
+      "category": "procedure",
+      "criterion_ids": [
+        "derive_plan_requirement",
+        "read_gross_coverage",
+        "remove_ineligible_coverage",
+        "calculate_usable_coverage",
+        "calculate_plan_gap",
+        "preserve_plan_unit",
+        "compare_baseline_plan",
+        "compare_accelerated_plan",
+        "compare_escalated_plan",
+        "read_standard_external_readiness",
+        "read_expedited_external_readiness",
+        "bound_external_recovery_quantity",
+        "count_required_attendees",
+        "net_local_attendees",
+        "apply_agenda_session_days",
+        "sum_change_fees",
+        "read_group_fare",
+        "calculate_incremental_travel_cost",
+        "identify_first_clear_week",
+        "bind_selected_venue_week",
+        "test_rush_against_venue_calendar"
+      ],
+      "description": "Derive the requirement, eligible coverage, exclusions, unit, and controlling threshold from the joined evidence rather than copying a headline quantity for the Product & Design Q3 offsite re-plan.",
+      "id": "analysis.inputs",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.5,
+      "category": "decision",
+      "criterion_ids": [
+        "identify_business_date",
+        "calculate_recommended_outcome",
+        "calculate_outcome_variance",
+        "state_honest_timing_status"
+      ],
+      "description": "Calculate the feasible timing for move_to_open_week_standard_ticketing under the actual operating window and report whether the 2026-07-21 outcome meets the control date.",
+      "id": "analysis.timeline",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 4.0,
+      "category": "alternatives",
+      "criterion_ids": [
+        "calculate_selected_cost",
+        "apply_escalation_authority",
+        "choose_task_specific_option"
+      ],
+      "description": "Compare all three task-specific alternatives, including timing, cost, authority, and residual risk; select move_to_open_week_standard_ticketing only because the joined evidence supports it.",
+      "id": "decision.options",
+      "weight": 8.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_01",
+        "state_01"
+      ],
+      "description": "Persist exactly the supported \"Offsite moved to Harrow Court's open week\" change for EVT-PRD-Q3 through the documented provider operation, with no neighboring record or unsupported field changed.",
+      "id": "state.primary",
+      "weight": 14.0
+    },
+    {
+      "atomic_weight": 1.5,
+      "category": "state",
+      "criterion_ids": [
+        "mutation_02"
+      ],
+      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "id": "state.collaboration",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "verify_primary_state"
+      ],
+      "description": "Read EVT-PRD-Q3 back after the primary state change and verify the persisted provider state rather than trusting the write acknowledgement.",
+      "id": "verification.readback",
+      "weight": 6.0
+    },
+    {
+      "atomic_weight": 5.0,
+      "category": "answer",
+      "criterion_ids": [
+        "answer_recommended_option",
+        "answer_recommended_outcome_date",
+        "answer_coverage_item_or_resource",
+        "answer_shortage_quantity",
+        "answer_decision_timing_status"
+      ],
+      "description": "Return the exact task-supported recommendation, outcome date, immutable business record, decisive operating insight, and timing status for the Product & Design Q3 offsite re-plan.",
+      "id": "answer.insights",
+      "weight": 10.0
+    },
+    {
+      "atomic_weight": 2.0,
+      "category": "containment",
+      "criterion_ids": [
+        "containment_01",
+        "write_scope"
+      ],
+      "description": "Keep all successful changes inside DESK-0001's declared state, collaboration, answer, and audit scope.",
+      "id": "containment.scope",
+      "weight": 4.0
+    },
+    {
+      "atomic_weight": 1.0,
+      "category": "procedure",
+      "criterion_ids": [
+        "no_rejected_mutation"
+      ],
+      "description": "Complete without a rejected state-changing call; failed exploratory reads may be recovered from, but an invalid mutation is not accepted.",
+      "id": "execution.mutations",
+      "weight": 2.0
+    }
+  ],
+  "sequence_signature": "594596c9efe0cfc689a217bba1271a2b508c6ca25b27b33132b5f2f43ede22d4",
+  "starting_records": [
+    {
+      "resource_id": "EVT-PRD-Q3",
+      "resource_type": "Event",
+      "status": "confirmed",
+      "system": "calendar"
+    },
+    {
+      "resource_id": "EVT-FIN-Q3",
+      "resource_type": "Event",
+      "status": "confirmed",
+      "system": "calendar"
+    },
+    {
+      "resource_id": "HOLD-4400",
+      "resource_type": "VenueHold",
+      "status": "HELD",
+      "system": "venues"
+    }
+  ],
+  "task_id": "deskops-001",
+  "title": "Move the product offsite to the week Harrow Court has space",
+  "workflow": {
+    "answer_fields": 29,
+    "readbacks": 1,
+    "reads": 33,
+    "writes": 2
+  },
+  "world": {
+    "id": "larkspur-workplace-v1",
+    "name": "Larkspur Analytics — Workplace & Events Operations",
+    "organization_id": "ORG-LARKSPUR",
+    "primary_site": "OFF-BRS",
+    "systems": [
+      "mail",
+      "calendar",
+      "directory",
+      "docs",
+      "sheets",
+      "drive",
+      "venues",
+      "travel",
+      "expense",
+      "approvals",
+      "chat",
+      "notes"
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 # hubbench-datadesk-005 — Reload the attribution days broken by Cormorant's schema cutover
 
-HubBench 1.2.0 · family **DataDesk** (`datadesk`, cluster `data-engineering-analytics`) · decision mode `plan` · role `analytics_engineer_oncall` · as of 2026-03-09.
+HubBench 1.3.0 · family **DataDesk** (`datadesk`, cluster `data-engineering-analytics`) · decision mode `plan` · role `analytics_engineer_oncall` · as of 2026-03-09.
 
 Data engineering decisions against a dbt-style warehouse catalog, pipeline run history, vendor feed deliveries, freshness SLAs, batch-window capacity, and finance reconciliation controls.
 

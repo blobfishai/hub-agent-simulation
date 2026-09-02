@@ -1,6 +1,6 @@
 # hubbench-researchdesk-008 — Create the onboarding-time root-cause packet
 
-HubBench 1.2.0 · family **ResearchDesk** (`researchdesk`, cluster `reasoning-knowledge-qa`) · decision mode `plan` · role `research_analyst` · as of 2026-07-13.
+HubBench 1.3.0 · family **ResearchDesk** (`researchdesk`, cluster `reasoning-knowledge-qa`) · decision mode `plan` · role `research_analyst` · as of 2026-07-13.
 
 Multi-source internal research across versioned knowledge, metric definitions, source provenance, ranked search, approvals, review capacity, published claims, and evidence packets.
 

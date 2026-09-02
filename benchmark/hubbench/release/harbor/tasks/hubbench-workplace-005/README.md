@@ -1,6 +1,6 @@
 # hubbench-workplace-005 — Settle the Corvane liquidated-damages claim for the late connector
 
-HubBench 1.2.0 · family **Workplace** (`workplace`, cluster `customer-workplace-agents`) · decision mode `quantity` · role `customer_delivery_coordinator` · as of 2026-04-14.
+HubBench 1.3.0 · family **Workplace** (`workplace`, cluster `customer-workplace-agents`) · decision mode `quantity` · role `customer_delivery_coordinator` · as of 2026-04-14.
 
 Customer-escalation delivery decisions against a helpdesk with SLA policies, a delivery tracker with sprints and capacity reports, a versioned wiki standard, a staff calendar with leave and on-call, an HRIS skills roster, a contract register with commitments and a credit ledger, counterparty confirmations, and approval records.
 

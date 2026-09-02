@@ -1,0 +1,1081 @@
+{
+  "contract": {
+    "answer": {
+      "attendee_count": 20,
+      "baseline_resolution_date": "2026-08-11",
+      "business_need_date": "2026-08-14",
+      "change_fees_usd": 690,
+      "changeable_bookings": 4,
+      "contingency_usd": 800,
+      "controlled_item_or_record": "EVT-ENG-AH",
+      "controlled_resolution_date": "2026-08-11",
+      "decision_timing_status": "ON_TIME",
+      "escalated_resolution_date": "2026-07-28",
+      "escalation_approval_required": 1,
+      "excluded_quantity": 3600,
+      "expedited_external_readiness": "2026-07-23",
+      "new_ticket_cost_usd": 600,
+      "new_tickets_required": 2,
+      "observed_quantity": 7100,
+      "outcome_vs_control_days": -3,
+      "per_diem_delta_usd": 510,
+      "quantity_unit": "USD",
+      "recommended_incremental_cost_usd": 6600,
+      "recommended_option": "post_adjustment_then_move_to_10_august",
+      "recommended_outcome_date": "2026-08-11",
+      "source_quantity": 6600,
+      "standard_external_readiness": "2026-08-03",
+      "supported_quantity": 3500,
+      "transaction_quantity": 3900,
+      "travellers": 6,
+      "venue_delta_usd": 4800
+    },
+    "answer_checks": [
+      {
+        "description": "Reported recommended option as 'post_adjustment_then_move_to_10_august', tied to EVT-ENG-AH, revision v1, and the selected post_adjustment_then_move_to_10_august outcome.",
+        "field": "recommended_option",
+        "id": "answer_recommended_option",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported recommended outcome date as '2026-08-11', tied to EVT-ENG-AH, revision v1, and the selected post_adjustment_then_move_to_10_august outcome.",
+        "field": "recommended_outcome_date",
+        "id": "answer_recommended_outcome_date",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported controlled item or record as 'EVT-ENG-AH', tied to EVT-ENG-AH, revision v1, and the selected post_adjustment_then_move_to_10_august outcome.",
+        "field": "controlled_item_or_record",
+        "id": "answer_controlled_item_or_record",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported transaction quantity as 3900, tied to EVT-ENG-AH, revision v1, and the selected post_adjustment_then_move_to_10_august outcome.",
+        "field": "transaction_quantity",
+        "id": "answer_transaction_quantity",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      },
+      {
+        "description": "Reported decision timing status as 'ON_TIME', tied to EVT-ENG-AH, revision v1, and the selected post_adjustment_then_move_to_10_august outcome.",
+        "field": "decision_timing_status",
+        "id": "answer_decision_timing_status",
+        "milestone_id": "answer.insights",
+        "weight": 1.0
+      }
+    ],
+    "assertions": [
+      {
+        "description": "Required EVT-ENG-AH to reach business outcome 'Budget-line adjustment submitted' through expense.adjustments.create with exact provider-critical values line_id='BL-ENG-EVT-26H2', amount_usd=3900, reason=\"DESK-0008 engineering all-hands move to Fennimore Hall's week of 2026-08-10: USD 3,100 uncovered incremental cost plus USD 800 events contingency\", related_event_id='EVT-ENG-AH'. The audited change binds selected option post_adjustment_then_move_to_10_august, approval AP-DK-0108, and constraint the usable-headroom rule and the signed adjustment approval; no other record satisfies this state criterion.",
+        "id": "mutation_01",
+        "milestone_id": "state.primary",
+        "payload_allowed_argument_paths": [
+          "line_id",
+          "amount_usd",
+          "reason",
+          "related_event_id"
+        ],
+        "payload_contains": {
+          "arguments": {
+            "amount_usd": 3900,
+            "line_id": "BL-ENG-EVT-26H2",
+            "reason": "DESK-0008 engineering all-hands move to Fennimore Hall's week of 2026-08-10: USD 3,100 uncovered incremental cost plus USD 800 events contingency",
+            "related_event_id": "EVT-ENG-AH"
+          },
+          "tool": "expense.adjustments.create"
+        },
+        "table": "mutations",
+        "values": {
+          "record_id": "ADJ-2201",
+          "status": "SUBMITTED",
+          "table_name": "budget_adjustments",
+          "tool": "expense.adjustments.create"
+        },
+        "weight": 3.0,
+        "where": {
+          "mutation_id": "deskops-008-mutation-01",
+          "task_id": "deskops-008"
+        }
+      },
+      {
+        "description": "Persisted ADJ-2201 in budget_adjustments with the supported values (line_id='BL-ENG-EVT-26H2', amount_usd=3900.0, related_event_id='EVT-ENG-AH', status='SUBMITTED') so a later reader sees the change, not just the acknowledgement.",
+        "id": "state_01",
+        "milestone_id": "state.primary",
+        "table": "budget_adjustments",
+        "values": {
+          "amount_usd": 3900.0,
+          "line_id": "BL-ENG-EVT-26H2",
+          "related_event_id": "EVT-ENG-AH",
+          "status": "SUBMITTED"
+        },
+        "weight": 2.0,
+        "where": {
+          "adjustment_id": "ADJ-2201"
+        }
+      },
+      {
+        "description": "Raised the engineering events line's reserved balance by exactly the USD 3,900 adjustment (3,600 → 7,500) and moved its revision to 2.",
+        "id": "state_02",
+        "milestone_id": "state.primary",
+        "table": "budget_lines",
+        "values": {
+          "reserved_usd": 7500.0,
+          "revision": 2
+        },
+        "weight": 1.0,
+        "where": {
+          "line_id": "BL-ENG-EVT-26H2"
+        }
+      },
+      {
+        "description": "Created — but did not send — the stakeholder draft carrying post_adjustment_then_move_to_10_august, the 2026-08-11 outcome, the binding constraint, and the DESK-0008 business reference.",
+        "id": "mutation_02",
+        "milestone_id": "state.collaboration",
+        "payload_contains": {
+          "arguments": {
+            "recipient": "ciaran.byrne@larkspur.example"
+          },
+          "tool": "notes.drafts.create"
+        },
+        "payload_text_any_of": [
+          [
+            "DESK-0008",
+            "EVT-ENG-AH",
+            "VEN-FENNIMORE"
+          ]
+        ],
+        "payload_text_contains": [
+          "post_adjustment_then_move_to_10_august",
+          "2026-08-11"
+        ],
+        "table": "mutations",
+        "values": {
+          "status": "DRAFT",
+          "table_name": "note_drafts",
+          "tool": "notes.drafts.create"
+        },
+        "weight": 1.5,
+        "where": {
+          "mutation_id": "deskops-008-mutation-02",
+          "task_id": "deskops-008"
+        }
+      },
+      {
+        "count": 2,
+        "description": "Made exactly two state changes for DESK-0008: the primary change and the stakeholder draft; no additional hold, booking change, adjustment, or calendar move.",
+        "id": "containment_01",
+        "milestone_id": "containment.scope",
+        "table": "mutations",
+        "weight": 1.0,
+        "where": {
+          "task_id": "deskops-008"
+        }
+      }
+    ],
+    "calculations": [
+      {
+        "description": "Preserved 2026-08-14 as the documented control date for funding the engineering all-hands move; did not infer urgency from a title or a request tone.",
+        "field": "business_need_date",
+        "id": "identify_business_date",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      },
+      {
+        "description": "Established 6600 USD for incremental cost of moving the engineering all-hands to Fennimore Hall's week of 2026-08-10 at agenda rev 3 (change fees, new tickets, venue difference, per-diem difference).",
+        "field": "source_quantity",
+        "id": "establish_source_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Correlated the independent source records to 7100 observed USD.",
+        "field": "observed_quantity",
+        "id": "reconcile_observed_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Removed 3600 USD for reserved balance held by open venue-hold deposits and pending adjustments.",
+        "field": "excluded_quantity",
+        "id": "identify_excluded_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 7100 observed − 3600 excluded = 3500 supported USD.",
+        "field": "supported_quantity",
+        "id": "calculate_supported_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Bound the state change to exactly 3900 USD, the measure required by the chosen disposition under the usable-headroom rule and the signed adjustment approval; did not substitute the header or another business quantity.",
+        "field": "transaction_quantity",
+        "id": "bound_transaction_quantity",
+        "milestone_id": "analysis.inputs",
+        "weight": 2.0
+      },
+      {
+        "description": "Kept the order, transfer, or dispense quantity in USD.",
+        "field": "quantity_unit",
+        "id": "preserve_transaction_unit",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Derived 2026-08-11 for post_adjustment_then_move_to_10_august.",
+        "field": "baseline_resolution_date",
+        "id": "compare_quantity_option_one",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-08-11 for move_on_gross_remaining_without_adjustment.",
+        "field": "controlled_resolution_date",
+        "id": "compare_quantity_option_two",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Derived 2026-07-28 for displace_byrne_board_meeting_for_27_july and recognized its control impact.",
+        "field": "escalated_resolution_date",
+        "id": "compare_quantity_option_three",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-08-03 as the independently confirmed standard readiness date for Wayfinder's confirmed standard and rush ticketing dates on WF-40460.",
+        "field": "standard_external_readiness",
+        "id": "read_standard_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Read 2026-07-23 as the independently confirmed expedited readiness date for Wayfinder's confirmed standard and rush ticketing dates on WF-40460.",
+        "field": "expedited_external_readiness",
+        "id": "read_expedited_external_readiness",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 18 required attendees minus the 12 Bristol locals = 6 travellers; the two optional Denver field engineers were not counted.",
+        "field": "travellers",
+        "id": "count_travellers",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 4 changeable flex itineraries (Inês, João, Marc, Niko) among the 6 traveller bookings.",
+        "field": "changeable_bookings",
+        "id": "count_changeable_bookings",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Identified 2 forfeited basic fares (Rafael Sousa, Liam Okafor) that need new tickets.",
+        "field": "new_tickets_required",
+        "id": "count_new_tickets",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Summed 95 + 95 + 250 + 250 = USD 690 of recorded change fees.",
+        "field": "change_fees_usd",
+        "id": "sum_change_fees",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Priced 2 new tickets at the USD 300 group fare on WF-40460 = USD 600.",
+        "field": "new_ticket_cost_usd",
+        "id": "price_new_tickets",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Calculated FH-7810 (24,600) minus contracted HC-4455 (19,800) = USD 4,800; did not use the alternative FH-7808.",
+        "field": "venue_delta_usd",
+        "id": "calculate_venue_delta",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Calculated 1 extra billed day × 6 travellers × USD 85 (United Kingdom) = USD 510 from the current per-diem table.",
+        "field": "per_diem_delta_usd",
+        "id": "calculate_per_diem_delta",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.5
+      },
+      {
+        "description": "Applied the USD 800 contingency for a 20-attendee event (band 16-40) from the current contingency table.",
+        "field": "contingency_usd",
+        "id": "apply_events_contingency",
+        "milestone_id": "analysis.inputs",
+        "weight": 1.0
+      },
+      {
+        "description": "Counted 20 attendees on the event (18 required + 2 optional) for the contingency band and Fennimore's capacity.",
+        "field": "attendee_count",
+        "id": "count_event_attendees",
+        "milestone_id": "analysis.inputs",
+        "weight": 0.5
+      },
+      {
+        "description": "Applied USD 6600 as the documented incremental spend for post_adjustment_then_move_to_10_august; did not invent a premium where spend is not a decision driver.",
+        "field": "recommended_incremental_cost_usd",
+        "id": "calculate_selected_cost",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Recognized that displace_byrne_board_meeting_for_27_july remains outside current authority and requires an additional approval.",
+        "field": "escalation_approval_required",
+        "id": "apply_escalation_authority",
+        "milestone_id": "decision.options",
+        "weight": 1.0
+      },
+      {
+        "description": "Compared the timing, cost, control status, and consequence of post_adjustment_then_move_to_10_august, move_on_gross_remaining_without_adjustment, displace_byrne_board_meeting_for_27_july; selected post_adjustment_then_move_to_10_august because it alone gives the best currently authorized result under the usable-headroom rule and the signed adjustment approval.",
+        "field": "recommended_option",
+        "id": "choose_task_specific_option",
+        "milestone_id": "decision.options",
+        "weight": 2.0
+      },
+      {
+        "description": "Calculated 2026-08-11 as the supported outcome date for post_adjustment_then_move_to_10_august.",
+        "field": "recommended_outcome_date",
+        "id": "calculate_recommended_outcome",
+        "milestone_id": "analysis.timeline",
+        "weight": 2.0
+      },
+      {
+        "description": "Compared 2026-08-11 with the independent control date 2026-08-14 and calculated a signed variance of -3 day(s).",
+        "field": "outcome_vs_control_days",
+        "id": "calculate_outcome_variance",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.5
+      },
+      {
+        "description": "Reported ON_TIME; did not relabel a controlled but late result as on time.",
+        "field": "decision_timing_status",
+        "id": "state_honest_timing_status",
+        "milestone_id": "analysis.timeline",
+        "weight": 1.0
+      }
+    ],
+    "investigations": [
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "reference_records": {
+                "case_reference": "DESK-0008"
+              }
+            },
+            "match": "result_contains",
+            "tool": "hubbench.context.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Established the isolated DESK-0008 scope, immutable handles, mounted systems, and evidence index before investigating EVT-ENG-AH.",
+        "id": "investigation_01",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DESK-0008"
+            },
+            "expected_result_contains": {
+              "messages": [
+                {
+                  "id": "MSG-1008-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "mail.messages.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Located the task-scoped correspondence for DESK-0008 by searching the mailbox before opening any message; did not rely on a guessed sender or filename.",
+        "id": "investigation_02",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DESK-0008"
+            },
+            "expected_result_contains": {
+              "events": [
+                {
+                  "id": "EVT-ENG-AH"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.events.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Resolved DESK-0008 to the immutable calendar event through a search rather than a title match against a similarly named event.",
+        "id": "investigation_03",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "DESK-0008"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-008-17"
+                },
+                {
+                  "id": "DRV-008-04"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the DESK-0008 case folder on the shared drive and identified the approval record and the event export by immutable file id.",
+        "id": "investigation_04",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "q": "TE-07"
+            },
+            "expected_result_contains": {
+              "files": [
+                {
+                  "id": "DRV-008-01"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "drive.files.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the policy folder and distinguished the effective TE-07 v5 policy from the superseded 2024 edition by file identity, not title.",
+        "id": "investigation_05",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "event_id": "EVT-ENG-AH"
+            },
+            "expected_result_contains": {
+              "id": "EVT-ENG-AH",
+              "status": "confirmed"
+            },
+            "match": "result_contains",
+            "tool": "calendar.events.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the calendar event EVT-ENG-AH: dates, session days, venue, organizer, linked agenda and budget line, and revision.",
+        "id": "investigation_06",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "event_id": "EVT-ENG-AH"
+            },
+            "expected_result_contains": {
+              "attendees": [
+                {
+                  "person_id": "P-BYRNE"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.attendees.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the attendees of EVT-ENG-AH with their required flag and home office before sizing who travels.",
+        "id": "investigation_07",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {},
+            "expected_result_contains": {
+              "offices": [
+                {
+                  "office_id": "OFF-BRS"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "directory.offices.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the office directory for home offices and timezones and identified OFF-BRS as the venue's local office whose attendees need no itinerary.",
+        "id": "investigation_08",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-01"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-01"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the effective TE-07 v5 policy for the attendance, booking-change, viability, budget, and authority rules; did not apply the superseded 2024 edition.",
+        "id": "investigation_09",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "policy_id": "POL-TE07-V5"
+            },
+            "expected_result_contains": {
+              "policy_id": "POL-TE07-V5",
+              "status": "current"
+            },
+            "match": "result_contains",
+            "tool": "travel.policies.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current travel policy version POL-TE07-V5 from the travel desk for its structured parameters (per-diem, fare caps, contingency bands, thresholds, conflict kinds).",
+        "id": "investigation_10",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "doc_id": "DOC-AGD-ENG"
+            },
+            "expected_result_contains": {
+              "revisions": [
+                {
+                  "revision_id": "DOC-AGD-ENG-R3",
+                  "status": "current"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "docs.revisions.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the revisions of agenda DOC-AGD-ENG and separated the current revision from the superseded one by status.",
+        "id": "investigation_11",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "revision_id": "DOC-AGD-ENG-R3"
+            },
+            "expected_result_contains": {
+              "revision_id": "DOC-AGD-ENG-R3",
+              "status": "current"
+            },
+            "match": "result_contains",
+            "tool": "docs.revisions.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current agenda revision DOC-AGD-ENG-R3 for the session days and the required attendee roles.",
+        "id": "investigation_12",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_week": "2026-08-31",
+              "start_week": "2026-06-15",
+              "venue_id": "VEN-FENNIMORE"
+            },
+            "expected_result_contains": {
+              "weeks": [
+                {
+                  "id": "VW-FENNIMORE-20260810",
+                  "status": "open"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "venues.availability.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read Fennimore Hall's availability calendar from 2026-06-15 to find the open weeks that displace no held, booked, or blackout week.",
+        "id": "investigation_13",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "end_date": "2026-08-30",
+              "event_id": "EVT-ENG-AH",
+              "start_date": "2026-06-15"
+            },
+            "expected_result_contains": {
+              "calendars": [
+                {
+                  "busy": [
+                    {
+                      "hard": true
+                    }
+                  ],
+                  "person_id": "P-BYRNE"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "calendar.freebusy.query"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Queried the required attendees' free/busy calendar from 2026-06-15 and separated hard conflicts from soft blocks before judging any week.",
+        "id": "investigation_14",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "event_id": "EVT-ENG-AH"
+            },
+            "expected_result_contains": {
+              "bookings": [
+                {
+                  "booking_id": "BK-7801"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "travel.bookings.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Listed the bookings on EVT-ENG-AH with fare class, changeability, change fee, and status before netting what can be re-issued.",
+        "id": "investigation_15",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "confirmation_id": "CONF-WAY-40460"
+            },
+            "expected_result_contains": {
+              "confirmation_id": "CONF-WAY-40460",
+              "standard_ticketing_date": "2026-07-31"
+            },
+            "match": "result_contains",
+            "tool": "travel.confirmations.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the external travel vendor's group-desk confirmation CONF-WAY-40460 (Wayfinder Corporate Travel) for the independently confirmed standard and rush ticketing dates, seats, group fare, and rush fee.",
+        "id": "investigation_16",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "quote_id": "QT-FEN-7810"
+            },
+            "expected_result_contains": {
+              "quote_id": "QT-FEN-7810",
+              "status": "current"
+            },
+            "match": "result_contains",
+            "tool": "venues.quotes.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current venue quote QT-FEN-7810 for its week, billed days, total, deposit, and validity; did not use a superseded or indicative quote.",
+        "id": "investigation_17",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "line_id": "BL-ENG-EVT-26H2"
+            },
+            "expected_result_contains": {
+              "line_id": "BL-ENG-EVT-26H2"
+            },
+            "match": "result_contains",
+            "tool": "expense.budget_lines.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read budget line BL-ENG-EVT-26H2 for approved, committed, reserved, and the adjustment ceiling before treating any balance as headroom.",
+        "id": "investigation_18",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "approval_id": "AP-DK-0108"
+            },
+            "expected_result_contains": {
+              "approval_id": "AP-DK-0108"
+            },
+            "match": "result_contains",
+            "tool": "approvals.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read approval AP-DK-0108 for its exact scope: event, venue, weeks, spend, queue, and what it does not cover.",
+        "id": "investigation_19",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-17"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-17"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Exported the approval record on the drive and confirmed it matches the workflow record before relying on it.",
+        "id": "investigation_20",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "message_id": "MSG-1008-01"
+            },
+            "expected_result_contains": {
+              "id": "MSG-1008-01"
+            },
+            "match": "result_contains",
+            "tool": "mail.messages.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the request message MSG-1008-01 for the documented control date and the business need in the requester's words.",
+        "id": "investigation_21",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "thread_id": "CHAT-1008"
+            },
+            "expected_result_contains": {
+              "thread_id": "CHAT-1008"
+            },
+            "match": "result_contains",
+            "tool": "chat.threads.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the team chat thread CHAT-1008 for venue, fare, and authority remarks that qualify the system records.",
+        "id": "investigation_22",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "spreadsheet_id": "SS-ENG-EVT-26H2",
+              "version": 3
+            },
+            "expected_result_contains": {
+              "spreadsheet_id": "SS-ENG-EVT-26H2",
+              "status": "current",
+              "version": 3
+            },
+            "match": "result_contains",
+            "tool": "sheets.values.get"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current version of budget workbook SS-ENG-EVT-26H2 and reconciled it to the budget system's line rather than a superseded snapshot.",
+        "id": "investigation_23",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "line_id": "BL-ENG-EVT-26H2"
+            },
+            "expected_result_contains": {
+              "adjustments": [
+                {
+                  "adjustment_id": "ADJ-2200"
+                }
+              ]
+            },
+            "match": "result_contains",
+            "tool": "expense.adjustments.list"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the existing holds, changes, quotes, or adjustments that fix the starting state by immutable id.",
+        "id": "investigation_24",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-32"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-32"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the task-scoped provider contract for DESK-0008 and confirmed that EVT-ENG-AH is backed by an isolated persistent world; did not infer upstream-provider parity.",
+        "id": "investigation_25",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-23"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-23"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the cross-system lineage for DESK-0008 and joined EVT-ENG-AH to the current authority and evidence records by immutable identity.",
+        "id": "investigation_26",
+        "milestone_id": "investigation.scope",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-24"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-24"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the current authority control for DESK-0008; distinguished task-scoped execution authority from the retired delegation in the same room.",
+        "id": "investigation_27",
+        "milestone_id": "investigation.requirements",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-28"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-28"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the signed source-integrity rule for DESK-0008 and applied its current-provider-state requirement before accepting any headline, filename, or search rank.",
+        "id": "investigation_28",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-33"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-33"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the live pre-action snapshot for EVT-ENG-AH and confirmed its PRE_ACTION state and expected mutation boundary before changing the provider world.",
+        "id": "investigation_29",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-26"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-26"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read the decision control record for DESK-0008 and confirmed that review remains required until the signed family approval and provider contract agree.",
+        "id": "investigation_30",
+        "milestone_id": "investigation.authority",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-27"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-27"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Read task-specific review capacity for DESK-0008, separating protected units from available units rather than treating gross capacity as usable.",
+        "id": "investigation_31",
+        "milestone_id": "investigation.constraints",
+        "weight": 1.0
+      },
+      {
+        "any_of": [
+          {
+            "arguments": {
+              "file_id": "DRV-008-29"
+            },
+            "expected_result_contains": {
+              "file_id": "DRV-008-29"
+            },
+            "match": "result_contains",
+            "tool": "drive.files.export"
+          }
+        ],
+        "before_primary_mutation": true,
+        "description": "Correlated the evidence-readiness record for DESK-0008: identity and revision are linked, authority still requires a live read, and no outcome is precomputed.",
+        "id": "investigation_32",
+        "milestone_id": "investigation.erp_correlation",
+        "weight": 1.0
+      }
+    ],
+    "post_write_verifications": [
+      {
+        "after_tool": "expense.adjustments.create",
+        "any_of": [
+          {
+            "arguments": {
+              "adjustment_id": "ADJ-2201"
+            },
+            "expected_result_contains": {
+              "adjustment_id": "ADJ-2201",
+              "amount_usd": 3900.0,
+              "line": "BL-ENG-EVT-26H2",
+              "status": "SUBMITTED"
+            },
+            "match": "result_contains",
+            "tool": "expense.adjustments.get"
+          }
+        ],
+        "description": "Read ADJ-2201 back through expense.adjustments.get after the change and confirmed the persisted provider values (adjustment_id='ADJ-2201', line='BL-ENG-EVT-26H2', amount_usd=3900.0, status='SUBMITTED') rather than relying on the write acknowledgement.",
+        "expected_result_contains": {
+          "adjustment_id": "ADJ-2201",
+          "amount_usd": 3900.0,
+          "line": "BL-ENG-EVT-26H2",
+          "status": "SUBMITTED"
+        },
+        "id": "verify_primary_state",
+        "materializes_new_record": true,
+        "milestone_id": "verification.readback",
+        "target_identity": {
+          "adjustment_id": "ADJ-2201"
+        },
+        "weight": 2.0
+      }
+    ]
+  },
+  "family_task_id": "deskops-008",
+  "metric": "HubScore",
+  "task_id": "hubbench-deskops-008"
+}

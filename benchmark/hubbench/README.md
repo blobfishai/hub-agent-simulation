@@ -5,8 +5,8 @@ One Blobfish-authored benchmark family per professional-domain cluster on
 open-source benchmark domain on the hub has an executable, oracle-proven
 Blobfish counterpart. The cluster map and family plan live in
 [`benchmark/reports/harbor-hub-coverage.json`](../reports/harbor-hub-coverage.json)
-(`hubbench` block): thirteen families, eight tasks minimum each. Eleven families
-and 88 tasks are currently released and qualified.
+(`hubbench` block): thirteen families, eight tasks minimum each. All thirteen
+families and 104 tasks are currently released and qualified.
 
 | Cluster | Family | Status |
 |---|---|---|
@@ -14,7 +14,7 @@ and 88 tasks are currently released and qualified.
 | terminal-operations | **hostops** | **released here — 8/8 reasoning-chain qualified** |
 | data-engineering-analytics | **datadesk** | **released here — 8/8 reasoning-chain qualified** |
 | reasoning-knowledge-qa | **researchdesk** | **released here — 8/8 reasoning-chain qualified** |
-| computer-use-gui | deskops | planned |
+| computer-use-gui | **deskops** | **released here — 8/8 reasoning-chain qualified** |
 | web-product-design | **webstudio** | **released here — 8/8 reasoning-chain qualified** |
 | policy-compliance-instruction-following | **policydesk** | **released here — 8/8 reasoning-chain qualified** |
 | it-operations-observability | **itsmdesk** | **released here — 8/8 reasoning-chain qualified** |
@@ -291,6 +291,32 @@ python3 benchmark/hubbench/chain_adapter.py --family researchdesk --write
 python3 benchmark/hubbench/qualify.py --family researchdesk --write
 ```
 
+## DeskOps family (computer-use-gui)
+
+DeskOps is the clean-room executable counterpart for the selected computer-use
+benchmark rows. It replaces fragile pixel coordinates with the underlying
+stateful office systems an employee is actually operating: mail, calendar and
+free/busy, people directory, versioned documents, versioned spreadsheets,
+shared drive, venue booking, corporate travel, expense controls, approvals,
+chat, and unsent stakeholder drafts. Its 49 provider tools plus the two
+benchmark controls are exposed through the same website, REST, terminal CLI,
+and stdio/HTTP MCP surfaces over one 26-table SQLite world.
+
+The eight offsite-operations tasks contain 35–37 visible assets each across at
+least seven native formats, 26 or more required provider reads spanning at
+least ten systems, 71–74 deterministic criteria, and 27–30 graded answer
+fields. Their only allowed operational mutation is one scoped calendar move,
+venue hold, travel-change request, or budget adjustment, followed by a native
+provider readback and one unsent stakeholder draft. Protected attendee
+conflicts, blacked-out venue weeks, non-changeable fares, and budget ceilings
+are enforced by the world rather than described only in prose.
+
+Committed evidence: `reports/reasoning-chain/deskops.json` measures 8/8 tasks
+at chain depth 8 with H1–H13 present on every task;
+`reports/deskops-qualification.json` records 8/8 strict oracle passes at 100,
+byte-identical deterministic replay, 16/16 detected mutation omissions, and
+zero false accepts across all ten invalid-solution policies.
+
 ## Run a task
 
 Everything is local Python 3.12 stdlib; no Docker, no API keys, no network.
@@ -388,7 +414,7 @@ fail-closed (freeze → Docker gate → tasks → dataset → registry round-tri
 receipt → site data). Publish order by hand (from a frozen copy under a dedicated operator
 directory, never a rebuilding tree):
 `harbor run -p <tasks> -a oracle` gate → `harbor publish tasks/* --public -t v<version>`
-→ `yes | harbor publish <dataset.toml dir> --public --no-tasks -t v<version>` (the
+→ `printf 'y\n' | harbor publish <dataset.toml dir> --public --no-tasks -t v<version>` (the
 dataset publish prompts for confirmation) → registry round-trip
 `harbor run -d blobfishai/hubbench@v<version> -a oracle -i blobfishai/hubbench-<family>-NNN` →
 `hf upload-large-folder SamuelChien821/hubbench <frozen>/huggingface --repo-type dataset`
@@ -416,6 +442,7 @@ committed derivatives must then be regenerated in the same PR, or the suites go 
 ```bash
 python3 benchmark/hubbench/build_distribution.py            # release/ (byte-stable; tests/test_distribution.py)
 python3 benchmark/harbor_hub_coverage.py --write            # reports/harbor-hub-coverage.json released counts
+python3 benchmark/hf_dataset_census.py --write              # reports/hf-dataset-census.json released counts
 python3 benchmark/build_hubbench_site_data.py               # website hubbench-data.json
 python3 benchmark/hubbench/site_data.py                     # website hubbench-explorer-data.json
 python3 -m pytest benchmark/hubbench benchmark/tests/test_harbor_hub_census.py -q

@@ -1,6 +1,6 @@
 # hubbench-repodesk-008 — Replace the flagged storefront gate results before Monday's changes
 
-HubBench 1.2.0 · family **RepoDesk** (`repodesk`, cluster `software-engineering`) · decision mode `quantity` · role `release_engineering_coordinator` · as of 2026-05-04.
+HubBench 1.3.0 · family **RepoDesk** (`repodesk`, cluster `software-engineering`) · decision mode `quantity` · role `release_engineering_coordinator` · as of 2026-05-04.
 
 Release-engineering decisions around a regression fix against a GitHub-shaped repository, a Jira-shaped issue tracker, a CI evidence register with flaky-test and runner-pool state, a deploy pipeline with release lanes, freeze windows, change records, and feature flags, customer cutover commitments, external certification partners, reviewer availability, and approval records.
 
