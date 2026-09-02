@@ -367,7 +367,9 @@ with a committed `families/<slug>/release/`:
   measured qualification and chain-audit numbers, `data/tasks.jsonl` (public
   records: instruction, tools, evidence list, graded answer FIELD NAMES — no gold
   values), `assets/`, `contracts/tools.json`, `verifiers/` (sealed contracts,
-  published like ERPBench), `ANCHORS.md`, `LICENSE`, `trajectories/`.
+  published like ERPBench), `ANCHORS.md`, `LICENSE`, and one strict,
+  Docker-gated reference-trajectory sample per family under `trajectories/`
+  (explicitly excluded from leaderboard scoring).
 - `reports/release.json` — the aggregate receipt (families, tasks, tools,
   criteria, qualification and chain totals, `harbor_root_sha256`,
   `huggingface_manifest_sha256`, input digests) plus verbatim copies of every
@@ -381,7 +383,7 @@ and — for one task per family — starts the world service locally, runs the
 packaged oracle through MCP/REST/CLI/submit, and grades it with the packaged
 verifier to reward 1.0 (the private channel refuses requests without the token).
 
-Publish order (from a frozen copy under `$HOME`, never a rebuilding tree):
+Publish order (from a frozen copy under a dedicated operator directory, never a rebuilding tree):
 `harbor run -p <tasks> -a oracle` gate → `harbor publish tasks/* --public -t v<version>`
 → `yes | harbor publish <dataset.toml dir> --public --no-tasks -t v<version>` (the
 dataset publish prompts for confirmation) → registry round-trip

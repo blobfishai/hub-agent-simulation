@@ -162,6 +162,32 @@ def test_release_receipt_reconciles_with_family_reports():
     assert receipt["huggingface_manifest_sha256"] == manifest
 
 
+def test_harbor_dataset_manifest_is_already_in_publisher_canonical_form():
+    manifest = (HARBOR / "dataset.toml").read_text(encoding="utf-8")
+    assert 'keywords = [ "hubbench",' in manifest
+    assert ',]\n[[dataset.authors]]' in manifest
+    assert 'name = "Blobfish AI"\n\n\n[[tasks]]' in manifest
+    assert manifest.endswith("\n\n")
+
+
+def test_hugging_face_payload_has_strict_reference_samples_for_every_family():
+    index = json.loads((RELEASE / "huggingface" / "trajectories" / "index.json").read_text(encoding="utf-8"))
+    assert index["schema_version"] == "hubbench.trajectory-index.v1"
+    assert index["version"] == _release_receipt()["version"]
+    samples = index["reference"]
+    assert {sample["family"] for sample in samples} == set(dist.discover_families())
+    for sample in samples:
+        path = RELEASE / "huggingface" / "trajectories" / sample["path"]
+        public = json.loads(path.read_text(encoding="utf-8"))
+        assert public["task_id"] == sample["task_id"]
+        assert public["strict_pass"] is True
+        assert public["reward"] == 1.0
+        assert public["score"] == 100.0
+        assert public["sample_only"] is True
+        assert public["leaderboard_eligible"] is False
+        assert sample["sha256"] == dist.sha256_json(public)
+
+
 def _free_port() -> int:
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))

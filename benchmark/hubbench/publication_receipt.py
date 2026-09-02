@@ -54,6 +54,37 @@ def rewards(job_dir: Path) -> dict[str, float]:
     return out
 
 
+def validated_job(job_dir: Path) -> tuple[dict[str, float], dict[str, Any]]:
+    """Return rewards and Harbor stats only for a finished, zero-error, zero-retry job."""
+
+    result_path = job_dir / "result.json"
+    if not result_path.is_file():
+        raise ValueError(f"{job_dir}: missing Harbor result.json")
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    if not result.get("finished_at"):
+        raise ValueError(f"{job_dir.name}: Harbor job is not finished")
+    stats = result.get("stats") or {}
+    total = int(result.get("n_total_trials", -1))
+    required_zero = (
+        "n_errored_trials",
+        "n_running_trials",
+        "n_pending_trials",
+        "n_cancelled_trials",
+        "n_retries",
+    )
+    nonzero = {key: stats.get(key) for key in required_zero if stats.get(key) != 0}
+    if nonzero:
+        raise ValueError(f"{job_dir.name}: Harbor job is not clean: {nonzero}")
+    if total < 1 or stats.get("n_completed_trials") != total:
+        raise ValueError(
+            f"{job_dir.name}: completed {stats.get('n_completed_trials')} of {total} scheduled trials"
+        )
+    job_rewards = rewards(job_dir)
+    if len(job_rewards) != total:
+        raise ValueError(f"{job_dir.name}: found {len(job_rewards)} rewards for {total} scheduled trials")
+    return job_rewards, stats
+
+
 def hf_siblings(api: dict[str, Any]) -> list[dict[str, Any]]:
     """Map the raw REST listing (camelCase) onto the attribute names the receipt helper reads."""
     return [
@@ -71,16 +102,25 @@ def build_receipt(args: argparse.Namespace) -> dict[str, Any]:
     receipt = json.loads((args.frozen.parent / "reports" / "release.json").read_text(encoding="utf-8")) if (args.frozen.parent / "reports" / "release.json").is_file() else None
 
     gate: dict[str, float] = {}
+    gate_stats: list[dict[str, Any]] = []
     for job in args.gate_job:
-        gate.update(rewards(job))
+        job_rewards, stats = validated_job(job)
+        overlap = sorted(set(gate) & set(job_rewards))
+        if overlap:
+            raise ValueError(f"gate tasks appear in more than one job: {overlap}")
+        gate.update(job_rewards)
+        gate_stats.append(stats)
     missing = sorted(set(published_tasks) - set(gate))
     if missing:
         raise ValueError(f"published tasks without a Docker oracle gate trial: {missing}")
+    unknown_gate = sorted(set(gate) - set(published_tasks))
+    if unknown_gate:
+        raise ValueError(f"gate jobs contain tasks outside the frozen dataset: {unknown_gate}")
     failed = sorted(task for task in published_tasks if gate[task] != 1.0)
     if failed:
         raise ValueError(f"gate trials below reward 1.0: {failed}")
 
-    round_trip = rewards(args.roundtrip_job)
+    round_trip, round_trip_stats = validated_job(args.roundtrip_job)
     if any(value != 1.0 for value in round_trip.values()):
         raise ValueError(f"registry round-trip below 1.0: {round_trip}")
     unknown = sorted(set(round_trip) - set(published_tasks))
@@ -114,12 +154,17 @@ def build_receipt(args: argparse.Namespace) -> dict[str, Any]:
             "environment": "docker (Colima)",
             "trials": len(published_tasks),
             "rewardOne": sum(1 for task in published_tasks if gate[task] == 1.0),
-            "errors": 0,
+            "errors": sum(int(stats["n_errored_trials"]) for stats in gate_stats),
+            "retries": sum(int(stats["n_retries"]) for stats in gate_stats),
+            "cancelled": sum(int(stats["n_cancelled_trials"]) for stats in gate_stats),
         },
         "registryRoundTrip": {
             "job": args.roundtrip_job.name,
             "tasks": [f"{name.split('/')[0]}/{task}" for task in sorted(round_trip)],
             "rewards": [round_trip[task] for task in sorted(round_trip)],
+            "errors": int(round_trip_stats["n_errored_trials"]),
+            "retries": int(round_trip_stats["n_retries"]),
+            "cancelled": int(round_trip_stats["n_cancelled_trials"]),
         },
         "huggingFaceDataset": HF_DATASET,
         "huggingFaceUrl": f"https://huggingface.co/datasets/{HF_DATASET}",

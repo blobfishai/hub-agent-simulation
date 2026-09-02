@@ -47,7 +47,7 @@ HARBOR_DATASET = f"{HARBOR_ORG}/hubbench"
 HARBOR_URL = f"https://hub.harborframework.com/datasets/{HARBOR_DATASET}/latest"
 HARBOR_IMAGE = "python:3.12-slim@sha256:7a8b475003c4fe15a2cd4e55e5cfc2f3560bdc9333d624f24cdd6d4340fd7a17"
 PAGE_URL = "https://blobfish.ai/benchmarks/hubbench"
-SOURCE_URL = "https://github.com/blobfishai/hubbench"
+SOURCE_URL = "https://github.com/blobfishai/hub-agent-simulation"
 HF_DATASET = "SamuelChien821/hubbench"
 HF_URL = f"https://huggingface.co/datasets/{HF_DATASET}"
 WORLD_HOST = "world"
@@ -255,6 +255,12 @@ def _toml_string(value: str) -> str:
 
 def _toml_list(values: list[str]) -> str:
     return "[" + ", ".join(_toml_string(value) for value in values) + "]"
+
+
+def _harbor_dataset_toml_list(values: list[str]) -> str:
+    """Match Harbor 0.21's mandatory ``DatasetManifest.to_toml`` serialization."""
+
+    return "[ " + ", ".join(_toml_string(value) for value in values) + ",]"
 
 
 def _sorted_value(value: Any) -> Any:
@@ -1089,13 +1095,15 @@ def write_harbor_dataset(output: Path, families: list[FamilyInputs], version: st
         f"name = {_toml_string(HARBOR_DATASET)}",
         f"version = {_toml_string(version)}",
         f"description = {_toml_string(f'{BENCHMARK}: one oracle-proven, deterministically graded Blobfish benchmark family per Harbor Hub professional-domain cluster — {len(tasks)} stateful multi-system employee-decision tasks over isolated SQLite worlds ({METRIC}, no LLM judge)')}",
-        f"keywords = {_toml_list(['hubbench', 'agents', 'mcp', 'stateful', 'multi-system', 'deterministic', 'executable-verifier', *sorted(inputs.family.cluster for inputs in families)])}",
+        f"keywords = {_harbor_dataset_toml_list(['hubbench', 'agents', 'mcp', 'stateful', 'multi-system', 'deterministic', 'executable-verifier', *sorted(inputs.family.cluster for inputs in families)])}",
         "[[dataset.authors]]",
         'name = "Blobfish AI"',
+        "",
         "",
     ]
     for row in tasks:
         lines.extend(["[[tasks]]", f"name = {_toml_string(row['name'])}", f"digest = {_toml_string(row['digest'])}", ""])
+    lines.append("")
     _write_text(harbor / "dataset.toml", "\n".join(lines))
     parsed = tomllib.loads((harbor / "dataset.toml").read_text(encoding="utf-8"))
     if parsed["dataset"]["name"] != HARBOR_DATASET or len(parsed["tasks"]) != len(tasks):
@@ -1179,7 +1187,13 @@ The engine (world, stateful surfaces, deterministic verifier, negative controls)
 """
 
 
-def _hf_card(version: str, families: list[FamilyInputs], totals: dict[str, Any], harbor: dict[str, Any]) -> str:
+def _hf_card(
+    version: str,
+    families: list[FamilyInputs],
+    totals: dict[str, Any],
+    harbor: dict[str, Any],
+    trajectories: dict[str, Any],
+) -> str:
     family_rows = "\n".join(
         f"| {inputs.family.name} (`{inputs.slug}`) | {inputs.family.cluster} | {len(inputs.tasks)} | {len(inputs.family.servers) + 1} | {inputs.manifest['tool_count']} "
         f"| {_span(_atomic_criteria(task) for task in inputs.tasks)} | {_span(len(task['expected']['answer']) for task in inputs.tasks)} "
@@ -1275,7 +1289,7 @@ Harbor dataset: `{HARBOR_DATASET}` ({len(harbor['tasks'])} task packages `{HARBO
 - `contracts/tools.json` — the provider-shaped MCP tool contracts per family.
 - `verifiers/<task>.json` — the sealed verifier contracts (expected answer, assertions, calculations, required investigations, readbacks). Keep them away from the agent.
 - `ANCHORS.md` — public Harbor Hub anchors and the clean-room boundary per family.
-- `trajectories/` — `index.json` plus one JSON file per trajectory: `reference/` (the packaged oracle replayed through MCP/REST/CLI/submit inside Harbor under Docker, graded by the packaged verifier) and `model/<run>/` (imported model runs with the durable world call trace, HubScore verdict, and token/cost receipt; `run.json` states whether the run is ranked or a disclosed partial run — qualification controls are never ranked as models).
+- `trajectories/` — `index.json`, {trajectories['reference']} Docker-gated oracle traces under `reference/`, and {trajectories['model_runs']} imported model run(s) under `model/<run>/`. Oracle traces disclose valid solutions and are excluded from rankings; every model `run.json` states whether the run is ranked or a disclosed partial run.
 
 ## Synthetic-data notice
 
@@ -1295,16 +1309,39 @@ def _hops(chain: dict[str, Any]) -> str:
     return f"{min(coverage.values())}–{max(coverage.values())}/{chain['measuredTasks']}" if min(coverage.values()) != max(coverage.values()) else f"{max(coverage.values())}/{chain['measuredTasks']} on every hop"
 
 
-def write_hf_trajectories(target: Path, version: str) -> dict[str, Any]:
+def write_hf_trajectories(target: Path, version: str, families: list[FamilyInputs]) -> dict[str, Any]:
     """Publish the committed reference and model trajectories (``reports/reference-trajectories``, ``model_runs``)."""
 
     reference_dir = HUBBENCH_ROOT / "reports" / "reference-trajectories"
     model_dir = HUBBENCH_ROOT / "model_runs"
+    family_by_task = {
+        task["task_id"]: inputs.slug
+        for inputs in families
+        for task in inputs.tasks
+    }
     index: dict[str, Any] = {"schema_version": "hubbench.trajectory-index.v1", "version": version, "reference": [], "model_runs": []}
     for path in (sorted(reference_dir.glob("*.json")) if reference_dir.is_dir() else []):
         record = json.loads(path.read_text(encoding="utf-8"))
-        _write_json(target / "reference" / path.name, record)
-        index["reference"].append({"task_id": record["task_id"], "harbor_task": record["harbor_task"], "job": record["job"], "score": record["score"], "strict_pass": record["strict_pass"], "tool_calls": len(record["trace"]), "path": f"reference/{path.name}"})
+        task_id = record.get("task_id")
+        if record.get("schema_version") != "hubbench.reference-trajectory.v1" or task_id not in family_by_task:
+            raise ValueError(f"{path}: unsupported or unknown reference trajectory")
+        if record.get("harbor_task") != f"hubbench-{task_id}":
+            raise ValueError(f"{path}: reference trajectory identity mismatch")
+        if record.get("strict_pass") is not True or float(record.get("reward", 0.0)) != 1.0 or float(record.get("score", 0.0)) != 100.0:
+            raise ValueError(f"{path}: reference trajectory is not a strict reward-1 pass")
+        public = {
+            **record,
+            "benchmark_version": version,
+            "family": family_by_task[task_id],
+            "sample_only": True,
+            "leaderboard_eligible": False,
+            "disclosure": "Oracle sample: contains one valid solution and is excluded from ranked model evaluation.",
+        }
+        _write_json(target / "reference" / path.name, public)
+        index["reference"].append({"task_id": task_id, "family": family_by_task[task_id], "harbor_task": record["harbor_task"], "job": record["job"], "trial": record["trial"], "score": record["score"], "reward": record["reward"], "strict_pass": record["strict_pass"], "sample_only": True, "leaderboard_eligible": False, "tool_calls": len(record["trace"]), "sha256": sha256_json(public), "path": f"reference/{path.name}"})
+    missing_families = sorted({inputs.slug for inputs in families} - {row["family"] for row in index["reference"]})
+    if missing_families:
+        raise ValueError(f"missing Docker-gated reference trajectories for: {', '.join(missing_families)}")
     run_dirs = sorted(path for path in model_dir.iterdir() if (path / "run.json").is_file()) if model_dir.is_dir() else []
     for run_dir in run_dirs:
         run = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
@@ -1365,8 +1402,8 @@ def write_huggingface(output: Path, families: list[FamilyInputs], harbor: dict[s
         hf / "LICENSE",
         f"{BENCHMARK} task data, evidence files, and contracts: Creative Commons Attribution 4.0 International (CC BY 4.0)\nhttps://creativecommons.org/licenses/by/4.0/\n\nThe HubBench engine and task-package runtime are Apache-2.0 (Copyright (c) 2026 BlobfishAI).\n",
     )
-    trajectories = write_hf_trajectories(hf / "trajectories", version)
-    _write_text(hf / "README.md", _hf_card(version, families, totals, harbor))
+    trajectories = write_hf_trajectories(hf / "trajectories", version, families)
+    _write_text(hf / "README.md", _hf_card(version, families, totals, harbor, trajectories))
     manifest_sha256, files, size = payload_manifest(hf)
     return {"dataset": HF_DATASET, "payload_manifest_sha256": manifest_sha256, "files": files, "bytes": size, "trajectories": trajectories}
 
@@ -1578,6 +1615,7 @@ def build_distribution(output: Path | None = None, families: list[str] | None = 
             "payload_manifest_sha256": huggingface["payload_manifest_sha256"],
             "files": huggingface["files"],
             "bytes": huggingface["bytes"],
+            "trajectories": huggingface["trajectories"],
         },
         "families": [_family_report(item, harbor["tasks"]) for item in inputs],
         "totals": totals,

@@ -2,7 +2,7 @@
 """Build (or rebuild) the aggregate HubBench distribution tree.
 
     python3 benchmark/hubbench/build_distribution.py --output benchmark/hubbench/release
-    python3 benchmark/hubbench/build_distribution.py --output /tmp/hubbench-release --family clinicops --version 1.0.0
+    python3 benchmark/hubbench/build_distribution.py --output /tmp/hubbench-release --family clinicops --version 1.1.0
 
 Emits the Harbor dataset (``harbor/``), the Hugging Face payload
 (``huggingface/``), public task records (``tasks/``), and ``reports/release.json``

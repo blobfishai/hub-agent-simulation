@@ -42,9 +42,10 @@ def test_publication_receipt_describes_the_published_release():
     assert re.fullmatch(r"[0-9a-f]{7,40}", publication["sourceRepositoryCommit"])
     gate = publication["harborGate"]
     assert gate["trials"] == gate["rewardOne"] == publication["harborTaskCount"]
-    assert gate["errors"] == 0
+    assert gate["errors"] == gate["retries"] == gate["cancelled"] == 0
     round_trip = publication["registryRoundTrip"]
     assert round_trip["rewards"] and all(reward == 1.0 for reward in round_trip["rewards"])
+    assert round_trip["errors"] == round_trip["retries"] == round_trip["cancelled"] == 0
     assert set(round_trip["tasks"]) <= set(publication["publishedTaskDigests"])
 
 

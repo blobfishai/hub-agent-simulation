@@ -23,11 +23,13 @@ stakeholder draft → the exact graded answer with every intermediate derivation
 
 ## Releases
 
-**v1.0.0 (published 2026-09-01)** — 5 families / 40 tasks on Harbor and Hugging Face
-(clinicops, hostops, datadesk, researchdesk, scilab). **v1.1.0 tree (this repository)** —
-7 families / 56 tasks, 269 tools, 1,767 agent-visible evidence files, 3,649
-deterministic criteria; the compose healthcheck now probes the world service's private
-`/health` endpoint instead of the graded task endpoint.
+**v1.1.0 (published 2026-09-01)** — 7 families / 56 tasks on Harbor and Hugging Face,
+269 tools, 1,767 agent-visible evidence files, and 3,649 deterministic criteria.
+Every task passed the exact Docker package gate at reward 1.0 with zero errors or
+retries; the Hugging Face payload publishes all 56 oracle traces plus five disclosed
+model-pilot traces. The compose healthcheck probes the world service's private
+`/health` endpoint instead of the graded task endpoint. **v1.0.0** remains the
+immutable five-family / 40-task predecessor.
 
 | Family | Hub cluster | Tasks | MCP servers | Tools |
 |---|---|---|---|---|
@@ -56,7 +58,7 @@ Harbor and Hugging Face and updates `benchmark/hubbench/reports/publication.json
 - **Website** — https://blobfish.ai/benchmarks/hubbench (leaderboard, task
   browser, asset room, environment and tool contract, trajectories, methodology)
 - **Harbor** — https://hub.harborframework.com/datasets/blobfishai/hubbench
-  (`harbor run -d blobfishai/hubbench@v1.0.0 -a <agent>`; task packages
+  (`harbor run -d blobfishai/hubbench@v1.1.0 -a <agent>`; task packages
   `blobfishai/hubbench-<family>-NNN`)
 - **Hugging Face** — https://huggingface.co/datasets/SamuelChien821/hubbench
   (dataset card, public task records, evidence files, tool contracts, sealed
@@ -87,7 +89,7 @@ python3 benchmark/hubbench/chain_adapter.py --family scilab --write
 python3 benchmark/hubbench/build_distribution.py
 
 # Run the packaged oracle against a published task from the registry (Docker)
-harbor run -d blobfishai/hubbench@v1.0.0 -a oracle
+harbor run -d blobfishai/hubbench@v1.1.0 -a oracle
 ```
 
 Python 3.12 standard library only — no third-party runtime dependency; `pytest`
@@ -98,8 +100,8 @@ for the test suite.
 `benchmark/hubbench/model_runs/` holds imported Harbor model jobs (durable world
 call trace, HubScore verdict, token and cost receipt per trial). A run is ranked
 only when it completed every published task once with zero errors and retries;
-the stratified GPT-5.6 Luna pilot (Codex 0.151.0, max reasoning; one task per
-published family) is a disclosed partial run: 5/5 completed, 0 errors, HubScore
+the stratified GPT-5.6 Luna pilot (Codex 0.151.0, max reasoning; five tasks spanning
+the v1.0.0 families) is a disclosed partial run: 5/5 completed, 0 errors, HubScore
 52.35–74.41 (mean 66.22), no strict passes, about $0.07 per task — trajectories
 only, never ranked.
 

@@ -85,7 +85,7 @@ Totals: 56/56 tasks pass; every one of the 13 hop classes is covered by all 56 t
 harbor run -d blobfishai/hubbench@v1.1.0 -a <agent> -m <provider/model>
 ```
 
-Harbor dataset: `blobfishai/hubbench` (56 task packages `blobfishai/hubbench-<family>-NNN`, root digest `2183793bdcc8f820933c32c65f7e853afdb9bb71ab10a19e6cbd29e2e1ebff3f`). Each package is self-contained on a digest-pinned `python:3.12-slim` base: an agent container (non-root `agent`, `tool` on PATH, evidence under `/workspace/evidence`) and a `world` service on port 8765. The sealed contract, expected answer, and oracle policy exist only in `tests/` (root verifier) and `solution/` (oracle replayed through the HTTP surfaces).
+Harbor dataset: `blobfishai/hubbench` (56 task packages `blobfishai/hubbench-<family>-NNN`, root digest `86f5805930e7674b6b32ce39fe07fe188fc8f24b6a30137c1a67d1d3a893e2af`). Each package is self-contained on a digest-pinned `python:3.12-slim` base: an agent container (non-root `agent`, `tool` on PATH, evidence under `/workspace/evidence`) and a `world` service on port 8765. The sealed contract, expected answer, and oracle policy exist only in `tests/` (root verifier) and `solution/` (oracle replayed through the HTTP surfaces).
 
 ## Layout
 
@@ -94,10 +94,10 @@ Harbor dataset: `blobfishai/hubbench` (56 task packages `blobfishai/hubbench-<fa
 - `contracts/tools.json` — the provider-shaped MCP tool contracts per family.
 - `verifiers/<task>.json` — the sealed verifier contracts (expected answer, assertions, calculations, required investigations, readbacks). Keep them away from the agent.
 - `ANCHORS.md` — public Harbor Hub anchors and the clean-room boundary per family.
-- `trajectories/` — `index.json` plus one JSON file per trajectory: `reference/` (the packaged oracle replayed through MCP/REST/CLI/submit inside Harbor under Docker, graded by the packaged verifier) and `model/<run>/` (imported model runs with the durable world call trace, HubScore verdict, and token/cost receipt; `run.json` states whether the run is ranked or a disclosed partial run — qualification controls are never ranked as models).
+- `trajectories/` — `index.json`, 56 Docker-gated oracle traces under `reference/`, and 1 imported model run(s) under `model/<run>/`. Oracle traces disclose valid solutions and are excluded from rankings; every model `run.json` states whether the run is ranked or a disclosed partial run.
 
 ## Synthetic-data notice
 
 All organisations, people, patients, employees, suppliers, records, messages, and values are synthetic and clean-room authored. Nothing was copied from any upstream benchmark; see `ANCHORS.md`. This dataset is for agent evaluation and research; it is not clinical, operational, financial, or legal advice.
 
-Page and leaderboard: https://blobfish.ai/benchmarks/hubbench · Source: https://github.com/blobfishai/hubbench · Harbor: https://hub.harborframework.com/datasets/blobfishai/hubbench/latest
+Page and leaderboard: https://blobfish.ai/benchmarks/hubbench · Source: https://github.com/blobfishai/hub-agent-simulation · Harbor: https://hub.harborframework.com/datasets/blobfishai/hubbench/latest
