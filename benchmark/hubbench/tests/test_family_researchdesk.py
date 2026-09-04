@@ -259,7 +259,7 @@ def test_mcp_surface_exposes_11_provider_servers_and_hides_verifier(
         )
         assert init["result"]["serverInfo"] == {
             "name": "hubbench-researchdesk",
-            "version": "1.0.0",
+            "version": research_family.version,
         }
         listing = handle_request(
             world, {"jsonrpc": "2.0", "id": 2, "method": "tools/list"}

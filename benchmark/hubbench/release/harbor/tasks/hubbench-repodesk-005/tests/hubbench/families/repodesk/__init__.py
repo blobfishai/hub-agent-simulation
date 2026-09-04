@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='repodesk',
     name='RepoDesk',
-    version='1.0.0',
+    version='1.0.1',
     cluster='software-engineering',
     description='Release-engineering decisions around a regression fix against a GitHub-shaped repository, a Jira-shaped issue tracker, a CI evidence register with flaky-test and runner-pool state, a deploy pipeline with release lanes, freeze windows, change records, and feature flags, customer cutover commitments, external certification partners, reviewer availability, and approval records.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

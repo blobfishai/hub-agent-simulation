@@ -151,7 +151,7 @@
   },
   "as_of": "2026-05-11",
   "benchmark": "HubBench",
-  "benchmark_version": "1.0.0",
+  "benchmark_version": "1.0.1",
   "decision_model": {
     "binding_constraint": "one continuous review session on a tier-1-capable approver without displacing protected windows; review hours already reserved or held as the protected quarter-close freeze = 21 REVIEW_HOUR; uncovered scope = 3 REVIEW_HOUR",
     "calculations": [
@@ -431,7 +431,8 @@
   "evaluation": {
     "llm_judge_calls": 0,
     "metric": "HubScore",
-    "strict_pass": "every rubric milestone passes"
+    "strict_pass": "every rubric milestone passes",
+    "text_contract_policy": "hubbench.text-facts.v1"
   },
   "expected": {
     "answer": {
@@ -500,7 +501,7 @@
     ],
     "assertions": [
       {
-        "description": "Required R-53001 to reach business outcome 'Cohort review booked' through reviews.sessions.create with exact provider-critical values request_id='R-53001', resource_id='RES-GRID-CFG', approver_id='APR-2', start_time='2026-05-14T09:00:00', end_time='2026-05-14T16:00:00', description='grid-config change cohort review (AGR-0003)'. The audited change binds selected option review_first_full_free_day, approval AP-AG-0103, and constraint one continuous review session on a tier-1-capable approver without displacing protected windows; no other record satisfies this state criterion.",
+        "description": "Persist REV-8202 through reviews.sessions.create with every declared structured provider value exact. The description must be nonempty text; its sentence wording need not copy the reference. Target, resource, time, quantity, status and authority checks remain unchanged.",
         "id": "mutation_01",
         "milestone_id": "state.primary",
         "payload_allowed_argument_paths": [
@@ -511,10 +512,12 @@
           "end_time",
           "description"
         ],
+        "payload_argument_text": {
+          "description": []
+        },
         "payload_contains": {
           "arguments": {
             "approver_id": "APR-2",
-            "description": "grid-config change cohort review (AGR-0003)",
             "end_time": "2026-05-14T16:00:00",
             "request_id": "R-53001",
             "resource_id": "RES-GRID-CFG",
@@ -582,9 +585,15 @@
         }
       },
       {
-        "description": "Created — but did not send — the stakeholder draft carrying review_first_full_free_day, the 2026-05-14 outcome, the binding constraint, and the AGR-0003 business reference.",
+        "description": "Create, but do not send, the stakeholder draft for the exact requested recipient. Its body must contain the persisted record REV-8202 and the supported facts 2026-05-14. Preserve the existing business-reference check; internal option tokens are not required in prose.",
         "id": "mutation_02",
         "milestone_id": "state.collaboration",
+        "payload_argument_text": {
+          "body": [
+            "REV-8202",
+            "2026-05-14"
+          ]
+        },
         "payload_contains": {
           "arguments": {
             "recipient": "owen.pryce@meridian.example"
@@ -597,10 +606,6 @@
             "grid-config",
             "R-53001"
           ]
-        ],
-        "payload_text_contains": [
-          "review_first_full_free_day",
-          "2026-05-14"
         ],
         "table": "mutations",
         "values": {
@@ -2618,7 +2623,7 @@
       "criterion_ids": [
         "mutation_02"
       ],
-      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "description": "Create, but do not send, the stakeholder draft for the exact requested recipient. Its body must contain the persisted record REV-8202 and the supported facts 2026-05-14. Preserve the existing business-reference check; internal option tokens are not required in prose.",
       "id": "state.collaboration",
       "weight": 6.0
     },
@@ -2705,6 +2710,11 @@
   },
   "world": {
     "id": "meridian-access-governance-v1",
+    "interaction_contract": {
+      "investigation_evidence": "Retrieve the applicable source records, policy, approval, and evidence through the connected provider tools before the first state change. The tool CLI, MCP, REST, and web tool forms share one audited trace. Reading /workspace/evidence directly is a convenience, but filesystem reads are not recorded and do not satisfy required tool investigations.",
+      "stakeholder_draft": "Leave an unsent draft for the requested recipient. Its body must name the persisted primary record and supported outcome date; research drafts must also identify the current definition. Preserve the business reference and explain the decision and constraints. An internal option identifier is required only in the structured answer, not in prose.",
+      "text_matching": "Required text facts use case-insensitive, punctuation-normalized whole tokens. Dates use ISO YYYY-MM-DD. These are structural checks, not a semantic assessment of arbitrary prose or contradictions."
+    },
     "name": "Meridian Grid Utilities — Access Governance",
     "organization_id": "ORG-MERIDIAN",
     "primary_site": "IAM-DESK",

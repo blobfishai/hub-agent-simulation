@@ -33,9 +33,11 @@ size_categories:
 - n<1K
 ---
 
-# HubBench 1.3.0
+# HubBench 1.4.0
 
 **One Blobfish-authored, oracle-proven benchmark family per Harbor Hub professional-domain cluster.** Every task is an employee decision worked over a dependent chain of evidence — never a lookup — against mock stateful tools over an isolated SQLite world. The agent reaches the world only through its public surfaces (MCP over streamable HTTP, a terminal `tool` CLI, a REST API, and a web console); a deterministic verifier (**HubScore**) grades the finished world from executable checks only. Zero LLM-judge calls.
+
+Shared domain families are not individual adaptations of every upstream dataset. Source-specific coverage is tracked separately in the [source catalog](https://blobfish.ai/datasets).
 
 Released families: ClinicOps (healthcare), DataDesk (data-engineering-analytics), DesignOps (manufacturing-engineering-design), DeskOps (computer-use-gui), HostOps (terminal-operations), ITSMDesk (it-operations-observability), PolicyDesk (policy-compliance-instruction-following), RepoDesk (software-engineering), ResearchDesk (reasoning-knowledge-qa), SciLab (scientific-research), SecOps (security), WebStudio (web-product-design), Workplace (customer-workplace-agents). 104 tasks, 554 provider-shaped tools across 161 MCP servers, 3450 agent-visible evidence files, 7001 atomic criteria.
 
@@ -61,6 +63,8 @@ Released families: ClinicOps (healthcare), DataDesk (data-engineering-analytics)
 
 HubScore is contract-driven and deterministic: required investigations before the first write, provider payload assertions on the persisted state change, post-write readbacks, write containment, exact graded answer fields (every intermediate value of the decision chain), and semantic milestone aggregation into 14 weighted milestones summing to 100. Reward = HubScore / 100; a task is a strict pass only when every milestone passes. Exact call order is not graded.
 
+Text checks are structural, not an assessment of arbitrary semantic equivalence. Direct filesystem evidence reads are not audited; required provider-tool evidence must appear in the call trace. All four tool surfaces share that trace.
+
 ## Qualification (computed from the committed reports)
 
 | Family | Oracle strict passes (mean HubScore) | Deterministic replays | Negative-control executions | False accepts | Mutation omissions detected | Executions |
@@ -83,7 +87,7 @@ Totals: 104/104 oracle strict passes at mean 100.0; 104/104 byte-identical repla
 
 ## Reasoning-chain audit (computed from the committed reports)
 
-Measured with the unmodified portfolio audit (`benchmark/reasoning_chain_audit.py`, hop classes H1–H13):
+Measured with the shared portfolio audit (`benchmark/reasoning_chain_audit.py`, hop classes H1–H13):
 
 | Family | Passing tasks | Chain depth | Hop coverage H1–H13 | Dependent derivations | Evidence reads before decision | Source systems | Graded answer fields |
 |---|---|---|---|---|---|---|---|
@@ -101,15 +105,15 @@ Measured with the unmodified portfolio audit (`benchmark/reasoning_chain_audit.p
 | `webstudio` | 8/8 | 8–8 | 8/8 on every hop | 23–27 | 31–31 | 12–12 | 24–28 |
 | `workplace` | 8/8 | 8–8 | 8/8 on every hop | 24–26 | 33–36 | 11–12 | 25–27 |
 
-Totals: 104/104 tasks pass; every one of the 13 hop classes is covered by all 104 tasks (3–8 per hop); dependent derivations 22–30; evidence reads before the decision 26–36.
+Totals: 104/104 tasks pass; aggregate coverage of each hop class is 99–104 of 104 tasks; dependent derivations 22–30; evidence reads before the decision 26–36.
 
 ## Run on Harbor
 
 ```bash
-harbor run -d blobfishai/hubbench@v1.3.0 -a <agent> -m <provider/model>
+harbor run -d blobfishai/hubbench@v1.4.0 -a <agent> -m <provider/model>
 ```
 
-Harbor dataset: `blobfishai/hubbench` (104 task packages `blobfishai/hubbench-<family>-NNN`, root digest `d3644e1bdfbd3bd0cb2e03fcfd9cbee416ab74956fad25ee26644811fa9cfe72`). Each package is self-contained on a digest-pinned `python:3.12-slim` base: an agent container (non-root `agent`, `tool` on PATH, evidence under `/workspace/evidence`) and a `world` service on port 8765. The sealed contract, expected answer, and oracle policy exist only in `tests/` (root verifier) and `solution/` (oracle replayed through the HTTP surfaces).
+Harbor dataset: `blobfishai/hubbench` (104 task packages `blobfishai/hubbench-<family>-NNN`, root digest `fd6b79f4e5bc88326ab90be064b369d0098908ac155c218a89a16581d2b5c6c9`). Each package is self-contained on a digest-pinned `python:3.12-slim` base: an agent container (non-root `agent`, `tool` on PATH, evidence under `/workspace/evidence`) and a `world` service on port 8765. The sealed contract, expected answer, and oracle policy exist only in `tests/` (root verifier) and `solution/` (oracle replayed through the HTTP surfaces).
 
 ## Layout
 
@@ -118,7 +122,9 @@ Harbor dataset: `blobfishai/hubbench` (104 task packages `blobfishai/hubbench-<f
 - `contracts/tools.json` — the provider-shaped MCP tool contracts per family.
 - `verifiers/<task>.json` — the sealed verifier contracts (expected answer, assertions, calculations, required investigations, readbacks). Keep them away from the agent.
 - `ANCHORS.md` — public Harbor Hub anchors and the clean-room boundary per family.
-- `trajectories/` — `index.json`, 104 Docker-gated oracle traces under `reference/`, and 1 imported model run(s) under `model/<run>/`. Oracle traces disclose valid solutions and are excluded from rankings; every model `run.json` states whether the run is ranked or a disclosed partial run.
+- `trajectories/` — `index.json`, 104 Docker-gated oracle traces under `reference/`, and 1 imported model run(s) under `model/<run>/`. Each oracle trace retains its source benchmark version; historical or unversioned traces are not evidence for the current distribution. Oracle traces are excluded from rankings; every model `run.json` states its evaluated version and whether the run is ranked or partial.
+
+Oracle trace provenance: 104 from this release; 0 historical or unversioned. This count describes included evidence, not model performance.
 
 ## Synthetic-data notice
 

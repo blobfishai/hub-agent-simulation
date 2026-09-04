@@ -17,6 +17,7 @@ from ...engine.assets import CSV, EML, JSON, MARKDOWN, PDF, XLSX, YAML, asset, e
 from ...engine.catalog import answer_checks, build_rubric_milestones, milestone_descriptions, sequence_signature
 from ...engine.decision import DecisionInputs, answer_schema, build_decision_model
 from ...engine.families import CONTEXT_TOOL, SUBMIT_TOOL
+from ...engine.grading_contracts import fact_text_contract
 from ...engine.quality_assets import quality_support_assets, quality_support_investigations, scoped_csv, scoped_markdown
 from . import tools as design_tools
 from .policy import SUPERSEDED_PROCEDURE, effective_procedure
@@ -45,7 +46,7 @@ from .specs import (
 
 BENCHMARK = "HubBench"
 FAMILY_SLUG = "designops"
-FAMILY_VERSION = "1.0.0"
+FAMILY_VERSION = "1.0.1"
 PRIMARY_KEYS = {
     "change_orders": "change_id",
     "supplier_orders": "order_id",
@@ -766,6 +767,7 @@ def build_assertions(scenario: Scenario, model: dict[str, Any]) -> list[dict[str
     ]
 
 
+@fact_text_contract
 def build_task(scenario: Scenario) -> dict[str, Any]:
     verify_numbers(scenario)
     assets = build_assets(scenario)

@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='deskops',
     name='DeskOps',
-    version='1.0.0',
+    version='1.0.1',
     cluster='computer-use-gui',
     description='Offsite-move decisions against a mailbox, a calendar with attendee free/busy, a people directory, agenda documents with revisions, a budget workbook with versions, a shared drive, a venue portal with weekly availability, quotes, and holds, a corporate travel desk with policy versions, bookings, group-ticketing confirmations, and booking changes, a budget system with lines and adjustments, and approval records.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

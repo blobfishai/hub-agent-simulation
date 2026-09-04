@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='researchdesk',
     name='ResearchDesk',
-    version='1.0.0',
+    version='1.0.1',
     cluster='reasoning-knowledge-qa',
     description='Multi-source internal research across versioned knowledge, metric definitions, source provenance, ranked search, approvals, review capacity, published claims, and evidence packets.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

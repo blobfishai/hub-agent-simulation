@@ -1,12 +1,20 @@
 # HubBench
 
-One Blobfish-authored benchmark family per professional-domain cluster on
-[hub.harborframework.com](https://hub.harborframework.com/datasets), so every
-open-source benchmark domain on the hub has an executable, oracle-proven
-Blobfish counterpart. The cluster map and family plan live in
+Blobfish-authored worlds for thirteen professional-domain clusters inspired by
+[hub.harborframework.com](https://hub.harborframework.com/datasets).
+Shared domain families are not individual adaptations of every source dataset;
+that work is tracked separately in the [source catalog](https://blobfish.ai/datasets).
+The historical cluster map and family plan live in
 [`benchmark/reports/harbor-hub-coverage.json`](../reports/harbor-hub-coverage.json)
 (`hubbench` block): thirteen families, eight tasks minimum each. All thirteen
 families and 104 tasks are currently released and qualified.
+
+The public publication receipt still identifies **v1.3.0**. The source tree now
+builds **v1.4.0**, a scoring-revision candidate (family contracts v1.0.1), not a
+newly published registry release. See [scoring changes](./SCORING_CHANGES.md).
+All 104 frozen v1.4.0 packages have now passed fresh, digest-bound Docker oracle
+admission with zero errors or retries. Versioned registry publication and full
+model runs remain pending; historical model trajectories are not new results.
 
 | Cluster | Family | Status |
 |---|---|---|
@@ -145,7 +153,7 @@ exact answer.
 ### Measured state (committed reports)
 
 - Reasoning chain ([`reports/reasoning-chain/clinicops.json`](./reports/reasoning-chain/clinicops.json)),
-  measured with the **unmodified** `measure_factorybench_task` from
+  measured with the shared `measure_factorybench_task` from
   `benchmark/chain_adapters/factorybench_100.py`: **8/8 tasks pass**, chain depth 8/8
   spine hops on every task, hop coverage H1–H13 = 8/8, 23–26 graded dependent
   derivations, 24–27 graded answer fields, 9 source systems, and 26 graded

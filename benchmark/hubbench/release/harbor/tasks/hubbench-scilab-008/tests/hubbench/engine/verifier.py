@@ -152,10 +152,42 @@ def _normalized_fragment(fragment: Any) -> str:
     return re.sub(r"[^a-z0-9.]+", " ", str(fragment).casefold()).strip()
 
 
+def _fact_tokens(text: str) -> str:
+    return " " + " ".join(re.findall(r"[a-z0-9]+", text.casefold())) + " "
+
+
+def _argument_text_mismatches(payload: dict[str, Any], requirements: Any) -> dict[str, Any]:
+    """Match literal facts in named string arguments, never adjacent fields.
+
+    Empty fact lists require nonempty text. Token boundaries reject, for example,
+    BF-71010 in place of BF-7101. No substring/fuzzy or semantic scoring is used.
+    """
+
+    if not isinstance(requirements, dict):
+        return {"contract": {"reason": "text requirements must be an object"}}
+    arguments = payload.get("arguments")
+    mismatches: dict[str, Any] = {}
+    for field, facts in requirements.items():
+        if not isinstance(facts, list) or any(
+            not isinstance(fact, str) or not _fact_tokens(fact).strip() for fact in facts
+        ):
+            mismatches[field] = {"reason": "text facts must be nonempty strings"}
+            continue
+        actual = arguments.get(field) if isinstance(arguments, dict) else None
+        if not isinstance(actual, str) or not actual.strip():
+            mismatches[field] = {"reason": "required argument is not nonempty text"}
+            continue
+        tokens = _fact_tokens(actual)
+        missing = [fact for fact in facts if _fact_tokens(fact) not in tokens]
+        if missing:
+            mismatches[field] = {"missing_text_facts": missing}
+    return mismatches
+
+
 def payload_assertion_mismatches(row: dict[str, Any], assertion: dict[str, Any]) -> dict[str, Any]:
     """Grade the actual provider payload persisted for a state assertion."""
 
-    if not any(key in assertion for key in ("payload_contains", "payload_text_contains", "payload_text_any_of", "payload_allowed_argument_paths")):
+    if not any(key in assertion for key in ("payload_contains", "payload_text_contains", "payload_text_any_of", "payload_allowed_argument_paths", "payload_argument_text")):
         return {}
     raw_payload = row.get("payload_json")
     try:
@@ -165,6 +197,10 @@ def payload_assertion_mismatches(row: dict[str, Any], assertion: dict[str, Any])
     if not isinstance(payload, dict):
         return {"payload_json": {"reason": "payload is not an object", "actual": payload}}
     evidence: dict[str, Any] = {}
+    if "payload_argument_text" in assertion:
+        text_mismatches = _argument_text_mismatches(payload, assertion["payload_argument_text"])
+        if text_mismatches:
+            evidence["argument_text_mismatches"] = text_mismatches
     expected_subset = assertion.get("payload_contains")
     if expected_subset is not None:
         nested = _nested_subset_mismatches(payload, expected_subset)

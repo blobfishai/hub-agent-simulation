@@ -1,6 +1,6 @@
 # hubbench-policydesk-003 — Fit the grid-config change review before the maintenance freeze
 
-HubBench 1.3.0 · family **PolicyDesk** (`policydesk`, cluster `policy-compliance-instruction-following`) · decision mode `schedule` · role `access_governance_analyst` · as of 2026-05-11.
+HubBench 1.4.0 · family **PolicyDesk** (`policydesk`, cluster `policy-compliance-instruction-following`) · decision mode `schedule` · role `access_governance_analyst` · as of 2026-05-11.
 
 Access-governance decisions against a policy library with numbered clauses, an access-request queue, an entitlement store with segregation-of-duties rules, an exceptions register, an approver directory with authority tiers, training records, an audit-finding tracker, an approver review calendar, and an external screening vendor.
 

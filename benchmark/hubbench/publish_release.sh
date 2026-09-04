@@ -20,6 +20,7 @@ set -euo pipefail
 
 VERSION="${1:?usage: publish_release.sh <version> [--from-step N] [--to-step N] [--roundtrip-tasks \"a b\"]}"
 shift
+[[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "version must be N.N.N" >&2; exit 2; }
 FROM_STEP=1
 TO_STEP=8
 ROUNDTRIP_TASKS=""
@@ -44,19 +45,32 @@ REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 HUBBENCH="$REPO/benchmark/hubbench"
 HARBOR="${HARBOR_BIN:-$HOME/.local/bin/harbor}"
 CACHE="$HOME/.cache/hubbench"
-FROZEN="$CACHE/v$VERSION"
+# The qualified snapshot can add admitted trajectories without overwriting the
+# original source-frozen release. Both must contain identical Harbor packages.
+FROZEN="${HUBBENCH_FROZEN_RELEASE:-$CACHE/v$VERSION}"
+case "$FROZEN" in
+  "$CACHE/v$VERSION"|"$CACHE/v$VERSION-qualified") ;;
+  *) echo "frozen release must be the version's original or qualified cache directory" >&2; exit 2 ;;
+esac
 JOBS="$CACHE/jobs"
 DATASET="blobfishai/hubbench"
 HF_DATASET="SamuelChien821/hubbench"
 SOURCE_REPO="${HUBBENCH_SOURCE_REPO:-$HOME/dev/hub-agent-simulation}"
-GATE_JOB="hubbench-oracle-v$VERSION-full"
-ROUNDTRIP_JOB="hubbench-oracle-registry-roundtrip-v$VERSION"
+GATE_JOB="${HUBBENCH_GATE_JOB:-hubbench-oracle-v$VERSION-full}"
+ROUNDTRIP_JOB="${HUBBENCH_ROUNDTRIP_JOB:-hubbench-oracle-registry-roundtrip-v$VERSION}"
+[[ "$GATE_JOB" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]+$ && "$ROUNDTRIP_JOB" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]+$ ]] || {
+  echo "job names must be simple directory names" >&2; exit 2
+}
 LOG="$JOBS/publish-v$VERSION.log"
 GATE_CONCURRENCY="${HUBBENCH_GATE_CONCURRENCY:-2}"
 case "$GATE_CONCURRENCY" in
   ''|*[!0-9]*) echo "HUBBENCH_GATE_CONCURRENCY must be a positive integer" >&2; exit 2 ;;
 esac
 [ "$GATE_CONCURRENCY" -ge 1 ] || { echo "HUBBENCH_GATE_CONCURRENCY must be at least 1" >&2; exit 2; }
+ROUNDTRIP_CONCURRENCY="${HUBBENCH_ROUNDTRIP_CONCURRENCY:-$GATE_CONCURRENCY}"
+[[ "$ROUNDTRIP_CONCURRENCY" =~ ^[0-9]+$ ]] && [ "$ROUNDTRIP_CONCURRENCY" -ge 1 ] || {
+  echo "HUBBENCH_ROUNDTRIP_CONCURRENCY must be a positive integer" >&2; exit 2
+}
 PUBLISH_CONCURRENCY="${HUBBENCH_PUBLISH_CONCURRENCY:-8}"
 case "$PUBLISH_CONCURRENCY" in
   ''|*[!0-9]*) echo "HUBBENCH_PUBLISH_CONCURRENCY must be a positive integer" >&2; exit 2 ;;
@@ -70,6 +84,7 @@ step() { [ "$FROM_STEP" -le "$1" ] && [ "$1" -le "$TO_STEP" ]; }
 
 if step 1; then
   echo "-- 1 freeze"
+  [ ! -e "$FROZEN" ] || { echo "refusing to overwrite existing frozen release: $FROZEN" >&2; exit 1; }
   cd "$REPO"
   [ -z "$(git status --porcelain benchmark/hubbench)" ] || { echo "benchmark/hubbench is dirty; commit the rebuilt release first" >&2; exit 1; }
   built_version="$(python3 -c "import tomllib;print(tomllib.load(open('$HUBBENCH/release/harbor/dataset.toml','rb'))['dataset']['version'])")"
@@ -83,12 +98,13 @@ fi
 
 if step 2; then
   echo "-- 2 docker oracle gate ($GATE_JOB)"
-  rm -rf "$JOBS/$GATE_JOB"
+  [ ! -e "$JOBS/$GATE_JOB" ] || { echo "existing gate evidence preserved; choose a new HUBBENCH_GATE_JOB for a fresh run" >&2; exit 1; }
   (cd "$CACHE" && "$HARBOR" run -p "$FROZEN/harbor/tasks" -a oracle -o "$JOBS" --job-name "$GATE_JOB" -n "$GATE_CONCURRENCY" -k 1 -r 0)
-  total="$(ls "$FROZEN/harbor/tasks" | wc -l | tr -d ' ')"
-  ones="$(find "$JOBS/$GATE_JOB" -name reward.txt -exec cat {} \; | grep -c '^1\.000000$' || true)"
-  [ "$ones" = "$total" ] || { echo "gate: $ones/$total trials at reward 1.0 — refusing to publish" >&2; exit 1; }
-  echo "gate: $ones/$total at reward 1.0"
+  python3 "$HUBBENCH/publication_receipt.py" --check-gate --frozen "$FROZEN/harbor" --gate-job "$JOBS/$GATE_JOB"
+fi
+
+if ! step 2 && { step 3 || step 4 || step 5 || step 6 || step 7; }; then
+  python3 "$HUBBENCH/publication_receipt.py" --check-gate --frozen "$FROZEN/harbor" --gate-job "$JOBS/$GATE_JOB"
 fi
 
 if step 3; then
@@ -112,12 +128,12 @@ if step 5; then
     ROUNDTRIP_TASKS="$(ls "$FROZEN/harbor/tasks" | sed 's/-[0-9]*$//' | sort -u | while read -r fam; do ls "$FROZEN/harbor/tasks" | grep "^$fam-" | sort | sed -n 2p; done | tr '\n' ' ')"
   fi
   includes=""; for t in $ROUNDTRIP_TASKS; do includes="$includes -i blobfishai/$t"; done
-  rm -rf "$JOBS/$ROUNDTRIP_JOB"; mkdir -p "$CACHE/registry-test"
+  [ ! -e "$JOBS/$ROUNDTRIP_JOB" ] || { echo "existing round-trip evidence preserved; choose a new HUBBENCH_ROUNDTRIP_JOB for a fresh run" >&2; exit 1; }
+  mkdir -p "$CACHE/registry-test"
   # shellcheck disable=SC2086
-  (cd "$CACHE/registry-test" && "$HARBOR" run -d "$DATASET@v$VERSION" -a oracle $includes -o "$JOBS" --job-name "$ROUNDTRIP_JOB" -n 2 -k 1 -r 0)
-  bad="$(find "$JOBS/$ROUNDTRIP_JOB" -name reward.txt -exec cat {} \; | grep -vc '^1\.000000$' || true)"
-  [ "$bad" = "0" ] || { echo "round-trip: $bad trials below 1.0" >&2; exit 1; }
-  echo "round-trip: all trials at reward 1.0"
+  (cd "$CACHE/registry-test" && "$HARBOR" run -d "$DATASET@v$VERSION" -a oracle $includes -o "$JOBS" --job-name "$ROUNDTRIP_JOB" -n "$ROUNDTRIP_CONCURRENCY" -k 1 -r 0)
+  python3 "$HUBBENCH/publication_receipt.py" --check-gate --frozen "$FROZEN/harbor" \
+    --gate-job "$JOBS/$GATE_JOB" --roundtrip-job "$JOBS/$ROUNDTRIP_JOB"
 fi
 
 if step 6; then

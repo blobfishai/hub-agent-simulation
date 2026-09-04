@@ -2,7 +2,7 @@
 """Build the APEX-style explorer data for blobfish.ai/benchmarks/hubbench.
 
     python3 benchmark/hubbench/site_data.py                      # write the explorer JSON
-    python3 benchmark/hubbench/site_data.py --import-gate <job>  # import Harbor oracle-gate traces first
+    python3 benchmark/hubbench/site_data.py --import-gate <job> --frozen <release>/harbor --import-only
 
 Emits ``products/website/app/benchmarks/hubbench/hubbench-explorer-data.json``
 conforming to ``products/website/app/benchmarks/explorer/types.ts``
@@ -31,6 +31,7 @@ REPO_ROOT = BENCHMARK_ROOT.parent
 sys.path.insert(0, str(BENCHMARK_ROOT))
 
 from hubbench.engine.assets import asset_bytes  # noqa: E402
+from hubbench.engine.catalog import sha256_json  # noqa: E402
 from hubbench.engine.distribution import (  # noqa: E402
     BENCHMARK,
     DEFAULT_VERSION,
@@ -41,6 +42,7 @@ from hubbench.engine.distribution import (  # noqa: E402
 )
 from hubbench.engine.families import CONTEXT_TOOL, SUBMIT_TOOL, load_family  # noqa: E402
 from hubbench.engine.tasks import load_release_tasks  # noqa: E402
+from hubbench.publication_receipt import validated_frozen_release, validated_oracle_job  # noqa: E402
 
 OUTPUT = REPO_ROOT / "products" / "website" / "app" / "benchmarks" / "hubbench" / "hubbench-explorer-data.json"
 REPORTS = HUBBENCH_ROOT / "reports"
@@ -267,26 +269,24 @@ def task_sample(entry: dict[str, Any], task: dict[str, Any], categories: list[di
 
 
 def tool_records(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    tools: dict[str, dict[str, Any]] = {}
+    # Names are scoped to a family world, not to the portfolio. Even common
+    # tools (such as submission) can require different fields in each family.
+    tools: list[dict[str, Any]] = []
     for entry in entries:
         for tool in entry["tools"]:
             name = tool["name"]
-            record = tools.get(name)
-            if record is None:
-                meta = (tool.get("_meta") or {}).get("hubbench") or {}
-                record = {
-                    "name": name,
-                    "title": (tool.get("annotations") or {}).get("title") or name,
-                    "description": tool.get("description", ""),
-                    "inputSchema": tool.get("inputSchema", {}),
-                    "server": meta.get("server") or name.split(".", 1)[0],
-                    "annotations": tool.get("annotations") or {},
-                    "_meta": {"hubbench": {**meta, "families": [entry["slug"]]}},
-                }
-                tools[name] = record
-            else:
-                record["_meta"]["hubbench"]["families"].append(entry["slug"])
-    return [tools[name] for name in sorted(tools)]
+            meta = (tool.get("_meta") or {}).get("hubbench") or {}
+            tools.append({
+                "name": name,
+                "family": entry["slug"],
+                "title": (tool.get("annotations") or {}).get("title") or name,
+                "description": tool.get("description", ""),
+                "inputSchema": tool.get("inputSchema", {}),
+                "server": meta.get("server") or name.split(".", 1)[0],
+                "annotations": tool.get("annotations") or {},
+                "_meta": {"hubbench": {**meta, "families": [entry["slug"]]}},
+            })
+    return sorted(tools, key=lambda tool: (tool["family"], tool["server"], tool["name"]))
 
 
 def evaluation_controls(entries: list[dict[str, Any]], total_tasks: int) -> list[dict[str, Any]]:
@@ -388,36 +388,53 @@ def trajectory_from_trace(task: dict[str, Any], family_tools: list[dict[str, Any
     }
 
 
-def import_gate(job_dir: Path) -> int:
-    """Import Harbor oracle-gate trials as compact reference trajectories under reports/."""
+def import_gate(job_dir: Path, frozen: Path) -> int:
+    """Validate the whole package-bound gate before writing any reference records."""
 
-    imported = 0
-    for trial in sorted(job_dir.iterdir()):
-        verifier = trial / "verifier"
-        if not (verifier / "trace.json").is_file() or not (verifier / "verdict.json").is_file():
-            continue
-        trace = read_json(verifier / "trace.json")
-        verdict = read_json(verifier / "verdict.json")
+    release = validated_frozen_release(frozen)
+    _, stats, evidence = validated_oracle_job(job_dir, release)
+    records = {}
+    proof = {
+        "schema_version": "hubbench.oracle-gate.v1",
+        "job": job_dir.name,
+        "dataset": release["name"],
+        "version": release["version"],
+        "harbor_root_sha256": release["root"],
+        "agent": "oracle", "environment": "docker", "stats": stats,
+        "trials": {},
+    }
+    for harbor_task, item in evidence.items():
+        trace, verdict = item["trace"], item["verdict"]
         task_id = trace["task_id"]
-        config = read_json(trial / "config.json") if (trial / "config.json").is_file() else {}
         record = {
             "schema_version": "hubbench.reference-trajectory.v1",
+            "benchmark_version": release["version"],
+            "task_digest": item["task_digest"],
             "task_id": task_id,
-            "harbor_task": trial.name.split("__", 1)[0],
+            "harbor_task": harbor_task,
             "job": job_dir.name,
-            "trial": trial.name,
-            "agent": (config.get("agent") or {}).get("name") or "oracle",
-            "score": verdict.get("score"),
-            "strict_pass": verdict.get("strict_pass"),
-            "reward": round(float(verdict.get("score", 0.0)) / 100.0, 6),
+            "trial": item["trial"],
+            "agent": "oracle",
+            "score": verdict["score"],
+            "strict_pass": verdict["strict_pass"],
+            "reward": 1.0,
             "trace": [
                 {"index": item["index"], "tool": item["tool"], "arguments": item.get("arguments") or {}, "success": item.get("success", True), "result": json.loads(compact(item.get("result"), 4000)) if isinstance(item.get("result"), (dict, list)) and len(json.dumps(item.get("result"))) <= 4000 else compact(item.get("result"), 4000)}
                 for item in trace["trace"]
             ],
         }
+        records[task_id] = record
+        proof["trials"][harbor_task] = {
+            **{key: value for key, value in item.items() if key not in ("trace", "verdict")},
+            "reference_sha256": sha256_json(record),
+        }
+    proof_path = REPORTS / "gates" / f"{job_dir.name}.json"
+    if proof_path.exists() and read_json(proof_path) != proof:
+        raise ValueError(f"refusing to replace different evidence for {job_dir.name}")
+    write_json(proof_path, proof)
+    for task_id, record in records.items():
         write_json(REFERENCE_TRAJECTORIES / f"{task_id}.json", record)
-        imported += 1
-    return imported
+    return len(records)
 
 
 def reference_trajectories(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -591,9 +608,9 @@ def _hub_census_text() -> str:
     return (
         f"On {coverage['observedAt']} the Harbor Hub listed {totals['datasets']} public datasets ({totals['tasks']:,} upstream tasks) in {totals['domainClusters']} professional-domain clusters. "
         f"Each dataset is classified by interface and domain: {filt.get('mcp', 0)} expose MCP or tool-calling surfaces, {filt.get('domainSpecific', 0)} sit in a professional domain, "
-        f"{filt.get('selected', 0)} are selected (either), {filt.get('selectedAnd', 0)} both. Every selected dataset maps to exactly one Blobfish counterpart — a first-party benchmark, a companion world, "
-        f"or a HubBench family — {filt.get('coverage', {}).get('released', 0)} already released, {filt.get('coverage', {}).get('planned', 0)} planned. "
-        "HubBench is one family per cluster, so every open-source benchmark domain on the hub gets an executable, oracle-proven counterpart; seed shapes are named per family for provenance and no upstream task is copied."
+        f"{filt.get('selected', 0)} were selected (either), {filt.get('selectedAnd', 0)} both. These are historical domain-family mappings, not individually rebuilt datasets. "
+        "HubBench publishes independently authored worlds for thirteen of these domain clusters; seed shapes are named per family for provenance and no upstream task is copied. "
+        "The source catalog at /datasets separates current listings, license evidence, pending adaptations, and related released worlds."
     )
 
 
@@ -606,8 +623,8 @@ def _hf_census_text() -> str:
     rows = census.get("datasets", [])
     return (
         f"The same filter applied to Hugging Face ({total:,} datasets on the platform): {len(rows)} agent-benchmark candidates surfaced by {len(census.get('queries', []))} fixed searches, "
-        f"{filt.get('selected', 0)} selected ({filt.get('mcp', 0)} MCP or tool-calling, {filt.get('domainSpecific', 0)} domain-specific), {filt.get('coverage', {}).get('released', 0)} with a released counterpart, "
-        f"{filt.get('coverage', {}).get('planned', 0)} planned. Recall is search-based, not an exhaustive scan; Blobfish's own datasets are counterparts, not candidates."
+        f"{filt.get('selected', 0)} selected ({filt.get('mcp', 0)} MCP or tool-calling, {filt.get('domainSpecific', 0)} domain-specific). "
+        "These historical mappings are not source-specific adaptations. Recall was search-based, not exhaustive; the unfiltered pagination inventory and its completion status are available at /datasets."
     )
 
 
@@ -657,7 +674,7 @@ def build() -> dict[str, Any]:
         "benchmark": {
             "name": BENCHMARK,
             "version": receipt.get("version", DEFAULT_VERSION),
-            "tagline": "One oracle-proven Blobfish family per Harbor Hub professional-domain cluster, each a stateful multi-system world reachable as MCP servers, a REST API, a web console, and a terminal CLI.",
+            "tagline": "Thirteen oracle-proven professional-domain families inspired by the Harbor Hub inventory, with stateful worlds reachable as MCP servers, a REST API, a web console, and a terminal CLI. Source-specific adaptations are tracked separately.",
             "question": "Can an agent work a real employee decision across five to eleven connected systems — evidence, quantities, calendars, vendors, alternatives, a controlled write, its readback, and the exact answer — without a lookup shortcut?",
             "taskCount": len(all_tasks),
             "categoryNoun": "family",
@@ -715,10 +732,18 @@ def build() -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--import-gate", type=Path, default=None, help="Harbor job directory whose oracle trials become reference trajectories")
+    parser.add_argument("--frozen", type=Path, help="frozen harbor/ directory against which imported trials are verified")
+    parser.add_argument("--import-only", action="store_true", help="import validated evidence without rebuilding public page data")
     parser.add_argument("--output", type=Path, default=OUTPUT)
     args = parser.parse_args()
+    if args.import_only and args.import_gate is None:
+        parser.error("--import-only requires --import-gate")
     if args.import_gate is not None:
-        print(f"imported {import_gate(args.import_gate)} reference trajectories -> {REFERENCE_TRAJECTORIES.relative_to(REPO_ROOT)}")
+        if args.frozen is None:
+            parser.error("--import-gate requires --frozen")
+        print(f"imported {import_gate(args.import_gate, args.frozen)} reference trajectories -> {REFERENCE_TRAJECTORIES.relative_to(REPO_ROOT)}")
+        if args.import_only:
+            return 0
     payload = build()
     write_json(args.output, payload)
     print(

@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='datadesk',
     name='DataDesk',
-    version='1.0.0',
+    version='1.0.1',
     cluster='data-engineering-analytics',
     description='Data engineering decisions against a dbt-style warehouse catalog, pipeline run history, vendor feed deliveries, freshness SLAs, batch-window capacity, and finance reconciliation controls.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

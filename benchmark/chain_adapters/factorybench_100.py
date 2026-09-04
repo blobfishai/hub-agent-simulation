@@ -34,8 +34,8 @@ Hop evidence:
 * H11 — a ``state.primary`` assertion with ``payload_contains.arguments``, at
   least one post-write verification, a ``containment.scope`` milestone and a
   non-empty ``allowed_write_tables``.
-* H12 — a ``state.collaboration`` assertion whose ``payload_text_contains``
-  names the selected option or completion.
+* H12 — a ``state.collaboration`` assertion whose ``payload_text_contains`` or
+  body-scoped ``payload_argument_text`` names the selected option or completion.
 * H13 — at least twelve answer fields covering every calculation ``field``.
 """
 
@@ -187,7 +187,10 @@ def measure_factorybench_task(task: dict[str, Any], contract: dict[str, Any]) ->
     decision_tokens = {str(model.get("selected_option")), str(model.get("selected_completion"))}
     hops["H12"] = any(
         a.get("milestone_id") == "state.collaboration"
-        and decision_tokens & set(map(str, a.get("payload_text_contains", [])))
+        and decision_tokens & set(map(str, [
+            *a.get("payload_text_contains", []),
+            *a.get("payload_argument_text", {}).get("body", []),
+        ]))
         for a in assertions
     )
     hops["H13"] = len(answer) >= 12 and calc_fields <= answer.keys()

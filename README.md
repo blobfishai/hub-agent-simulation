@@ -5,14 +5,18 @@
 > repository is clean-room synthetic test data.
 
 `hub-agent-simulation` is the executable source repository for
-[HubBench](https://blobfish.ai/benchmarks/hubbench), Blobfish AI's counterpart to
-the open-source agent benchmarks listed on
+[HubBench](https://blobfish.ai/benchmarks/hubbench), Blobfish AI's independently
+authored professional-domain benchmark inspired by selected datasets on
 [hub.harborframework.com](https://hub.harborframework.com/datasets): one
 Blobfish-authored, oracle-proven benchmark family per professional-domain cluster,
 each a stateful multi-system world that an agent reaches as **MCP servers** (stdio
 and streamable HTTP, one per mock provider), a **REST API**, a **web console**, and a
 **terminal `tool` CLI** — all over one isolated SQLite world — graded by the
 deterministic **HubScore** verifier with zero LLM-judge calls.
+
+These shared domain families are not individual adaptations of every upstream
+dataset. Source-specific review and adaptation status are tracked separately
+in the [source catalog](https://blobfish.ai/datasets).
 
 Every task is an employee decision worked over a dependent chain of evidence,
 never a lookup: the request → the operative policy or spec → quantities from live
@@ -22,6 +26,18 @@ cost, and authority status → a controlled state change, its readback, and a
 stakeholder draft → the exact graded answer with every intermediate derivation.
 
 ## Releases
+
+**v1.4.0 qualified source** — scoring contracts now check required facts in
+stakeholder draft bodies and allow alternative wording in 18 audited primary
+fields. Exact state, dates, recipients, approval, containment, investigations,
+and readbacks remain graded. Text checks are structural, not arbitrary semantic
+equivalence; direct filesystem evidence reads are not audited. See
+[scoring changes](benchmark/hubbench/SCORING_CHANGES.md).
+All 104 frozen packages passed fresh package-bound Docker oracle admission at
+reward 1.0 with zero errors or retries. The latest completed cross-platform
+publication receipt remains v1.3.0 until publication and registry round trips
+are recorded.
+Historical model results are not rescored or relabeled.
 
 **v1.3.0 (published 2026-09-02)** — 13 families / 104 tasks on Harbor and
 Hugging Face, 554 tools, 3,450 agent-visible evidence files, and 7,001

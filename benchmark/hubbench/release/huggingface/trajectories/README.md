@@ -1,6 +1,6 @@
 # Trajectories
 
-`index.json` lists every trajectory. **Reference** trajectories are the durable world call traces of the packaged oracle replayed through the public surfaces (MCP over HTTP, REST, the `tool` CLI, answer submission) inside Harbor under Docker and graded by the packaged verifier — 104 published. **Model** trajectories come from imported Harbor runs of `blobfishai/hubbench` with the same durable trace, the HubScore verdict, and the token/cost receipt per trial; a run is ranked only when it completed every published task once with zero errors and zero retries, otherwise it is a disclosed partial run. Qualification controls are never ranked as models.
+`index.json` lists every trajectory. **Reference** trajectories are the durable world call traces of the packaged oracle replayed through the public surfaces (MCP over HTTP, REST, the `tool` CLI, answer submission) inside Harbor under Docker and graded by the packaged verifier — 104 included. Each retains its source `benchmark_version` (null when provenance is unestablished), separately from this distribution's version. Historical samples do not qualify a newer release. **Model** trajectories come from imported Harbor runs of `blobfishai/hubbench` with the same durable trace, the HubScore verdict, and the token/cost receipt per trial; a run is ranked only when it completed every published task once with zero errors and zero retries, otherwise it is a disclosed partial run. Qualification controls are never ranked as models.
 
 ## Model runs
 
