@@ -1,4 +1,4 @@
-# HubBench 1.3.0 — distribution tree
+# HubBench 1.4.0 — distribution tree
 
 Deterministic release emitted by `benchmark/hubbench/build_distribution.py` from the committed family releases and reports. Rebuilding it from the same inputs reproduces every byte.
 
@@ -20,16 +20,16 @@ Totals: 104 tasks, 554 tools, 3450 evidence files, 7001 atomic criteria; 104/104
 
 ## Layout
 
-- `harbor/` — Harbor dataset `blobfishai/hubbench` v1.3.0: `dataset.toml`, `task-digests.json`, and 104 self-contained task packages under `tasks/hubbench-<family>-NNN/` (`task.toml`, `instruction.md`, `README.md`, `environment/`, `tests/`, `solution/`). Root digest `d3644e1bdfbd3bd0cb2e03fcfd9cbee416ab74956fad25ee26644811fa9cfe72`.
-- `huggingface/` — Hugging Face dataset payload (`README.md` card, `data/tasks.jsonl`, `assets/`, `contracts/`, `verifiers/`, `ANCHORS.md`, `LICENSE`, `trajectories/`). Payload manifest `17ddeeb9caf9997634edae1d3e0907648b951ec216cecab8ee3d2fb561185da7`.
+- `harbor/` — Harbor dataset `blobfishai/hubbench` v1.4.0: `dataset.toml`, `task-digests.json`, and 104 self-contained task packages under `tasks/hubbench-<family>-NNN/` (`task.toml`, `instruction.md`, `README.md`, `environment/`, `tests/`, `solution/`). Root digest `fd6b79f4e5bc88326ab90be064b369d0098908ac155c218a89a16581d2b5c6c9`.
+- `huggingface/` — Hugging Face dataset payload (`README.md` card, `data/tasks.jsonl`, `assets/`, `contracts/`, `verifiers/`, `ANCHORS.md`, `LICENSE`, `trajectories/`). Payload manifest `b4a1673ca1ec16ed144ee8e34ecb04973555f91681bce61f48ceedc7aa2b776c`.
 - `reports/` — `release.json` (aggregate receipt with input digests) plus verbatim copies of every family's qualification and reasoning-chain report.
 - `tasks/` — one public record per task (no gold values).
 
 ## Publish (operator, from the repository root)
 
 ```bash
-harbor publish benchmark/hubbench/release/harbor/tasks --public -t v1.3.0
-harbor publish benchmark/hubbench/release/harbor --no-tasks --public -t v1.3.0
+harbor publish benchmark/hubbench/release/harbor/tasks --public -t v1.4.0
+harbor publish benchmark/hubbench/release/harbor --no-tasks --public -t v1.4.0
 hf upload-large-folder SamuelChien821/hubbench benchmark/hubbench/release/huggingface --repo-type dataset
 ```
 

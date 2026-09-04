@@ -1,4 +1,4 @@
-# HubBench 1.3.0
+# HubBench 1.4.0
 
 One Blobfish-authored, oracle-proven benchmark family per Harbor Hub professional-domain cluster: mock stateful tools over an isolated SQLite world, reachable as MCP servers over streamable HTTP, a terminal `tool` CLI, a REST API, and a web console, graded by the deterministic **HubScore** verifier (zero LLM judge). Every task is an employee decision worked over a dependent chain of evidence — never a lookup.
 
@@ -23,7 +23,7 @@ One Blobfish-authored, oracle-proven benchmark family per Harbor Hub professiona
 ## Run
 
 ```bash
-harbor run -d blobfishai/hubbench@v1.3.0 -a <agent> -m <provider/model>
+harbor run -d blobfishai/hubbench@v1.4.0 -a <agent> -m <provider/model>
 ```
 
 Each task package is self-contained: a digest-pinned `python:3.12-slim` agent image (non-root `agent`, `tool` on PATH, evidence under `/workspace/evidence`) and a `world` service exposing the surfaces on port 8765. The verifier runs as root, pulls the finished world over a token-gated read-only channel, and writes `/logs/verifier/reward.txt` (= HubScore / 100).

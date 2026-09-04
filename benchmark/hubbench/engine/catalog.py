@@ -453,7 +453,10 @@ def validate_tasks(
             )
         if not any(
             assertion["milestone_id"] == "state.collaboration"
-            and assertion.get("payload_text_contains")
+            and (
+                assertion.get("payload_text_contains")
+                or assertion.get("payload_argument_text", {}).get("body")
+            )
             for assertion in task["expected"]["assertions"]
         ):
             problems.append(

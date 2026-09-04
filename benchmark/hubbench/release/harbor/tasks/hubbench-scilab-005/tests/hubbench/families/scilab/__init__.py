@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='scilab',
     name='SciLab',
-    version='1.0.0',
+    version='1.0.1',
     cluster='scientific-research',
     description='Assay-operations decisions against a LIMS with versioned protocols and QC results, an analyser schedule with calibration certificates, a reagent-lot inventory with expiry and quarantine state, supplier shipment confirmations, ELN method notes, and approval records.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

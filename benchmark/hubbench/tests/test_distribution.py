@@ -191,7 +191,43 @@ def test_hugging_face_payload_has_strict_reference_samples_for_published_and_can
         assert public["score"] == 100.0
         assert public["sample_only"] is True
         assert public["leaderboard_eligible"] is False
+        assert public["benchmark_version"] == sample["benchmark_version"]
+        assert public["distribution_version"] == index["version"]
+        assert public["current_release"] == (public["benchmark_version"] == index["version"])
         assert sample["sha256"] == dist.sha256_json(public)
+
+
+def test_reference_trajectory_version_is_not_reassigned_to_candidate_release():
+    record = {"job": "hubbench-oracle-v1.3.0-full", "harbor_task": "hubbench-datadesk-001"}
+    assert dist.reference_source_version(record) == "1.3.0"
+    assert dist.reference_source_version({**record, "job": "unpublished-gate"}) is None
+    assert dist.reference_source_version({**record, "harbor_task": "hubbench-unknown-001"}) is None
+
+
+def test_dataset_card_uses_measured_coverage_and_current_trace_counts():
+    receipt = _release_receipt()
+    card = (RELEASE / "huggingface" / "README.md").read_text(encoding="utf-8")
+    index = json.loads((RELEASE / "huggingface" / "trajectories" / "index.json").read_text(encoding="utf-8"))
+    coverage = receipt["totals"]["reasoning_chain"]["hop_coverage_total"].values()
+    assert f"aggregate coverage of each hop class is {dist._span(coverage)} of 104 tasks" in card
+    current = sum(row["current_release"] for row in index["reference"])
+    assert f"Oracle trace provenance: {current} from this release; {len(index['reference']) - current} historical or unversioned" in card
+    assert receipt["huggingface"]["trajectories"]["current_reference"] == current
+    assert "not individual adaptations of every upstream dataset" in card
+    assert "Direct filesystem evidence reads are not audited" in card
+
+
+def test_hugging_face_tasks_retain_the_public_interaction_contract():
+    records = [json.loads(line) for line in (RELEASE / "huggingface" / "data" / "tasks.jsonl").read_text().splitlines()]
+    tasks = {
+        task["task_id"]: task
+        for slug in dist.discover_families()
+        for task in load_release_tasks(load_family(slug))
+    }
+    assert len(records) == len(tasks) == 104
+    for record in records:
+        task = tasks[record["family_task_id"]]
+        assert record["world"]["interaction_contract"] == task["world"]["interaction_contract"]
 
 
 def _free_ports() -> tuple[int, int]:

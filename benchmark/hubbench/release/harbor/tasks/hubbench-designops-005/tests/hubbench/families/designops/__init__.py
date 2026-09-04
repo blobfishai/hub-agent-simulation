@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='designops',
     name='DesignOps',
-    version='1.0.0',
+    version='1.0.1',
     cluster='manufacturing-engineering-design',
     description='Engineering-change release decisions against a PLM with part revisions and CAD check-in history, change orders with affected items, a multi-level BOM, a certification register, a tooling register with calibration state, supplier-portal quotes, a production release calendar, and approval records.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

@@ -145,7 +145,7 @@
   },
   "as_of": "2026-03-09",
   "benchmark": "HubBench",
-  "benchmark_version": "1.0.0",
+  "benchmark_version": "1.0.1",
   "decision_model": {
     "binding_constraint": "the par policy and the signed approval scope; lot 3288 vials that expire 2026-03-15, before any scheduled dose = 3 VIAL; uncovered scope = 4 VIAL",
     "calculations": [
@@ -418,7 +418,8 @@
   "evaluation": {
     "llm_judge_calls": 0,
     "metric": "HubScore",
-    "strict_pass": "every rubric milestone passes"
+    "strict_pass": "every rubric milestone passes",
+    "text_contract_policy": "hubbench.text-facts.v1"
   },
   "expected": {
     "answer": {
@@ -539,9 +540,15 @@
         }
       },
       {
-        "description": "Created — but did not send — the stakeholder draft carrying order_standard_to_par, the 2026-03-16 outcome, the binding constraint, and the CLIN-0002 business reference.",
+        "description": "Create, but do not send, the stakeholder draft for the exact requested recipient. Its body must contain the persisted record PO-5101 and the supported facts 2026-03-16. Preserve the existing business-reference check; internal option tokens are not required in prose.",
         "id": "mutation_02",
         "milestone_id": "state.collaboration",
+        "payload_argument_text": {
+          "body": [
+            "PO-5101",
+            "2026-03-16"
+          ]
+        },
         "payload_contains": {
           "arguments": {
             "recipient": "oncology-charge-nurse@northlake.example"
@@ -554,10 +561,6 @@
             "MRN-611402",
             "MR-70360"
           ]
-        ],
-        "payload_text_contains": [
-          "order_standard_to_par",
-          "2026-03-16"
         ],
         "table": "mutations",
         "values": {
@@ -2560,7 +2563,7 @@
       "criterion_ids": [
         "mutation_02"
       ],
-      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "description": "Create, but do not send, the stakeholder draft for the exact requested recipient. Its body must contain the persisted record PO-5101 and the supported facts 2026-03-16. Preserve the existing business-reference check; internal option tokens are not required in prose.",
       "id": "state.collaboration",
       "weight": 6.0
     },
@@ -2665,6 +2668,11 @@
   },
   "world": {
     "id": "northlake-infusion-v1",
+    "interaction_contract": {
+      "investigation_evidence": "Retrieve the applicable source records, policy, approval, and evidence through the connected provider tools before the first state change. The tool CLI, MCP, REST, and web tool forms share one audited trace. Reading /workspace/evidence directly is a convenience, but filesystem reads are not recorded and do not satisfy required tool investigations.",
+      "stakeholder_draft": "Leave an unsent draft for the requested recipient. Its body must name the persisted primary record and supported outcome date; research drafts must also identify the current definition. Preserve the business reference and explain the decision and constraints. An internal option identifier is required only in the structured answer, not in prose.",
+      "text_matching": "Required text facts use case-insensitive, punctuation-normalized whole tokens. Dates use ISO YYYY-MM-DD. These are structural checks, not a semantic assessment of arbitrary prose or contradictions."
+    },
     "name": "Northlake Health — Infusion Services",
     "organization_id": "ORG-NORTHLAKE",
     "primary_site": "LOC-INF",

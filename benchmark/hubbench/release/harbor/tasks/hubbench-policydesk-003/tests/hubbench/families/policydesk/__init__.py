@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='policydesk',
     name='PolicyDesk',
-    version='1.0.0',
+    version='1.0.1',
     cluster='policy-compliance-instruction-following',
     description='Access-governance decisions against a policy library with numbered clauses, an access-request queue, an entitlement store with segregation-of-duties rules, an exceptions register, an approver directory with authority tiers, training records, an audit-finding tracker, an approver review calendar, and an external screening vendor.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

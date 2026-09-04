@@ -41,7 +41,7 @@ from .tasks import HUBBENCH_ROOT, load_release_contract, load_release_tasks, rel
 
 BENCHMARK = "HubBench"
 METRIC = "HubScore"
-DEFAULT_VERSION = "1.3.0"
+DEFAULT_VERSION = "1.4.0"
 HARBOR_ORG = "blobfishai"
 HARBOR_DATASET = f"{HARBOR_ORG}/hubbench"
 HARBOR_URL = f"https://hub.harborframework.com/datasets/{HARBOR_DATASET}/latest"
@@ -95,7 +95,7 @@ SEALED_TASK_KEYS = (
 )
 VERIFIER_TASK_EXCLUDED = ("assets", "seed_tables", "oracle_steps")
 # Engine modules that carry grading, oracle, or task-construction logic.
-SEALED_ENGINE_MODULES = frozenset({"evaluation", "catalog", "decision", "quality_assets", "release", "distribution"})
+SEALED_ENGINE_MODULES = frozenset({"evaluation", "catalog", "decision", "quality_assets", "release", "distribution", "grading_contracts"})
 VERIFIER_ENGINE_MODULES = frozenset({"verifier"})
 RUNTIME_ROOTS = ("cli", "server", "http", "world_service")
 FAMILY_RUNTIME_FILES = ("tools.py", "schema.sql")
@@ -114,7 +114,12 @@ ORIENTATION = (
     "(`tool list`, `tool schema <name>`, `tool <name> '<json>'`), through the REST API under "
     f"`http://{WORLD_HOST}:{WORLD_PORT}/api/v1/`, and through the web console at `http://{WORLD_HOST}:{WORLD_PORT}/`. "
     "Every surface reads and writes the same isolated, stateful world. The task's evidence files are under "
-    "`/workspace/evidence`. Record the structured decision with the benchmark's answer control when the work is complete."
+    "`/workspace/evidence`. Direct filesystem reads are not audited: retrieve the applicable evidence and live "
+    "records through the provider tools before the first write to satisfy required investigations. All four tool "
+    "surfaces share that audit trace. Leave the requested stakeholder draft unsent; its body must reference the "
+    "persisted primary record and supported ISO outcome date (and current definition for research). Internal "
+    "option identifiers belong in the structured answer, not stakeholder prose. Record the structured decision "
+    "with the benchmark's answer control when the work is complete."
 )
 
 
@@ -1129,6 +1134,9 @@ def write_harbor_dataset(output: Path, families: list[FamilyInputs], version: st
 
 def public_record(inputs: FamilyInputs, task: dict[str, Any], harbor_row: dict[str, Any]) -> dict[str, Any]:
     family = inputs.family
+    public_world = {key: task["world"][key] for key in ("id", "name", "systems")}
+    if "interaction_contract" in task["world"]:
+        public_world["interaction_contract"] = task["world"]["interaction_contract"]
     return {
         "task_id": harbor_row["task_id"],
         "harbor_task": harbor_row["name"],
@@ -1144,7 +1152,7 @@ def public_record(inputs: FamilyInputs, task: dict[str, Any], harbor_row: dict[s
         "role": task["role"],
         "as_of": task["as_of"],
         "instruction": task["instruction"],
-        "world": {"id": task["world"]["id"], "name": task["world"]["name"], "systems": task["world"]["systems"]},
+        "world": public_world,
         "servers": harbor_row["servers"],
         "tools": inputs.manifest["tools"],
         "evidence_files": [
@@ -1244,6 +1252,8 @@ size_categories:
 
 **One Blobfish-authored, oracle-proven benchmark family per Harbor Hub professional-domain cluster.** Every task is an employee decision worked over a dependent chain of evidence — never a lookup — against mock stateful tools over an isolated SQLite world. The agent reaches the world only through its public surfaces (MCP over streamable HTTP, a terminal `tool` CLI, a REST API, and a web console); a deterministic verifier (**{METRIC}**) grades the finished world from executable checks only. Zero LLM-judge calls.
 
+Shared domain families are not individual adaptations of every upstream dataset. Source-specific coverage is tracked separately in the [source catalog](https://blobfish.ai/datasets).
+
 Released families: {families_text}. {totals['tasks']} tasks, {totals['tools']} provider-shaped tools across {totals['servers']} MCP servers, {totals['evidence_files']} agent-visible evidence files, {totals['atomic_criteria']} atomic criteria.
 
 ## Families
@@ -1256,6 +1266,8 @@ Released families: {families_text}. {totals['tasks']} tasks, {totals['tools']} p
 
 {METRIC} is contract-driven and deterministic: required investigations before the first write, provider payload assertions on the persisted state change, post-write readbacks, write containment, exact graded answer fields (every intermediate value of the decision chain), and semantic milestone aggregation into 14 weighted milestones summing to 100. Reward = {METRIC} / 100; a task is a strict pass only when every milestone passes. Exact call order is not graded.
 
+Text checks are structural, not an assessment of arbitrary semantic equivalence. Direct filesystem evidence reads are not audited; required provider-tool evidence must appear in the call trace. All four tool surfaces share that trace.
+
 ## Qualification (computed from the committed reports)
 
 | Family | Oracle strict passes (mean {METRIC}) | Deterministic replays | Negative-control executions | False accepts | Mutation omissions detected | Executions |
@@ -1266,13 +1278,13 @@ Totals: {q['oracle_passes']}/{totals['tasks']} oracle strict passes at mean {q['
 
 ## Reasoning-chain audit (computed from the committed reports)
 
-Measured with the unmodified portfolio audit (`benchmark/reasoning_chain_audit.py`, hop classes H1–H13):
+Measured with the shared portfolio audit (`benchmark/reasoning_chain_audit.py`, hop classes H1–H13):
 
 | Family | Passing tasks | Chain depth | Hop coverage H1–H13 | Dependent derivations | Evidence reads before decision | Source systems | Graded answer fields |
 |---|---|---|---|---|---|---|---|
 {chain_rows}
 
-Totals: {c['passing_tasks']}/{c['measured_tasks']} tasks pass; every one of the 13 hop classes is covered by all {c['measured_tasks']} tasks ({c['hop_coverage_min']}–{c['hop_coverage_max']} per hop); dependent derivations {c['dependent_derivations_min']}–{c['dependent_derivations_max']}; evidence reads before the decision {c['evidence_reads_min']}–{c['evidence_reads_max']}.
+Totals: {c['passing_tasks']}/{c['measured_tasks']} tasks pass; aggregate coverage of each hop class is {_span(c['hop_coverage_total'].values())} of {c['measured_tasks']} tasks; dependent derivations {c['dependent_derivations_min']}–{c['dependent_derivations_max']}; evidence reads before the decision {c['evidence_reads_min']}–{c['evidence_reads_max']}.
 
 ## Run on Harbor
 
@@ -1289,7 +1301,9 @@ Harbor dataset: `{HARBOR_DATASET}` ({len(harbor['tasks'])} task packages `{HARBO
 - `contracts/tools.json` — the provider-shaped MCP tool contracts per family.
 - `verifiers/<task>.json` — the sealed verifier contracts (expected answer, assertions, calculations, required investigations, readbacks). Keep them away from the agent.
 - `ANCHORS.md` — public Harbor Hub anchors and the clean-room boundary per family.
-- `trajectories/` — `index.json`, {trajectories['reference']} Docker-gated oracle traces under `reference/`, and {trajectories['model_runs']} imported model run(s) under `model/<run>/`. Oracle traces disclose valid solutions and are excluded from rankings; every model `run.json` states whether the run is ranked or a disclosed partial run.
+- `trajectories/` — `index.json`, {trajectories['reference']} Docker-gated oracle traces under `reference/`, and {trajectories['model_runs']} imported model run(s) under `model/<run>/`. Each oracle trace retains its source benchmark version; historical or unversioned traces are not evidence for the current distribution. Oracle traces are excluded from rankings; every model `run.json` states its evaluated version and whether the run is ranked or partial.
+
+Oracle trace provenance: {trajectories['current_reference']} from this release; {trajectories['reference'] - trajectories['current_reference']} historical or unversioned. This count describes included evidence, not model performance.
 
 ## Synthetic-data notice
 
@@ -1307,6 +1321,49 @@ def _span(values: Any) -> str:
 def _hops(chain: dict[str, Any]) -> str:
     coverage = chain["hopCoverage"]
     return f"{min(coverage.values())}–{max(coverage.values())}/{chain['measuredTasks']}" if min(coverage.values()) != max(coverage.values()) else f"{max(coverage.values())}/{chain['measuredTasks']} on every hop"
+
+
+def reference_source_version(record: dict[str, Any]) -> str | None:
+    """Resolve a package-bound gate proof, or a legacy publication receipt.
+
+    Legacy reference records did not carry a benchmark version. Join their job
+    and task to a committed publication; never assign the requested build version
+    to an older result. Unknown provenance remains explicitly unversioned.
+    """
+
+    versions = set()
+    job = record.get("job", "")
+    if not isinstance(job, str) or not job or Path(job).name != job or job in (".", ".."):
+        raise ValueError("invalid reference gate job identity")
+    gate_path = REPORTS_DIR / "gates" / f"{job}.json"
+    if gate_path.is_file():
+        gate = json.loads(gate_path.read_text(encoding="utf-8"))
+        trial = gate.get("trials", {}).get(record.get("harbor_task"), {})
+        if (
+            gate.get("schema_version") != "hubbench.oracle-gate.v1"
+            or gate.get("dataset") != HARBOR_DATASET or gate.get("job") != job
+            or not gate.get("version") or record.get("benchmark_version") != gate["version"]
+            or trial.get("task_digest") != record.get("task_digest")
+            or trial.get("trial") != record.get("trial")
+            or trial.get("reference_sha256") != sha256_json(record)
+        ):
+            raise ValueError("reference trajectory does not match its admitted gate proof")
+        versions.add(gate["version"])
+    elif record.get("benchmark_version") is not None:
+        raise ValueError("versioned reference trajectory has no admitted gate proof")
+    paths = [REPORTS_DIR / "publication.json", *sorted((REPORTS_DIR / "publications").glob("v*.json"))]
+    for path in paths:
+        if not path.is_file():
+            continue
+        publication = json.loads(path.read_text(encoding="utf-8"))
+        if (
+            record.get("job") in publication.get("harborGate", {}).get("jobs", [])
+            and record.get("harbor_task") in publication.get("publishedTasks", [])
+        ):
+            versions.add(publication["version"])
+    if len(versions) > 1:
+        raise ValueError("reference gate is associated with multiple benchmark versions")
+    return next(iter(versions), None)
 
 
 def write_hf_trajectories(target: Path, version: str, families: list[FamilyInputs]) -> dict[str, Any]:
@@ -1329,16 +1386,23 @@ def write_hf_trajectories(target: Path, version: str, families: list[FamilyInput
             raise ValueError(f"{path}: reference trajectory identity mismatch")
         if record.get("strict_pass") is not True or float(record.get("reward", 0.0)) != 1.0 or float(record.get("score", 0.0)) != 100.0:
             raise ValueError(f"{path}: reference trajectory is not a strict reward-1 pass")
+        source_version = reference_source_version(record)
         public = {
             **record,
-            "benchmark_version": version,
+            "benchmark_version": source_version,
+            "distribution_version": version,
+            "current_release": source_version == version,
             "family": family_by_task[task_id],
             "sample_only": True,
             "leaderboard_eligible": False,
-            "disclosure": "Oracle sample: contains one valid solution and is excluded from ranked model evaluation.",
+            "disclosure": (
+                f"Oracle sample from benchmark {source_version or 'version not established'}. "
+                "Contains a solution for its source package, not proof of solvability "
+                "for a different scoring version. Excluded from ranked model evaluation."
+            ),
         }
         _write_json(target / "reference" / path.name, public)
-        index["reference"].append({"task_id": task_id, "family": family_by_task[task_id], "harbor_task": record["harbor_task"], "job": record["job"], "trial": record["trial"], "score": record["score"], "reward": record["reward"], "strict_pass": record["strict_pass"], "sample_only": True, "leaderboard_eligible": False, "tool_calls": len(record["trace"]), "sha256": sha256_json(public), "path": f"reference/{path.name}"})
+        index["reference"].append({"task_id": task_id, "family": family_by_task[task_id], "harbor_task": record["harbor_task"], "job": record["job"], "trial": record["trial"], "benchmark_version": source_version, "current_release": source_version == version, "score": record["score"], "reward": record["reward"], "strict_pass": record["strict_pass"], "sample_only": True, "leaderboard_eligible": False, "tool_calls": len(record["trace"]), "sha256": sha256_json(public), "path": f"reference/{path.name}"})
     publication_path = HUBBENCH_ROOT / "reports" / "publication.json"
     publication = json.loads(publication_path.read_text(encoding="utf-8")) if publication_path.is_file() else {}
     required_families = (
@@ -1346,7 +1410,7 @@ def write_hf_trajectories(target: Path, version: str, families: list[FamilyInput
         if publication.get("version") == version
         else set()
     )
-    missing_families = sorted(required_families - {row["family"] for row in index["reference"]})
+    missing_families = sorted(required_families - {row["family"] for row in index["reference"] if row["current_release"]})
     if missing_families:
         raise ValueError(f"missing Docker-gated reference trajectories for published families: {', '.join(missing_families)}")
     run_dirs = sorted(path for path in model_dir.iterdir() if (path / "run.json").is_file()) if model_dir.is_dir() else []
@@ -1368,14 +1432,16 @@ def write_hf_trajectories(target: Path, version: str, families: list[FamilyInput
         target / "README.md",
         f"# Trajectories\n\n`index.json` lists every trajectory. **Reference** trajectories are the durable world call traces of the packaged oracle "
         f"replayed through the public surfaces (MCP over HTTP, REST, the `tool` CLI, answer submission) inside Harbor under Docker and graded by "
-        f"the packaged verifier — {len(index['reference'])} published. **Model** trajectories come from imported Harbor runs of `{HARBOR_DATASET}` with the "
+        f"the packaged verifier — {len(index['reference'])} included. Each retains its source `benchmark_version` "
+        f"(null when provenance is unestablished), separately from this distribution's version. Historical samples "
+        f"do not qualify a newer release. **Model** trajectories come from imported Harbor runs of `{HARBOR_DATASET}` with the "
         f"same durable trace, the HubScore verdict, and the token/cost receipt per trial; a run is ranked only when it completed every published task "
         f"once with zero errors and zero retries, otherwise it is a disclosed partial run. Qualification controls are never ranked as models.\n\n"
         f"## Model runs\n\n{runs}\n\nEach trace lists every tool call the world recorded (tool, arguments, success, result — long results are truncated with a "
         f"character count). Traces from v1.0.0 packages include repeated argument-free `hubbench.context.get` reads caused by the compose healthcheck "
         f"polling the task endpoint; v1.1.0 packages probe the private `/health` endpoint instead.\n",
     )
-    return {"reference": len(index["reference"]), "model_runs": len(index["model_runs"]), "model_trials": sum(len(run["trials"]) for run in index["model_runs"])}
+    return {"reference": len(index["reference"]), "current_reference": sum(row["current_release"] for row in index["reference"]), "model_runs": len(index["model_runs"]), "model_trials": sum(len(run["trials"]) for run in index["model_runs"])}
 
 
 def write_huggingface(output: Path, families: list[FamilyInputs], harbor: dict[str, Any], totals: dict[str, Any], version: str) -> dict[str, Any]:

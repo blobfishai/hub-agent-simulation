@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='workplace',
     name='Workplace',
-    version='1.0.0',
+    version='1.0.1',
     cluster='customer-workplace-agents',
     description='Customer-escalation delivery decisions against a helpdesk with SLA policies, a delivery tracker with sprints and capacity reports, a versioned wiki standard, a staff calendar with leave and on-call, an HRIS skills roster, a contract register with commitments and a credit ledger, counterparty confirmations, and approval records.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

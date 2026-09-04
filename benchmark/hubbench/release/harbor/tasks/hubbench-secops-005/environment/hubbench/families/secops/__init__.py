@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='secops',
     name='SecOps',
-    version='1.0.0',
+    version='1.0.1',
     cluster='security',
     description='Defensive credential-compromise triage and containment decisions against a SIEM with versioned detection rules, an EDR host inventory, an IAM identity register with sessions, factors, and credential-object grants, a cloud key registry, a security ticket queue, containment-tier playbooks, a responder on-call calendar, identity-provider vendor invalidation confirmations, and approval records.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

@@ -1403,7 +1403,7 @@
     }
   ],
   "benchmark": "HubBench",
-  "benchmark_version": "1.0.0",
+  "benchmark_version": "1.0.1",
   "decision_model": {
     "binding_constraint": "one continuous session on a Tier-2-qualified responder without displacing protected windows; Thursday responder-hours already booked or held as the protected regulator evidence session = 12 RESPONDER_HOUR; uncovered scope = 2 RESPONDER_HOUR",
     "calculations": [
@@ -1678,7 +1678,8 @@
   "evaluation": {
     "llm_judge_calls": 0,
     "metric": "HubScore",
-    "strict_pass": "every rubric milestone passes"
+    "strict_pass": "every rubric milestone passes",
+    "text_contract_policy": "hubbench.text-facts.v1"
   },
   "expected": {
     "answer": {
@@ -1813,9 +1814,15 @@
         }
       },
       {
-        "description": "Created \u2014 but did not send \u2014 the stakeholder draft carrying review_first_full_free_day, the 2026-06-12 outcome, the binding constraint, and the SEC-0003 business reference.",
+        "description": "Create, but do not send, the stakeholder draft for the exact requested recipient. Its body must contain the persisted record BRG-70877 and the supported facts 2026-06-12. Preserve the existing business-reference check; internal option tokens are not required in prose.",
         "id": "mutation_02",
         "milestone_id": "state.collaboration",
+        "payload_argument_text": {
+          "body": [
+            "BRG-70877",
+            "2026-06-12"
+          ]
+        },
         "payload_contains": {
           "arguments": {
             "recipient": "maja.lindqvist@kestrelgrid.example"
@@ -1828,10 +1835,6 @@
             "a.kowalczyk",
             "SR-61260"
           ]
-        ],
-        "payload_text_contains": [
-          "review_first_full_free_day",
-          "2026-06-12"
         ],
         "table": "mutations",
         "values": {
@@ -4467,7 +4470,7 @@
       "criterion_ids": [
         "mutation_02"
       ],
-      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "description": "Create, but do not send, the stakeholder draft for the exact requested recipient. Its body must contain the persisted record BRG-70877 and the supported facts 2026-06-12. Preserve the existing business-reference check; internal option tokens are not required in prose.",
       "id": "state.collaboration",
       "weight": 6.0
     },
@@ -6721,6 +6724,11 @@
   },
   "world": {
     "id": "kestrel-secops-v1",
+    "interaction_contract": {
+      "investigation_evidence": "Retrieve the applicable source records, policy, approval, and evidence through the connected provider tools before the first state change. The tool CLI, MCP, REST, and web tool forms share one audited trace. Reading /workspace/evidence directly is a convenience, but filesystem reads are not recorded and do not satisfy required tool investigations.",
+      "stakeholder_draft": "Leave an unsent draft for the requested recipient. Its body must name the persisted primary record and supported outcome date; research drafts must also identify the current definition. Preserve the business reference and explain the decision and constraints. An internal option identifier is required only in the structured answer, not in prose.",
+      "text_matching": "Required text facts use case-insensitive, punctuation-normalized whole tokens. Dates use ISO YYYY-MM-DD. These are structural checks, not a semantic assessment of arbitrary prose or contradictions."
+    },
     "name": "Kestrel Grid Utilities \u2014 Security Operations Center",
     "organization_id": "ORG-KESTREL",
     "primary_site": "TENANT-PRIMARY",

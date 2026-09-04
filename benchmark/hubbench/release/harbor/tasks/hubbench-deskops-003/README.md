@@ -1,6 +1,6 @@
 # hubbench-deskops-003 — Find the first week the sales kickoff planning offsite clears every regional lead
 
-HubBench 1.3.0 · family **DeskOps** (`deskops`, cluster `computer-use-gui`) · decision mode `schedule` · role `workplace_operations_coordinator` · as of 2026-06-08.
+HubBench 1.4.0 · family **DeskOps** (`deskops`, cluster `computer-use-gui`) · decision mode `schedule` · role `workplace_operations_coordinator` · as of 2026-06-08.
 
 Offsite-move decisions against a mailbox, a calendar with attendee free/busy, a people directory, agenda documents with revisions, a budget workbook with versions, a shared drive, a venue portal with weekly availability, quotes, and holds, a corporate travel desk with policy versions, bookings, group-ticketing confirmations, and booking changes, a budget system with lines and adjustments, and approval records.
 

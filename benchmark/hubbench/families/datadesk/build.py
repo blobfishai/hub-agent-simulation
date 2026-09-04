@@ -37,6 +37,7 @@ from ...engine.decision import (
     build_decision_model,
 )
 from ...engine.families import CONTEXT_TOOL, SUBMIT_TOOL
+from ...engine.grading_contracts import fact_text_contract
 from ...engine.quality_assets import (
     quality_support_assets,
     quality_support_investigations,
@@ -61,7 +62,7 @@ from .specs import (
 
 BENCHMARK = "HubBench"
 FAMILY_SLUG = "datadesk"
-FAMILY_VERSION = "1.0.0"
+FAMILY_VERSION = "1.0.1"
 PRIMARY_KEYS = {
     "backfill_jobs": "job_id",
     "run_schedules": "schedule_id",
@@ -2045,6 +2046,7 @@ def build_assertions(scenario: Scenario, model: dict[str, Any]) -> list[dict[str
     ]
 
 
+@fact_text_contract
 def build_task(scenario: Scenario) -> dict[str, Any]:
     verify_numbers(scenario)
     assets = build_assets(scenario)

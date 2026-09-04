@@ -1,6 +1,6 @@
 # hubbench-designops-008 — Replace the gauge sets the calibration bulletin excluded before Monday's cut-ins
 
-HubBench 1.3.0 · family **DesignOps** (`designops`, cluster `manufacturing-engineering-design`) · decision mode `quantity` · role `engineering_change_coordinator` · as of 2026-05-11.
+HubBench 1.4.0 · family **DesignOps** (`designops`, cluster `manufacturing-engineering-design`) · decision mode `quantity` · role `engineering_change_coordinator` · as of 2026-05-11.
 
 Engineering-change release decisions against a PLM with part revisions and CAD check-in history, change orders with affected items, a multi-level BOM, a certification register, a tooling register with calibration state, supplier-portal quotes, a production release calendar, and approval records.
 

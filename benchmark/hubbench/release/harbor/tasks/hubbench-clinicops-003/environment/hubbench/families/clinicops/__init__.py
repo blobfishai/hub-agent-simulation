@@ -20,7 +20,7 @@ def _no_task_builder() -> list:
 FAMILY = Family(
     slug='clinicops',
     name='ClinicOps',
-    version='1.0.0',
+    version='1.0.1',
     cluster='healthcare',
     description='Infusion operations decisions against a FHIR-shaped EHR, chair scheduling, pharmacy inventory, supplier confirmations, and approval records.',
     schema_sql=Path(__file__).with_name("schema.sql").read_text(encoding="utf-8"),

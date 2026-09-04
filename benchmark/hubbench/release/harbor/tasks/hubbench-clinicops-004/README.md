@@ -1,6 +1,6 @@
 # hubbench-clinicops-004 — Get Kwame Boateng's IVIG in before neurology's deadline
 
-HubBench 1.3.0 · family **ClinicOps** (`clinicops`, cluster `healthcare`) · decision mode `plan` · role `infusion_pharmacy_buyer` · as of 2026-03-09.
+HubBench 1.4.0 · family **ClinicOps** (`clinicops`, cluster `healthcare`) · decision mode `plan` · role `infusion_pharmacy_buyer` · as of 2026-03-09.
 
 Infusion operations decisions against a FHIR-shaped EHR, chair scheduling, pharmacy inventory, supplier confirmations, and approval records.
 

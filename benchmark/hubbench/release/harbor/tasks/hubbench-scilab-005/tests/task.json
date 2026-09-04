@@ -150,7 +150,7 @@
   },
   "as_of": "2026-05-11",
   "benchmark": "HubBench",
-  "benchmark_version": "1.0.0",
+  "benchmark_version": "1.0.1",
   "decision_model": {
     "binding_constraint": "the inter-site transfer procedure (usable lots only) and the signed approval scope; annex vials reserved for a named run or past dating = 3 VIAL; uncovered scope = 1 VIAL",
     "calculations": [
@@ -431,7 +431,8 @@
   "evaluation": {
     "llm_judge_calls": 0,
     "metric": "HubScore",
-    "strict_pass": "every rubric milestone passes"
+    "strict_pass": "every rubric milestone passes",
+    "text_contract_policy": "hubbench.text-facts.v1"
   },
   "expected": {
     "answer": {
@@ -552,9 +553,15 @@
         }
       },
       {
-        "description": "Created — but did not send — the stakeholder draft carrying transfer_supported_quantity, the 2026-05-13 outcome, the binding constraint, and the LAB-0005 business reference.",
+        "description": "Create, but do not send, the stakeholder draft for the exact requested recipient. Its body must contain the persisted record TR-2201 and the supported facts 2026-05-13. Preserve the existing business-reference check; internal option tokens are not required in prose.",
         "id": "mutation_02",
         "milestone_id": "state.collaboration",
+        "payload_argument_text": {
+          "body": [
+            "TR-2201",
+            "2026-05-13"
+          ]
+        },
         "payload_contains": {
           "arguments": {
             "recipient": "halvor.eide@corvane.example"
@@ -567,10 +574,6 @@
             "tox-panel-cohort-a",
             "RR-51280"
           ]
-        ],
-        "payload_text_contains": [
-          "transfer_supported_quantity",
-          "2026-05-13"
         ],
         "table": "mutations",
         "values": {
@@ -2855,7 +2858,7 @@
       "criterion_ids": [
         "mutation_02"
       ],
-      "description": "After the primary outcome is known, leave a stakeholder draft carrying the supported decision, outcome date, binding constraint, and business reference for human review; do not send it.",
+      "description": "Create, but do not send, the stakeholder draft for the exact requested recipient. Its body must contain the persisted record TR-2201 and the supported facts 2026-05-13. Preserve the existing business-reference check; internal option tokens are not required in prose.",
       "id": "state.collaboration",
       "weight": 6.0
     },
@@ -2942,6 +2945,11 @@
   },
   "world": {
     "id": "corvane-assay-ops-v1",
+    "interaction_contract": {
+      "investigation_evidence": "Retrieve the applicable source records, policy, approval, and evidence through the connected provider tools before the first state change. The tool CLI, MCP, REST, and web tool forms share one audited trace. Reading /workspace/evidence directly is a convenience, but filesystem reads are not recorded and do not satisfy required tool investigations.",
+      "stakeholder_draft": "Leave an unsent draft for the requested recipient. Its body must name the persisted primary record and supported outcome date; research drafts must also identify the current definition. Preserve the business reference and explain the decision and constraints. An internal option identifier is required only in the structured answer, not in prose.",
+      "text_matching": "Required text facts use case-insensitive, punctuation-normalized whole tokens. Dates use ISO YYYY-MM-DD. These are structural checks, not a semantic assessment of arbitrary prose or contradictions."
+    },
     "name": "Corvane Institute — Assay Operations Core",
     "organization_id": "ORG-CORVANE",
     "primary_site": "SITE-MAIN",
