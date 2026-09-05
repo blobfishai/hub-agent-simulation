@@ -1,6 +1,7 @@
-# HubBench v1.4.0 scoring candidate
+# HubBench v1.4.0 scoring revision
 
-Status: source/build candidate; the public registry publication is still v1.3.0.
+Status: published 2026-09-05; exact package and object identities are recorded in
+[`reports/publications/v1.4.0.json`](./reports/publications/v1.4.0.json).
 This revision changes grading, not task count, evidence data, provider behavior,
 or model performance. Family contract versions advance from 1.0.0 to 1.0.1.
 No historical verdict or publication receipt is rewritten.
@@ -82,9 +83,12 @@ versioned mechanism.
   Imports validate the entire batch before writing. Registry round trips must
   use digest-pinned registry packages, not a local-directory run.
 
-Before claiming v1.4.0 published: publish a new immutable Harbor tag and Hugging Face/source
-revision, verify registry round trips and bytes, and regenerate publication/page
-receipts. Then run full, version-bound model evaluations before ranking them.
+The published Harbor v1.4.0 tag contains the 104 qualified packages. A fresh
+registry round trip fetched one digest-pinned package per family: 13/13 reward
+1.0, zero errors or retries. All 3,671 Hugging Face payload files were verified
+against their immutable Git objects after merging the staged dataset PR; the
+publication receipt also verifies the clean, published source checkout.
+Full, version-bound model evaluations are still required before ranking them.
 The historical v1.0.0 Luna pilot remains 0/5 strict; it is not rescored here.
 
 The publisher preserves existing frozen releases and job evidence. A new run

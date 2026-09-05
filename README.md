@@ -27,17 +27,21 @@ stakeholder draft → the exact graded answer with every intermediate derivation
 
 ## Releases
 
-**v1.4.0 qualified source** — scoring contracts now check required facts in
+**v1.4.0 (published 2026-09-05)** — scoring contracts now check required facts in
 stakeholder draft bodies and allow alternative wording in 18 audited primary
 fields. Exact state, dates, recipients, approval, containment, investigations,
 and readbacks remain graded. Text checks are structural, not arbitrary semantic
 equivalence; direct filesystem evidence reads are not audited. See
 [scoring changes](benchmark/hubbench/SCORING_CHANGES.md).
 All 104 frozen packages passed fresh package-bound Docker oracle admission at
-reward 1.0 with zero errors or retries. The latest completed cross-platform
-publication receipt remains v1.3.0 until publication and registry round trips
-are recorded.
-Historical model results are not rescored or relabeled.
+reward 1.0 with zero errors or retries. The published Harbor manifest matches
+all 104 qualified digests; a fresh registry round trip passed 13/13, one package
+per family. All 3,671 Hugging Face payload objects match the qualified release
+at commit `78f8e0f09ccaba9e764445b0783e7ac3f9b8d404` (tag `v1.4.0`).
+The [immutable publication receipt](benchmark/hubbench/reports/publications/v1.4.0.json)
+pins the qualified source commit and all package/object verification evidence.
+Historical model results are not rescored or relabeled; full v1.4.0 model
+evaluations remain pending and no model receives an unearned leaderboard rank.
 
 **v1.3.0 (published 2026-09-02)** — 13 families / 104 tasks on Harbor and
 Hugging Face, 554 tools, 3,450 agent-visible evidence files, and 7,001
@@ -69,7 +73,8 @@ Qualification across the 104 released tasks (1,456 executions): 104/104 oracle
 strict passes at a mean HubScore of 100.0, 104/104 byte-identical replays,
 1,040 negative-control executions across 10 attack policies with 0 false
 accepts, 208/208 mutation omissions detected; reasoning-chain audit
-104/104 with hop classes H1–H13 covered. Every number is recomputed from
+104/104, with aggregate per-hop coverage ranging from 99 to 104 of 104 tasks
+across H1–H13. Every number is recomputed from
 `benchmark/hubbench/reports/` and `benchmark/hubbench/release/reports/release.json`
 by the tests — nothing here is typed by hand.
 
@@ -84,7 +89,7 @@ other released family.
 - **Website** — https://blobfish.ai/benchmarks/hubbench (leaderboard, task
   browser, asset room, environment and tool contract, trajectories, methodology)
 - **Harbor** — https://hub.harborframework.com/datasets/blobfishai/hubbench
-  (`harbor run -d blobfishai/hubbench@v1.3.0 -a <agent>`; task packages
+  (`harbor run -d blobfishai/hubbench@v1.4.0 -a <agent>`; task packages
   `blobfishai/hubbench-<family>-NNN`)
 - **Hugging Face** — https://huggingface.co/datasets/SamuelChien821/hubbench
   (dataset card, public task records, evidence files, tool contracts, sealed
