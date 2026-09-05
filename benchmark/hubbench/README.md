@@ -9,12 +9,13 @@ The historical cluster map and family plan live in
 (`hubbench` block): thirteen families, eight tasks minimum each. All thirteen
 families and 104 tasks are currently released and qualified.
 
-The public publication receipt still identifies **v1.3.0**. The source tree now
-builds **v1.4.0**, a scoring-revision candidate (family contracts v1.0.1), not a
-newly published registry release. See [scoring changes](./SCORING_CHANGES.md).
-All 104 frozen v1.4.0 packages have now passed fresh, digest-bound Docker oracle
-admission with zero errors or retries. Versioned registry publication and full
-model runs remain pending; historical model trajectories are not new results.
+**v1.4.0 is published** on Harbor, Hugging Face, and the standalone source
+repository (family contracts v1.0.1). See [scoring changes](./SCORING_CHANGES.md)
+and the [immutable publication receipt](./reports/publications/v1.4.0.json).
+All 104 frozen packages passed fresh, digest-bound Docker oracle admission;
+all 13 registry round trips passed, with zero errors or retries. Every published
+Hugging Face object matches the qualified payload. Full model runs remain
+pending; historical model trajectories are not new results or ranked entries.
 
 | Cluster | Family | Status |
 |---|---|---|
